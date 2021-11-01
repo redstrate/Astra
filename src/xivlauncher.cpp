@@ -65,7 +65,6 @@ void LauncherWindow::launch(const LoginAuth auth) {
     arguments.push_back("wine");
 
     QStringList env = QProcess::systemEnvironment();
-    env << "DXVK_HUD=full";
 
     if(useEsync) {
         env << "WINEESYNC=1";
