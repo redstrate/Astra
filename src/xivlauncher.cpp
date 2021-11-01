@@ -109,18 +109,21 @@ QString LauncherWindow::readVersion(QString path) {
 }
 
 void LauncherWindow::readInitialInformation() {
+    if(settings.contains("gamePath") && settings.value("gamePath").canConvert<QString>() && !settings.value("gamePath").toString().isEmpty()) {
+        gamePath = settings.value("gamePath").toString();
+    } else {
 #if defined(Q_OS_WIN)
-    gamePath = "C:\\Program Files (x86\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn";
+        gamePath = "C:\\Program Files (x86\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn";
 #endif
 
 #if defined(Q_OS_MACOS)
-    gamePath = QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
+        gamePath = QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
 #endif
 
 #if defined(Q_OS_LINUX)
-    // TODO: this is assuming it's in your default WINEPREFIX
-    gamePath = QDir::homePath() + "/.wine/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
+        gamePath = QDir::homePath() + "/.wine/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
 #endif
+    }
 
     bootVersion = readVersion(gamePath + "/boot/ffxivboot.ver");
     gameVersion = readVersion(gamePath + "/game/ffxivgame.ver");
@@ -226,6 +229,8 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
 
     connect(loginButton, &QPushButton::released, [=] {
         auto info = LoginInformation{usernameEdit->text(), passwordEdit->text(), otpEdit->text()};
+
+        settings.setValue("gamePath", gamePath);
 
         settings.setValue("rememberUsername", rememberUsernameBox->checkState() == Qt::CheckState::Checked);
         if(rememberUsernameBox->checkState() == Qt::CheckState::Checked) {
