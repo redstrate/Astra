@@ -1,0 +1,4 @@
+*build*/
+*.kdev4
+.idea/
+.DS_Store
