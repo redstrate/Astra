@@ -134,6 +134,10 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     squareBoot = new SquareBoot(*this, *squareLauncher);
 
     QMenu* fileMenu = menuBar()->addMenu("File");
+    // sorry linux users, for some reason my global menu does not like qt6 apps right now
+#if defined(Q_OS_LINUX)
+    menuBar()->setNativeMenuBar(false);
+#endif
 
     QAction* settingsAction = fileMenu->addAction("Settings...");
     connect(settingsAction, &QAction::triggered, [=] {
