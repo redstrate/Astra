@@ -42,42 +42,42 @@ void LauncherWindow::buildRequest(QNetworkRequest& request) {
 void LauncherWindow::launch(const LoginAuth auth) {
     auto process = new QProcess(this);
     process->setProcessChannelMode(QProcess::ForwardedChannels);
+    process->setWorkingDirectory(gamePath + "/game/");
 
-    bool isWine = false;
-    QString winePath;
-    QString ffxivPath;
+    QList<QString> arguments;
 
-#if defined(Q_OS_WIN)
-    ffxivPath = gamePath + "\\game\\ffxiv_dx11.exe";
-#endif
-
+    // for platforms using wine, set wine before ffxiv_dx11.exe
+    // TODO: make wine path configurable
 #if defined(Q_OS_MACOS)
-    isWine = true;
-   // TODO: this is assuming FFXIV is installed in /Applications
-   winePath = "/Applications/FINAL FANTASY XIV ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine";
-   ffxivPath = QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn/game/ffxiv_dx11.exe";
+    arguments.push_back("/Applications/FINAL FANTASY XIV ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine");
 #endif
 
 #if defined(Q_OS_LINUX)
-    isWine = true;
-    // TODO: this is assuming you want to use the wine in your PATH, which isn't always the case
-    winePath = "wine";
-
-    // TODO: this is assuming it's in your default WINEPREFIX
-    ffxivPath = gamePath + "/game/ffxiv_dx11.exe";
-    process->setWorkingDirectory(gamePath + "/game/");
-#endif
-
-    QList<QString> arguments;
-    if (isWine) {
-        arguments.push_back(ffxivPath);
+    if(useGamescope) {
+        arguments.push_back("gamescope");
+        arguments.push_back("-f");
+        arguments.push_back("-b");
     }
 
-    // i wonder what these mean...
+    if(useGamemode)
+        arguments.push_back("gamemoderun");
+
+    arguments.push_back("wine");
+
+    QStringList env = QProcess::systemEnvironment();
+    env << "DXVK_HUD=full";
+
+    if(useEsync) {
+        env << "WINEESYNC=1";
+    }
+
+    process->setEnvironment(env);
+#endif
+
+    // now for the actual game...
+    arguments.push_back(gamePath + "\\game\\ffxiv_dx11.exe");
     arguments.push_back("DEV.DataPathType=1");
     arguments.push_back("DEV.UseSqPack=1");
-    // by the way, it looks like setting graphics options is possible via these too, i wonder what
-    // else is hiding :-)))
 
     arguments.push_back(QString("DEV.MaxEntitledExpansionID=%1").arg(auth.maxExpansion));
     arguments.push_back(QString("DEV.TestSID=%1").arg(auth.SID));
@@ -91,14 +91,9 @@ void LauncherWindow::launch(const LoginAuth auth) {
             arguments.push_back(QString("DEV.LobbyHost0%1=%2 DEV.LobbyPort0%1=54994").arg(QString::number(i), auth.lobbyhost));
     }
 
-    if (isWine) {
-        QStringList env = QProcess::systemEnvironment();
-        //env << "DXVK_FILTER_DEVICE_NAME=AMD";
-        process->setEnvironment(env);
-        process->start(winePath, arguments);
-    } else {
-        process->start(ffxivPath, arguments);
-    }
+    auto executable = arguments[0];
+    arguments.removeFirst();
+    process->start(executable, arguments);
 }
 
 QString LauncherWindow::readVersion(QString path) {

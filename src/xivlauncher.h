@@ -35,10 +35,14 @@ public:
     QString gamePath;
     QString bootVersion, gameVersion;
 
+    bool useEsync, useGamescope, useGamemode;
+
     void launch(const LoginAuth auth);
     void buildRequest(QNetworkRequest& request);
     void setSSL(QNetworkRequest& request);
     QString readVersion(QString path);
+
+    QSettings settings;
 
 private:
     void readInitialInformation();
@@ -46,6 +50,4 @@ private:
     SapphireLauncher* sapphireLauncher;
     SquareBoot* squareBoot;
     SquareLauncher* squareLauncher;
-
-    QSettings settings;
 };
