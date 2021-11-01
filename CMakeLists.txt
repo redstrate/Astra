@@ -15,7 +15,8 @@ add_executable(xivlauncher
         src/xivlauncher.cpp
         src/sapphirelauncher.cpp
         src/squareboot.cpp
-        src/squarelauncher.cpp)
+        src/squarelauncher.cpp
+        src/settingswindow.cpp)
 
 target_link_libraries(xivlauncher Qt6::Core Qt6::Widgets Qt6::Network qt6keychain)
 

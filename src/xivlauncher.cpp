@@ -13,11 +13,13 @@
 #include <QCheckBox>
 #include <keychain.h>
 #include <QMessageBox>
+#include <QMenuBar>
 
 #include "xivlauncher.h"
 #include "sapphirelauncher.h"
 #include "squarelauncher.h"
 #include "squareboot.h"
+#include "settingswindow.h"
 
 void LauncherWindow::setSSL(QNetworkRequest& request) {
     QSslConfiguration config;
@@ -90,6 +92,9 @@ void LauncherWindow::launch(const LoginAuth auth) {
     }
 
     if (isWine) {
+        QStringList env = QProcess::systemEnvironment();
+        //env << "DXVK_FILTER_DEVICE_NAME=AMD";
+        process->setEnvironment(env);
         process->start(winePath, arguments);
     } else {
         process->start(ffxivPath, arguments);
@@ -127,6 +132,14 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     sapphireLauncher = new SapphireLauncher(*this);
     squareLauncher = new SquareLauncher(*this);
     squareBoot = new SquareBoot(*this, *squareLauncher);
+
+    QMenu* fileMenu = menuBar()->addMenu("File");
+
+    QAction* settingsAction = fileMenu->addAction("Settings...");
+    connect(settingsAction, &QAction::triggered, [=] {
+        auto window = new SettingsWindow(*this);
+        window->show();
+    });
 
     const auto savedServerType = settings.value("serverType", 0).toInt();
     const auto savedLobbyURL = settings.value("lobbyURL", "127.0.0.1").toString();
