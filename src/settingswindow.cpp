@@ -84,7 +84,14 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     auto gameDirectoryButton = new QPushButton("Open Game Directory");
     connect(gameDirectoryButton, &QPushButton::pressed, [this] {
+#if defined(Q_OS_WIN)
+        // for some reason, windows requires special treatment (what else is new?)
+        const QFileInfo fileInfo(this->window.gamePath);
+
+        QProcess::startDetached("explorer.exe", QStringList(QDir::toNativeSeparators(fileInfo.canonicalFilePath())));
+#else
         QDesktopServices::openUrl("file://" + this->window.gamePath);
+#endif
     });
     layout->addWidget(gameDirectoryButton);
 }
