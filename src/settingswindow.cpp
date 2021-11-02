@@ -10,7 +10,6 @@
 #include <QMessageBox>
 #include <QProcess>
 #include <QComboBox>
-#include <QLineEdit>
 
 #include "xivlauncher.h"
 
@@ -113,8 +112,8 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     layout->addRow(wineBox);
 #endif
 
-    auto currentGameDirectory = new QLineEdit(window.gamePath);
-    currentGameDirectory->setEnabled(false);
+    auto currentGameDirectory = new QLabel(window.gamePath);
+    currentGameDirectory->setWordWrap(true);
     layout->addRow("Game Directory", currentGameDirectory);
 
     auto selectDirectoryButton = new QPushButton("Select Game Directory");

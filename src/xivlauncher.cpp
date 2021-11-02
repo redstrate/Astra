@@ -181,6 +181,20 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
         launchExecutable({gamePath + "/boot/ffxivconfig64.exe"});
     });
 
+#if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
+    QMenu* wineMenu = toolsMenu->addMenu("Wine");
+
+    QAction* wineCfg = wineMenu->addAction("winecfg");
+    connect(wineCfg, &QAction::triggered, [=] {
+        launchExecutable({"winecfg.exe"});
+    });
+
+    QAction* controlPanel = wineMenu->addAction("Control Panel");
+    connect(controlPanel, &QAction::triggered, [=] {
+        launchExecutable({"control.exe"});
+    });
+#endif
+
     const auto savedServerType = settings.value("serverType", 0).toInt();
     const auto savedLobbyURL = settings.value("lobbyURL", "127.0.0.1").toString();
     const auto shouldRememberUsername = settings.value("rememberUsername", false).toBool();
