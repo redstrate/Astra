@@ -134,6 +134,10 @@ void LauncherWindow::readInitialInformation() {
 
     bootVersion = readVersion(gamePath + "/boot/ffxivboot.ver");
     gameVersion = readVersion(gamePath + "/game/ffxivgame.ver");
+
+    useEsync = settings.value("useEsync", false).toBool();
+    useGamemode = settings.value("useGamemode", false).toBool();
+    useGamescope = settings.value("useGamescope", false).toBool();
 }
 
 LauncherWindow::LauncherWindow(QWidget* parent) :
