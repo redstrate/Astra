@@ -7,6 +7,8 @@
 #include <QFileDialog>
 #include <QCheckBox>
 #include <QGroupBox>
+#include <QMessageBox>
+#include <QProcess>
 
 #include "xivlauncher.h"
 
@@ -75,6 +77,8 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     connect(selectDirectoryButton, &QPushButton::pressed, [this, currentGameDirectory] {
         this->window.gamePath = QFileDialog::getExistingDirectory(this, "Open Game Directory");
         currentGameDirectory->setText(this->window.gamePath);
+
+        this->window.readInitialInformation();
     });
     layout->addWidget(selectDirectoryButton);
 

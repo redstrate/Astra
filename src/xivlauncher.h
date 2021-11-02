@@ -41,12 +41,11 @@ public:
     void buildRequest(QNetworkRequest& request);
     void setSSL(QNetworkRequest& request);
     QString readVersion(QString path);
+    void readInitialInformation();
 
     QSettings settings;
 
 private:
-    void readInitialInformation();
-
     SapphireLauncher* sapphireLauncher;
     SquareBoot* squareBoot;
     SquareLauncher* squareLauncher;
