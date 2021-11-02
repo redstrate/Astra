@@ -157,6 +157,11 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
         launchExecutable({gamePath + "/boot/ffxivboot64.exe"});
     });
 
+    QAction* launchSysInfo = toolsMenu->addAction("Launch System Info...");
+    connect(launchSysInfo, &QAction::triggered, [=] {
+        launchExecutable({gamePath + "/boot/ffxivsysinfo64.exe"});
+    });
+
     const auto savedServerType = settings.value("serverType", 0).toInt();
     const auto savedLobbyURL = settings.value("lobbyURL", "127.0.0.1").toString();
     const auto shouldRememberUsername = settings.value("rememberUsername", false).toBool();
