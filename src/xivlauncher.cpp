@@ -162,6 +162,11 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
         launchExecutable({gamePath + "/boot/ffxivsysinfo64.exe"});
     });
 
+    QAction* launchCfgBackup = toolsMenu->addAction("Launch Config Backup...");
+    connect(launchCfgBackup, &QAction::triggered, [=] {
+        launchExecutable({gamePath + "/boot/ffxivconfig64.exe"});
+    });
+
     const auto savedServerType = settings.value("serverType", 0).toInt();
     const auto savedLobbyURL = settings.value("lobbyURL", "127.0.0.1").toString();
     const auto shouldRememberUsername = settings.value("rememberUsername", false).toBool();
