@@ -77,7 +77,11 @@ void LauncherWindow::launchExecutable(const QStringList args) {
     // for platforms using wine, set wine before ffxiv_dx11.exe
     // TODO: make wine path configurable
 #if defined(Q_OS_MACOS)
-    arguments.push_back("/Applications/FINAL FANTASY XIV ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine");
+    if(useSystemWine) {
+        arguments.push_back("/usr/local/bin/wine64");
+    } else {
+        arguments.push_back("/Applications/FINAL FANTASY XIV ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine");
+    }
 #endif
 
 #if defined(Q_OS_LINUX)
@@ -138,6 +142,7 @@ void LauncherWindow::readInitialInformation() {
     useEsync = settings.value("useEsync", false).toBool();
     useGamemode = settings.value("useGamemode", false).toBool();
     useGamescope = settings.value("useGamescope", false).toBool();
+    useSystemWine = settings.value("useSystemWine", false).toBool();
 }
 
 LauncherWindow::LauncherWindow(QWidget* parent) :

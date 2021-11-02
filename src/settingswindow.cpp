@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QProcess>
 #include <QComboBox>
+#include <QLineEdit>
 
 #include "xivlauncher.h"
 
@@ -31,13 +32,40 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
         this->window.useDX9 = directXCombo->currentIndex() == 1;
     });
 
+    auto infoLabel = new QLabel("This is a list of possible enhancements you can make to your Wine gaming experience.\n"
+                                "This is all stuff you can do outside of the launcher, but we can take care of it for you.");
+    infoLabel->setWordWrap(true);
+
+#if defined(Q_OS_MAC)
+    auto wineBox = new QGroupBox("Wine Options");
+    auto wineBoxLayout = new QFormLayout();
+    wineBox->setLayout(wineBoxLayout);
+
+    wineBoxLayout->addWidget(infoLabel);
+
+    auto useSystemWine = new QCheckBox("Use System Wine");
+    useSystemWine->setChecked(window.settings.value("useSystemWine", false).toBool());
+    wineBoxLayout->addWidget(useSystemWine);
+
+    connect(useSystemWine, &QCheckBox::stateChanged, [this](int state) {
+        this->window.useSystemWine = state;
+        this->window.settings.setValue("useSystemWine", static_cast<bool>(state));
+    });
+
+    auto systemWineLabel = new QLabel("Use the system wine instead of the one packaged with the macOS version of FFXIV.\n"
+                                     "You can easily install wine through homebrew, but please note that the game will not run out of the box\n"
+                                     "on DX11 without DXVK installed.");
+    systemWineLabel->setWordWrap(true);
+    wineBoxLayout->addWidget(systemWineLabel);
+
+    layout->addRow(wineBox);
+#endif
+
 #if defined(Q_OS_LINUX)
     auto wineBox = new QGroupBox("Wine Options");
     auto wineBoxLayout = new QFormLayout();
     wineBox->setLayout(wineBoxLayout);
 
-    auto infoLabel = new QLabel("This is a list of possible enhancements you can make to your Wine gaming experience.\n"
-                                "This is all stuff you can do outside of the launcher, but we can take care of it for you.");
     wineBoxLayout->addWidget(infoLabel);
 
     auto useEsync = new QCheckBox("Use Esync");
@@ -46,6 +74,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     auto esyncLabel = new QLabel("Improves general game performance, but requires a Wine built with the Esync patches.\n"
                                  "If you use the latest Wine staging, it should work.");
+    esyncLabel->setWordWrap(true);
     wineBoxLayout->addWidget(esyncLabel);
 
     connect(useEsync, &QCheckBox::stateChanged, [this](int state) {
@@ -59,6 +88,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     auto gamescopeLabel = new QLabel("Use the SteamOS compositor that uses Wayland.\n"
                                  "If you are experiencing input issues on XWayland, try this option if you have it installed.");
+    gamescopeLabel->setWordWrap(true);
     wineBoxLayout->addWidget(gamescopeLabel);
 
     connect(useGamescope, &QCheckBox::stateChanged, [this](int state) {
@@ -72,6 +102,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     auto gamemodeLabel = new QLabel("Use Feral Interactive's GameMode, which applies a couple of performance enhancements.\n"
                                      "May give a slight performance boost, but requires GameMode to be installed.\n");
+    gamemodeLabel->setWordWrap(true);
     wineBoxLayout->addWidget(gamemodeLabel);
 
     connect(useGamemode, &QCheckBox::stateChanged, [this](int state) {
@@ -82,7 +113,8 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     layout->addRow(wineBox);
 #endif
 
-    auto currentGameDirectory = new QLabel(window.gamePath);
+    auto currentGameDirectory = new QLineEdit(window.gamePath);
+    currentGameDirectory->setEnabled(false);
     layout->addRow("Game Directory", currentGameDirectory);
 
     auto selectDirectoryButton = new QPushButton("Select Game Directory");
