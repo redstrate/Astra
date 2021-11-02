@@ -36,6 +36,7 @@ public:
     QString bootVersion, gameVersion;
 
     bool useEsync, useGamescope, useGamemode;
+    bool useDX9 = false;
 
     void launchGame(const LoginAuth auth);
     void launchExecutable(const QStringList args);

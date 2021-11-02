@@ -43,7 +43,12 @@ void LauncherWindow::launchGame(const LoginAuth auth) {
     QList<QString> arguments;
 
     // now for the actual game...
-    arguments.push_back(gamePath + "\\game\\ffxiv_dx11.exe");
+    if(useDX9) {
+        arguments.push_back(gamePath + "\\game\\ffxiv.exe");
+    } else {
+        arguments.push_back(gamePath + "\\game\\ffxiv_dx11.exe");
+    }
+
     arguments.push_back("DEV.DataPathType=1");
     arguments.push_back("DEV.UseSqPack=1");
 

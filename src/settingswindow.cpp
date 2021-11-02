@@ -9,6 +9,7 @@
 #include <QGroupBox>
 #include <QMessageBox>
 #include <QProcess>
+#include <QComboBox>
 
 #include "xivlauncher.h"
 
@@ -18,6 +19,17 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     auto layout = new QFormLayout(this);
     setLayout(layout);
+
+    auto directXCombo = new QComboBox();
+    directXCombo->setCurrentIndex(window.settings.value("directx", 0).toInt());
+    directXCombo->addItem("DirectX 11");
+    directXCombo->addItem("DirectX 9");
+    layout->addRow("DirectX Version", directXCombo);
+
+    connect(directXCombo, &QComboBox::currentIndexChanged, [=](int index) {
+        this->window.settings.setValue("directx", directXCombo->currentIndex());
+        this->window.useDX9 = directXCombo->currentIndex() == 1;
+    });
 
 #if defined(Q_OS_LINUX)
     auto wineBox = new QGroupBox("Wine Options");
