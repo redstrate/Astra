@@ -107,7 +107,7 @@ void LauncherWindow::readInitialInformation() {
         gamePath = settings.value("gamePath").toString();
     } else {
 #if defined(Q_OS_WIN)
-        gamePath = "C:\\Program Files (x86\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn";
+        gamePath = "C:\\Program Files (x86)\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn";
 #endif
 
 #if defined(Q_OS_MACOS)
