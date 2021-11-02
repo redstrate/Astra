@@ -37,7 +37,8 @@ public:
 
     bool useEsync, useGamescope, useGamemode;
 
-    void launch(const LoginAuth auth);
+    void launchGame(const LoginAuth auth);
+    void launchExecutable(const QStringList args);
     void buildRequest(QNetworkRequest& request);
     void setSSL(QNetworkRequest& request);
     QString readVersion(QString path);

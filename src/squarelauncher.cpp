@@ -121,7 +121,7 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
         if(reply->rawHeaderList().contains("X-Patch-Unique-Id")) {
             auth.SID = reply->rawHeader("X-Patch-Unique-Id");
 
-            window.launch(auth);
+            window.launchGame(auth);
         } else {
             auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Failed the anti-tamper check. Please restore your game to the original state or update the game.");
             messageBox->show();

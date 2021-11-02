@@ -39,7 +39,30 @@ void LauncherWindow::buildRequest(QNetworkRequest& request) {
     request.setRawHeader("Accept-Language", "en-us");
 }
 
-void LauncherWindow::launch(const LoginAuth auth) {
+void LauncherWindow::launchGame(const LoginAuth auth) {
+    QList<QString> arguments;
+
+    // now for the actual game...
+    arguments.push_back(gamePath + "\\game\\ffxiv_dx11.exe");
+    arguments.push_back("DEV.DataPathType=1");
+    arguments.push_back("DEV.UseSqPack=1");
+
+    arguments.push_back(QString("DEV.MaxEntitledExpansionID=%1").arg(auth.maxExpansion));
+    arguments.push_back(QString("DEV.TestSID=%1").arg(auth.SID));
+    arguments.push_back(QString("SYS.Region=%1").arg(auth.region));
+    arguments.push_back(QString("language=%1").arg(language));
+    arguments.push_back(QString("ver=%1").arg(gameVersion));
+
+    if(!auth.lobbyhost.isEmpty()) {
+        arguments.push_back(QString("DEV.GMServerHost=%1").arg(auth.frontierHost));
+        for(int i = 1; i < 9; i++)
+            arguments.push_back(QString("DEV.LobbyHost0%1=%2 DEV.LobbyPort0%1=54994").arg(QString::number(i), auth.lobbyhost));
+    }
+
+    launchExecutable(arguments);
+}
+
+void LauncherWindow::launchExecutable(const QStringList args) {
     auto process = new QProcess(this);
     process->setProcessChannelMode(QProcess::ForwardedChannels);
     process->setWorkingDirectory(gamePath + "/game/");
@@ -73,22 +96,7 @@ void LauncherWindow::launch(const LoginAuth auth) {
     process->setEnvironment(env);
 #endif
 
-    // now for the actual game...
-    arguments.push_back(gamePath + "\\game\\ffxiv_dx11.exe");
-    arguments.push_back("DEV.DataPathType=1");
-    arguments.push_back("DEV.UseSqPack=1");
-
-    arguments.push_back(QString("DEV.MaxEntitledExpansionID=%1").arg(auth.maxExpansion));
-    arguments.push_back(QString("DEV.TestSID=%1").arg(auth.SID));
-    arguments.push_back(QString("SYS.Region=%1").arg(auth.region));
-    arguments.push_back(QString("language=%1").arg(language));
-    arguments.push_back(QString("ver=%1").arg(gameVersion));
-
-    if(!auth.lobbyhost.isEmpty()) {
-        arguments.push_back(QString("DEV.GMServerHost=%1").arg(auth.frontierHost));
-        for(int i = 1; i < 9; i++)
-            arguments.push_back(QString("DEV.LobbyHost0%1=%2 DEV.LobbyPort0%1=54994").arg(QString::number(i), auth.lobbyhost));
-    }
+    arguments.append(args);
 
     auto executable = arguments[0];
     arguments.removeFirst();
@@ -140,6 +148,13 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     connect(settingsAction, &QAction::triggered, [=] {
         auto window = new SettingsWindow(*this);
         window->show();
+    });
+
+    QMenu* toolsMenu = menuBar()->addMenu("Tools");
+
+    QAction* launchOfficial = toolsMenu->addAction("Launch Official Client...");
+    connect(launchOfficial, &QAction::triggered, [=] {
+        launchExecutable({gamePath + "/boot/ffxivboot64.exe"});
     });
 
     const auto savedServerType = settings.value("serverType", 0).toInt();

@@ -33,7 +33,7 @@ void SapphireLauncher::login(QString lobbyUrl, const LoginInformation& info) {
             auth.frontierHost = document["frontierHost"].toString();
             auth.region = 3;
 
-            window.launch(auth);
+            window.launchGame(auth);
         } else {
             auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Invalid username/password.");
             messageBox->show();
@@ -64,6 +64,6 @@ void SapphireLauncher::registerAccount(QString lobbyUrl, const LoginInformation&
         auth.frontierHost = document["frontierHost"].toString();
         auth.region = 3;
 
-        window.launch(auth);
+        window.launchGame(auth);
     });
 }
