@@ -4,7 +4,7 @@ Finally, a cross-platform FFXIV launcher. It should run on Windows, macOS (reall
 
 This is mostly a hobby project, but should be extremely useful to macOS players who otherwise have to deal with the aging old launcher. Linux users should also appreciate not having to deal with installing XIVQuickLauncher through wine :-)
 
-![screenshot](https://github.com/redstrate/xivlauncher/blob/master/misc/screenshot.png?raw=true)
+![screenshot](https://github.com/redstrate/xivlauncher/blob/main/misc/screenshot.png?raw=true)
 
 ## Features
 * Can use native (Windows) and Wine (macOS, Linux) versions of FFXIV.
