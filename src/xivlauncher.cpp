@@ -82,6 +82,13 @@ void LauncherWindow::launchExecutable(const QStringList args) {
     } else {
         arguments.push_back("/Applications/FINAL FANTASY XIV ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine");
     }
+
+    QStringList env = QProcess::systemEnvironment();
+
+    if(enableDXVKhud)
+        env << "DXVK_HUD=full";
+
+    process->setEnvironment(env);
 #endif
 
 #if defined(Q_OS_LINUX)
@@ -143,6 +150,7 @@ void LauncherWindow::readInitialInformation() {
     useGamemode = settings.value("useGamemode", false).toBool();
     useGamescope = settings.value("useGamescope", false).toBool();
     useSystemWine = settings.value("useSystemWine", false).toBool();
+    enableDXVKhud = settings.value("enableDXVKhud", false).toBool();
 }
 
 LauncherWindow::LauncherWindow(QWidget* parent) :
@@ -273,6 +281,8 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     setCentralWidget(emptyWidget);
 
     readInitialInformation();
+
+    launchExecutable({gamePath + "/game/ffxiv_dx11.exe", "DEV.TestSID=xxxx"});
 
     connect(loginButton, &QPushButton::released, [=] {
         auto info = LoginInformation{usernameEdit->text(), passwordEdit->text(), otpEdit->text()};

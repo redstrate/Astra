@@ -38,6 +38,7 @@ public:
     bool useEsync, useGamescope, useGamemode;
     bool useDX9 = false;
     bool useSystemWine = false;
+    bool enableDXVKhud = false;
 
     void launchGame(const LoginAuth auth);
     void launchExecutable(const QStringList args);

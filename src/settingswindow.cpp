@@ -31,19 +31,31 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
         this->window.useDX9 = directXCombo->currentIndex() == 1;
     });
 
-    auto infoLabel = new QLabel("This is a list of possible enhancements you can make to your Wine gaming experience.\n"
-                                "This is all stuff you can do outside of the launcher, but we can take care of it for you.");
-    infoLabel->setWordWrap(true);
-
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     auto wineBox = new QGroupBox("Wine Options");
     auto wineBoxLayout = new QFormLayout();
     wineBox->setLayout(wineBoxLayout);
 
+    layout->addRow(wineBox);
+
+    auto infoLabel = new QLabel("This is a list of possible enhancements you can make to your Wine gaming experience.\n"
+                                "This is all stuff you can do outside of the launcher, but we can take care of it for you.");
+    infoLabel->setWordWrap(true);
     wineBoxLayout->addWidget(infoLabel);
 
+    auto enableDXVKhud = new QCheckBox("Enable DXVK HUD");
+    enableDXVKhud->setChecked(window.enableDXVKhud);
+    wineBoxLayout->addWidget(enableDXVKhud);
+
+    connect(enableDXVKhud, &QCheckBox::stateChanged, [this](int state) {
+        this->window.enableDXVKhud = state;
+        this->window.settings.setValue("enableDXVKhud", static_cast<bool>(state));
+    });
+#endif
+
+#if defined(Q_OS_MAC)
     auto useSystemWine = new QCheckBox("Use System Wine");
-    useSystemWine->setChecked(window.settings.value("useSystemWine", false).toBool());
+    useSystemWine->setChecked(window.useSystemWine);
     wineBoxLayout->addWidget(useSystemWine);
 
     connect(useSystemWine, &QCheckBox::stateChanged, [this](int state) {
@@ -61,14 +73,8 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 #endif
 
 #if defined(Q_OS_LINUX)
-    auto wineBox = new QGroupBox("Wine Options");
-    auto wineBoxLayout = new QFormLayout();
-    wineBox->setLayout(wineBoxLayout);
-
-    wineBoxLayout->addWidget(infoLabel);
-
     auto useEsync = new QCheckBox("Use Esync");
-    useEsync->setChecked(window.settings.value("useEsync", false).toBool());
+    useEsync->setChecked(window.useEsync);
     wineBoxLayout->addWidget(useEsync);
 
     auto esyncLabel = new QLabel("Improves general game performance, but requires a Wine built with the Esync patches.\n"
@@ -82,8 +88,8 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     });
 
     auto useGamescope = new QCheckBox("Use Gamescope");
-    useGamescope->setChecked(window.settings.value("useGamescope", false).toBool());
-    wineBoxLayout->addWidget( useGamescope);
+    useGamescope->setChecked(window.useGamescope);
+    wineBoxLayout->addWidget(useGamescope);
 
     auto gamescopeLabel = new QLabel("Use the SteamOS compositor that uses Wayland.\n"
                                  "If you are experiencing input issues on XWayland, try this option if you have it installed.");
@@ -96,7 +102,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     });
 
     auto useGamemode = new QCheckBox("Use Gamemode");
-    useGamemode->setChecked(window.settings.value("useGamemode", false).toBool());
+    useGamemode->setChecked(window.useGamemode);
     wineBoxLayout->addWidget(useGamemode);
 
     auto gamemodeLabel = new QLabel("Use Feral Interactive's GameMode, which applies a couple of performance enhancements.\n"
@@ -108,8 +114,6 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
         this->window.useGamemode = state;
         this->window.settings.setValue("useGamemode", static_cast<bool>(state));
     });
-
-    layout->addRow(wineBox);
 #endif
 
     auto currentGameDirectory = new QLabel(window.gamePath);
