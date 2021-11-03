@@ -32,12 +32,11 @@ public:
     QNetworkAccessManager* mgr;
 
     int language = 1; // 1 is english, thats all i know
-    QString gamePath;
+    QString gamePath, winePath;
     QString bootVersion, gameVersion;
 
     bool useEsync, useGamescope, useGamemode;
     bool useDX9 = false;
-    bool useSystemWine = false;
     bool enableDXVKhud = false;
 
     void launchGame(const LoginAuth auth);

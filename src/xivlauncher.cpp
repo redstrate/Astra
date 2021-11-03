@@ -70,26 +70,9 @@ void LauncherWindow::launchGame(const LoginAuth auth) {
 void LauncherWindow::launchExecutable(const QStringList args) {
     auto process = new QProcess(this);
     process->setProcessChannelMode(QProcess::ForwardedChannels);
-    process->setWorkingDirectory(gamePath + "/game/");
 
     QList<QString> arguments;
-
-    // for platforms using wine, set wine before ffxiv_dx11.exe
-    // TODO: make wine path configurable
-#if defined(Q_OS_MACOS)
-    if(useSystemWine) {
-        arguments.push_back("/usr/local/bin/wine64");
-    } else {
-        arguments.push_back("/Applications/FINAL FANTASY XIV ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine");
-    }
-
     QStringList env = QProcess::systemEnvironment();
-
-    if(enableDXVKhud)
-        env << "DXVK_HUD=full";
-
-    process->setEnvironment(env);
-#endif
 
 #if defined(Q_OS_LINUX)
     if(useGamescope) {
@@ -101,21 +84,25 @@ void LauncherWindow::launchExecutable(const QStringList args) {
     if(useGamemode)
         arguments.push_back("gamemoderun");
 
-    arguments.push_back("wine");
-
-    QStringList env = QProcess::systemEnvironment();
-
     if(useEsync) {
         env << "WINEESYNC=1";
     }
-
-    process->setEnvironment(env);
 #endif
+
+#if defined(Q_OS_MACOS) || defined(Q_OS_LINUX)
+    arguments.push_back(winePath);
+#endif
+
+    if(enableDXVKhud)
+        env << "DXVK_HUD=full";
 
     arguments.append(args);
 
     auto executable = arguments[0];
     arguments.removeFirst();
+
+    process->setWorkingDirectory(gamePath + "/game/");
+    process->setEnvironment(env);
     process->start(executable, arguments);
 }
 
@@ -127,6 +114,32 @@ QString LauncherWindow::readVersion(QString path) {
 }
 
 void LauncherWindow::readInitialInformation() {
+    const int wineVersion = settings.value("wineVersion", 0).toInt();
+#if defined(Q_OS_MAC)
+    switch(wineVersion) {
+        case 0: // system wine
+            winePath = "/usr/local/bin/wine64";
+            break;
+        case 1: // custom path
+            winePath = settings.value("winePath").toString();
+            break;
+        case 2: // ffxiv built-in (for mac users)
+            winePath = "/Applications/FINAL FANTASY XIV ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine";
+            break;
+    }
+#endif
+
+#if defined(Q_OS_LINUX)
+    switch(wineVersion) {
+        case 0: // system wine (should be in $PATH)
+            winePath = "wine";
+            break;
+        case 1: // custom pth
+            winePath = settings.value("winePath").toString();
+            break;
+    }
+#endif
+
     if(settings.contains("gamePath") && settings.value("gamePath").canConvert<QString>() && !settings.value("gamePath").toString().isEmpty()) {
         gamePath = settings.value("gamePath").toString();
     } else {
@@ -149,7 +162,6 @@ void LauncherWindow::readInitialInformation() {
     useEsync = settings.value("useEsync", false).toBool();
     useGamemode = settings.value("useGamemode", false).toBool();
     useGamescope = settings.value("useGamescope", false).toBool();
-    useSystemWine = settings.value("useSystemWine", false).toBool();
     enableDXVKhud = settings.value("enableDXVKhud", false).toBool();
 }
 
@@ -281,8 +293,6 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     setCentralWidget(emptyWidget);
 
     readInitialInformation();
-
-    launchExecutable({gamePath + "/game/ffxiv_dx11.exe", "DEV.TestSID=xxxx"});
 
     connect(loginButton, &QPushButton::released, [=] {
         auto info = LoginInformation{usernameEdit->text(), passwordEdit->text(), otpEdit->text()};

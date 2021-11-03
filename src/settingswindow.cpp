@@ -43,6 +43,41 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     infoLabel->setWordWrap(true);
     wineBoxLayout->addWidget(infoLabel);
 
+    auto winePathLabel = new QLabel(window.winePath);
+    winePathLabel->setWordWrap(true);
+    wineBoxLayout->addRow("Wine Executable", winePathLabel);
+
+    auto wineVersionCombo = new QComboBox();
+
+#if defined(Q_OS_MAC)
+    wineVersionCombo->insertItem(2, "FFXIV Built-In");
+#endif
+
+    wineVersionCombo->insertItem(0, "System Wine");
+    wineVersionCombo->insertItem(1, "Custom Path...");
+    wineVersionCombo->setCurrentIndex(window.settings.value("wineVersion", 0).toInt());
+    wineBoxLayout->addWidget(wineVersionCombo);
+
+    auto selectWineButton = new QPushButton("Select Wine Executable");
+    selectWineButton->setEnabled(window.settings.value("wineVersion", 0).toInt() == 2);
+    wineBoxLayout->addWidget(selectWineButton);
+
+    connect(wineVersionCombo, &QComboBox::currentIndexChanged, [this, selectWineButton, winePathLabel](int index) {
+        this->window.settings.setValue("wineVersion", index);
+        selectWineButton->setEnabled(index == 1);
+
+        this->window.readInitialInformation();
+        winePathLabel->setText(this->window.winePath);
+    });
+
+    connect(selectWineButton, &QPushButton::pressed, [this, winePathLabel] {
+        this->window.winePath = QFileDialog::getOpenFileName(this, "Open Wine Executable");
+        this->window.settings.setValue("winePath", this->window.winePath);
+
+        this->window.readInitialInformation();
+        winePathLabel->setText(this->window.winePath);
+    });
+
     auto enableDXVKhud = new QCheckBox("Enable DXVK HUD");
     enableDXVKhud->setChecked(window.enableDXVKhud);
     wineBoxLayout->addWidget(enableDXVKhud);
@@ -51,25 +86,6 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
         this->window.enableDXVKhud = state;
         this->window.settings.setValue("enableDXVKhud", static_cast<bool>(state));
     });
-#endif
-
-#if defined(Q_OS_MAC)
-    auto useSystemWine = new QCheckBox("Use System Wine");
-    useSystemWine->setChecked(window.useSystemWine);
-    wineBoxLayout->addWidget(useSystemWine);
-
-    connect(useSystemWine, &QCheckBox::stateChanged, [this](int state) {
-        this->window.useSystemWine = state;
-        this->window.settings.setValue("useSystemWine", static_cast<bool>(state));
-    });
-
-    auto systemWineLabel = new QLabel("Use the system wine instead of the one packaged with the macOS version of FFXIV.\n"
-                                     "You can easily install wine through homebrew, but please note that the game will not run out of the box\n"
-                                     "on DX11 without DXVK installed.");
-    systemWineLabel->setWordWrap(true);
-    wineBoxLayout->addWidget(systemWineLabel);
-
-    layout->addRow(wineBox);
 #endif
 
 #if defined(Q_OS_LINUX)
