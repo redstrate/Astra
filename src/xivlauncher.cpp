@@ -89,12 +89,14 @@ void LauncherWindow::launchExecutable(const QStringList args) {
     }
 #endif
 
-#if defined(Q_OS_MACOS) || defined(Q_OS_LINUX)
-    arguments.push_back(winePath);
-#endif
+#if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
+    env << "WINEPREFIX=" + winePrefixPath;
 
     if(enableDXVKhud)
         env << "DXVK_HUD=full";
+
+    arguments.push_back(winePath);
+#endif
 
     arguments.append(args);
 
@@ -153,6 +155,18 @@ void LauncherWindow::readInitialInformation() {
 
 #if defined(Q_OS_LINUX)
         gamePath = QDir::homePath() + "/.wine/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
+#endif
+    }
+
+    if(settings.contains("winePrefix") && settings.value("winePrefix").canConvert<QString>() && !settings.value("winePrefix").toString().isEmpty()) {
+        winePrefixPath = settings.value("winePrefix").toString();
+    } else {
+#if defined(Q_OS_MACOS)
+        winePrefixPath = QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy";
+#endif
+
+#if defined(Q_OS_LINUX)
+        winePrefixPath = QDir::homePath() + "/.wine";
 #endif
     }
 
@@ -298,6 +312,7 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
         auto info = LoginInformation{usernameEdit->text(), passwordEdit->text(), otpEdit->text()};
 
         settings.setValue("gamePath", gamePath);
+        settings.setValue("winePrefix", winePrefixPath);
 
         settings.setValue("rememberUsername", rememberUsernameBox->checkState() == Qt::CheckState::Checked);
         if(rememberUsernameBox->checkState() == Qt::CheckState::Checked) {

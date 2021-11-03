@@ -32,7 +32,7 @@ public:
     QNetworkAccessManager* mgr;
 
     int language = 1; // 1 is english, thats all i know
-    QString gamePath, winePath;
+    QString gamePath, winePath, winePrefixPath;
     QString bootVersion, gameVersion;
 
     bool useEsync, useGamescope, useGamemode;

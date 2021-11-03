@@ -78,6 +78,25 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
         winePathLabel->setText(this->window.winePath);
     });
 
+    auto winePrefixDirectory = new QLabel(window.winePrefixPath);
+    winePrefixDirectory->setWordWrap(true);
+    wineBoxLayout->addRow("Wine Prefix", winePrefixDirectory);
+
+    auto selectPrefixButton = new QPushButton("Select Wine Prefix");
+    connect(selectPrefixButton, &QPushButton::pressed, [this, winePrefixDirectory] {
+        this->window.winePrefixPath = QFileDialog::getExistingDirectory(this, "Open Wine Prefix");
+        winePrefixDirectory->setText(this->window.winePrefixPath);
+
+        this->window.readInitialInformation();
+    });
+    wineBoxLayout->addWidget(selectPrefixButton);
+
+    auto openPrefixButton = new QPushButton("Open Wine Prefix");
+    connect(openPrefixButton, &QPushButton::pressed, [this] {
+        openPath(this->window.winePrefixPath);
+    });
+    wineBoxLayout->addWidget(openPrefixButton);
+
     auto enableDXVKhud = new QCheckBox("Enable DXVK HUD");
     enableDXVKhud->setChecked(window.enableDXVKhud);
     wineBoxLayout->addWidget(enableDXVKhud);
@@ -147,14 +166,18 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     auto gameDirectoryButton = new QPushButton("Open Game Directory");
     connect(gameDirectoryButton, &QPushButton::pressed, [this] {
+        openPath(this->window.gamePath);
+    });
+    layout->addWidget(gameDirectoryButton);
+}
+
+void SettingsWindow::openPath(const QString path) {
 #if defined(Q_OS_WIN)
-        // for some reason, windows requires special treatment (what else is new?)
-        const QFileInfo fileInfo(this->window.gamePath);
+    // for some reason, windows requires special treatment (what else is new?)
+        const QFileInfo fileInfo(path);
 
         QProcess::startDetached("explorer.exe", QStringList(QDir::toNativeSeparators(fileInfo.canonicalFilePath())));
 #else
-        QDesktopServices::openUrl("file://" + this->window.gamePath);
+    QDesktopServices::openUrl("file://" + path);
 #endif
-    });
-    layout->addWidget(gameDirectoryButton);
 }
