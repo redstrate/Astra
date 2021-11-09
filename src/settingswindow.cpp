@@ -33,17 +33,6 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     mainLayout->addWidget(gameBox, 0, 1);
 
-    auto serverType = new QComboBox();
-    serverType->insertItem(0, "Square Enix");
-    serverType->insertItem(1, "Sapphire");
-    //serverType->setCurrentIndex(savedServerType);
-
-    gameBoxLayout->addRow("Server Lobby", serverType);
-
-    auto lobbyServerURL = new QLineEdit();
-    //lobbyServerURL->setText(savedLobbyURL);
-    gameBoxLayout->addRow("Lobby URL", lobbyServerURL);
-
     auto directXCombo = new QComboBox();
     directXCombo->setCurrentIndex(window.settings.value("directx", 0).toInt());
     directXCombo->addItem("DirectX 11");
@@ -79,6 +68,17 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     loginBox->setLayout(loginBoxLayout);
 
     mainLayout->addWidget(loginBox, 1, 1);
+
+    auto serverType = new QComboBox();
+    serverType->insertItem(0, "Square Enix");
+    serverType->insertItem(1, "Sapphire");
+    //serverType->setCurrentIndex(savedServerType);
+
+    loginBoxLayout->addRow("Server Lobby", serverType);
+
+    auto lobbyServerURL = new QLineEdit();
+    //lobbyServerURL->setText(savedLobbyURL);
+    loginBoxLayout->addRow("Lobby URL", lobbyServerURL);
 
     auto rememberUsernameBox = new QCheckBox();
     //rememberUsernameBox->setChecked(shouldRememberUsername);
