@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QCheckBox>
 #include <QLabel>
+#include <QPushButton>
 
 class LauncherWindow;
 struct ProfileSettings;
@@ -23,10 +24,18 @@ private:
 
     QListWidget* profileWidget = nullptr;
 
+    // game
     QLineEdit* nameEdit = nullptr;
     QComboBox* directXCombo = nullptr;
     QLabel* currentGameDirectory = nullptr;
 
+    // wine
+    QComboBox* wineVersionCombo;
+    QPushButton* selectWineButton;
+    QLabel* winePathLabel;
+    QLabel* winePrefixDirectory;
+
+    // login
     QComboBox* serverType = nullptr;
     QLineEdit* lobbyServerURL = nullptr;
     QCheckBox* rememberUsernameBox = nullptr, *rememberPasswordBox = nullptr;

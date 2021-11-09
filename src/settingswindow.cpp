@@ -137,11 +137,11 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     infoLabel->setWordWrap(true);
     wineBoxLayout->addWidget(infoLabel);
 
-    auto winePathLabel = new QLabel(window.currentProfile().winePath);
+    winePathLabel = new QLabel(window.currentProfile().winePath);
     winePathLabel->setWordWrap(true);
     wineBoxLayout->addRow("Wine Executable", winePathLabel);
 
-    auto wineVersionCombo = new QComboBox();
+    wineVersionCombo = new QComboBox();
 
 #if defined(Q_OS_MAC)
     wineVersionCombo->insertItem(2, "FFXIV Built-In");
@@ -149,45 +149,51 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     wineVersionCombo->insertItem(0, "System Wine");
     wineVersionCombo->insertItem(1, "Custom Path...");
-    wineVersionCombo->setCurrentIndex(window.settings.value("wineVersion", 0).toInt());
+
     wineBoxLayout->addWidget(wineVersionCombo);
 
-    auto selectWineButton = new QPushButton("Select Wine Executable");
-    selectWineButton->setEnabled(window.settings.value("wineVersion", 0).toInt() == 2);
+    selectWineButton = new QPushButton("Select Wine Executable");
     wineBoxLayout->addWidget(selectWineButton);
 
-    connect(wineVersionCombo, &QComboBox::currentIndexChanged, [this, selectWineButton, winePathLabel](int index) {
-        this->window.settings.setValue("wineVersion", index);
-        selectWineButton->setEnabled(index == 1);
+    connect(wineVersionCombo, &QComboBox::currentIndexChanged, [this](int index) {
+        getCurrentProfile().wineVersion = index;
 
-        this->window.readInitialInformation();
-        winePathLabel->setText(this->window.currentProfile().winePath);
+        this->window.saveSettings();
+        this->reloadControls();
+
+        // TODO: figure out the purpose of calling this before 1.0
+        // this->window.readInitialInformation();
     });
 
-    connect(selectWineButton, &QPushButton::pressed, [this, winePathLabel] {
-        this->window.currentProfile().winePath = QFileDialog::getOpenFileName(this, "Open Wine Executable");
-        this->window.settings.setValue("winePath", this->window.currentProfile().winePath);
+    connect(selectWineButton, &QPushButton::pressed, [this] {
+        getCurrentProfile().winePath = QFileDialog::getOpenFileName(this, "Open Wine Executable");
 
-        this->window.readInitialInformation();
-        winePathLabel->setText(this->window.currentProfile().winePath);
+        this->window.saveSettings();
+        this->reloadControls();
+
+        // TODO: figure out the purpose of calling this before 2.0
+        //this->window.readInitialInformation();
     });
 
-    auto winePrefixDirectory = new QLabel(window.currentProfile().winePrefixPath);
+    winePrefixDirectory = new QLabel(window.currentProfile().winePrefixPath);
     winePrefixDirectory->setWordWrap(true);
     wineBoxLayout->addRow("Wine Prefix", winePrefixDirectory);
 
     auto selectPrefixButton = new QPushButton("Select Wine Prefix");
-    connect(selectPrefixButton, &QPushButton::pressed, [this, winePrefixDirectory] {
-        this->window.currentProfile().winePrefixPath = QFileDialog::getExistingDirectory(this, "Open Wine Prefix");
-        winePrefixDirectory->setText(this->window.currentProfile().winePrefixPath);
+    connect(selectPrefixButton, &QPushButton::pressed, [this] {
+        getCurrentProfile().winePrefixPath = QFileDialog::getExistingDirectory(this, "Open Wine Prefix");
 
-        this->window.readInitialInformation();
+        this->window.saveSettings();
+        this->reloadControls();
+
+        // TODO: figure out the purpose of calling this before 3.0
+        //this->window.readInitialInformation();
     });
     wineBoxLayout->addWidget(selectPrefixButton);
 
     auto openPrefixButton = new QPushButton("Open Wine Prefix");
     connect(openPrefixButton, &QPushButton::pressed, [this] {
-        openPath(this->window.currentProfile().winePrefixPath);
+        openPath(getCurrentProfile().winePrefixPath);
     });
     wineBoxLayout->addWidget(openPrefixButton);
 
@@ -265,9 +271,18 @@ void SettingsWindow::reloadControls() {
 
     ProfileSettings& profile = window.getProfile(profileWidget->currentRow());
     nameEdit->setText(profile.name);
+
+    // game
     directXCombo->setCurrentIndex(profile.useDX9 ? 1 : 0);
     currentGameDirectory->setText(profile.gamePath);
 
+    // wine
+    wineVersionCombo->setCurrentIndex(profile.wineVersion);
+    selectWineButton->setEnabled(profile.wineVersion == 1);
+    winePathLabel->setText(profile.winePath);
+    winePrefixDirectory->setText(profile.winePrefixPath);
+
+    // login
     serverType->setCurrentIndex(profile.isSapphire ? 1 : 0);
     lobbyServerURL->setText(profile.lobbyURL);
     rememberUsernameBox->setChecked(profile.rememberUsername);

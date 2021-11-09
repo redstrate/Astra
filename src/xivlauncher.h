@@ -18,9 +18,14 @@ struct ProfileSettings {
     int language = 1; // 1 is english, thats all i know
     QString gamePath, winePath, winePrefixPath;
     QString bootVersion, gameVersion;
+
+    // 0 = system, 1 = custom, 2 = built-in (mac only)
+    // TODO: yes, i know this should be an enum
+    int wineVersion = 0;
     bool useEsync, useGamescope, useGamemode;
     bool useDX9 = false;
     bool enableDXVKhud = false;
+
 
     bool isSapphire = false;
     QString lobbyURL;

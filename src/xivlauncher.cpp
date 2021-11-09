@@ -130,9 +130,9 @@ void LauncherWindow::readInitialInformation() {
 
         settings.beginGroup(profile_name);
 
-        const int wineVersion = settings.value("wineVersion", 0).toInt();
+        profile.wineVersion = settings.value("wineVersion", 0).toInt();
 #if defined(Q_OS_MAC)
-        switch(wineVersion) {
+        switch(profile.wineVersion) {
         case 0: // system wine
             profile.winePath = "/usr/local/bin/wine64";
             break;
@@ -146,7 +146,7 @@ void LauncherWindow::readInitialInformation() {
 #endif
 
 #if defined(Q_OS_LINUX)
-        switch(wineVersion) {
+        switch(profile.wineVersion) {
             case 0: // system wine (should be in $PATH)
                 profile.winePath = "wine";
                 break;
@@ -172,8 +172,8 @@ void LauncherWindow::readInitialInformation() {
 #endif
         }
 
-        if(settings.contains("winePrefix") && settings.value("winePrefix").canConvert<QString>() && !settings.value("winePrefix").toString().isEmpty()) {
-            profile.winePrefixPath = settings.value("winePrefix").toString();
+        if(settings.contains("winePrefixPath") && settings.value("winePrefixPath").canConvert<QString>() && !settings.value("winePrefixPath").toString().isEmpty()) {
+            profile.winePrefixPath = settings.value("winePrefixPath").toString();
         } else {
 #if defined(Q_OS_MACOS)
             profile.winePrefixPath = QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy";
@@ -385,9 +385,16 @@ void LauncherWindow::saveSettings() {
     for(auto profile : profileSettings) {
         settings.beginGroup(profile.name);
 
+        // game
         settings.setValue("useDX9", profile.useDX9);
         settings.setValue("gamePath", profile.gamePath);
 
+        // wine
+        settings.setValue("wineVersion", profile.wineVersion);
+        settings.setValue("winePath", profile.winePath);
+        settings.setValue("winePrefixPath", profile.winePrefixPath);
+
+        // login
         settings.setValue("isSapphire", profile.isSapphire);
         settings.setValue("lobbyURL", profile.lobbyURL);
         settings.setValue("rememberUsername", profile.rememberUsername);
