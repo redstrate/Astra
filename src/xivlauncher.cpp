@@ -187,6 +187,9 @@ void LauncherWindow::readInitialInformation() {
         profile.bootVersion = readVersion(profile.gamePath + "/boot/ffxivboot.ver");
         profile.gameVersion = readVersion(profile.gamePath + "/game/ffxivgame.ver");
 
+        profile.rememberUsername = settings.value("rememberUsername", false).toBool();
+        profile.rememberPassword = settings.value("rememberPassword", false).toBool();
+
         profile.useDX9 = settings.value("useDX9", false).toBool();
         profile.useEsync = settings.value("useEsync", false).toBool();
         profile.useGamemode = settings.value("useGamemode", false).toBool();
@@ -262,6 +265,10 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     layout->addRow("Username", usernameEdit);
 
     rememberUsernameBox = new QCheckBox();
+    connect(rememberUsernameBox, &QCheckBox::stateChanged, [=](int) {
+        currentProfile().rememberUsername = rememberUsernameBox->isChecked();
+        saveSettings();
+    });
     layout->addRow("Remember Username?", rememberUsernameBox);
 
     passwordEdit = new QLineEdit();
@@ -269,6 +276,10 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     layout->addRow("Password", passwordEdit);
 
     rememberPasswordBox = new QCheckBox();
+    connect(rememberPasswordBox, &QCheckBox::stateChanged, [=](int) {
+        currentProfile().rememberPassword = rememberPasswordBox->isChecked();
+        saveSettings();
+    });
     layout->addRow("Remember Password?", rememberPasswordBox);
 
     otpEdit = new QLineEdit();
@@ -370,6 +381,8 @@ void LauncherWindow::saveSettings() {
         settings.beginGroup(profile.name);
 
         settings.setValue("useDX9", profile.useDX9);
+        settings.setValue("rememberUsername", profile.rememberUsername);
+        settings.setValue("rememberPassword", profile.rememberPassword);
 
         settings.endGroup();
     }

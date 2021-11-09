@@ -4,6 +4,7 @@
 #include <QListWidget>
 #include <QComboBox>
 #include <QLineEdit>
+#include <QCheckBox>
 
 class LauncherWindow;
 struct ProfileSettings;
@@ -23,6 +24,7 @@ private:
 
     QLineEdit* nameEdit = nullptr;
     QComboBox* directXCombo = nullptr;
+    QCheckBox* rememberUsernameBox = nullptr, *rememberPasswordBox = nullptr;
 
     bool currentlyReloadingControls = false;
 

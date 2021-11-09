@@ -95,12 +95,18 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     //lobbyServerURL->setText(savedLobbyURL);
     loginBoxLayout->addRow("Lobby URL", lobbyServerURL);
 
-    auto rememberUsernameBox = new QCheckBox();
-    //rememberUsernameBox->setChecked(shouldRememberUsername);
+    rememberUsernameBox = new QCheckBox();
+    connect(rememberUsernameBox, &QCheckBox::stateChanged, [=](int) {
+        getCurrentProfile().rememberUsername = rememberUsernameBox->isChecked();
+        this->window.saveSettings();
+    });
     loginBoxLayout->addRow("Remember Username?", rememberUsernameBox);
 
-    auto rememberPasswordBox = new QCheckBox();
-    //rememberPasswordBox->setChecked(shouldRememberPassword);
+    rememberPasswordBox = new QCheckBox();
+    connect(rememberPasswordBox, &QCheckBox::stateChanged, [=](int) {
+        getCurrentProfile().rememberPassword = rememberPasswordBox->isChecked();
+        this->window.saveSettings();
+    });
     loginBoxLayout->addRow("Remember Password?", rememberPasswordBox);
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
@@ -244,6 +250,8 @@ void SettingsWindow::reloadControls() {
     ProfileSettings& profile = window.getProfile(profileWidget->currentRow());
     nameEdit->setText(profile.name);
     directXCombo->setCurrentIndex(profile.useDX9 ? 1 : 0);
+    rememberUsernameBox->setChecked(profile.rememberUsername);
+    rememberPasswordBox->setChecked(profile.rememberPassword);
 
     currentlyReloadingControls = false;
 }
