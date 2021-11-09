@@ -16,9 +16,10 @@ add_executable(xivlauncher
         src/sapphirelauncher.cpp
         src/squareboot.cpp
         src/squarelauncher.cpp
-        src/settingswindow.cpp)
+        src/settingswindow.cpp
+        src/blowfish.cpp)
 
-target_link_libraries(xivlauncher Qt6::Core Qt6::Widgets Qt6::Network qt6keychain)
+target_link_libraries(xivlauncher Qt6::Core Qt6::Widgets Qt6::Network qt6keychain mbedtls)
 
 # disgusting, thanks qtkeychain
 target_include_directories(xivlauncher PRIVATE
