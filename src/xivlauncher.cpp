@@ -116,67 +116,84 @@ QString LauncherWindow::readVersion(QString path) {
 }
 
 void LauncherWindow::readInitialInformation() {
-    const int wineVersion = settings.value("wineVersion", 0).toInt();
+    auto profiles = settings.childGroups();
+
+    // create the Default profile if it doesnt exist
+    if(profiles.empty())
+        profiles.append("Default");
+
+    for(const auto& profile_name : profiles) {
+        ProfileSettings profile;
+        profile.name = profile_name;
+
+        settings.beginGroup(profile_name);
+
+        const int wineVersion = settings.value("wineVersion", 0).toInt();
 #if defined(Q_OS_MAC)
-    switch(wineVersion) {
+        switch(wineVersion) {
         case 0: // system wine
-            winePath = "/usr/local/bin/wine64";
+            profile.winePath = "/usr/local/bin/wine64";
             break;
         case 1: // custom path
-            winePath = settings.value("winePath").toString();
+            profile.winePath = settings.value("winePath").toString();
             break;
         case 2: // ffxiv built-in (for mac users)
-            winePath = "/Applications/FINAL FANTASY XIV ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine";
+            profile.winePath = "/Applications/FINAL FANTASY XIV ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine";
             break;
     }
 #endif
 
 #if defined(Q_OS_LINUX)
-    switch(wineVersion) {
-        case 0: // system wine (should be in $PATH)
-            currentProfile().winePath = "wine";
-            break;
-        case 1: // custom pth
-            currentProfile().winePath = settings.value("winePath").toString();
-            break;
-    }
+        switch(wineVersion) {
+            case 0: // system wine (should be in $PATH)
+                profile.winePath = "wine";
+                break;
+            case 1: // custom pth
+                profile.winePath = settings.value("winePath").toString();
+                break;
+        }
 #endif
 
-    if(settings.contains("gamePath") && settings.value("gamePath").canConvert<QString>() && !settings.value("gamePath").toString().isEmpty()) {
-        currentProfile().gamePath = settings.value("gamePath").toString();
-    } else {
+        if(settings.contains("gamePath") && settings.value("gamePath").canConvert<QString>() && !settings.value("gamePath").toString().isEmpty()) {
+            profile.gamePath = settings.value("gamePath").toString();
+        } else {
 #if defined(Q_OS_WIN)
-        gamePath = "C:\\Program Files (x86)\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn";
+            profile.gamePath = "C:\\Program Files (x86)\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn";
 #endif
 
 #if defined(Q_OS_MACOS)
-        gamePath = QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
+            profile.gamePath = QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
 #endif
 
 #if defined(Q_OS_LINUX)
-        currentProfile().gamePath = QDir::homePath() + "/.wine/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
+            profile.gamePath = QDir::homePath() + "/.wine/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
 #endif
-    }
+        }
 
-    if(settings.contains("winePrefix") && settings.value("winePrefix").canConvert<QString>() && !settings.value("winePrefix").toString().isEmpty()) {
-        currentProfile().winePrefixPath = settings.value("winePrefix").toString();
-    } else {
+        if(settings.contains("winePrefix") && settings.value("winePrefix").canConvert<QString>() && !settings.value("winePrefix").toString().isEmpty()) {
+            profile.winePrefixPath = settings.value("winePrefix").toString();
+        } else {
 #if defined(Q_OS_MACOS)
-        winePrefixPath = QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy";
+            profile.winePrefixPath = QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy";
 #endif
 
 #if defined(Q_OS_LINUX)
-        currentProfile().winePrefixPath = QDir::homePath() + "/.wine";
+            profile.winePrefixPath = QDir::homePath() + "/.wine";
 #endif
+        }
+
+        profile.bootVersion = readVersion(profile.gamePath + "/boot/ffxivboot.ver");
+        profile.gameVersion = readVersion(profile.gamePath + "/game/ffxivgame.ver");
+
+        profile.useEsync = settings.value("useEsync", false).toBool();
+        profile.useGamemode = settings.value("useGamemode", false).toBool();
+        profile.useGamescope = settings.value("useGamescope", false).toBool();
+        profile.enableDXVKhud = settings.value("enableDXVKhud", false).toBool();
+
+        settings.endGroup();
+
+        profileSettings.append(profile);
     }
-
-    currentProfile().bootVersion = readVersion(currentProfile().gamePath + "/boot/ffxivboot.ver");
-    currentProfile().gameVersion = readVersion(currentProfile().gamePath + "/game/ffxivgame.ver");
-
-    currentProfile().useEsync = settings.value("useEsync", false).toBool();
-    currentProfile().useGamemode = settings.value("useGamemode", false).toBool();
-    currentProfile().useGamescope = settings.value("useGamescope", false).toBool();
-    currentProfile().enableDXVKhud = settings.value("enableDXVKhud", false).toBool();
 }
 
 LauncherWindow::LauncherWindow(QWidget* parent) :
@@ -186,7 +203,7 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     squareLauncher = new SquareLauncher(*this);
     squareBoot = new SquareBoot(*this, *squareLauncher);
 
-    profileSettings.append(ProfileSettings());
+    readInitialInformation();
 
     QMenu* fileMenu = menuBar()->addMenu("File");
     // sorry linux users, for some reason my global menu does not like qt6 apps right now
@@ -231,11 +248,6 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     });
 #endif
 
-    const auto savedServerType = settings.value("serverType", 0).toInt();
-    const auto savedLobbyURL = settings.value("lobbyURL", "127.0.0.1").toString();
-    const auto shouldRememberUsername = settings.value("rememberUsername", false).toBool();
-    const auto shouldRememberPassword = settings.value("rememberPassword", false).toBool();
-
     auto layout = new QFormLayout();
 
     auto profileSelect = new QComboBox();
@@ -245,7 +257,7 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     auto usernameEdit = new QLineEdit();
     layout->addRow("Username", usernameEdit);
 
-    if(shouldRememberUsername) {
+    if(currentProfile().rememberUsername) {
         auto job = new QKeychain::ReadPasswordJob("LauncherWindow");
         job->setKey("username");
         job->start();
@@ -256,14 +268,14 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     }
 
     auto rememberUsernameBox = new QCheckBox();
-    rememberUsernameBox->setChecked(shouldRememberUsername);
+    rememberUsernameBox->setChecked(currentProfile().rememberUsername);
     layout->addRow("Remember Username?", rememberUsernameBox);
 
     auto passwordEdit = new QLineEdit();
     passwordEdit->setEchoMode(QLineEdit::EchoMode::Password);
     layout->addRow("Password", passwordEdit);
 
-    if(shouldRememberPassword) {
+    if(currentProfile().rememberPassword) {
         auto job = new QKeychain::ReadPasswordJob("LauncherWindow");
         job->setKey("password");
         job->start();
@@ -274,7 +286,7 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     }
 
     auto rememberPasswordBox = new QCheckBox();
-    rememberPasswordBox->setChecked(shouldRememberPassword);
+    rememberPasswordBox->setChecked(currentProfile().rememberPassword);
     layout->addRow("Remember Password?", rememberPasswordBox);
 
     auto otpEdit = new QLineEdit();
@@ -286,62 +298,46 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     auto registerButton = new QPushButton("Register");
     layout->addRow(registerButton);
 
-    /*const auto refreshControls = [=](int index) {
-        lobbyServerURL->setEnabled(index == 1);
-        registerButton->setEnabled(index == 1);
-        otpEdit->setEnabled(index == 0);
+    const auto refreshControls = [=]() {
+        registerButton->setEnabled(currentProfile().isSapphire);
+        otpEdit->setEnabled(!currentProfile().isSapphire);
     };
-    refreshControls(serverType->currentIndex());
-
-    connect(serverType, &QComboBox::currentIndexChanged, [=](int index) {
-        refreshControls(index);
-    });*/
+    refreshControls();
 
     auto emptyWidget = new QWidget();
     emptyWidget->setLayout(layout);
     setCentralWidget(emptyWidget);
 
-    readInitialInformation();
-
     connect(loginButton, &QPushButton::released, [=] {
         auto info = LoginInformation{usernameEdit->text(), passwordEdit->text(), otpEdit->text()};
 
-        settings.setValue("gamePath", currentProfile().gamePath);
-        settings.setValue("winePrefix", currentProfile().winePrefixPath);
-
-        settings.setValue("rememberUsername", rememberUsernameBox->checkState() == Qt::CheckState::Checked);
-        if(rememberUsernameBox->checkState() == Qt::CheckState::Checked) {
+        if(currentProfile().rememberUsername) {
             auto job = new QKeychain::WritePasswordJob("LauncherWindow");
             job->setTextData(usernameEdit->text());
             job->setKey("username");
             job->start();
         }
 
-        settings.setValue("rememberPassword", rememberPasswordBox->checkState() == Qt::CheckState::Checked);
-        if(rememberPasswordBox->checkState() == Qt::CheckState::Checked) {
+        if(currentProfile().rememberPassword) {
             auto job = new QKeychain::WritePasswordJob("LauncherWindow");
             job->setTextData(passwordEdit->text());
             job->setKey("password");
             job->start();
         }
 
-        //settings.setValue("serverType", serverType->currentIndex());
-        //settings.setValue("lobbyURL", lobbyServerURL->text());
-
-        //if(serverType->currentIndex() == 0) {
-            // begin se's booting process
+        if(currentProfile().isSapphire) {
+            sapphireLauncher->login(currentProfile().lobbyURL, info);
+        } else {
             squareBoot->bootCheck(info);
-        //} else {
-        //    sapphireLauncher->login(lobbyServerURL->text(), info);
-        //}
+        }
     });
 
-    /*connect(registerButton, &QPushButton::released, [=] {
-        if(serverType->currentIndex() == 1) {
+    connect(registerButton, &QPushButton::released, [=] {
+        if(currentProfile().isSapphire) {
             auto info = LoginInformation{usernameEdit->text(), passwordEdit->text(), otpEdit->text()};
-            sapphireLauncher->registerAccount(lobbyServerURL->text(), info);
+            sapphireLauncher->registerAccount(currentProfile().lobbyURL, info);
         }
-    });*/
+    });
 }
 
 LauncherWindow::~LauncherWindow() = default;
@@ -355,23 +351,22 @@ ProfileSettings& LauncherWindow::currentProfile() {
 }
 
 void LauncherWindow::setProfile(QString name) {
-    for(int i = 0; i < profileSettings.size(); i++) {
-        currentProfileIndex = 0;
-    }
-
-    currentProfileIndex = -1;
+    currentProfileIndex = getProfileIndex(name);
 }
 
-ProfileSettings LauncherWindow::getProfile(QString name) {
-    for(auto profile : profileSettings) {
-        return profile;
+int LauncherWindow::getProfileIndex(QString name) {
+    for(int i = 0; i < profileSettings.size(); i++) {
+        if(profileSettings[i].name == name)
+            return i;
     }
+
+    return -1;
 }
 
 QList<QString> LauncherWindow::profileList() const {
     QList<QString> list;
     for(auto profile : profileSettings) {
-        list.append("Default");
+        list.append(profile.name);
     }
 
     return list;

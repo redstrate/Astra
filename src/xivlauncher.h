@@ -10,13 +10,18 @@ class SquareLauncher;
 class SquareBoot;
 
 struct ProfileSettings {
+    QString name;
+
     int language = 1; // 1 is english, thats all i know
     QString gamePath, winePath, winePrefixPath;
     QString bootVersion, gameVersion;
-
     bool useEsync, useGamescope, useGamemode;
     bool useDX9 = false;
     bool enableDXVKhud = false;
+
+    bool isSapphire = false;
+    QString lobbyURL;
+    bool rememberUsername, rememberPassword;
 };
 
 struct LoginInformation {
@@ -44,7 +49,7 @@ public:
     ProfileSettings currentProfile() const;
     ProfileSettings& currentProfile();
     void setProfile(QString name);
-    ProfileSettings getProfile(QString name);
+    int getProfileIndex(QString name);
     QList<QString> profileList() const;
 
     void launchGame(const LoginAuth auth);
