@@ -84,10 +84,14 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     mainLayout->addWidget(loginBox, 1, 1);
 
-    auto serverType = new QComboBox();
+    serverType = new QComboBox();
     serverType->insertItem(0, "Square Enix");
     serverType->insertItem(1, "Sapphire");
-    //serverType->setCurrentIndex(savedServerType);
+
+    connect(serverType, &QComboBox::currentIndexChanged, [=](int index) {
+        getCurrentProfile().isSapphire = serverType->currentIndex() == 1;
+        this->window.saveSettings();
+    });
 
     loginBoxLayout->addRow("Server Lobby", serverType);
 
@@ -250,6 +254,8 @@ void SettingsWindow::reloadControls() {
     ProfileSettings& profile = window.getProfile(profileWidget->currentRow());
     nameEdit->setText(profile.name);
     directXCombo->setCurrentIndex(profile.useDX9 ? 1 : 0);
+
+    serverType->setCurrentIndex(profile.isSapphire ? 1 : 0);
     rememberUsernameBox->setChecked(profile.rememberUsername);
     rememberPasswordBox->setChecked(profile.rememberPassword);
 

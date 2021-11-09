@@ -24,6 +24,8 @@ private:
 
     QLineEdit* nameEdit = nullptr;
     QComboBox* directXCombo = nullptr;
+
+    QComboBox* serverType = nullptr;
     QCheckBox* rememberUsernameBox = nullptr, *rememberPasswordBox = nullptr;
 
     bool currentlyReloadingControls = false;
