@@ -24,14 +24,13 @@ struct ProfileSettings {
     // 0 = system, 1 = custom, 2 = built-in (mac only)
     // TODO: yes, i know this should be an enum
     int wineVersion = 0;
-    bool useEsync, useGamescope, useGamemode;
+    bool useEsync = false, useGamescope = false, useGamemode = false;
     bool useDX9 = false;
     bool enableDXVKhud = false;
 
-
     bool isSapphire = false;
     QString lobbyURL;
-    bool rememberUsername, rememberPassword;
+    bool rememberUsername = false, rememberPassword = false;
 };
 
 struct LoginInformation {
