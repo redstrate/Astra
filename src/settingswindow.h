@@ -28,6 +28,7 @@ private:
     QLabel* currentGameDirectory = nullptr;
 
     QComboBox* serverType = nullptr;
+    QLineEdit* lobbyServerURL = nullptr;
     QCheckBox* rememberUsernameBox = nullptr, *rememberPasswordBox = nullptr;
 
     bool currentlyReloadingControls = false;

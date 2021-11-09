@@ -188,6 +188,7 @@ void LauncherWindow::readInitialInformation() {
         profile.gameVersion = readVersion(profile.gamePath + "/game/ffxivgame.ver");
 
         profile.isSapphire = settings.value("isSapphire", false).toBool();
+        profile.lobbyURL = settings.value("lobbyURL", "").toString();
         profile.rememberUsername = settings.value("rememberUsername", false).toBool();
         profile.rememberPassword = settings.value("rememberPassword", false).toBool();
 
@@ -388,6 +389,7 @@ void LauncherWindow::saveSettings() {
         settings.setValue("gamePath", profile.gamePath);
 
         settings.setValue("isSapphire", profile.isSapphire);
+        settings.setValue("lobbyURL", profile.lobbyURL);
         settings.setValue("rememberUsername", profile.rememberUsername);
         settings.setValue("rememberPassword", profile.rememberPassword);
 

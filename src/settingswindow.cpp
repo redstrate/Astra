@@ -100,8 +100,11 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     loginBoxLayout->addRow("Server Lobby", serverType);
 
-    auto lobbyServerURL = new QLineEdit();
-    //lobbyServerURL->setText(savedLobbyURL);
+    lobbyServerURL = new QLineEdit();
+    connect(lobbyServerURL, &QLineEdit::editingFinished, [=] {
+        getCurrentProfile().lobbyURL = lobbyServerURL->text();
+        this->window.saveSettings();
+    });
     loginBoxLayout->addRow("Lobby URL", lobbyServerURL);
 
     rememberUsernameBox = new QCheckBox();
@@ -266,6 +269,7 @@ void SettingsWindow::reloadControls() {
     currentGameDirectory->setText(profile.gamePath);
 
     serverType->setCurrentIndex(profile.isSapphire ? 1 : 0);
+    lobbyServerURL->setText(profile.lobbyURL);
     rememberUsernameBox->setChecked(profile.rememberUsername);
     rememberPasswordBox->setChecked(profile.rememberPassword);
 
