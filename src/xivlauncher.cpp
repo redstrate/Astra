@@ -301,14 +301,14 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
         if(currentProfile().rememberUsername) {
             auto job = new QKeychain::WritePasswordJob("LauncherWindow");
             job->setTextData(usernameEdit->text());
-            job->setKey("username");
+            job->setKey(currentProfile().name + "username");
             job->start();
         }
 
         if(currentProfile().rememberPassword) {
             auto job = new QKeychain::WritePasswordJob("LauncherWindow");
             job->setTextData(passwordEdit->text());
-            job->setKey("password");
+            job->setKey(currentProfile().name + "password");
             job->start();
         }
 
@@ -402,7 +402,7 @@ void LauncherWindow::reloadControls() {
     rememberUsernameBox->setChecked(currentProfile().rememberUsername);
     if(currentProfile().rememberUsername) {
         auto job = new QKeychain::ReadPasswordJob("LauncherWindow");
-        job->setKey("username");
+        job->setKey(currentProfile().name + "-username");
         job->start();
 
         connect(job, &QKeychain::ReadPasswordJob::finished, [=](QKeychain::Job* j) {
@@ -413,7 +413,7 @@ void LauncherWindow::reloadControls() {
     rememberPasswordBox->setChecked(currentProfile().rememberPassword);
     if(currentProfile().rememberPassword) {
         auto job = new QKeychain::ReadPasswordJob("LauncherWindow");
-        job->setKey("password");
+        job->setKey(currentProfile().name + "-password");
         job->start();
 
         connect(job, &QKeychain::ReadPasswordJob::finished, [=](QKeychain::Job* j) {
