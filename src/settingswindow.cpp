@@ -52,17 +52,17 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     connect(directXCombo, &QComboBox::currentIndexChanged, [=](int index) {
         this->window.settings.setValue("directx", directXCombo->currentIndex());
-        this->window.useDX9 = directXCombo->currentIndex() == 1;
+        this->window.currentProfile().useDX9 = directXCombo->currentIndex() == 1;
     });
 
-    auto currentGameDirectory = new QLabel(window.gamePath);
+    auto currentGameDirectory = new QLabel(window.currentProfile().gamePath);
     currentGameDirectory->setWordWrap(true);
     gameBoxLayout->addRow("Game Directory", currentGameDirectory);
 
     auto selectDirectoryButton = new QPushButton("Select Game Directory");
     connect(selectDirectoryButton, &QPushButton::pressed, [this, currentGameDirectory] {
-        this->window.gamePath = QFileDialog::getExistingDirectory(this, "Open Game Directory");
-        currentGameDirectory->setText(this->window.gamePath);
+        this->window.currentProfile().gamePath = QFileDialog::getExistingDirectory(this, "Open Game Directory");
+        currentGameDirectory->setText(this->window.currentProfile().gamePath);
 
         this->window.readInitialInformation();
     });
@@ -70,7 +70,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     auto gameDirectoryButton = new QPushButton("Open Game Directory");
     connect(gameDirectoryButton, &QPushButton::pressed, [this] {
-        openPath(this->window.gamePath);
+        openPath(this->window.currentProfile().gamePath);
     });
     gameBoxLayout->addWidget(gameDirectoryButton);
 
@@ -86,7 +86,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     infoLabel->setWordWrap(true);
     wineBoxLayout->addWidget(infoLabel);
 
-    auto winePathLabel = new QLabel(window.winePath);
+    auto winePathLabel = new QLabel(window.currentProfile().winePath);
     winePathLabel->setWordWrap(true);
     wineBoxLayout->addRow("Wine Executable", winePathLabel);
 
@@ -110,25 +110,25 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
         selectWineButton->setEnabled(index == 1);
 
         this->window.readInitialInformation();
-        winePathLabel->setText(this->window.winePath);
+        winePathLabel->setText(this->window.currentProfile().winePath);
     });
 
     connect(selectWineButton, &QPushButton::pressed, [this, winePathLabel] {
-        this->window.winePath = QFileDialog::getOpenFileName(this, "Open Wine Executable");
-        this->window.settings.setValue("winePath", this->window.winePath);
+        this->window.currentProfile().winePath = QFileDialog::getOpenFileName(this, "Open Wine Executable");
+        this->window.settings.setValue("winePath", this->window.currentProfile().winePath);
 
         this->window.readInitialInformation();
-        winePathLabel->setText(this->window.winePath);
+        winePathLabel->setText(this->window.currentProfile().winePath);
     });
 
-    auto winePrefixDirectory = new QLabel(window.winePrefixPath);
+    auto winePrefixDirectory = new QLabel(window.currentProfile().winePrefixPath);
     winePrefixDirectory->setWordWrap(true);
     wineBoxLayout->addRow("Wine Prefix", winePrefixDirectory);
 
     auto selectPrefixButton = new QPushButton("Select Wine Prefix");
     connect(selectPrefixButton, &QPushButton::pressed, [this, winePrefixDirectory] {
-        this->window.winePrefixPath = QFileDialog::getExistingDirectory(this, "Open Wine Prefix");
-        winePrefixDirectory->setText(this->window.winePrefixPath);
+        this->window.currentProfile().winePrefixPath = QFileDialog::getExistingDirectory(this, "Open Wine Prefix");
+        winePrefixDirectory->setText(this->window.currentProfile().winePrefixPath);
 
         this->window.readInitialInformation();
     });
@@ -136,23 +136,23 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     auto openPrefixButton = new QPushButton("Open Wine Prefix");
     connect(openPrefixButton, &QPushButton::pressed, [this] {
-        openPath(this->window.winePrefixPath);
+        openPath(this->window.currentProfile().winePrefixPath);
     });
     wineBoxLayout->addWidget(openPrefixButton);
 
     auto enableDXVKhud = new QCheckBox("Enable DXVK HUD");
-    enableDXVKhud->setChecked(window.enableDXVKhud);
+    enableDXVKhud->setChecked(window.currentProfile().enableDXVKhud);
     wineBoxLayout->addWidget(enableDXVKhud);
 
     connect(enableDXVKhud, &QCheckBox::stateChanged, [this](int state) {
-        this->window.enableDXVKhud = state;
+        this->window.currentProfile().enableDXVKhud = state;
         this->window.settings.setValue("enableDXVKhud", static_cast<bool>(state));
     });
 #endif
 
 #if defined(Q_OS_LINUX)
     auto useEsync = new QCheckBox("Use Esync");
-    useEsync->setChecked(window.useEsync);
+    useEsync->setChecked(window.currentProfile().useEsync);
     wineBoxLayout->addWidget(useEsync);
 
     auto esyncLabel = new QLabel("Improves general game performance, but requires a Wine built with the Esync patches.\n"
@@ -161,12 +161,12 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     wineBoxLayout->addWidget(esyncLabel);
 
     connect(useEsync, &QCheckBox::stateChanged, [this](int state) {
-        this->window.useEsync = state;
+        this->window.currentProfile().useEsync = state;
         this->window.settings.setValue("useEsync", static_cast<bool>(state));
     });
 
     auto useGamescope = new QCheckBox("Use Gamescope");
-    useGamescope->setChecked(window.useGamescope);
+    useGamescope->setChecked(window.currentProfile().useGamescope);
     wineBoxLayout->addWidget(useGamescope);
 
     auto gamescopeLabel = new QLabel("Use the SteamOS compositor that uses Wayland.\n"
@@ -175,12 +175,12 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     wineBoxLayout->addWidget(gamescopeLabel);
 
     connect(useGamescope, &QCheckBox::stateChanged, [this](int state) {
-        this->window.useGamescope = state;
+        this->window.currentProfile().useGamescope = state;
         this->window.settings.setValue("useGamescope", static_cast<bool>(state));
     });
 
     auto useGamemode = new QCheckBox("Use Gamemode");
-    useGamemode->setChecked(window.useGamemode);
+    useGamemode->setChecked(window.currentProfile().useGamemode);
     wineBoxLayout->addWidget(useGamemode);
 
     auto gamemodeLabel = new QLabel("Use Feral Interactive's GameMode, which applies a couple of performance enhancements.\n"
@@ -189,7 +189,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     wineBoxLayout->addWidget(gamemodeLabel);
 
     connect(useGamemode, &QCheckBox::stateChanged, [this](int state) {
-        this->window.useGamemode = state;
+        this->window.currentProfile().useGamemode = state;
         this->window.settings.setValue("useGamemode", static_cast<bool>(state));
     });
 #endif

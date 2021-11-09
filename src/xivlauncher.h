@@ -9,6 +9,16 @@ class SapphireLauncher;
 class SquareLauncher;
 class SquareBoot;
 
+struct ProfileSettings {
+    int language = 1; // 1 is english, thats all i know
+    QString gamePath, winePath, winePrefixPath;
+    QString bootVersion, gameVersion;
+
+    bool useEsync, useGamescope, useGamemode;
+    bool useDX9 = false;
+    bool enableDXVKhud = false;
+};
+
 struct LoginInformation {
     QString username, password, oneTimePassword;
 };
@@ -31,13 +41,11 @@ public:
 
     QNetworkAccessManager* mgr;
 
-    int language = 1; // 1 is english, thats all i know
-    QString gamePath, winePath, winePrefixPath;
-    QString bootVersion, gameVersion;
-
-    bool useEsync, useGamescope, useGamemode;
-    bool useDX9 = false;
-    bool enableDXVKhud = false;
+    ProfileSettings currentProfile() const;
+    ProfileSettings& currentProfile();
+    void setProfile(QString name);
+    ProfileSettings getProfile(QString name);
+    QList<QString> profileList() const;
 
     void launchGame(const LoginAuth auth);
     void launchExecutable(const QStringList args);
@@ -52,4 +60,7 @@ private:
     SapphireLauncher* sapphireLauncher;
     SquareBoot* squareBoot;
     SquareLauncher* squareLauncher;
+
+    QList<ProfileSettings> profileSettings;
+    int currentProfileIndex = 0;
 };

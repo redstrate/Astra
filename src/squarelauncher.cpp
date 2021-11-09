@@ -103,7 +103,7 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
     QUrl url;
     url.setScheme("https");
     url.setHost("patch-gamever.ffxiv.com");
-    url.setPath(QString("/http/win32/ffxivneo_release_game/%1/%2").arg(window.gameVersion, SID));
+    url.setPath(QString("/http/win32/ffxivneo_release_game/%1/%2").arg(window.currentProfile().gameVersion, SID));
 
     auto request = QNetworkRequest(url);
     window.setSSL(request);
@@ -111,7 +111,7 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
     request.setRawHeader("User-Agent", "FFXIV PATCH CLIENT");
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
 
-    QString report = window.bootVersion + "=" + getBootHash();
+    QString report = window.currentProfile().bootVersion + "=" + getBootHash();
 
     for(int i = 0; i < expansionVersions.size(); i++)
         report += QString("\nex%1\t%2").arg(QString::number(i + 1), expansionVersions[i]);
@@ -142,7 +142,7 @@ QString SquareLauncher::getBootHash() {
 
     QString result;
     for (int i = 0; i < fileList.count(); i++) {
-        result += fileList[i] + "/" + getFileHash(window.gamePath + "/boot/" + fileList[i]);
+        result += fileList[i] + "/" + getFileHash(window.currentProfile().gamePath + "/boot/" + fileList[i]);
 
         if (i != fileList.length() - 1)
             result += ",";
@@ -153,5 +153,5 @@ QString SquareLauncher::getBootHash() {
 
 void SquareLauncher::readExpansionVersions(int max) {
     for(int i = 0; i < max; i++)
-        expansionVersions.push_back(window.readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(window.gamePath, QString::number(i + 1))));
+        expansionVersions.push_back(window.readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(window.currentProfile().gamePath, QString::number(i + 1))));
 }

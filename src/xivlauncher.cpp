@@ -43,10 +43,10 @@ void LauncherWindow::launchGame(const LoginAuth auth) {
     QList<QString> arguments;
 
     // now for the actual game...
-    if(useDX9) {
-        arguments.push_back(gamePath + "\\game\\ffxiv.exe");
+    if(currentProfile().useDX9) {
+        arguments.push_back(currentProfile().gamePath + "\\game\\ffxiv.exe");
     } else {
-        arguments.push_back(gamePath + "\\game\\ffxiv_dx11.exe");
+        arguments.push_back(currentProfile().gamePath + "\\game\\ffxiv_dx11.exe");
     }
 
     arguments.push_back("DEV.DataPathType=1");
@@ -55,8 +55,8 @@ void LauncherWindow::launchGame(const LoginAuth auth) {
     arguments.push_back(QString("DEV.MaxEntitledExpansionID=%1").arg(auth.maxExpansion));
     arguments.push_back(QString("DEV.TestSID=%1").arg(auth.SID));
     arguments.push_back(QString("SYS.Region=%1").arg(auth.region));
-    arguments.push_back(QString("language=%1").arg(language));
-    arguments.push_back(QString("ver=%1").arg(gameVersion));
+    arguments.push_back(QString("language=%1").arg(currentProfile().language));
+    arguments.push_back(QString("ver=%1").arg(currentProfile().gameVersion));
 
     if(!auth.lobbyhost.isEmpty()) {
         arguments.push_back(QString("DEV.GMServerHost=%1").arg(auth.frontierHost));
@@ -75,27 +75,27 @@ void LauncherWindow::launchExecutable(const QStringList args) {
     QStringList env = QProcess::systemEnvironment();
 
 #if defined(Q_OS_LINUX)
-    if(useGamescope) {
+    if(currentProfile().useGamescope) {
         arguments.push_back("gamescope");
         arguments.push_back("-f");
         arguments.push_back("-b");
     }
 
-    if(useGamemode)
+    if(currentProfile().useGamemode)
         arguments.push_back("gamemoderun");
 
-    if(useEsync) {
+    if(currentProfile().useEsync) {
         env << "WINEESYNC=1";
     }
 #endif
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
-    env << "WINEPREFIX=" + winePrefixPath;
+    env << "WINEPREFIX=" + currentProfile().winePrefixPath;
 
-    if(enableDXVKhud)
+    if(currentProfile().enableDXVKhud)
         env << "DXVK_HUD=full";
 
-    arguments.push_back(winePath);
+    arguments.push_back(currentProfile().winePath);
 #endif
 
     arguments.append(args);
@@ -103,7 +103,7 @@ void LauncherWindow::launchExecutable(const QStringList args) {
     auto executable = arguments[0];
     arguments.removeFirst();
 
-    process->setWorkingDirectory(gamePath + "/game/");
+    process->setWorkingDirectory(currentProfile().gamePath + "/game/");
     process->setEnvironment(env);
     process->start(executable, arguments);
 }
@@ -134,16 +134,16 @@ void LauncherWindow::readInitialInformation() {
 #if defined(Q_OS_LINUX)
     switch(wineVersion) {
         case 0: // system wine (should be in $PATH)
-            winePath = "wine";
+            currentProfile().winePath = "wine";
             break;
         case 1: // custom pth
-            winePath = settings.value("winePath").toString();
+            currentProfile().winePath = settings.value("winePath").toString();
             break;
     }
 #endif
 
     if(settings.contains("gamePath") && settings.value("gamePath").canConvert<QString>() && !settings.value("gamePath").toString().isEmpty()) {
-        gamePath = settings.value("gamePath").toString();
+        currentProfile().gamePath = settings.value("gamePath").toString();
     } else {
 #if defined(Q_OS_WIN)
         gamePath = "C:\\Program Files (x86)\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn";
@@ -154,29 +154,29 @@ void LauncherWindow::readInitialInformation() {
 #endif
 
 #if defined(Q_OS_LINUX)
-        gamePath = QDir::homePath() + "/.wine/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
+        currentProfile().gamePath = QDir::homePath() + "/.wine/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
 #endif
     }
 
     if(settings.contains("winePrefix") && settings.value("winePrefix").canConvert<QString>() && !settings.value("winePrefix").toString().isEmpty()) {
-        winePrefixPath = settings.value("winePrefix").toString();
+        currentProfile().winePrefixPath = settings.value("winePrefix").toString();
     } else {
 #if defined(Q_OS_MACOS)
         winePrefixPath = QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy";
 #endif
 
 #if defined(Q_OS_LINUX)
-        winePrefixPath = QDir::homePath() + "/.wine";
+        currentProfile().winePrefixPath = QDir::homePath() + "/.wine";
 #endif
     }
 
-    bootVersion = readVersion(gamePath + "/boot/ffxivboot.ver");
-    gameVersion = readVersion(gamePath + "/game/ffxivgame.ver");
+    currentProfile().bootVersion = readVersion(currentProfile().gamePath + "/boot/ffxivboot.ver");
+    currentProfile().gameVersion = readVersion(currentProfile().gamePath + "/game/ffxivgame.ver");
 
-    useEsync = settings.value("useEsync", false).toBool();
-    useGamemode = settings.value("useGamemode", false).toBool();
-    useGamescope = settings.value("useGamescope", false).toBool();
-    enableDXVKhud = settings.value("enableDXVKhud", false).toBool();
+    currentProfile().useEsync = settings.value("useEsync", false).toBool();
+    currentProfile().useGamemode = settings.value("useGamemode", false).toBool();
+    currentProfile().useGamescope = settings.value("useGamescope", false).toBool();
+    currentProfile().enableDXVKhud = settings.value("enableDXVKhud", false).toBool();
 }
 
 LauncherWindow::LauncherWindow(QWidget* parent) :
@@ -185,6 +185,8 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     sapphireLauncher = new SapphireLauncher(*this);
     squareLauncher = new SquareLauncher(*this);
     squareBoot = new SquareBoot(*this, *squareLauncher);
+
+    profileSettings.append(ProfileSettings());
 
     QMenu* fileMenu = menuBar()->addMenu("File");
     // sorry linux users, for some reason my global menu does not like qt6 apps right now
@@ -202,17 +204,17 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
 
     QAction* launchOfficial = toolsMenu->addAction("Launch Official Client...");
     connect(launchOfficial, &QAction::triggered, [=] {
-        launchExecutable({gamePath + "/boot/ffxivboot64.exe"});
+        launchExecutable({currentProfile().gamePath + "/boot/ffxivboot64.exe"});
     });
 
     QAction* launchSysInfo = toolsMenu->addAction("Launch System Info...");
     connect(launchSysInfo, &QAction::triggered, [=] {
-        launchExecutable({gamePath + "/boot/ffxivsysinfo64.exe"});
+        launchExecutable({currentProfile().gamePath + "/boot/ffxivsysinfo64.exe"});
     });
 
     QAction* launchCfgBackup = toolsMenu->addAction("Launch Config Backup...");
     connect(launchCfgBackup, &QAction::triggered, [=] {
-        launchExecutable({gamePath + "/boot/ffxivconfig64.exe"});
+        launchExecutable({currentProfile().gamePath + "/boot/ffxivconfig64.exe"});
     });
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
@@ -304,8 +306,8 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     connect(loginButton, &QPushButton::released, [=] {
         auto info = LoginInformation{usernameEdit->text(), passwordEdit->text(), otpEdit->text()};
 
-        settings.setValue("gamePath", gamePath);
-        settings.setValue("winePrefix", winePrefixPath);
+        settings.setValue("gamePath", currentProfile().gamePath);
+        settings.setValue("winePrefix", currentProfile().winePrefixPath);
 
         settings.setValue("rememberUsername", rememberUsernameBox->checkState() == Qt::CheckState::Checked);
         if(rememberUsernameBox->checkState() == Qt::CheckState::Checked) {
@@ -343,3 +345,34 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
 }
 
 LauncherWindow::~LauncherWindow() = default;
+
+ProfileSettings LauncherWindow::currentProfile() const {
+    return profileSettings[currentProfileIndex];
+}
+
+ProfileSettings& LauncherWindow::currentProfile() {
+    return profileSettings[currentProfileIndex];
+}
+
+void LauncherWindow::setProfile(QString name) {
+    for(int i = 0; i < profileSettings.size(); i++) {
+        currentProfileIndex = 0;
+    }
+
+    currentProfileIndex = -1;
+}
+
+ProfileSettings LauncherWindow::getProfile(QString name) {
+    for(auto profile : profileSettings) {
+        return profile;
+    }
+}
+
+QList<QString> LauncherWindow::profileList() const {
+    QList<QString> list;
+    for(auto profile : profileSettings) {
+        list.append("Default");
+    }
+
+    return list;
+}

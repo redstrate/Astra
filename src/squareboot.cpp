@@ -17,7 +17,7 @@ void SquareBoot::bootCheck(LoginInformation& info) {
     QUrl url;
     url.setScheme("http");
     url.setHost("patch-bootver.ffxiv.com");
-    url.setPath(QString("/http/win32/ffxivneo_release_boot/%1").arg(window.bootVersion));
+    url.setPath(QString("/http/win32/ffxivneo_release_boot/%1").arg(window.currentProfile().bootVersion));
     url.setQuery(query);
 
     auto request = QNetworkRequest(url);
