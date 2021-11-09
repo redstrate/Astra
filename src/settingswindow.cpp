@@ -23,9 +23,6 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     auto mainLayout = new QGridLayout(this);
     setLayout(mainLayout);
 
-    auto layout = new QFormLayout();
-    mainLayout->addLayout(layout, 0, 1);
-
     auto profileWidget = new QListWidget();
     profileWidget->addItem("Default");
     mainLayout->addWidget(profileWidget, 0, 0);
@@ -34,7 +31,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     auto gameBoxLayout = new QFormLayout();
     gameBox->setLayout(gameBoxLayout);
 
-    layout->addRow(gameBox);
+    mainLayout->addWidget(gameBox, 0, 1);
 
     auto serverType = new QComboBox();
     serverType->insertItem(0, "Square Enix");
@@ -82,7 +79,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     auto wineBoxLayout = new QFormLayout();
     wineBox->setLayout(wineBoxLayout);
 
-    layout->addRow(wineBox);
+    mainLayout->addWidget(wineBox, 0, 2);
 
     auto infoLabel = new QLabel("This is a list of possible enhancements you can make to your Wine gaming experience.\n"
                                 "This is all stuff you can do outside of the launcher, but we can take care of it for you.");
