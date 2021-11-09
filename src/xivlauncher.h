@@ -7,12 +7,14 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QPushButton>
+#include <QUuid>
 
 class SapphireLauncher;
 class SquareLauncher;
 class SquareBoot;
 
 struct ProfileSettings {
+    QUuid uuid;
     QString name;
 
     int language = 1; // 1 is english, thats all i know

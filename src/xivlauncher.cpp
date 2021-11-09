@@ -122,13 +122,17 @@ void LauncherWindow::readInitialInformation() {
 
     // create the Default profile if it doesnt exist
     if(profiles.empty())
-        profiles.append("Default");
+        profiles.append(QUuid::createUuid().toString());
 
-    for(const auto& profile_name : profiles) {
+    profileSettings.resize(profiles.size());
+
+    for(const auto& uuid : profiles) {
         ProfileSettings profile;
-        profile.name = profile_name;
+        profile.uuid = QUuid(uuid);
 
-        settings.beginGroup(profile_name);
+        settings.beginGroup(uuid);
+
+        profile.name = settings.value("name").toString();
 
         profile.wineVersion = settings.value("wineVersion", 0).toInt();
 #if defined(Q_OS_MAC)
@@ -195,9 +199,9 @@ void LauncherWindow::readInitialInformation() {
         profile.useGamescope = settings.value("useGamescope", false).toBool();
         profile.enableDXVKhud = settings.value("enableDXVKhud", false).toBool();
 
-        settings.endGroup();
+        profileSettings[settings.value("index").toInt()] = profile;
 
-        profileSettings.append(profile);
+        settings.endGroup();
     }
 
     readGameVersion();
@@ -378,6 +382,7 @@ QList<QString> LauncherWindow::profileList() const {
 
 int LauncherWindow::addProfile() {
     ProfileSettings newProfile;
+    newProfile.uuid = QUuid::createUuid();
     newProfile.name = "New Profile";
 
     profileSettings.append(newProfile);
@@ -388,8 +393,15 @@ int LauncherWindow::addProfile() {
 }
 
 void LauncherWindow::saveSettings() {
-    for(auto profile : profileSettings) {
-        settings.beginGroup(profile.name);
+    settings.setValue("defaultProfile", defaultProfileIndex);
+
+    for(int i = 0; i < profileSettings.size(); i++) {
+        const auto& profile = profileSettings[i];
+
+        settings.beginGroup(profile.uuid.toString());
+
+        settings.setValue("name", profile.name);
+        settings.setValue("index", i);
 
         // game
         settings.setValue("useDX9", profile.useDX9);
