@@ -116,6 +116,8 @@ QString LauncherWindow::readVersion(QString path) {
 }
 
 void LauncherWindow::readInitialInformation() {
+    defaultProfileIndex = settings.value("defaultProfile", 0).toInt();
+
     auto profiles = settings.childGroups();
 
     // create the Default profile if it doesnt exist
@@ -252,59 +254,31 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
 
     auto layout = new QFormLayout();
 
-    auto profileSelect = new QComboBox();
-    profileSelect->addItem("Default");
+    profileSelect = new QComboBox();
+
     layout->addRow("Profile", profileSelect);
 
-    auto usernameEdit = new QLineEdit();
+    usernameEdit = new QLineEdit();
     layout->addRow("Username", usernameEdit);
 
-    if(currentProfile().rememberUsername) {
-        auto job = new QKeychain::ReadPasswordJob("LauncherWindow");
-        job->setKey("username");
-        job->start();
-
-        connect(job, &QKeychain::ReadPasswordJob::finished, [=](QKeychain::Job* j) {
-            usernameEdit->setText(job->textData());
-        });
-    }
-
-    auto rememberUsernameBox = new QCheckBox();
-    rememberUsernameBox->setChecked(currentProfile().rememberUsername);
+    rememberUsernameBox = new QCheckBox();
     layout->addRow("Remember Username?", rememberUsernameBox);
 
-    auto passwordEdit = new QLineEdit();
+    passwordEdit = new QLineEdit();
     passwordEdit->setEchoMode(QLineEdit::EchoMode::Password);
     layout->addRow("Password", passwordEdit);
 
-    if(currentProfile().rememberPassword) {
-        auto job = new QKeychain::ReadPasswordJob("LauncherWindow");
-        job->setKey("password");
-        job->start();
-
-        connect(job, &QKeychain::ReadPasswordJob::finished, [=](QKeychain::Job* j) {
-            passwordEdit->setText(job->textData());
-        });
-    }
-
-    auto rememberPasswordBox = new QCheckBox();
-    rememberPasswordBox->setChecked(currentProfile().rememberPassword);
+    rememberPasswordBox = new QCheckBox();
     layout->addRow("Remember Password?", rememberPasswordBox);
 
-    auto otpEdit = new QLineEdit();
+    otpEdit = new QLineEdit();
     layout->addRow("One-Time Password", otpEdit);
 
     auto loginButton = new QPushButton("Login");
     layout->addRow(loginButton);
 
-    auto registerButton = new QPushButton("Register");
+    registerButton = new QPushButton("Register");
     layout->addRow(registerButton);
-
-    const auto refreshControls = [=]() {
-        registerButton->setEnabled(currentProfile().isSapphire);
-        otpEdit->setEnabled(!currentProfile().isSapphire);
-    };
-    refreshControls();
 
     auto emptyWidget = new QWidget();
     emptyWidget->setLayout(layout);
@@ -340,16 +314,18 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
             sapphireLauncher->registerAccount(currentProfile().lobbyURL, info);
         }
     });
+
+    reloadControls();
 }
 
 LauncherWindow::~LauncherWindow() = default;
 
 ProfileSettings LauncherWindow::currentProfile() const {
-    return getProfile(currentProfileIndex);
+    return getProfile(profileSelect->currentIndex());
 }
 
 ProfileSettings& LauncherWindow::currentProfile() {
-    return getProfile(currentProfileIndex);
+    return getProfile(profileSelect->currentIndex());
 }
 
 ProfileSettings LauncherWindow::getProfile(int index) const {
@@ -358,16 +334,6 @@ ProfileSettings LauncherWindow::getProfile(int index) const {
 
 ProfileSettings& LauncherWindow::getProfile(int index) {
     return profileSettings[index];
-}
-
-void LauncherWindow::setProfile(QString name) {
-    currentProfileIndex = getProfileIndex(name);
-    settingsChanged();
-}
-
-void LauncherWindow::setProfile(int index) {
-    currentProfileIndex = index;
-    settingsChanged();
 }
 
 int LauncherWindow::getProfileIndex(QString name) {
@@ -407,4 +373,41 @@ void LauncherWindow::saveSettings() {
 
         settings.endGroup();
     }
+}
+
+void LauncherWindow::reloadControls() {
+    profileSelect->clear();
+
+    for(const auto& profile : profileList()) {
+        profileSelect->addItem(profile);
+    }
+
+    if(profileSelect->currentIndex() == -1) {
+        profileSelect->setCurrentIndex(defaultProfileIndex);
+    }
+
+    rememberUsernameBox->setChecked(currentProfile().rememberUsername);
+    if(currentProfile().rememberUsername) {
+        auto job = new QKeychain::ReadPasswordJob("LauncherWindow");
+        job->setKey("username");
+        job->start();
+
+        connect(job, &QKeychain::ReadPasswordJob::finished, [=](QKeychain::Job* j) {
+            usernameEdit->setText(job->textData());
+        });
+    }
+
+    rememberPasswordBox->setChecked(currentProfile().rememberPassword);
+    if(currentProfile().rememberPassword) {
+        auto job = new QKeychain::ReadPasswordJob("LauncherWindow");
+        job->setKey("password");
+        job->start();
+
+        connect(job, &QKeychain::ReadPasswordJob::finished, [=](QKeychain::Job* j) {
+            passwordEdit->setText(job->textData());
+        });
+    }
+
+    registerButton->setEnabled(currentProfile().isSapphire);
+    otpEdit->setEnabled(!currentProfile().isSapphire);
 }

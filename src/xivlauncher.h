@@ -4,6 +4,9 @@
 #include <QNetworkAccessManager>
 #include <QFuture>
 #include <QSettings>
+#include <QComboBox>
+#include <QCheckBox>
+#include <QPushButton>
 
 class SapphireLauncher;
 class SquareLauncher;
@@ -52,8 +55,6 @@ public:
     ProfileSettings getProfile(int index) const;
     ProfileSettings& getProfile(int index);
 
-    void setProfile(QString name);
-    void setProfile(int index);
     int getProfileIndex(QString name);
     QList<QString> profileList() const;
     int addProfile();
@@ -68,6 +69,9 @@ public:
 
     QSettings settings;
 
+public slots:
+    void reloadControls();
+
 signals:
     void settingsChanged();
 
@@ -76,6 +80,12 @@ private:
     SquareBoot* squareBoot;
     SquareLauncher* squareLauncher;
 
+    QComboBox* profileSelect;
+    QLineEdit* usernameEdit, *passwordEdit;
+    QLineEdit* otpEdit;
+    QCheckBox* rememberUsernameBox, *rememberPasswordBox;
+    QPushButton* registerButton;
+
     QList<ProfileSettings> profileSettings;
-    int currentProfileIndex = 0;
+    int defaultProfileIndex = 0;
 };
