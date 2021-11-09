@@ -35,6 +35,8 @@ private:
     QLabel* winePathLabel;
     QLabel* winePrefixDirectory;
 
+    QCheckBox* useGamescope, *useEsync, *useGamemode;
+
     // login
     QComboBox* serverType = nullptr;
     QLineEdit* lobbyServerURL = nullptr;

@@ -394,6 +394,10 @@ void LauncherWindow::saveSettings() {
         settings.setValue("winePath", profile.winePath);
         settings.setValue("winePrefixPath", profile.winePrefixPath);
 
+        settings.setValue("useEsync", profile.useEsync);
+        settings.setValue("useGamescope", profile.useGamescope);
+        settings.setValue("useGamemode", profile.useGamemode);
+
         // login
         settings.setValue("isSapphire", profile.isSapphire);
         settings.setValue("lobbyURL", profile.lobbyURL);

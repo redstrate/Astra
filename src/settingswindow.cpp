@@ -208,8 +208,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 #endif
 
 #if defined(Q_OS_LINUX)
-    auto useEsync = new QCheckBox("Use Esync");
-    useEsync->setChecked(window.currentProfile().useEsync);
+    useEsync = new QCheckBox("Use Esync");
     wineBoxLayout->addWidget(useEsync);
 
     auto esyncLabel = new QLabel("Improves general game performance, but requires a Wine built with the Esync patches.\n"
@@ -218,12 +217,12 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     wineBoxLayout->addWidget(esyncLabel);
 
     connect(useEsync, &QCheckBox::stateChanged, [this](int state) {
-        this->window.currentProfile().useEsync = state;
-        this->window.settings.setValue("useEsync", static_cast<bool>(state));
+        getCurrentProfile().useEsync = state;
+
+        this->window.saveSettings();
     });
 
-    auto useGamescope = new QCheckBox("Use Gamescope");
-    useGamescope->setChecked(window.currentProfile().useGamescope);
+    useGamescope = new QCheckBox("Use Gamescope");
     wineBoxLayout->addWidget(useGamescope);
 
     auto gamescopeLabel = new QLabel("Use the SteamOS compositor that uses Wayland.\n"
@@ -232,12 +231,12 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     wineBoxLayout->addWidget(gamescopeLabel);
 
     connect(useGamescope, &QCheckBox::stateChanged, [this](int state) {
-        this->window.currentProfile().useGamescope = state;
-        this->window.settings.setValue("useGamescope", static_cast<bool>(state));
+        getCurrentProfile().useGamescope = state;
+
+        this->window.saveSettings();
     });
 
-    auto useGamemode = new QCheckBox("Use Gamemode");
-    useGamemode->setChecked(window.currentProfile().useGamemode);
+    useGamemode = new QCheckBox("Use Gamemode");
     wineBoxLayout->addWidget(useGamemode);
 
     auto gamemodeLabel = new QLabel("Use Feral Interactive's GameMode, which applies a couple of performance enhancements.\n"
@@ -246,8 +245,9 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     wineBoxLayout->addWidget(gamemodeLabel);
 
     connect(useGamemode, &QCheckBox::stateChanged, [this](int state) {
-        this->window.currentProfile().useGamemode = state;
-        this->window.settings.setValue("useGamemode", static_cast<bool>(state));
+        getCurrentProfile().useGamemode = state;
+
+        this->window.saveSettings();
     });
 #endif
 
@@ -281,6 +281,10 @@ void SettingsWindow::reloadControls() {
     selectWineButton->setEnabled(profile.wineVersion == 1);
     winePathLabel->setText(profile.winePath);
     winePrefixDirectory->setText(profile.winePrefixPath);
+
+    useEsync->setChecked(profile.useEsync);
+    useGamescope->setChecked(profile.useGamescope);
+    useGamemode->setChecked(profile.useGamemode);
 
     // login
     serverType->setCurrentIndex(profile.isSapphire ? 1 : 0);
