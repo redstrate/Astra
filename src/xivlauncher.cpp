@@ -214,6 +214,7 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     QAction* settingsAction = fileMenu->addAction("Settings...");
     connect(settingsAction, &QAction::triggered, [=] {
         auto window = new SettingsWindow(*this);
+        connect(this, &LauncherWindow::settingsChanged, window, &SettingsWindow::reloadControls);
         window->show();
     });
 
@@ -352,6 +353,12 @@ ProfileSettings& LauncherWindow::currentProfile() {
 
 void LauncherWindow::setProfile(QString name) {
     currentProfileIndex = getProfileIndex(name);
+    settingsChanged();
+}
+
+void LauncherWindow::setProfile(int index) {
+    currentProfileIndex = index;
+    settingsChanged();
 }
 
 int LauncherWindow::getProfileIndex(QString name) {
@@ -370,4 +377,15 @@ QList<QString> LauncherWindow::profileList() const {
     }
 
     return list;
+}
+
+int LauncherWindow::addProfile() {
+    ProfileSettings newProfile;
+    newProfile.name = "New Profile";
+
+    profileSettings.append(newProfile);
+
+    settingsChanged();
+
+    return profileSettings.size() - 1;
 }

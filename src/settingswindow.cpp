@@ -11,7 +11,6 @@
 #include <QProcess>
 #include <QComboBox>
 #include <QGridLayout>
-#include <QListWidget>
 #include <QLineEdit>
 
 #include "xivlauncher.h"
@@ -23,9 +22,14 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     auto mainLayout = new QGridLayout(this);
     setLayout(mainLayout);
 
-    auto profileWidget = new QListWidget();
-    profileWidget->addItem("Default");
+    profileWidget = new QListWidget();
     mainLayout->addWidget(profileWidget, 0, 0);
+
+    auto addProfileButton = new QPushButton("Add Profile");
+    connect(addProfileButton, &QPushButton::pressed, [=] {
+       profileWidget->setCurrentRow(this->window.addProfile());
+    });
+    mainLayout->addWidget(addProfileButton, 1, 0);
 
     auto gameBox = new QGroupBox("Game Options");
     auto gameBoxLayout = new QFormLayout();
@@ -207,6 +211,16 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
         this->window.settings.setValue("useGamemode", static_cast<bool>(state));
     });
 #endif
+
+    reloadControls();
+}
+
+void SettingsWindow::reloadControls() {
+    profileWidget->clear();
+
+    for(auto profile : window.profileList()) {
+        profileWidget->addItem(profile);
+    }
 }
 
 void SettingsWindow::openPath(const QString path) {

@@ -49,8 +49,10 @@ public:
     ProfileSettings currentProfile() const;
     ProfileSettings& currentProfile();
     void setProfile(QString name);
+    void setProfile(int index);
     int getProfileIndex(QString name);
     QList<QString> profileList() const;
+    int addProfile();
 
     void launchGame(const LoginAuth auth);
     void launchExecutable(const QStringList args);
@@ -60,6 +62,9 @@ public:
     void readInitialInformation();
 
     QSettings settings;
+
+signals:
+    void settingsChanged();
 
 private:
     SapphireLauncher* sapphireLauncher;
