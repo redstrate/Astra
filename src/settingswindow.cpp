@@ -74,6 +74,20 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     });
     gameBoxLayout->addWidget(gameDirectoryButton);
 
+    auto loginBox = new QGroupBox("Login Options");
+    auto loginBoxLayout = new QFormLayout();
+    loginBox->setLayout(loginBoxLayout);
+
+    mainLayout->addWidget(loginBox, 1, 1);
+
+    auto rememberUsernameBox = new QCheckBox();
+    //rememberUsernameBox->setChecked(shouldRememberUsername);
+    loginBoxLayout->addRow("Remember Username?", rememberUsernameBox);
+
+    auto rememberPasswordBox = new QCheckBox();
+    //rememberPasswordBox->setChecked(shouldRememberPassword);
+    loginBoxLayout->addRow("Remember Password?", rememberPasswordBox);
+
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     auto wineBox = new QGroupBox("Wine Options");
     auto wineBoxLayout = new QFormLayout();
