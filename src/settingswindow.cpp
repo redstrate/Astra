@@ -26,13 +26,13 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     connect(profileWidget, &QListWidget::currentRowChanged, this, &SettingsWindow::reloadControls);
 
-    mainLayout->addWidget(profileWidget, 0, 0);
+    mainLayout->addWidget(profileWidget, 0, 0, 0, 1);
 
     auto addProfileButton = new QPushButton("Add Profile");
     connect(addProfileButton, &QPushButton::pressed, [=] {
        profileWidget->setCurrentRow(this->window.addProfile());
     });
-    mainLayout->addWidget(addProfileButton, 1, 0);
+    mainLayout->addWidget(addProfileButton, 3, 0);
 
     nameEdit = new QLineEdit();
     connect(nameEdit, &QLineEdit::editingFinished, [=] {
@@ -41,13 +41,13 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
         reloadControls();
         this->window.saveSettings();
     });
-    mainLayout->addWidget(nameEdit, 2, 0);
+    mainLayout->addWidget(nameEdit, 0, 1);
 
     auto gameBox = new QGroupBox("Game Options");
     auto gameBoxLayout = new QFormLayout();
     gameBox->setLayout(gameBoxLayout);
 
-    mainLayout->addWidget(gameBox, 0, 1);
+    mainLayout->addWidget(gameBox, 1, 1);
 
     directXCombo = new QComboBox();
     directXCombo->addItem("DirectX 11");
@@ -84,7 +84,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     auto loginBoxLayout = new QFormLayout();
     loginBox->setLayout(loginBoxLayout);
 
-    mainLayout->addWidget(loginBox, 1, 1);
+    mainLayout->addWidget(loginBox, 2, 1);
 
     serverType = new QComboBox();
     serverType->insertItem(0, "Square Enix");
@@ -129,7 +129,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     auto wineBoxLayout = new QFormLayout();
     wineBox->setLayout(wineBoxLayout);
 
-    mainLayout->addWidget(wineBox, 0, 2);
+    mainLayout->addWidget(wineBox, 1, 2, 2, 2);
 
     auto infoLabel = new QLabel("This is a list of possible enhancements you can make to your Wine gaming experience.\n"
                                 "This is all stuff you can do outside of the launcher, but we can take care of it for you.");
