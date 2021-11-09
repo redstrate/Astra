@@ -101,8 +101,9 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     serverType->insertItem(1, "Sapphire");
 
     connect(serverType, &QComboBox::currentIndexChanged, [=](int index) {
-        getCurrentProfile().isSapphire = serverType->currentIndex() == 1;
+        getCurrentProfile().isSapphire = index == 1;
 
+        reloadControls();
         this->window.reloadControls();
         this->window.saveSettings();
     });
@@ -300,6 +301,7 @@ void SettingsWindow::reloadControls() {
 
     // login
     serverType->setCurrentIndex(profile.isSapphire ? 1 : 0);
+    lobbyServerURL->setEnabled(profile.isSapphire);
     lobbyServerURL->setText(profile.lobbyURL);
     rememberUsernameBox->setChecked(profile.rememberUsername);
     rememberPasswordBox->setChecked(profile.rememberPassword);
