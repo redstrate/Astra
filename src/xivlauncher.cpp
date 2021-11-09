@@ -187,6 +187,7 @@ void LauncherWindow::readInitialInformation() {
         profile.bootVersion = readVersion(profile.gamePath + "/boot/ffxivboot.ver");
         profile.gameVersion = readVersion(profile.gamePath + "/game/ffxivgame.ver");
 
+        profile.isSapphire = settings.value("isSapphire", false).toBool();
         profile.rememberUsername = settings.value("rememberUsername", false).toBool();
         profile.rememberPassword = settings.value("rememberPassword", false).toBool();
 
@@ -384,6 +385,8 @@ void LauncherWindow::saveSettings() {
         settings.beginGroup(profile.name);
 
         settings.setValue("useDX9", profile.useDX9);
+
+        settings.setValue("isSapphire", profile.isSapphire);
         settings.setValue("rememberUsername", profile.rememberUsername);
         settings.setValue("rememberPassword", profile.rememberPassword);
 
