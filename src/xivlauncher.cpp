@@ -122,7 +122,7 @@ void LauncherWindow::readInitialInformation() {
 
     // create the Default profile if it doesnt exist
     if(profiles.empty())
-        profiles.append(QUuid::createUuid().toString());
+        profiles.append(QUuid::createUuid().toString(QUuid::StringFormat::WithoutBraces));
 
     profileSettings.resize(profiles.size());
 
@@ -132,7 +132,7 @@ void LauncherWindow::readInitialInformation() {
 
         settings.beginGroup(uuid);
 
-        profile.name = settings.value("name").toString();
+        profile.name = settings.value("name", "Default").toString();
 
         profile.wineVersion = settings.value("wineVersion", 0).toInt();
 #if defined(Q_OS_MAC)
@@ -398,7 +398,7 @@ void LauncherWindow::saveSettings() {
     for(int i = 0; i < profileSettings.size(); i++) {
         const auto& profile = profileSettings[i];
 
-        settings.beginGroup(profile.uuid.toString());
+        settings.beginGroup(profile.uuid.toString(QUuid::StringFormat::WithoutBraces));
 
         settings.setValue("name", profile.name);
         settings.setValue("index", i);
