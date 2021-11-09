@@ -59,22 +59,25 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
         this->window.saveSettings();
     });
 
-    auto currentGameDirectory = new QLabel(window.currentProfile().gamePath);
+    currentGameDirectory = new QLabel(window.currentProfile().gamePath);
     currentGameDirectory->setWordWrap(true);
     gameBoxLayout->addRow("Game Directory", currentGameDirectory);
 
     auto selectDirectoryButton = new QPushButton("Select Game Directory");
-    connect(selectDirectoryButton, &QPushButton::pressed, [this, currentGameDirectory] {
-        this->window.currentProfile().gamePath = QFileDialog::getExistingDirectory(this, "Open Game Directory");
-        currentGameDirectory->setText(this->window.currentProfile().gamePath);
+    connect(selectDirectoryButton, &QPushButton::pressed, [this] {
+        getCurrentProfile().gamePath = QFileDialog::getExistingDirectory(this, "Open Game Directory");
 
-        this->window.readInitialInformation();
+        this->reloadControls();
+        this->window.saveSettings();
+
+        // TODO: replace this call with a dedicated "read version information" call or something similar
+        //this->window.readInitialInformation();
     });
     gameBoxLayout->addWidget(selectDirectoryButton);
 
     auto gameDirectoryButton = new QPushButton("Open Game Directory");
     connect(gameDirectoryButton, &QPushButton::pressed, [this] {
-        openPath(this->window.currentProfile().gamePath);
+        openPath(getCurrentProfile().gamePath);
     });
     gameBoxLayout->addWidget(gameDirectoryButton);
 
@@ -260,6 +263,7 @@ void SettingsWindow::reloadControls() {
     ProfileSettings& profile = window.getProfile(profileWidget->currentRow());
     nameEdit->setText(profile.name);
     directXCombo->setCurrentIndex(profile.useDX9 ? 1 : 0);
+    currentGameDirectory->setText(profile.gamePath);
 
     serverType->setCurrentIndex(profile.isSapphire ? 1 : 0);
     rememberUsernameBox->setChecked(profile.rememberUsername);

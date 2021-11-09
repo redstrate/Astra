@@ -385,6 +385,7 @@ void LauncherWindow::saveSettings() {
         settings.beginGroup(profile.name);
 
         settings.setValue("useDX9", profile.useDX9);
+        settings.setValue("gamePath", profile.gamePath);
 
         settings.setValue("isSapphire", profile.isSapphire);
         settings.setValue("rememberUsername", profile.rememberUsername);

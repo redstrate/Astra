@@ -5,6 +5,7 @@
 #include <QComboBox>
 #include <QLineEdit>
 #include <QCheckBox>
+#include <QLabel>
 
 class LauncherWindow;
 struct ProfileSettings;
@@ -24,6 +25,7 @@ private:
 
     QLineEdit* nameEdit = nullptr;
     QComboBox* directXCombo = nullptr;
+    QLabel* currentGameDirectory = nullptr;
 
     QComboBox* serverType = nullptr;
     QCheckBox* rememberUsernameBox = nullptr, *rememberPasswordBox = nullptr;
