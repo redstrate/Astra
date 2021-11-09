@@ -258,6 +258,9 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     auto layout = new QFormLayout();
 
     profileSelect = new QComboBox();
+    connect(profileSelect, &QComboBox::currentIndexChanged, [=](int index) {
+        reloadControls();
+    });
 
     layout->addRow("Profile", profileSelect);
 
@@ -389,11 +392,20 @@ void LauncherWindow::saveSettings() {
 }
 
 void LauncherWindow::reloadControls() {
+    if(currentlyReloadingControls)
+        return;
+
+    currentlyReloadingControls = true;
+
+    const int oldIndex = profileSelect->currentIndex();
+
     profileSelect->clear();
 
     for(const auto& profile : profileList()) {
         profileSelect->addItem(profile);
     }
+
+    profileSelect->setCurrentIndex(oldIndex);
 
     if(profileSelect->currentIndex() == -1) {
         profileSelect->setCurrentIndex(defaultProfileIndex);
@@ -423,4 +435,6 @@ void LauncherWindow::reloadControls() {
 
     registerButton->setEnabled(currentProfile().isSapphire);
     otpEdit->setEnabled(!currentProfile().isSapphire);
+
+    currentlyReloadingControls = false;
 }

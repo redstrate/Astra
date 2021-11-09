@@ -76,6 +76,8 @@ signals:
     void settingsChanged();
 
 private:
+    bool currentlyReloadingControls = false;
+
     SapphireLauncher* sapphireLauncher;
     SquareBoot* squareBoot;
     SquareLauncher* squareLauncher;
