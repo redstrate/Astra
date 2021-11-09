@@ -90,6 +90,8 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     connect(serverType, &QComboBox::currentIndexChanged, [=](int index) {
         getCurrentProfile().isSapphire = serverType->currentIndex() == 1;
+
+        this->window.reloadControls();
         this->window.saveSettings();
     });
 
@@ -102,6 +104,8 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     rememberUsernameBox = new QCheckBox();
     connect(rememberUsernameBox, &QCheckBox::stateChanged, [=](int) {
         getCurrentProfile().rememberUsername = rememberUsernameBox->isChecked();
+
+        this->window.reloadControls();
         this->window.saveSettings();
     });
     loginBoxLayout->addRow("Remember Username?", rememberUsernameBox);
@@ -109,6 +113,8 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     rememberPasswordBox = new QCheckBox();
     connect(rememberPasswordBox, &QCheckBox::stateChanged, [=](int) {
         getCurrentProfile().rememberPassword = rememberPasswordBox->isChecked();
+
+        this->window.reloadControls();
         this->window.saveSettings();
     });
     loginBoxLayout->addRow("Remember Password?", rememberPasswordBox);
