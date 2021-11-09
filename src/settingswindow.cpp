@@ -12,6 +12,7 @@
 #include <QComboBox>
 #include <QGridLayout>
 #include <QListWidget>
+#include <QLineEdit>
 
 #include "xivlauncher.h"
 
@@ -29,16 +30,52 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     profileWidget->addItem("Default");
     mainLayout->addWidget(profileWidget, 0, 0);
 
+    auto gameBox = new QGroupBox("Game Options");
+    auto gameBoxLayout = new QFormLayout();
+    gameBox->setLayout(gameBoxLayout);
+
+    layout->addRow(gameBox);
+
+    auto serverType = new QComboBox();
+    serverType->insertItem(0, "Square Enix");
+    serverType->insertItem(1, "Sapphire");
+    //serverType->setCurrentIndex(savedServerType);
+
+    gameBoxLayout->addRow("Server Lobby", serverType);
+
+    auto lobbyServerURL = new QLineEdit();
+    //lobbyServerURL->setText(savedLobbyURL);
+    gameBoxLayout->addRow("Lobby URL", lobbyServerURL);
+
     auto directXCombo = new QComboBox();
     directXCombo->setCurrentIndex(window.settings.value("directx", 0).toInt());
     directXCombo->addItem("DirectX 11");
     directXCombo->addItem("DirectX 9");
-    layout->addRow("DirectX Version", directXCombo);
+    gameBoxLayout->addRow("DirectX Version", directXCombo);
 
     connect(directXCombo, &QComboBox::currentIndexChanged, [=](int index) {
         this->window.settings.setValue("directx", directXCombo->currentIndex());
         this->window.useDX9 = directXCombo->currentIndex() == 1;
     });
+
+    auto currentGameDirectory = new QLabel(window.gamePath);
+    currentGameDirectory->setWordWrap(true);
+    gameBoxLayout->addRow("Game Directory", currentGameDirectory);
+
+    auto selectDirectoryButton = new QPushButton("Select Game Directory");
+    connect(selectDirectoryButton, &QPushButton::pressed, [this, currentGameDirectory] {
+        this->window.gamePath = QFileDialog::getExistingDirectory(this, "Open Game Directory");
+        currentGameDirectory->setText(this->window.gamePath);
+
+        this->window.readInitialInformation();
+    });
+    gameBoxLayout->addWidget(selectDirectoryButton);
+
+    auto gameDirectoryButton = new QPushButton("Open Game Directory");
+    connect(gameDirectoryButton, &QPushButton::pressed, [this] {
+        openPath(this->window.gamePath);
+    });
+    gameBoxLayout->addWidget(gameDirectoryButton);
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     auto wineBox = new QGroupBox("Wine Options");
@@ -159,25 +196,6 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
         this->window.settings.setValue("useGamemode", static_cast<bool>(state));
     });
 #endif
-
-    auto currentGameDirectory = new QLabel(window.gamePath);
-    currentGameDirectory->setWordWrap(true);
-    layout->addRow("Game Directory", currentGameDirectory);
-
-    auto selectDirectoryButton = new QPushButton("Select Game Directory");
-    connect(selectDirectoryButton, &QPushButton::pressed, [this, currentGameDirectory] {
-        this->window.gamePath = QFileDialog::getExistingDirectory(this, "Open Game Directory");
-        currentGameDirectory->setText(this->window.gamePath);
-
-        this->window.readInitialInformation();
-    });
-    layout->addWidget(selectDirectoryButton);
-
-    auto gameDirectoryButton = new QPushButton("Open Game Directory");
-    connect(gameDirectoryButton, &QPushButton::pressed, [this] {
-        openPath(this->window.gamePath);
-    });
-    layout->addWidget(gameDirectoryButton);
 }
 
 void SettingsWindow::openPath(const QString path) {

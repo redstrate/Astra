@@ -240,17 +240,6 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     profileSelect->addItem("Default");
     layout->addRow("Profile", profileSelect);
 
-    auto serverType = new QComboBox();
-    serverType->insertItem(0, "Square Enix");
-    serverType->insertItem(1, "Sapphire");
-    serverType->setCurrentIndex(savedServerType);
-
-    layout->addRow("Server Lobby", serverType);
-
-    auto lobbyServerURL = new QLineEdit();
-    lobbyServerURL->setText(savedLobbyURL);
-    layout->addRow("Lobby URL", lobbyServerURL);
-
     auto usernameEdit = new QLineEdit();
     layout->addRow("Username", usernameEdit);
 
@@ -295,7 +284,7 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     auto registerButton = new QPushButton("Register");
     layout->addRow(registerButton);
 
-    const auto refreshControls = [=](int index) {
+    /*const auto refreshControls = [=](int index) {
         lobbyServerURL->setEnabled(index == 1);
         registerButton->setEnabled(index == 1);
         otpEdit->setEnabled(index == 0);
@@ -304,7 +293,7 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
 
     connect(serverType, &QComboBox::currentIndexChanged, [=](int index) {
         refreshControls(index);
-    });
+    });*/
 
     auto emptyWidget = new QWidget();
     emptyWidget->setLayout(layout);
@@ -334,23 +323,23 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
             job->start();
         }
 
-        settings.setValue("serverType", serverType->currentIndex());
-        settings.setValue("lobbyURL", lobbyServerURL->text());
+        //settings.setValue("serverType", serverType->currentIndex());
+        //settings.setValue("lobbyURL", lobbyServerURL->text());
 
-        if(serverType->currentIndex() == 0) {
+        //if(serverType->currentIndex() == 0) {
             // begin se's booting process
             squareBoot->bootCheck(info);
-        } else {
-            sapphireLauncher->login(lobbyServerURL->text(), info);
-        }
+        //} else {
+        //    sapphireLauncher->login(lobbyServerURL->text(), info);
+        //}
     });
 
-    connect(registerButton, &QPushButton::released, [=] {
+    /*connect(registerButton, &QPushButton::released, [=] {
         if(serverType->currentIndex() == 1) {
             auto info = LoginInformation{usernameEdit->text(), passwordEdit->text(), otpEdit->text()};
             sapphireLauncher->registerAccount(lobbyServerURL->text(), info);
         }
-    });
+    });*/
 }
 
 LauncherWindow::~LauncherWindow() = default;
