@@ -65,6 +65,7 @@ public:
     int getProfileIndex(QString name);
     QList<QString> profileList() const;
     int addProfile();
+    int deleteProfile(QString name);
 
     void launchGame(const LoginAuth auth);
     void launchExecutable(const QStringList args);

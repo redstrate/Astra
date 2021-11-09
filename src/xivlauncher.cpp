@@ -392,6 +392,23 @@ int LauncherWindow::addProfile() {
     return profileSettings.size() - 1;
 }
 
+int LauncherWindow::deleteProfile(QString name) {
+    int index = 0;
+    for(int i = 0; i < profileSettings.size(); i++) {
+        if(profileSettings[i].name == name)
+            index = i;
+    }
+
+    // remove group so it doesnt stay
+    settings.beginGroup(profileSettings[index].uuid.toString(QUuid::StringFormat::WithoutBraces));
+    settings.remove("");
+    settings.endGroup();
+
+    profileSettings.removeAt(index);
+
+    return index - 1;
+}
+
 void LauncherWindow::saveSettings() {
     settings.setValue("defaultProfile", defaultProfileIndex);
 

@@ -30,9 +30,19 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     auto addProfileButton = new QPushButton("Add Profile");
     connect(addProfileButton, &QPushButton::pressed, [=] {
-       profileWidget->setCurrentRow(this->window.addProfile());
+        profileWidget->setCurrentRow(this->window.addProfile());
+
+        this->window.saveSettings();
     });
-    mainLayout->addWidget(addProfileButton, 3, 0);
+    mainLayout->addWidget(addProfileButton, 2, 0);
+
+    deleteProfileButton = new QPushButton("Delete Profile");
+    connect(deleteProfileButton, &QPushButton::pressed, [=] {
+        profileWidget->setCurrentRow(this->window.deleteProfile(getCurrentProfile().name));
+
+        this->window.saveSettings();
+    });
+    mainLayout->addWidget(deleteProfileButton, 3, 0);
 
     nameEdit = new QLineEdit();
     connect(nameEdit, &QLineEdit::editingFinished, [=] {
@@ -267,6 +277,9 @@ void SettingsWindow::reloadControls() {
         profileWidget->addItem(profile);
     }
     profileWidget->setCurrentRow(oldRow);
+
+    // deleting the main profile is unsupported behavior
+    deleteProfileButton->setEnabled(window.profileList().size() > 1);
 
     ProfileSettings& profile = window.getProfile(profileWidget->currentRow());
     nameEdit->setText(profile.name);

@@ -23,6 +23,7 @@ private:
     ProfileSettings& getCurrentProfile();
 
     QListWidget* profileWidget = nullptr;
+    QPushButton* deleteProfileButton = nullptr;
 
     // game
     QLineEdit* nameEdit = nullptr;
