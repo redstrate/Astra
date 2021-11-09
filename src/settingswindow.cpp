@@ -10,7 +10,6 @@
 #include <QMessageBox>
 #include <QProcess>
 #include <QGridLayout>
-#include <QLineEdit>
 
 #include "xivlauncher.h"
 
@@ -25,9 +24,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     profileWidget->addItem("INVALID *DEBUG*");
     profileWidget->setCurrentRow(0);
 
-    connect(profileWidget, &QListWidget::currentRowChanged, [=]() {
-        reloadControls();
-    });
+    connect(profileWidget, &QListWidget::currentRowChanged, this, &SettingsWindow::reloadControls);
 
     mainLayout->addWidget(profileWidget, 0, 0);
 
@@ -36,6 +33,14 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
        profileWidget->setCurrentRow(this->window.addProfile());
     });
     mainLayout->addWidget(addProfileButton, 1, 0);
+
+    nameEdit = new QLineEdit();
+    connect(nameEdit, &QLineEdit::editingFinished, [=] {
+        getCurrentProfile().name = nameEdit->text();
+
+        reloadControls();
+    });
+    mainLayout->addWidget(nameEdit, 2, 0);
 
     auto gameBox = new QGroupBox("Game Options");
     auto gameBoxLayout = new QFormLayout();
@@ -49,7 +54,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     gameBoxLayout->addRow("DirectX Version", directXCombo);
 
     connect(directXCombo, &QComboBox::currentIndexChanged, [=](int index) {
-        this->window.getProfile(profileWidget->currentRow()).useDX9 = directXCombo->currentIndex() == 1;
+        getCurrentProfile().useDX9 = directXCombo->currentIndex() == 1;
     });
 
     auto currentGameDirectory = new QLabel(window.currentProfile().gamePath);
@@ -235,9 +240,14 @@ void SettingsWindow::reloadControls() {
     profileWidget->setCurrentRow(oldRow);
 
     ProfileSettings& profile = window.getProfile(profileWidget->currentRow());
+    nameEdit->setText(profile.name);
     directXCombo->setCurrentIndex(profile.useDX9 ? 1 : 0);
 
     currentlyReloadingControls = false;
+}
+
+ProfileSettings& SettingsWindow::getCurrentProfile() {
+    return this->window.getProfile(profileWidget->currentRow());
 }
 
 void SettingsWindow::openPath(const QString path) {
