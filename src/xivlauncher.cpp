@@ -15,11 +15,17 @@
 #include <QMessageBox>
 #include <QMenuBar>
 
+#if defined(Q_OS_MAC)
+#include <sys/sysctl.h>
+#include <mach/mach_time.h>
+#endif
+
 #include "xivlauncher.h"
 #include "sapphirelauncher.h"
 #include "squarelauncher.h"
 #include "squareboot.h"
 #include "settingswindow.h"
+#include "blowfish.h"
 
 void LauncherWindow::setSSL(QNetworkRequest& request) {
     QSslConfiguration config;
@@ -37,6 +43,52 @@ void LauncherWindow::buildRequest(QNetworkRequest& request) {
                          "image/gif, image/jpeg, image/pjpeg, application/x-ms-application, application/xaml+xml, application/x-ms-xbap, */*");
     request.setRawHeader("Accept-Encoding", "gzip, deflate");
     request.setRawHeader("Accept-Language", "en-us");
+}
+
+// from xivdev
+char ChecksumTable[] = {
+        'f', 'X', '1', 'p', 'G', 't', 'd', 'S',
+        '5', 'C', 'A', 'P', '4', '_', 'V', 'L'
+};
+
+char GetChecksum(unsigned int key) {
+    auto value = key & 0x000F0000;
+    return ChecksumTable[value >> 16];
+}
+
+#if defined(Q_OS_MAC)
+// this is pretty much what wine does :-0
+uint32_t TickCount() {
+    struct mach_timebase_info convfact;
+    mach_timebase_info(&convfact);
+    return mach_absolute_time() * convfact.numer / convfact.denom / 100;
+}
+#endif
+
+QString encryptGameArg(QString arg) {
+    unsigned int rawTicks = TickCount() / 10000;
+    qDebug() << "raw tick count: " << rawTicks;
+
+    unsigned int ticks = rawTicks & 0xFFFFFFFFu;
+    qDebug() << "ticks: " << ticks;
+
+    unsigned int u = ticks & 0xFFFF0000u;
+    qDebug() << "key: " << u;
+
+    BlowfishSession session;
+    session.setKey(u);
+
+    QByteArray encryptedArg = session.encrypt(QString(" T =%1 ").arg(ticks) + arg);
+
+    qDebug() << "decryption attempt: " << session.decrypt(encryptedArg);
+
+    QString base64 = encryptedArg.trimmed().toBase64(QByteArray::Base64Option::Base64UrlEncoding);
+
+    qDebug() << "base64: " << encryptedArg.toBase64();
+
+    char checksum = GetChecksum(u);
+
+    return QString("//**sqex0003%1%2**//").arg(base64, QString(checksum));
 }
 
 void LauncherWindow::launchGame(const LoginAuth auth) {
@@ -64,7 +116,20 @@ void LauncherWindow::launchGame(const LoginAuth auth) {
             arguments.push_back(QString("DEV.LobbyHost0%1=%2 DEV.LobbyPort0%1=54994").arg(QString::number(i), auth.lobbyhost));
     }
 
-    launchExecutable(arguments);
+    bool encryptArguments = true;
+    if(encryptArguments) {
+        auto executable = arguments[0];
+        arguments.removeFirst();
+
+        QString argJoined;
+        for(auto arg : arguments)
+            argJoined += " " + arg;
+
+        auto earg = encryptGameArg(argJoined);
+        launchExecutable({executable, earg});
+    } else {
+        launchExecutable(arguments);
+    }
 }
 
 void LauncherWindow::launchExecutable(const QStringList args) {
@@ -220,6 +285,13 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     sapphireLauncher = new SapphireLauncher(*this);
     squareLauncher = new SquareLauncher(*this);
     squareBoot = new SquareBoot(*this, *squareLauncher);
+
+    // test case for encryption
+    BlowfishSession session;
+    session.setKey(327680);
+
+    auto enc = session.encrypt("a little lamb jumps over the fence, it falls.");
+    qDebug() << "first decryption attempt: " << session.decrypt(enc);
 
     readInitialInformation();
 

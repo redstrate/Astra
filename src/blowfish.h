@@ -8,7 +8,7 @@ class BlowfishSession {
 public:
     BlowfishSession();
 
-    void setKey(QString key);
+    void setKey(unsigned int key);
 
     QByteArray encrypt(QString string);
     QString decrypt(QByteArray data);
