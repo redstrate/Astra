@@ -316,14 +316,14 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
         if(currentProfile().rememberUsername) {
             auto job = new QKeychain::WritePasswordJob("LauncherWindow");
             job->setTextData(usernameEdit->text());
-            job->setKey(currentProfile().name + "username");
+            job->setKey(currentProfile().name + "-username");
             job->start();
         }
 
         if(currentProfile().rememberPassword) {
             auto job = new QKeychain::WritePasswordJob("LauncherWindow");
             job->setTextData(passwordEdit->text());
-            job->setKey(currentProfile().name + "password");
+            job->setKey(currentProfile().name + "-password");
             job->start();
         }
 
