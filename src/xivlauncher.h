@@ -70,6 +70,7 @@ public:
     void setSSL(QNetworkRequest& request);
     QString readVersion(QString path);
     void readInitialInformation();
+    void readGameVersion();
     void saveSettings();
 
     QSettings settings;

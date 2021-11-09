@@ -70,8 +70,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
         this->reloadControls();
         this->window.saveSettings();
 
-        // TODO: replace this call with a dedicated "read version information" call or something similar
-        //this->window.readInitialInformation();
+        this->window.readGameVersion();
     });
     gameBoxLayout->addWidget(selectDirectoryButton);
 

@@ -184,9 +184,6 @@ void LauncherWindow::readInitialInformation() {
 #endif
         }
 
-        profile.bootVersion = readVersion(profile.gamePath + "/boot/ffxivboot.ver");
-        profile.gameVersion = readVersion(profile.gamePath + "/game/ffxivgame.ver");
-
         profile.isSapphire = settings.value("isSapphire", false).toBool();
         profile.lobbyURL = settings.value("lobbyURL", "").toString();
         profile.rememberUsername = settings.value("rememberUsername", false).toBool();
@@ -201,6 +198,15 @@ void LauncherWindow::readInitialInformation() {
         settings.endGroup();
 
         profileSettings.append(profile);
+    }
+
+    readGameVersion();
+}
+
+void LauncherWindow::readGameVersion() {
+    for(auto& profile : profileSettings) {
+        profile.bootVersion = readVersion(profile.gamePath + "/boot/ffxivboot.ver");
+        profile.gameVersion = readVersion(profile.gamePath + "/game/ffxivgame.ver");
     }
 }
 
