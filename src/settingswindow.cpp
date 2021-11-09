@@ -259,6 +259,8 @@ void SettingsWindow::reloadControls() {
     rememberUsernameBox->setChecked(profile.rememberUsername);
     rememberPasswordBox->setChecked(profile.rememberPassword);
 
+    window.reloadControls();
+
     currentlyReloadingControls = false;
 }
 
