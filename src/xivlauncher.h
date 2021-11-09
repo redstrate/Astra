@@ -48,6 +48,10 @@ public:
 
     ProfileSettings currentProfile() const;
     ProfileSettings& currentProfile();
+
+    ProfileSettings getProfile(int index) const;
+    ProfileSettings& getProfile(int index);
+
     void setProfile(QString name);
     void setProfile(int index);
     int getProfileIndex(QString name);

@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <QListWidget>
+#include <QComboBox>
 
 class LauncherWindow;
 
@@ -15,7 +16,10 @@ public slots:
 private:
     void openPath(const QString path);
 
-    QListWidget* profileWidget;
+    QListWidget* profileWidget = nullptr;
+    QComboBox* directXCombo = nullptr;
+
+    bool currentlyReloadingControls = false;
 
     LauncherWindow& window;
 };

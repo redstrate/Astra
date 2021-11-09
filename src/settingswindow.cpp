@@ -9,7 +9,6 @@
 #include <QGroupBox>
 #include <QMessageBox>
 #include <QProcess>
-#include <QComboBox>
 #include <QGridLayout>
 #include <QLineEdit>
 
@@ -23,6 +22,13 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     setLayout(mainLayout);
 
     profileWidget = new QListWidget();
+    profileWidget->addItem("INVALID *DEBUG*");
+    profileWidget->setCurrentRow(0);
+
+    connect(profileWidget, &QListWidget::currentRowChanged, [=]() {
+        reloadControls();
+    });
+
     mainLayout->addWidget(profileWidget, 0, 0);
 
     auto addProfileButton = new QPushButton("Add Profile");
@@ -37,15 +43,13 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     mainLayout->addWidget(gameBox, 0, 1);
 
-    auto directXCombo = new QComboBox();
-    directXCombo->setCurrentIndex(window.settings.value("directx", 0).toInt());
+    directXCombo = new QComboBox();
     directXCombo->addItem("DirectX 11");
     directXCombo->addItem("DirectX 9");
     gameBoxLayout->addRow("DirectX Version", directXCombo);
 
     connect(directXCombo, &QComboBox::currentIndexChanged, [=](int index) {
-        this->window.settings.setValue("directx", directXCombo->currentIndex());
-        this->window.currentProfile().useDX9 = directXCombo->currentIndex() == 1;
+        this->window.getProfile(profileWidget->currentRow()).useDX9 = directXCombo->currentIndex() == 1;
     });
 
     auto currentGameDirectory = new QLabel(window.currentProfile().gamePath);
@@ -216,11 +220,24 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 }
 
 void SettingsWindow::reloadControls() {
+    if(currentlyReloadingControls)
+        return;
+
+    currentlyReloadingControls = true;
+
+    auto oldRow = profileWidget->currentRow();
+
     profileWidget->clear();
 
     for(auto profile : window.profileList()) {
         profileWidget->addItem(profile);
     }
+    profileWidget->setCurrentRow(oldRow);
+
+    ProfileSettings& profile = window.getProfile(profileWidget->currentRow());
+    directXCombo->setCurrentIndex(profile.useDX9 ? 1 : 0);
+
+    currentlyReloadingControls = false;
 }
 
 void SettingsWindow::openPath(const QString path) {

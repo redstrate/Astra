@@ -344,11 +344,19 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
 LauncherWindow::~LauncherWindow() = default;
 
 ProfileSettings LauncherWindow::currentProfile() const {
-    return profileSettings[currentProfileIndex];
+    return getProfile(currentProfileIndex);
 }
 
 ProfileSettings& LauncherWindow::currentProfile() {
-    return profileSettings[currentProfileIndex];
+    return getProfile(currentProfileIndex);
+}
+
+ProfileSettings LauncherWindow::getProfile(int index) const {
+    return profileSettings[index];
+}
+
+ProfileSettings& LauncherWindow::getProfile(int index) {
+    return profileSettings[index];
 }
 
 void LauncherWindow::setProfile(QString name) {
