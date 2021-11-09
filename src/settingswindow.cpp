@@ -39,6 +39,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
         getCurrentProfile().name = nameEdit->text();
 
         reloadControls();
+        this->window.saveSettings();
     });
     mainLayout->addWidget(nameEdit, 2, 0);
 
@@ -55,6 +56,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     connect(directXCombo, &QComboBox::currentIndexChanged, [=](int index) {
         getCurrentProfile().useDX9 = directXCombo->currentIndex() == 1;
+        this->window.saveSettings();
     });
 
     auto currentGameDirectory = new QLabel(window.currentProfile().gamePath);

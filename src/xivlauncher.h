@@ -64,6 +64,7 @@ public:
     void setSSL(QNetworkRequest& request);
     QString readVersion(QString path);
     void readInitialInformation();
+    void saveSettings();
 
     QSettings settings;
 

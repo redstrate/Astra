@@ -185,6 +185,7 @@ void LauncherWindow::readInitialInformation() {
         profile.bootVersion = readVersion(profile.gamePath + "/boot/ffxivboot.ver");
         profile.gameVersion = readVersion(profile.gamePath + "/game/ffxivgame.ver");
 
+        profile.useDX9 = settings.value("useDX9", false).toBool();
         profile.useEsync = settings.value("useEsync", false).toBool();
         profile.useGamemode = settings.value("useGamemode", false).toBool();
         profile.useGamescope = settings.value("useGamescope", false).toBool();
@@ -396,4 +397,14 @@ int LauncherWindow::addProfile() {
     settingsChanged();
 
     return profileSettings.size() - 1;
+}
+
+void LauncherWindow::saveSettings() {
+    for(auto profile : profileSettings) {
+        settings.beginGroup(profile.name);
+
+        settings.setValue("useDX9", profile.useDX9);
+
+        settings.endGroup();
+    }
 }
