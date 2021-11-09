@@ -295,9 +295,11 @@ void SettingsWindow::reloadControls() {
     winePathLabel->setText(profile.winePath);
     winePrefixDirectory->setText(profile.winePrefixPath);
 
+#if defined(Q_OS_LINUX)
     useEsync->setChecked(profile.useEsync);
     useGamescope->setChecked(profile.useGamescope);
     useGamemode->setChecked(profile.useGamemode);
+#endif
 
     // login
     serverType->setCurrentIndex(profile.isSapphire ? 1 : 0);
