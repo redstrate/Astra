@@ -10,6 +10,8 @@
 #include <QMessageBox>
 #include <QProcess>
 #include <QComboBox>
+#include <QGridLayout>
+#include <QListWidget>
 
 #include "xivlauncher.h"
 
@@ -17,8 +19,15 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     setWindowTitle("Settings");
     setWindowModality(Qt::WindowModality::ApplicationModal);
 
-    auto layout = new QFormLayout(this);
-    setLayout(layout);
+    auto mainLayout = new QGridLayout(this);
+    setLayout(mainLayout);
+
+    auto layout = new QFormLayout();
+    mainLayout->addLayout(layout, 0, 1);
+
+    auto profileWidget = new QListWidget();
+    profileWidget->addItem("Default");
+    mainLayout->addWidget(profileWidget, 0, 0);
 
     auto directXCombo = new QComboBox();
     directXCombo->setCurrentIndex(window.settings.value("directx", 0).toInt());

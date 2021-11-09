@@ -236,6 +236,10 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
 
     auto layout = new QFormLayout();
 
+    auto profileSelect = new QComboBox();
+    profileSelect->addItem("Default");
+    layout->addRow("Profile", profileSelect);
+
     auto serverType = new QComboBox();
     serverType->insertItem(0, "Square Enix");
     serverType->insertItem(1, "Sapphire");
