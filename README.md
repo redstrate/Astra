@@ -12,5 +12,6 @@ This is mostly a hobby project, but should be extremely useful to macOS players 
 * Multiple profile support!
   * For example, having a regular Square Enix profile and a test Sapphire profile. Or maybe one for DX11 and another for DX9?
   * All of the configurable settings can be configured per-profile! 
-* Saving username and/or password. These are saved per-profile as well!
+* Saving username and/or password. These are saved per-profile, and are encrypted using your system wallet.
+* Encrypted game argument support similiar to what XIVQuickLauncher and the official ffxivboot already does.
 * Enable several (Linux) Wine-specific performance enhancements such as enabling Esync.
