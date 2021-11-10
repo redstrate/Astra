@@ -69,6 +69,16 @@ uint32_t TickCount() {
 }
 #endif
 
+#if defined(Q_OS_LINUX)
+uint32_t TickCount() {
+    struct timespec ts;
+
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+
+    return (ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
+}
+#endif
+
 #if defined(Q_OS_WIN)
 uint32_t TickCount() {
     return GetTickCount();
