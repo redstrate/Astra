@@ -39,6 +39,7 @@ private:
     QCheckBox* useGamescope, *useEsync, *useGamemode;
 
     // login
+    QCheckBox* encryptArgumentsBox = nullptr;
     QComboBox* serverType = nullptr;
     QLineEdit* lobbyServerURL = nullptr;
     QCheckBox* rememberUsernameBox = nullptr, *rememberPasswordBox = nullptr;

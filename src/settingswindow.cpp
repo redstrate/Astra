@@ -96,6 +96,15 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     mainLayout->addWidget(loginBox, 2, 1);
 
+    encryptArgumentsBox = new QCheckBox();
+    connect(encryptArgumentsBox, &QCheckBox::stateChanged, [=](int) {
+        getCurrentProfile().encryptArguments = encryptArgumentsBox->isChecked();
+
+        this->window.reloadControls();
+        this->window.saveSettings();
+    });
+    loginBoxLayout->addRow("Encrypt Game Arguments", encryptArgumentsBox);
+
     serverType = new QComboBox();
     serverType->insertItem(0, "Square Enix");
     serverType->insertItem(1, "Sapphire");
@@ -302,6 +311,7 @@ void SettingsWindow::reloadControls() {
 #endif
 
     // login
+    encryptArgumentsBox->setChecked(profile.encryptArguments);
     serverType->setCurrentIndex(profile.isSapphire ? 1 : 0);
     lobbyServerURL->setEnabled(profile.isSapphire);
     lobbyServerURL->setText(profile.lobbyURL);

@@ -142,8 +142,7 @@ void LauncherWindow::launchGame(const LoginAuth auth) {
             arguments.push_back(QString("DEV.LobbyHost0%1=%2 DEV.LobbyPort0%1=54994").arg(QString::number(i), auth.lobbyhost));
     }
 
-    bool encryptArguments = true;
-    if(encryptArguments) {
+    if(currentProfile().encryptArguments) {
         auto executable = arguments[0];
         arguments.removeFirst();
 
@@ -279,6 +278,8 @@ void LauncherWindow::readInitialInformation() {
 #endif
         }
 
+        // login
+        profile.encryptArguments = settings.value("encryptArguments", false).toBool();
         profile.isSapphire = settings.value("isSapphire", false).toBool();
         profile.lobbyURL = settings.value("lobbyURL", "").toString();
         profile.rememberUsername = settings.value("rememberUsername", false).toBool();
@@ -525,6 +526,7 @@ void LauncherWindow::saveSettings() {
         settings.setValue("useGamemode", profile.useGamemode);
 
         // login
+        settings.setValue("encryptArguments", profile.encryptArguments);
         settings.setValue("isSapphire", profile.isSapphire);
         settings.setValue("lobbyURL", profile.lobbyURL);
         settings.setValue("rememberUsername", profile.rememberUsername);
