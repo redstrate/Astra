@@ -20,6 +20,10 @@
 #include <mach/mach_time.h>
 #endif
 
+#if defined(Q_OS_WIN)
+#include <windows.h>
+#endif
+
 #include "xivlauncher.h"
 #include "sapphirelauncher.h"
 #include "squarelauncher.h"
@@ -65,8 +69,14 @@ uint32_t TickCount() {
 }
 #endif
 
+#if defined(Q_OS_WIN)
+uint32_t TickCount() {
+    return GetTickCount();
+}
+#endif
+
 QString encryptGameArg(QString arg) {
-    unsigned int rawTicks = TickCount() / 10000;
+    unsigned int rawTicks = TickCount();
     qDebug() << "raw tick count: " << rawTicks;
 
     unsigned int ticks = rawTicks & 0xFFFFFFFFu;
@@ -75,20 +85,26 @@ QString encryptGameArg(QString arg) {
     unsigned int u = ticks & 0xFFFF0000u;
     qDebug() << "key: " << u;
 
-    BlowfishSession session;
-    session.setKey(u);
+    char buffer[9] = {};
+    sprintf(buffer, "%08x", u);
 
-    QByteArray encryptedArg = session.encrypt(QString(" T =%1 ").arg(ticks) + arg);
 
-    qDebug() << "decryption attempt: " << session.decrypt(encryptedArg);
+    Blowfish session(QByteArray(buffer, 8));
+    QByteArray encryptedArg = session.Encrypt((QString(" /T =%1").arg(ticks) + arg).toUtf8());
 
-    QString base64 = encryptedArg.trimmed().toBase64(QByteArray::Base64Option::Base64UrlEncoding);
-
+    QString base64 = encryptedArg.toBase64(QByteArray::Base64Option::Base64UrlEncoding | QByteArray::Base64Option::OmitTrailingEquals);
     qDebug() << "base64: " << encryptedArg.toBase64();
 
-    char checksum = GetChecksum(u);
+    session.Decrypt(encryptedArg);
+    qDebug() << "decryption attempt: " << encryptedArg;
 
-    return QString("//**sqex0003%1%2**//").arg(base64, QString(checksum));
+    char checksum = GetChecksum(u);
+    qDebug() << checksum;
+
+    auto a = QString("//**sqex0003%1%2**//").arg(base64, QString(checksum));
+    qDebug() << a;
+
+    return a;
 }
 
 void LauncherWindow::launchGame(const LoginAuth auth) {
@@ -101,14 +117,14 @@ void LauncherWindow::launchGame(const LoginAuth auth) {
         arguments.push_back(currentProfile().gamePath + "\\game\\ffxiv_dx11.exe");
     }
 
-    arguments.push_back("DEV.DataPathType=1");
-    arguments.push_back("DEV.UseSqPack=1");
+    arguments.push_back("/DEV.DataPathType =1");
+    arguments.push_back("/DEV.UseSqPack =1");
 
-    arguments.push_back(QString("DEV.MaxEntitledExpansionID=%1").arg(auth.maxExpansion));
-    arguments.push_back(QString("DEV.TestSID=%1").arg(auth.SID));
-    arguments.push_back(QString("SYS.Region=%1").arg(auth.region));
-    arguments.push_back(QString("language=%1").arg(currentProfile().language));
-    arguments.push_back(QString("ver=%1").arg(currentProfile().gameVersion));
+    arguments.push_back(QString("/DEV.MaxEntitledExpansionID =%1").arg(auth.maxExpansion));
+    arguments.push_back(QString("/DEV.TestSID =%1").arg(auth.SID));
+    arguments.push_back(QString("/SYS.Region =%1").arg(auth.region));
+    arguments.push_back(QString("/language =%1").arg(currentProfile().language));
+    arguments.push_back(QString("/ver =%1").arg(currentProfile().gameVersion));
 
     if(!auth.lobbyhost.isEmpty()) {
         arguments.push_back(QString("DEV.GMServerHost=%1").arg(auth.frontierHost));
@@ -285,13 +301,6 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     sapphireLauncher = new SapphireLauncher(*this);
     squareLauncher = new SquareLauncher(*this);
     squareBoot = new SquareBoot(*this, *squareLauncher);
-
-    // test case for encryption
-    BlowfishSession session;
-    session.setKey(327680);
-
-    auto enc = session.encrypt("a little lamb jumps over the fence, it falls.");
-    qDebug() << "first decryption attempt: " << session.decrypt(enc);
 
     readInitialInformation();
 
