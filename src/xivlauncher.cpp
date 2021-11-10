@@ -66,7 +66,8 @@ char GetChecksum(unsigned int key) {
 uint32_t TickCount() {
     struct mach_timebase_info convfact;
     mach_timebase_info(&convfact);
-    return mach_absolute_time() * convfact.numer / convfact.denom / 100;
+
+    return (mach_absolute_time() * convfact.numer) / (convfact.denom * 1000000);
 }
 #endif
 
