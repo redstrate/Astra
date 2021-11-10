@@ -87,34 +87,18 @@ uint32_t TickCount() {
 
 QString encryptGameArg(QString arg) {
     unsigned int rawTicks = TickCount();
-    qDebug() << "raw tick count: " << rawTicks;
-
     unsigned int ticks = rawTicks & 0xFFFFFFFFu;
-    qDebug() << "ticks: " << ticks;
-
-    unsigned int u = ticks & 0xFFFF0000u;
-    qDebug() << "key: " << u;
+    unsigned int key = ticks & 0xFFFF0000u;
 
     char buffer[9] = {};
-    sprintf(buffer, "%08x", u);
-
+    sprintf(buffer, "%08x", key);
 
     Blowfish session(QByteArray(buffer, 8));
     QByteArray encryptedArg = session.Encrypt((QString(" /T =%1").arg(ticks) + arg).toUtf8());
-
     QString base64 = encryptedArg.toBase64(QByteArray::Base64Option::Base64UrlEncoding | QByteArray::Base64Option::OmitTrailingEquals);
-    qDebug() << "base64: " << encryptedArg.toBase64();
+    char checksum = GetChecksum(key);
 
-    session.Decrypt(encryptedArg);
-    qDebug() << "decryption attempt: " << encryptedArg;
-
-    char checksum = GetChecksum(u);
-    qDebug() << checksum;
-
-    auto a = QString("//**sqex0003%1%2**//").arg(base64, QString(checksum));
-    qDebug() << a;
-
-    return a;
+    return QString("//**sqex0003%1%2**//").arg(base64, QString(checksum));
 }
 
 void LauncherWindow::launchGame(const LoginAuth auth) {
