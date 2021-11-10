@@ -127,32 +127,42 @@ void LauncherWindow::launchGame(const LoginAuth auth) {
         arguments.push_back(currentProfile().gamePath + "\\game\\ffxiv_dx11.exe");
     }
 
-    arguments.push_back("/DEV.DataPathType =1");
-    arguments.push_back("/DEV.UseSqPack =1");
+    struct Argument {
+        QString key, value;
+    };
 
-    arguments.push_back(QString("/DEV.MaxEntitledExpansionID =%1").arg(auth.maxExpansion));
-    arguments.push_back(QString("/DEV.TestSID =%1").arg(auth.SID));
-    arguments.push_back(QString("/SYS.Region =%1").arg(auth.region));
-    arguments.push_back(QString("/language =%1").arg(currentProfile().language));
-    arguments.push_back(QString("/ver =%1").arg(currentProfile().gameVersion));
+    QList<Argument> gameArgs;
+    gameArgs.push_back({"DEV.DataPathType", QString::number(1)});
+    gameArgs.push_back({"DEV.UseSqPack", QString::number(1)});
+
+    gameArgs.push_back({"DEV.MaxEntitledExpansionID", QString::number(auth.maxExpansion)});
+    gameArgs.push_back({"DEV.TestSID", auth.SID});
+    gameArgs.push_back({"SYS.Region", QString::number(auth.region)});
+    gameArgs.push_back({"language", QString::number(currentProfile().language)});
+    gameArgs.push_back({"ver", currentProfile().gameVersion});
 
     if(!auth.lobbyhost.isEmpty()) {
-        arguments.push_back(QString("DEV.GMServerHost=%1").arg(auth.frontierHost));
-        for(int i = 1; i < 9; i++)
-            arguments.push_back(QString("DEV.LobbyHost0%1=%2 DEV.LobbyPort0%1=54994").arg(QString::number(i), auth.lobbyhost));
+        gameArgs.push_back({"DEV.GMServerHost", auth.frontierHost});
+        for(int i = 1; i < 9; i++) {
+            gameArgs.push_back({QString("DEV.LobbyHost0%1").arg(QString::number(i)), auth.lobbyhost});
+            gameArgs.push_back({QString("DEV.LobbyPort0%1").arg(QString::number(i)), QString::number(54994)});
+        }
     }
 
     if(currentProfile().encryptArguments) {
-        auto executable = arguments[0];
-        arguments.removeFirst();
-
         QString argJoined;
-        for(auto arg : arguments)
-            argJoined += " " + arg;
+        for(auto arg : gameArgs) {
+            argJoined += QString(" /%1 =%2").arg(arg.key, arg.value);
+        }
 
         auto earg = encryptGameArg(argJoined);
-        launchExecutable({executable, earg});
+        arguments.append(earg);
+        launchExecutable(arguments);
     } else {
+        for(auto arg : gameArgs) {
+            arguments.push_back(QString(" %1=%2").arg(arg.key, arg.value));
+        }
+
         launchExecutable(arguments);
     }
 }
