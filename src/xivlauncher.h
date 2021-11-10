@@ -25,7 +25,11 @@ struct ProfileSettings {
     // wine
     // 0 = system, 1 = custom, 2 = built-in (mac only)
     // TODO: yes, i know this should be an enum
+#if defined(Q_OS_MAC)
+    int wineVersion = 2;
+#else
     int wineVersion = 0;
+#endif
     bool useEsync = false, useGamescope = false, useGamemode = false;
     bool useDX9 = false;
     bool enableDXVKhud = false;

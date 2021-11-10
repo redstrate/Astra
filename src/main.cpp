@@ -5,7 +5,7 @@ int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
     QCoreApplication::setOrganizationName("redstrate");
-    QCoreApplication::setOrganizationDomain("com.redstrate");
+    QCoreApplication::setOrganizationDomain("redstrate.com");
 
 #ifdef NDEBUG
     QCoreApplication::setApplicationName("xivlauncher");

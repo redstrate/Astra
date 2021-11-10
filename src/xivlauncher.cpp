@@ -14,6 +14,7 @@
 #include <keychain.h>
 #include <QMessageBox>
 #include <QMenuBar>
+#include <QCoreApplication>
 
 #if defined(Q_OS_MAC)
 #include <sys/sysctl.h>
@@ -218,7 +219,11 @@ void LauncherWindow::readInitialInformation() {
 
         profile.name = settings.value("name", "Default").toString();
 
+#if defined(Q_OS_MAC)
+        profile.wineVersion = settings.value("wineVersion", 2).toInt();
+#else
         profile.wineVersion = settings.value("wineVersion", 0).toInt();
+#endif
         readWineInfo(profile);
 
         if(settings.contains("gamePath") && settings.value("gamePath").canConvert<QString>() && !settings.value("gamePath").toString().isEmpty()) {
@@ -228,7 +233,7 @@ void LauncherWindow::readInitialInformation() {
             profile.gamePath = "C:\\Program Files (x86)\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn";
 #endif
 
-#if defined(Q_OS_MACOS)
+#if defined(Q_OS_MAC)
             profile.gamePath = QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
 #endif
 
@@ -305,7 +310,7 @@ void LauncherWindow::readGameVersion() {
 }
 
 LauncherWindow::LauncherWindow(QWidget* parent) :
-        QMainWindow(parent) {
+        QMainWindow(parent), settings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::applicationName()) {
     mgr = new QNetworkAccessManager();
     sapphireLauncher = new SapphireLauncher(*this);
     squareLauncher = new SquareLauncher(*this);
