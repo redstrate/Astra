@@ -1,20 +1,24 @@
 #pragma once
+
 #include <QByteArray>
-#include <QDebug>
+
 constexpr int Rounds = 16;
 
-class Blowfish
-{
+/*
+ * This is a direct C++ port of XIVQuickLauncher's Blowfish implementation. This exactly matches the behavior of
+ * XIVQuickLauncher and the official xivboot. Full credit goes to XIVQuickLauncher's developers and the developers of mbedtls
+ * for some reference on key generation included here.
+ */
+class Blowfish {
 public:
-
- unsigned int P[18] =
+    unsigned int P[18] =
             {
                     0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344, 0xa4093822, 0x299f31d0,
                     0x082efa98, 0xec4e6c89, 0x452821e6, 0x38d01377, 0xbe5466cf, 0x34e90c6c,
                     0xc0ac29b7, 0xc97c50dd, 0x3f84d5b5, 0xb5470917, 0x9216d5d9, 0x8979fb1b
             };
 
- unsigned int S[4][256] =
+    unsigned int S[4][256] =
             {
                     {
                             0xd1310ba6, 0x98dfb5ac, 0x2ffd72db, 0xd01adfb7, 0xb8e1afed, 0x6a267e96,
@@ -199,45 +203,33 @@ public:
             };
 
 
-    Blowfish(QByteArray key)
-    {
+    Blowfish(QByteArray key) {
         uint32_t keybits = 64, j = 0;
         keybits >>= 3;
 
-        qDebug() << key;
-
         uint32_t data;
-        for( int i = 0; i < Rounds + 2 /* 18 */; ++i )
-        {
+        for (int i = 0; i < Rounds + 2; ++i) {
             data = 0u;
-            for( int k = 0; k < 4; ++k )
-            {
-                data = ( data << 8 ) | key[j++];
-                if( j >= keybits )
+            for (int k = 0; k < 4; ++k) {
+                data = (data << 8) | key[j++];
+                if (j >= keybits)
                     j = 0;
             }
-            qDebug() << i << " to " << data;
             P[i] = P[i] ^ data;
         }
-        //for(int i = 0; i < key.length(); i++)
-        //    P[i] ^= key[i];
-        //foreach (var (i, keyFragment) in WrappingUInt32(key, P.Length))
-        //P[i] ^= keyFragment;
 
         uint L = 0, R = 0;
-        for (int i = 0; i < 18 /* P. LEngth*/; i += 2) {
-            auto [lnew, rnew] = Encrypt(L, R);
+        for (int i = 0; i < 18; i += 2) {
+            auto[lnew, rnew] = Encrypt(L, R);
             P[i] = lnew;
             P[i + 1] = rnew;
             L = lnew;
             R = rnew;
         }
-           // (L, R) = (P[i], P[i + 1]) = Encrypt(L, R);
 
-        for (int i = 0; i < 4 /* S(0).Length */; i++) {
+        for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 256; j += 2) {
-                //(L, R) = (S[i, j], S[i, j + 1]) = Encrypt(L, R);
-                auto [lnew, rnew] = Encrypt(L, R);
+                auto[lnew, rnew] = Encrypt(L, R);
                 S[i][j] = lnew;
                 S[i][j + 1] = rnew;
                 L = lnew;
@@ -246,66 +238,55 @@ public:
         }
     }
 
-    uint32_t ToUint32(unsigned char* buf) {
-        return ( buf[0] * (1 << 0) ) +    // Bottom 8 bits
-               ( buf[1] * (1 << 8) ) +    // Next 8 bits, i.e. multiply by 256
-               ( buf[2] * (1 << 16)) +    // Next 8 bits, i.e. multiply by 65,536
-               ( buf[3] * (1 << 24));      // Top 7 bits and sign bit, multiply by 16,777,216
+    // from https://stackoverflow.com/a/7993914 which details what exactly BitConverter.ToUint32 is actually doing :-)
+    uint32_t ToUint32(unsigned char *buf) {
+        return (buf[0] * (1 << 0)) +
+               (buf[1] * (1 << 8)) +
+               (buf[2] * (1 << 16)) +
+               (buf[3] * (1 << 24));
     }
 
-    QByteArray Encrypt(QByteArray data)
-    {
+    QByteArray Encrypt(QByteArray data) {
         auto paddedLength = data.length() % 8 == 0 ? data.length() : data.length() + (8 - (data.length() % 8));
         auto buffer = new unsigned char[paddedLength];
-        //Buffer.BlockCopy(data, 0, buffer, 0, data.Length);
         memset(buffer, 0, paddedLength);
         memcpy(buffer, data, data.length());
 
 
-        for (int i = 0; i < paddedLength; i += 8)
-        {
-            auto [L, R] = Encrypt(ToUint32(buffer + i), ToUint32(buffer + i + 4));
-            qDebug() << ToUint32(buffer + i) << " to " << L;
-            qDebug() << ToUint32(buffer + i + 4) << " to " << R;
-            qDebug() << "---";
+        for (int i = 0; i < paddedLength; i += 8) {
+            auto[L, R] = Encrypt(ToUint32(buffer + i), ToUint32(buffer + i + 4));
             CopyUInt32IntoArray(buffer, L, i);
             CopyUInt32IntoArray(buffer, R, i + 4);
         }
 
-        return QByteArray((char*)buffer, paddedLength);
+        return QByteArray((char *) buffer, paddedLength);
     }
 
-    void Decrypt(QByteArray& data)
-    {
-        for (int i = 0; i < data.length(); i += 8)
-        {
-            auto [L, R] = Decrypt(ToUint32((unsigned char*)data.data() + i),
-                                  ToUint32((unsigned char*)data.data() + i + 4));
-            CopyUInt32IntoArray((unsigned char*)data.data(), L, i);
-            CopyUInt32IntoArray((unsigned char*)data.data(), R, i + 4);
+    void Decrypt(QByteArray &data) {
+        for (int i = 0; i < data.length(); i += 8) {
+            auto[L, R] = Decrypt(ToUint32((unsigned char *) data.data() + i),
+                                 ToUint32((unsigned char *) data.data() + i + 4));
+            CopyUInt32IntoArray((unsigned char *) data.data(), L, i);
+            CopyUInt32IntoArray((unsigned char *) data.data(), R, i + 4);
         }
     }
 
-   void CopyUInt32IntoArray(unsigned char* dest, uint val, int offset)
-    {
+    void CopyUInt32IntoArray(unsigned char *dest, uint val, int offset) {
         dest[offset] = (val & 0xFF);
         dest[offset + 1] = ((val >> 8) & 0xFF);
         dest[offset + 2] = ((val >> 16) & 0xFF);
         dest[offset + 3] = ((val >> 24) & 0xFF);
     }
 
- unsigned int F(uint i)
-    {
+    unsigned int F(uint i) {
         return ((S[0][i >> 24]
-                 + S[1][ (i >> 16) & 0xFF])
-                ^ S[2][ (i >> 8) & 0xFF])
-               + S[3][ i & 0xFF];
+                 + S[1][(i >> 16) & 0xFF])
+                ^ S[2][(i >> 8) & 0xFF])
+               + S[3][i & 0xFF];
     }
 
-    std::tuple<unsigned int, unsigned int> Encrypt(uint L, uint R)
-    {
-        for (int i = 0; i < Rounds; i += 2)
-        {
+    std::tuple<unsigned int, unsigned int> Encrypt(uint L, uint R) {
+        for (int i = 0; i < Rounds; i += 2) {
             L ^= P[i];
             R ^= F(L);
             R ^= P[i + 1];
@@ -315,10 +296,8 @@ public:
         return {R ^ P[17], L ^ P[16]};
     }
 
-    std::tuple<uint, uint> Decrypt(uint L, uint R)
-    {
-        for (int i = Rounds; i > 0; i -= 2)
-        {
+    std::tuple<uint, uint> Decrypt(uint L, uint R) {
+        for (int i = Rounds; i > 0; i -= 2) {
             L ^= P[i + 1];
             R ^= F(L);
             R ^= P[i];
@@ -326,24 +305,5 @@ public:
         }
 
         return {R ^ P[0], L ^ P[1]};
-        }
-
-/*private static IEnumerable<TSource> Cycle<TSource>(IEnumerable<TSource> source)
-    {
-        while (true)
-            foreach (TSource t in source)
-        yield return t;
     }
-
-private static IEnumerable<(int, uint)> WrappingUInt32(IEnumerable<byte> source, int count)
-    {
-        var enumerator = Cycle(source).GetEnumerator();
-        for (int i = 0; i < count; i++)
-        {
-            var n = 0u;
-            for (var j = 0; j < 4 && enumerator.MoveNext(); j++)
-                n = (n << 8) | enumerator.Current;
-            yield return (i, n);
-        }
-    }*/
 };
