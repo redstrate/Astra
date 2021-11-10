@@ -77,6 +77,7 @@ public:
     QString readVersion(QString path);
     void readInitialInformation();
     void readGameVersion();
+    void readWineInfo(ProfileSettings& settings);
     void saveSettings();
 
     QSettings settings;

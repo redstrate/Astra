@@ -177,11 +177,9 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     connect(wineVersionCombo, &QComboBox::currentIndexChanged, [this](int index) {
         getCurrentProfile().wineVersion = index;
 
+        this->window.readWineInfo(getCurrentProfile());
         this->window.saveSettings();
         this->reloadControls();
-
-        // TODO: figure out the purpose of calling this before 1.0
-        // this->window.readInitialInformation();
     });
 
     connect(selectWineButton, &QPushButton::pressed, [this] {
@@ -189,9 +187,6 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
         this->window.saveSettings();
         this->reloadControls();
-
-        // TODO: figure out the purpose of calling this before 2.0
-        //this->window.readInitialInformation();
     });
 
     winePrefixDirectory = new QLabel(window.currentProfile().winePrefixPath);
@@ -204,9 +199,6 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
         this->window.saveSettings();
         this->reloadControls();
-
-        // TODO: figure out the purpose of calling this before 3.0
-        //this->window.readInitialInformation();
     });
     wineBoxLayout->addWidget(selectPrefixButton);
 

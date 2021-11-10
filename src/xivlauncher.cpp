@@ -219,30 +219,7 @@ void LauncherWindow::readInitialInformation() {
         profile.name = settings.value("name", "Default").toString();
 
         profile.wineVersion = settings.value("wineVersion", 0).toInt();
-#if defined(Q_OS_MAC)
-        switch(profile.wineVersion) {
-        case 0: // system wine
-            profile.winePath = "/usr/local/bin/wine64";
-            break;
-        case 1: // custom path
-            profile.winePath = settings.value("winePath").toString();
-            break;
-        case 2: // ffxiv built-in (for mac users)
-            profile.winePath = "/Applications/FINAL FANTASY XIV ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine";
-            break;
-    }
-#endif
-
-#if defined(Q_OS_LINUX)
-        switch(profile.wineVersion) {
-            case 0: // system wine (should be in $PATH)
-                profile.winePath = "wine";
-                break;
-            case 1: // custom pth
-                profile.winePath = settings.value("winePath").toString();
-                break;
-        }
-#endif
+        readWineInfo(profile);
 
         if(settings.contains("gamePath") && settings.value("gamePath").canConvert<QString>() && !settings.value("gamePath").toString().isEmpty()) {
             profile.gamePath = settings.value("gamePath").toString();
@@ -291,6 +268,33 @@ void LauncherWindow::readInitialInformation() {
     }
 
     readGameVersion();
+}
+
+void LauncherWindow::readWineInfo(ProfileSettings& profile) {
+#if defined(Q_OS_MAC)
+    switch(profile.wineVersion) {
+        case 0: // system wine
+            profile.winePath = "/usr/local/bin/wine64";
+            break;
+        case 1: // custom path
+            profile.winePath = profile.winePath;
+            break;
+        case 2: // ffxiv built-in (for mac users)
+            profile.winePath = "/Applications/FINAL FANTASY XIV ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine";
+            break;
+    }
+#endif
+
+#if defined(Q_OS_LINUX)
+    switch(profile.wineVersion) {
+            case 0: // system wine (should be in $PATH)
+                profile.winePath = "wine";
+                break;
+            case 1: // custom pth
+                profile.winePath = profile.winePath;
+                break;
+        }
+#endif
 }
 
 void LauncherWindow::readGameVersion() {
