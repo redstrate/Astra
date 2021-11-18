@@ -152,6 +152,8 @@ QString SquareLauncher::getBootHash() {
 }
 
 void SquareLauncher::readExpansionVersions(int max) {
+    expansionVersions.clear();
+
     for(int i = 0; i < max; i++)
         expansionVersions.push_back(window.readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(window.currentProfile().gamePath, QString::number(i + 1))));
 }
