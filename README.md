@@ -9,6 +9,8 @@ have to suffer running your launcher through Wine.
 As of this moment, the three missing major features are **game patching** and **Dalamud and other external tool launching** and **the news list**.
 If you don't use these features then the launcher is still usable.
 
+More information can be found in the [FAQ](https://github.com/redstrate/xivlauncher/wiki/Frequently-Asked-Questions).
+
 ![screenshot](https://github.com/redstrate/xivlauncher/blob/main/misc/screenshot.png?raw=true)
 
 ## Features
