@@ -6,7 +6,7 @@ set(CMAKE_AUTOMOC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(Qt6 COMPONENTS Core Widgets Network CONFIG REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Network CONFIG REQUIRED)
 
 add_subdirectory(external)
 
@@ -19,7 +19,7 @@ add_executable(xivlauncher
         src/settingswindow.cpp
         src/blowfish.cpp)
 
-target_link_libraries(xivlauncher Qt6::Core Qt6::Widgets Qt6::Network qt6keychain)
+target_link_libraries(xivlauncher Qt5::Core Qt5::Widgets Qt5::Network qt5keychain)
 
 # disgusting, thanks qtkeychain
 target_include_directories(xivlauncher PRIVATE

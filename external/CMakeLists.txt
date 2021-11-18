@@ -6,7 +6,7 @@ FetchContent_Declare(
         GIT_TAG        v0.12.0
 )
 
-set(BUILD_WITH_QT6 ON CACHE BOOL "" FORCE)
+set(BUILD_WITH_QT6 OFF CACHE BOOL "" FORCE)
 set(QTKEYCHAIN_STATIC ON CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(qtkeychain)

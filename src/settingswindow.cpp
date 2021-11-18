@@ -64,7 +64,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     directXCombo->addItem("DirectX 9");
     gameBoxLayout->addRow("DirectX Version", directXCombo);
 
-    connect(directXCombo, &QComboBox::currentIndexChanged, [=](int index) {
+    connect(directXCombo, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=](int index) {
         getCurrentProfile().useDX9 = directXCombo->currentIndex() == 1;
         this->window.saveSettings();
     });
@@ -109,7 +109,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     serverType->insertItem(0, "Square Enix");
     serverType->insertItem(1, "Sapphire");
 
-    connect(serverType, &QComboBox::currentIndexChanged, [=](int index) {
+    connect(serverType, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=](int index) {
         getCurrentProfile().isSapphire = index == 1;
 
         reloadControls();
@@ -174,7 +174,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     selectWineButton = new QPushButton("Select Wine Executable");
     wineBoxLayout->addWidget(selectWineButton);
 
-    connect(wineVersionCombo, &QComboBox::currentIndexChanged, [this](int index) {
+    connect(wineVersionCombo, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int index) {
         getCurrentProfile().wineVersion = index;
 
         this->window.readWineInfo(getCurrentProfile());

@@ -43,7 +43,7 @@ void LauncherWindow::setSSL(QNetworkRequest& request) {
 void LauncherWindow::buildRequest(QNetworkRequest& request) {
     setSSL(request);
     request.setHeader(QNetworkRequest::UserAgentHeader,
-                      QString("SQEXAuthor/2.0.0(Windows 6.2; ja-jp; %1)").arg(QSysInfo::bootUniqueId()));
+                      QString("SQEXAuthor/2.0.0(Windows 6.2; ja-jp; %1)").arg(QString(QSysInfo::bootUniqueId())));
     request.setRawHeader("Accept",
                          "image/gif, image/jpeg, image/pjpeg, application/x-ms-application, application/xaml+xml, application/x-ms-xbap, */*");
     request.setRawHeader("Accept-Encoding", "gzip, deflate");
@@ -366,7 +366,7 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     auto layout = new QFormLayout();
 
     profileSelect = new QComboBox();
-    connect(profileSelect, &QComboBox::currentIndexChanged, [=](int index) {
+    connect(profileSelect, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=](int index) {
         reloadControls();
     });
 

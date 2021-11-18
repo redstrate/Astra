@@ -105,6 +105,6 @@ private:
     QCheckBox* rememberUsernameBox, *rememberPasswordBox;
     QPushButton* registerButton;
 
-    QList<ProfileSettings> profileSettings;
+    QVector<ProfileSettings> profileSettings;
     int defaultProfileIndex = 0;
 };
