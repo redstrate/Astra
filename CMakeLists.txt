@@ -12,12 +12,16 @@ add_subdirectory(external)
 
 add_executable(xivlauncher
         src/main.cpp
-        src/xivlauncher.cpp
+        src/launchercore.cpp
         src/sapphirelauncher.cpp
         src/squareboot.cpp
         src/squarelauncher.cpp
         src/settingswindow.cpp
-        src/blowfish.cpp src/assetupdater.cpp src/assetupdater.h)
+        src/blowfish.cpp
+        src/assetupdater.cpp
+        src/assetupdater.h
+        src/launcherwindow.cpp
+        src/launcherwindow.h)
 
 target_link_libraries(xivlauncher Qt5::Core Qt5::Widgets Qt5::Network qt5keychain QuaZip)
 

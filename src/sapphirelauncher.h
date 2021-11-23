@@ -2,15 +2,15 @@
 
 #include <QString>
 
-#include "xivlauncher.h"
+#include "launchercore.h"
 
 class SapphireLauncher : QObject {
 public:
-    SapphireLauncher(LauncherWindow& window);
+    SapphireLauncher(LauncherCore& window);
 
     void login(QString lobbyUrl, const LoginInformation& info);
     void registerAccount(QString lobbyUrl, const LoginInformation& info);
 
 private:
-    LauncherWindow& window;
+    LauncherCore& window;
 };

@@ -4,9 +4,6 @@
 #include <QNetworkAccessManager>
 #include <QFuture>
 #include <QSettings>
-#include <QComboBox>
-#include <QCheckBox>
-#include <QPushButton>
 #include <QUuid>
 #include <QProcess>
 
@@ -45,6 +42,8 @@ struct ProfileSettings {
 };
 
 struct LoginInformation {
+    ProfileSettings* settings = nullptr;
+
     QString username, password, oneTimePassword;
 };
 
@@ -57,17 +56,12 @@ struct LoginAuth {
     QString lobbyhost, frontierHost;
 };
 
-class LauncherWindow : public QMainWindow {
+class LauncherCore : public QObject {
 Q_OBJECT
 public:
-    explicit LauncherWindow(QWidget* parent = nullptr);
-
-    ~LauncherWindow() override;
+    LauncherCore();
 
     QNetworkAccessManager* mgr;
-
-    ProfileSettings currentProfile() const;
-    ProfileSettings& currentProfile();
 
     ProfileSettings getProfile(int index) const;
     ProfileSettings& getProfile(int index);
@@ -77,9 +71,9 @@ public:
     int addProfile();
     int deleteProfile(QString name);
 
-    void launchGame(const LoginAuth auth);
-    void launchExecutable(QStringList args);
-    void launchExecutable(QProcess* process, QStringList args);
+    void launchGame(const ProfileSettings& settings, const LoginAuth auth);
+    void launchExecutable(const ProfileSettings& settings, QStringList args);
+    void launchExecutable(const ProfileSettings& settings, QProcess* process, QStringList args);
     void buildRequest(QNetworkRequest& request);
     void setSSL(QNetworkRequest& request);
     QString readVersion(QString path);
@@ -90,26 +84,15 @@ public:
 
     QSettings settings;
 
-public slots:
-    void reloadControls();
-
-signals:
-    void settingsChanged();
-
-private:
-    bool currentlyReloadingControls = false;
-
     SapphireLauncher* sapphireLauncher;
     SquareBoot* squareBoot;
     SquareLauncher* squareLauncher;
     AssetUpdater* assetUpdater;
 
-    QComboBox* profileSelect;
-    QLineEdit* usernameEdit, *passwordEdit;
-    QLineEdit* otpEdit;
-    QCheckBox* rememberUsernameBox, *rememberPasswordBox;
-    QPushButton* registerButton;
-
-    QVector<ProfileSettings> profileSettings;
     int defaultProfileIndex = 0;
+signals:
+    void settingsChanged();
+
+private:
+    QVector<ProfileSettings> profileSettings;
 };

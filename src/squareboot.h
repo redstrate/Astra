@@ -1,16 +1,16 @@
 #pragma once
 
-#include "xivlauncher.h"
+#include "launchercore.h"
 
 class SquareLauncher;
 
 class SquareBoot : public QObject {
 public:
-    SquareBoot(LauncherWindow& window, SquareLauncher& launcher);
+    SquareBoot(LauncherCore& window, SquareLauncher& launcher);
 
     void bootCheck(LoginInformation& info);
 
 private:
-    LauncherWindow& window;
+    LauncherCore& window;
     SquareLauncher& launcher;
 };

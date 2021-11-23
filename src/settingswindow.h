@@ -8,12 +8,13 @@
 #include <QLabel>
 #include <QPushButton>
 
+class LauncherCore;
 class LauncherWindow;
 struct ProfileSettings;
 
 class SettingsWindow : public QWidget {
 public:
-    SettingsWindow(LauncherWindow& window, QWidget* parent = nullptr);
+    SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidget* parent = nullptr);
 
 public slots:
     void reloadControls();
@@ -48,4 +49,5 @@ private:
     bool currentlyReloadingControls = false;
 
     LauncherWindow& window;
+    LauncherCore& core;
 };

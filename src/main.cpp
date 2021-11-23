@@ -1,5 +1,8 @@
-#include "xivlauncher.h"
+#include "launchercore.h"
+#include "launcherwindow.h"
+
 #include <QApplication>
+#include <QCommandLineParser>
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
@@ -13,7 +16,15 @@ int main(int argc, char* argv[]) {
     QCoreApplication::setApplicationName("xivlauncher-debug");
 #endif
 
-    LauncherWindow w;
+    LauncherCore c;
+
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Cross-platform FFXIV Launcher");
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.process(app);
+
+    LauncherWindow w(c);
     w.show();
 
     return app.exec();

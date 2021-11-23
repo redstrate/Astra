@@ -3,15 +3,16 @@
 #include <QObject>
 #include <QTemporaryDir>
 
-class LauncherWindow;
+class LauncherCore;
 class QNetworkReply;
+struct ProfileSettings;
 
 class AssetUpdater : public QObject {
     Q_OBJECT
 public:
-    AssetUpdater(LauncherWindow& launcher);
+    AssetUpdater(LauncherCore& launcher);
 
-    void update();
+    void update(const ProfileSettings& profile);
     void finishDownload(QNetworkReply* reply);
     void beginInstall();
 
@@ -19,7 +20,7 @@ signals:
     void finishedUpdating();
 
 private:
-    LauncherWindow& launcher;
+    LauncherCore& launcher;
 
     QTemporaryDir tempDir;
 };

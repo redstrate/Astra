@@ -1,25 +1,25 @@
 #pragma once
 
-#include "xivlauncher.h"
+#include "launchercore.h"
 
 class SquareLauncher : public QObject {
 public:
-    SquareLauncher(LauncherWindow& window);
+    SquareLauncher(LauncherCore& window);
 
     void getStored(const LoginInformation& info);
 
-    void login(const LoginInformation& info, const QUrl referer);
+    void login(const LoginInformation& info, QUrl referer);
 
     void registerSession(const LoginInformation& info);
 
 private:
-    QString getBootHash();
-    void readExpansionVersions(int max);
+    QString getBootHash(const LoginInformation& info);
+    void readExpansionVersions(const LoginInformation& info, int max);
 
     QString stored, SID;
     LoginAuth auth;
 
-    LauncherWindow& window;
+    LauncherCore& window;
 
     QList<QString> expansionVersions;
 };

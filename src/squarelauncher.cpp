@@ -6,9 +6,9 @@
 #include <QRegularExpressionMatch>
 #include <QMessageBox>
 
-#include "xivlauncher.h"
+#include "launchercore.h"
 
-SquareLauncher::SquareLauncher(LauncherWindow& window) : window(window) {
+SquareLauncher::SquareLauncher(LauncherCore& window) : window(window) {
 
 }
 
@@ -88,7 +88,7 @@ void SquareLauncher::login(const LoginInformation& info, const QUrl referer) {
                 auth.region = parts[5].toInt();
                 auth.maxExpansion = parts[13].toInt();
 
-                readExpansionVersions(auth.maxExpansion);
+                readExpansionVersions(info, auth.maxExpansion);
 
                 registerSession(info);
             }
@@ -103,7 +103,7 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
     QUrl url;
     url.setScheme("https");
     url.setHost("patch-gamever.ffxiv.com");
-    url.setPath(QString("/http/win32/ffxivneo_release_game/%1/%2").arg(window.currentProfile().gameVersion, SID));
+    url.setPath(QString("/http/win32/ffxivneo_release_game/%1/%2").arg(info.settings->gameVersion, SID));
 
     auto request = QNetworkRequest(url);
     window.setSSL(request);
@@ -111,7 +111,7 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
     request.setRawHeader("User-Agent", "FFXIV PATCH CLIENT");
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
 
-    QString report = window.currentProfile().bootVersion + "=" + getBootHash();
+    QString report = info.settings->bootVersion + "=" + getBootHash(info);
 
     for(int i = 0; i < expansionVersions.size(); i++)
         report += QString("\nex%1\t%2").arg(QString::number(i + 1), expansionVersions[i]);
@@ -121,7 +121,7 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
         if(reply->rawHeaderList().contains("X-Patch-Unique-Id")) {
             auth.SID = reply->rawHeader("X-Patch-Unique-Id");
 
-            window.launchGame(auth);
+            window.launchGame(*info.settings, auth);
         } else {
             auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Failed the anti-tamper check. Please restore your game to the original state or update the game.");
             messageBox->show();
@@ -129,7 +129,7 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
     });
 }
 
-QString SquareLauncher::getBootHash() {
+QString SquareLauncher::getBootHash(const LoginInformation& info) {
     const QList<QString> fileList =
             {
                     "ffxivboot.exe",
@@ -142,7 +142,7 @@ QString SquareLauncher::getBootHash() {
 
     QString result;
     for (int i = 0; i < fileList.count(); i++) {
-        result += fileList[i] + "/" + getFileHash(window.currentProfile().gamePath + "/boot/" + fileList[i]);
+        result += fileList[i] + "/" + getFileHash(info.settings->gamePath + "/boot/" + fileList[i]);
 
         if (i != fileList.length() - 1)
             result += ",";
@@ -151,9 +151,9 @@ QString SquareLauncher::getBootHash() {
     return result;
 }
 
-void SquareLauncher::readExpansionVersions(int max) {
+void SquareLauncher::readExpansionVersions(const LoginInformation& info, int max) {
     expansionVersions.clear();
 
     for(int i = 0; i < max; i++)
-        expansionVersions.push_back(window.readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(window.currentProfile().gamePath, QString::number(i + 1))));
+        expansionVersions.push_back(window.readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(info.settings->gamePath, QString::number(i + 1))));
 }

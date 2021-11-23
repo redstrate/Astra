@@ -6,7 +6,7 @@
 
 #include <quazip/JlCompress.h>
 
-#include "xivlauncher.h"
+#include "launchercore.h"
 
 const QString dalamudRemotePath = "https://goatcorp.github.io/dalamud-distrib/";
 const QString dalamudVersion = "latest";
@@ -14,19 +14,19 @@ const QString dalamudVersion = "latest";
 const QString nativeLauncherRemotePath = "https://github.com/redstrate/nativelauncher/releases/download/";
 const QString nativeLauncherVersion = "v1.0.0";
 
-AssetUpdater::AssetUpdater(LauncherWindow &launcher) : launcher(launcher) {
+AssetUpdater::AssetUpdater(LauncherCore &launcher) : launcher(launcher) {
     connect(launcher.mgr, &QNetworkAccessManager::finished, this, &AssetUpdater::finishDownload);
 
     launcher.mgr->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
 }
 
-void AssetUpdater::update() {
+void AssetUpdater::update(const ProfileSettings& profile) {
     QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
     const bool hasDalamud = QFile::exists(dataDir + "/NativeLauncher.exe") && QFile::exists(dataDir + "/Dalamud");
 
     // first we determine if we need dalamud
-    const bool needsDalamud = launcher.currentProfile().enableDalamud && !hasDalamud;
+    const bool needsDalamud = profile.enableDalamud && !hasDalamud;
     if(needsDalamud) {
         // download nativelauncher release (needed to launch the game with fixed ACLs)
         {

@@ -11,9 +11,10 @@
 #include <QProcess>
 #include <QGridLayout>
 
-#include "xivlauncher.h"
+#include "launchercore.h"
+#include "launcherwindow.h"
 
-SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window(window), QWidget(parent) {
+SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidget* parent) : core(core), window(window), QWidget(parent) {
     setWindowTitle("Settings");
     setWindowModality(Qt::WindowModality::ApplicationModal);
 
@@ -30,17 +31,17 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     auto addProfileButton = new QPushButton("Add Profile");
     connect(addProfileButton, &QPushButton::pressed, [=] {
-        profileWidget->setCurrentRow(this->window.addProfile());
+        profileWidget->setCurrentRow(this->core.addProfile());
 
-        this->window.saveSettings();
+        this->core.saveSettings();
     });
     mainLayout->addWidget(addProfileButton, 2, 0);
 
     deleteProfileButton = new QPushButton("Delete Profile");
     connect(deleteProfileButton, &QPushButton::pressed, [=] {
-        profileWidget->setCurrentRow(this->window.deleteProfile(getCurrentProfile().name));
+        profileWidget->setCurrentRow(this->core.deleteProfile(getCurrentProfile().name));
 
-        this->window.saveSettings();
+        this->core.saveSettings();
     });
     mainLayout->addWidget(deleteProfileButton, 3, 0);
 
@@ -49,7 +50,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
         getCurrentProfile().name = nameEdit->text();
 
         reloadControls();
-        this->window.saveSettings();
+        this->core.saveSettings();
     });
     mainLayout->addWidget(nameEdit, 0, 1);
 
@@ -66,10 +67,10 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
 
     connect(directXCombo, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=](int index) {
         getCurrentProfile().useDX9 = directXCombo->currentIndex() == 1;
-        this->window.saveSettings();
+        this->core.saveSettings();
     });
 
-    currentGameDirectory = new QLabel(window.currentProfile().gamePath);
+    currentGameDirectory = new QLabel();
     currentGameDirectory->setWordWrap(true);
     gameBoxLayout->addRow("Game Directory", currentGameDirectory);
 
@@ -78,9 +79,9 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
         getCurrentProfile().gamePath = QFileDialog::getExistingDirectory(this, "Open Game Directory");
 
         this->reloadControls();
-        this->window.saveSettings();
+        this->core.saveSettings();
 
-        this->window.readGameVersion();
+        this->core.readGameVersion();
     });
     gameBoxLayout->addWidget(selectDirectoryButton);
 
@@ -100,7 +101,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     connect(encryptArgumentsBox, &QCheckBox::stateChanged, [=](int) {
         getCurrentProfile().encryptArguments = encryptArgumentsBox->isChecked();
 
-        this->window.saveSettings();
+        this->core.saveSettings();
     });
     loginBoxLayout->addRow("Encrypt Game Arguments", encryptArgumentsBox);
 
@@ -108,7 +109,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     connect(enableDalamudBox, &QCheckBox::stateChanged, [=](int) {
         getCurrentProfile().enableDalamud = enableDalamudBox->isChecked();
 
-        this->window.saveSettings();
+        this->core.saveSettings();
     });
     loginBoxLayout->addRow("Enable Dalamud Injection", enableDalamudBox);
 
@@ -120,8 +121,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
         getCurrentProfile().isSapphire = index == 1;
 
         reloadControls();
-        this->window.reloadControls();
-        this->window.saveSettings();
+        this->core.saveSettings();
     });
 
     loginBoxLayout->addRow("Server Lobby", serverType);
@@ -129,7 +129,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     lobbyServerURL = new QLineEdit();
     connect(lobbyServerURL, &QLineEdit::editingFinished, [=] {
         getCurrentProfile().lobbyURL = lobbyServerURL->text();
-        this->window.saveSettings();
+        this->core.saveSettings();
     });
     loginBoxLayout->addRow("Lobby URL", lobbyServerURL);
 
@@ -137,8 +137,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     connect(rememberUsernameBox, &QCheckBox::stateChanged, [=](int) {
         getCurrentProfile().rememberUsername = rememberUsernameBox->isChecked();
 
-        this->window.reloadControls();
-        this->window.saveSettings();
+        this->core.saveSettings();
     });
     loginBoxLayout->addRow("Remember Username?", rememberUsernameBox);
 
@@ -146,8 +145,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     connect(rememberPasswordBox, &QCheckBox::stateChanged, [=](int) {
         getCurrentProfile().rememberPassword = rememberPasswordBox->isChecked();
 
-        this->window.reloadControls();
-        this->window.saveSettings();
+        this->core.saveSettings();
     });
     loginBoxLayout->addRow("Remember Password?", rememberPasswordBox);
 
@@ -163,7 +161,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     infoLabel->setWordWrap(true);
     wineBoxLayout->addWidget(infoLabel);
 
-    winePathLabel = new QLabel(window.currentProfile().winePath);
+    winePathLabel = new QLabel();
     winePathLabel->setWordWrap(true);
     wineBoxLayout->addRow("Wine Executable", winePathLabel);
 
@@ -184,19 +182,19 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     connect(wineVersionCombo, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int index) {
         getCurrentProfile().wineVersion = index;
 
-        this->window.readWineInfo(getCurrentProfile());
-        this->window.saveSettings();
+        this->core.readWineInfo(getCurrentProfile());
+        this->core.saveSettings();
         this->reloadControls();
     });
 
     connect(selectWineButton, &QPushButton::pressed, [this] {
         getCurrentProfile().winePath = QFileDialog::getOpenFileName(this, "Open Wine Executable");
 
-        this->window.saveSettings();
+        this->core.saveSettings();
         this->reloadControls();
     });
 
-    winePrefixDirectory = new QLabel(window.currentProfile().winePrefixPath);
+    winePrefixDirectory = new QLabel();
     winePrefixDirectory->setWordWrap(true);
     wineBoxLayout->addRow("Wine Prefix", winePrefixDirectory);
 
@@ -204,7 +202,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     connect(selectPrefixButton, &QPushButton::pressed, [this] {
         getCurrentProfile().winePrefixPath = QFileDialog::getExistingDirectory(this, "Open Wine Prefix");
 
-        this->window.saveSettings();
+        this->core.saveSettings();
         this->reloadControls();
     });
     wineBoxLayout->addWidget(selectPrefixButton);
@@ -216,12 +214,11 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     wineBoxLayout->addWidget(openPrefixButton);
 
     auto enableDXVKhud = new QCheckBox("Enable DXVK HUD");
-    enableDXVKhud->setChecked(window.currentProfile().enableDXVKhud);
     wineBoxLayout->addWidget(enableDXVKhud);
 
     connect(enableDXVKhud, &QCheckBox::stateChanged, [this](int state) {
-        this->window.currentProfile().enableDXVKhud = state;
-        this->window.settings.setValue("enableDXVKhud", static_cast<bool>(state));
+        getCurrentProfile().enableDXVKhud = state;
+        this->core.settings.setValue("enableDXVKhud", static_cast<bool>(state));
     });
 #endif
 
@@ -237,7 +234,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     connect(useEsync, &QCheckBox::stateChanged, [this](int state) {
         getCurrentProfile().useEsync = state;
 
-        this->window.saveSettings();
+        this->core.saveSettings();
     });
 
     useGamescope = new QCheckBox("Use Gamescope");
@@ -251,7 +248,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     connect(useGamescope, &QCheckBox::stateChanged, [this](int state) {
         getCurrentProfile().useGamescope = state;
 
-        this->window.saveSettings();
+        this->core.saveSettings();
     });
 
     useGamemode = new QCheckBox("Use Gamemode");
@@ -265,7 +262,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     connect(useGamemode, &QCheckBox::stateChanged, [this](int state) {
         getCurrentProfile().useGamemode = state;
 
-        this->window.saveSettings();
+        this->core.saveSettings();
     });
 #endif
 
@@ -282,15 +279,15 @@ void SettingsWindow::reloadControls() {
 
     profileWidget->clear();
 
-    for(auto profile : window.profileList()) {
+    for(const auto& profile : core.profileList()) {
         profileWidget->addItem(profile);
     }
     profileWidget->setCurrentRow(oldRow);
 
     // deleting the main profile is unsupported behavior
-    deleteProfileButton->setEnabled(window.profileList().size() > 1);
+    deleteProfileButton->setEnabled(core.profileList().size() > 1);
 
-    ProfileSettings& profile = window.getProfile(profileWidget->currentRow());
+    ProfileSettings& profile = core.getProfile(profileWidget->currentRow());
     nameEdit->setText(profile.name);
 
     // game
@@ -325,7 +322,7 @@ void SettingsWindow::reloadControls() {
 }
 
 ProfileSettings& SettingsWindow::getCurrentProfile() {
-    return this->window.getProfile(profileWidget->currentRow());
+    return this->core.getProfile(profileWidget->currentRow());
 }
 
 void SettingsWindow::openPath(const QString path) {

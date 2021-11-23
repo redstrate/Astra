@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include <QNetworkReply>
 
-SapphireLauncher::SapphireLauncher(LauncherWindow& window) : window(window) {
+SapphireLauncher::SapphireLauncher(LauncherCore& window) : window(window) {
 
 }
 
@@ -33,7 +33,7 @@ void SapphireLauncher::login(QString lobbyUrl, const LoginInformation& info) {
             auth.frontierHost = document["frontierHost"].toString();
             auth.region = 3;
 
-            window.launchGame(auth);
+            window.launchGame(*info.settings, auth);
         } else {
             auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Invalid username/password.");
             messageBox->show();
@@ -64,6 +64,6 @@ void SapphireLauncher::registerAccount(QString lobbyUrl, const LoginInformation&
         auth.frontierHost = document["frontierHost"].toString();
         auth.region = 3;
 
-        window.launchGame(auth);
+        window.launchGame(*info.settings, auth);
     });
 }
