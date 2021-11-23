@@ -3,10 +3,10 @@
 Finally, a cross-platform FFXIV launcher. It should run on Windows, macOS and Linux!
 
 Compared to XIVQuickLauncher and the official launcher, this supports
-**multiple profiles** and **macOS and Linux**! This means you no longer
-have to suffer running your launcher through Wine.
+**multiple profiles**, **Dalamud mods**, _and_ **macOS and Linux**! This means you no longer
+have to suffer running your FFXIV launcher through Wine.
 
-As of this moment, the three missing major features are **game patching** and **Dalamud and other external tool launching** and **the news list**.
+As of this moment, the three missing major features are **game patching**, **external tool launching** and **the news list**.
 If you don't use these features then the launcher is still usable.
 
 More information can be found in the [FAQ](https://github.com/redstrate/xivlauncher/wiki/Frequently-Asked-Questions).
@@ -15,6 +15,7 @@ More information can be found in the [FAQ](https://github.com/redstrate/xivlaunc
 
 ## Features
 * Can use native (Windows) and Wine (macOS, Linux) versions of FFXIV.
+* You can use Dalamud, which is downloaded within the launcher just like XIVQuickLauncher. 
 * Can connect to the official Square Enix servers _as well_ as Sapphire servers.
 * Multiple profile support!
   * For example, having a regular Square Enix profile and a test Sapphire profile. Or maybe one for DX11 and another for DX9?
