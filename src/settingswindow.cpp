@@ -100,10 +100,17 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, QWidget* parent) : window
     connect(encryptArgumentsBox, &QCheckBox::stateChanged, [=](int) {
         getCurrentProfile().encryptArguments = encryptArgumentsBox->isChecked();
 
-        this->window.reloadControls();
         this->window.saveSettings();
     });
     loginBoxLayout->addRow("Encrypt Game Arguments", encryptArgumentsBox);
+
+    enableDalamudBox = new QCheckBox();
+    connect(enableDalamudBox, &QCheckBox::stateChanged, [=](int) {
+        getCurrentProfile().enableDalamud = enableDalamudBox->isChecked();
+
+        this->window.saveSettings();
+    });
+    loginBoxLayout->addRow("Enable Dalamud Injection", enableDalamudBox);
 
     serverType = new QComboBox();
     serverType->insertItem(0, "Square Enix");
@@ -309,6 +316,8 @@ void SettingsWindow::reloadControls() {
     lobbyServerURL->setText(profile.lobbyURL);
     rememberUsernameBox->setChecked(profile.rememberUsername);
     rememberPasswordBox->setChecked(profile.rememberPassword);
+
+    enableDalamudBox->setChecked(profile.enableDalamud);
 
     window.reloadControls();
 

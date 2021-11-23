@@ -40,6 +40,7 @@ private:
 
     // login
     QCheckBox* encryptArgumentsBox = nullptr;
+    QCheckBox* enableDalamudBox = nullptr;
     QComboBox* serverType = nullptr;
     QLineEdit* lobbyServerURL = nullptr;
     QCheckBox* rememberUsernameBox = nullptr, *rememberPasswordBox = nullptr;

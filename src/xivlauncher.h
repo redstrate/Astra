@@ -8,10 +8,12 @@
 #include <QCheckBox>
 #include <QPushButton>
 #include <QUuid>
+#include <QProcess>
 
 class SapphireLauncher;
 class SquareLauncher;
 class SquareBoot;
+class AssetUpdater;
 
 struct ProfileSettings {
     QUuid uuid;
@@ -33,6 +35,7 @@ struct ProfileSettings {
     bool useEsync = false, useGamescope = false, useGamemode = false;
     bool useDX9 = false;
     bool enableDXVKhud = false;
+    bool enableDalamud = false;
 
     // login
     bool encryptArguments = false;
@@ -75,7 +78,8 @@ public:
     int deleteProfile(QString name);
 
     void launchGame(const LoginAuth auth);
-    void launchExecutable(const QStringList args);
+    void launchExecutable(QStringList args);
+    void launchExecutable(QProcess* process, QStringList args);
     void buildRequest(QNetworkRequest& request);
     void setSSL(QNetworkRequest& request);
     QString readVersion(QString path);
@@ -98,6 +102,7 @@ private:
     SapphireLauncher* sapphireLauncher;
     SquareBoot* squareBoot;
     SquareLauncher* squareLauncher;
+    AssetUpdater* assetUpdater;
 
     QComboBox* profileSelect;
     QLineEdit* usernameEdit, *passwordEdit;

@@ -15,6 +15,8 @@
 #include <QMessageBox>
 #include <QMenuBar>
 #include <QCoreApplication>
+#include <QStandardPaths>
+#include <QRegularExpressionMatch>
 
 #if defined(Q_OS_MAC)
 #include <sys/sysctl.h>
@@ -31,6 +33,7 @@
 #include "squareboot.h"
 #include "settingswindow.h"
 #include "blowfish.h"
+#include "assetupdater.h"
 
 void LauncherWindow::setSSL(QNetworkRequest& request) {
     QSslConfiguration config;
@@ -106,6 +109,12 @@ QString encryptGameArg(QString arg) {
 void LauncherWindow::launchGame(const LoginAuth auth) {
     QList<QString> arguments;
 
+    QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+
+    if(currentProfile().enableDalamud) {
+        arguments.push_back(dataDir + "/NativeLauncher.exe");
+    }
+
     // now for the actual game...
     if(currentProfile().useDX9) {
         arguments.push_back(currentProfile().gamePath + "\\game\\ffxiv.exe");
@@ -135,6 +144,25 @@ void LauncherWindow::launchGame(const LoginAuth auth) {
         }
     }
 
+    auto gameProcess = new QProcess(this);
+
+    if(currentProfile().enableDalamud) {
+        connect(gameProcess, &QProcess::readyReadStandardOutput, [this, gameProcess] {
+            QString output = gameProcess->readAllStandardOutput();
+
+            auto dalamudProcess = new QProcess();
+
+            QStringList dalamudEnv = gameProcess->environment();
+            dalamudEnv << "XL_WINEONLINUX=true";
+
+            dalamudProcess->setEnvironment(dalamudEnv);
+
+            QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+
+            dalamudProcess->start(currentProfile().winePath, {dataDir + "/Dalamud/" + "Dalamud.Injector.exe", output});
+        });
+    }
+
     if(currentProfile().encryptArguments) {
         QString argJoined;
         for(auto arg : gameArgs) {
@@ -143,20 +171,22 @@ void LauncherWindow::launchGame(const LoginAuth auth) {
 
         auto earg = encryptGameArg(argJoined);
         arguments.append(earg);
-        launchExecutable(arguments);
+         launchExecutable(gameProcess, arguments);
     } else {
         for(auto arg : gameArgs) {
             arguments.push_back(QString(" %1=%2").arg(arg.key, arg.value));
         }
 
-        launchExecutable(arguments);
+        launchExecutable(gameProcess, arguments);
     }
 }
 
 void LauncherWindow::launchExecutable(const QStringList args) {
     auto process = new QProcess(this);
-    process->setProcessChannelMode(QProcess::ForwardedChannels);
+    launchExecutable(process, args);
+}
 
+void LauncherWindow::launchExecutable(QProcess* process, const QStringList args) {
     QList<QString> arguments;
     QStringList env = QProcess::systemEnvironment();
 
@@ -191,6 +221,7 @@ void LauncherWindow::launchExecutable(const QStringList args) {
 
     process->setWorkingDirectory(currentProfile().gamePath + "/game/");
     process->setEnvironment(env);
+
     process->start(executable, arguments);
 }
 
@@ -268,6 +299,8 @@ void LauncherWindow::readInitialInformation() {
         profile.useGamescope = settings.value("useGamescope", false).toBool();
         profile.enableDXVKhud = settings.value("enableDXVKhud", false).toBool();
 
+        profile.enableDalamud = settings.value("enableDalamud", false).toBool();
+
         profileSettings[settings.value("index").toInt()] = profile;
 
         settings.endGroup();
@@ -316,6 +349,7 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     sapphireLauncher = new SapphireLauncher(*this);
     squareLauncher = new SquareLauncher(*this);
     squareBoot = new SquareBoot(*this, *squareLauncher);
+    assetUpdater = new AssetUpdater(*this);
 
     readInitialInformation();
 
@@ -406,7 +440,7 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
     emptyWidget->setLayout(layout);
     setCentralWidget(emptyWidget);
 
-    connect(loginButton, &QPushButton::released, [=] {
+    connect(assetUpdater, &AssetUpdater::finishedUpdating, [=] {
         auto info = LoginInformation{usernameEdit->text(), passwordEdit->text(), otpEdit->text()};
 
         if(currentProfile().rememberUsername) {
@@ -428,6 +462,11 @@ LauncherWindow::LauncherWindow(QWidget* parent) :
         } else {
             squareBoot->bootCheck(info);
         }
+    });
+
+    connect(loginButton, &QPushButton::released, [=] {
+        // update the assets first if needed, then it calls the slot above :-)
+        assetUpdater->update();
     });
 
     connect(registerButton, &QPushButton::released, [=] {
@@ -535,6 +574,8 @@ void LauncherWindow::saveSettings() {
         settings.setValue("lobbyURL", profile.lobbyURL);
         settings.setValue("rememberUsername", profile.rememberUsername);
         settings.setValue("rememberPassword", profile.rememberPassword);
+
+        settings.setValue("enableDalamud", profile.enableDalamud);
 
         settings.endGroup();
     }

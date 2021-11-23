@@ -17,14 +17,15 @@ add_executable(xivlauncher
         src/squareboot.cpp
         src/squarelauncher.cpp
         src/settingswindow.cpp
-        src/blowfish.cpp)
+        src/blowfish.cpp src/assetupdater.cpp src/assetupdater.h)
 
-target_link_libraries(xivlauncher Qt5::Core Qt5::Widgets Qt5::Network qt5keychain)
+target_link_libraries(xivlauncher Qt5::Core Qt5::Widgets Qt5::Network qt5keychain QuaZip)
 
-# disgusting, thanks qtkeychain
+# disgusting, thanks qtkeychain and quazip
 target_include_directories(xivlauncher PRIVATE
         ${CMAKE_BINARY_DIR}/_deps/qtkeychain-src
-        ${CMAKE_BINARY_DIR}/_deps/qtkeychain-build)
+        ${CMAKE_BINARY_DIR}/_deps/qtkeychain-build
+        ${CMAKE_BINARY_DIR}/_deps/quazip-src)
 
 install(TARGETS xivlauncher
         DESTINATION "${INSTALL_BIN_PATH}"
