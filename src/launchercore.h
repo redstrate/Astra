@@ -42,7 +42,7 @@ struct ProfileSettings {
 };
 
 struct LoginInformation {
-    ProfileSettings* settings = nullptr;
+    const ProfileSettings* settings = nullptr;
 
     QString username, password, oneTimePassword;
 };
