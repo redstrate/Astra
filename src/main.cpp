@@ -22,10 +22,16 @@ int main(int argc, char* argv[]) {
     parser.setApplicationDescription("Cross-platform FFXIV Launcher");
     parser.addHelpOption();
     parser.addVersionOption();
+
+    QCommandLineOption noguiOption("nogui", "Don't open a main window.");
+    parser.addOption(noguiOption);
+
     parser.process(app);
 
-    LauncherWindow w(c);
-    w.show();
+    if(!parser.isSet(noguiOption)) {
+        LauncherWindow w(c);
+        w.show();
+    }
 
     return app.exec();
 }
