@@ -153,7 +153,10 @@ void LauncherWindow::launchGame(const LoginAuth auth) {
             auto dalamudProcess = new QProcess();
 
             QStringList dalamudEnv = gameProcess->environment();
+
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
             dalamudEnv << "XL_WINEONLINUX=true";
+#endif
 
             dalamudProcess->setEnvironment(dalamudEnv);
 
