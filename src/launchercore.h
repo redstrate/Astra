@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QUuid>
 #include <QProcess>
+#include <QMessageBox>
 
 class SapphireLauncher;
 class SquareLauncher;
@@ -81,6 +82,8 @@ public:
     void readGameVersion();
     void readWineInfo(ProfileSettings& settings);
     void saveSettings();
+
+    void addUpdateButtons(const ProfileSettings& settings, QMessageBox& messageBox);
 
     QSettings settings;
 

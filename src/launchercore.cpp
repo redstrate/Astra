@@ -452,3 +452,12 @@ void LauncherCore::saveSettings() {
         settings.endGroup();
     }
 }
+
+void LauncherCore::addUpdateButtons(const ProfileSettings& settings, QMessageBox& messageBox) {
+    auto launcherButton = messageBox.addButton("Launch Official Launcher", QMessageBox::NoRole);
+    connect(launcherButton, &QPushButton::clicked, [=] {
+        launchExecutable(settings, {settings.gamePath + "/boot/ffxivboot64.exe"});
+    });
+
+    messageBox.addButton(QMessageBox::StandardButton::Ok);
+}

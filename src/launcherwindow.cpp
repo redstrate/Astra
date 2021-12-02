@@ -185,15 +185,15 @@ void LauncherWindow::reloadControls() {
         });
     }
 
-    const bool isLockedOut = !currentProfile().isSapphire && !core.squareLauncher->isGateOpen;
+    const bool canLogin = currentProfile().isSapphire || (!currentProfile().isSapphire && core.squareLauncher->isGateOpen);
 
-    if(!isLockedOut) {
+    if(canLogin) {
         loginButton->setText("Login");
     } else {
         loginButton->setText("Login (Maintenance is in progress)");
     }
 
-    loginButton->setEnabled(!isLockedOut);
+    loginButton->setEnabled(canLogin);
     registerButton->setEnabled(currentProfile().isSapphire);
     otpEdit->setEnabled(!currentProfile().isSapphire);
 

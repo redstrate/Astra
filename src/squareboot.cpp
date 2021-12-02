@@ -3,6 +3,7 @@
 #include <QUrlQuery>
 #include <QNetworkReply>
 #include <QMessageBox>
+#include <QPushButton>
 
 #include "squarelauncher.h"
 
@@ -31,6 +32,8 @@ void SquareBoot::bootCheck(LoginInformation& info) {
             launcher.getStored(info);
         } else {
             auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Failed to launch. The game may require an update, please use another launcher.");
+            window.addUpdateButtons(*info.settings, *messageBox);
+
             messageBox->show();
         }
     });
