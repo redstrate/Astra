@@ -353,6 +353,12 @@ LauncherCore::LauncherCore() : settings(QSettings::IniFormat, QSettings::UserSco
     assetUpdater = new AssetUpdater(*this);
 
     readInitialInformation();
+
+    // check gate status before login
+    squareLauncher->gateOpen();
+
+    // TODO: we really should call this "heavy" signal
+    connect(squareLauncher, &SquareLauncher::gateStatusRecieved, this, &LauncherCore::settingsChanged);
 }
 
 ProfileSettings LauncherCore::getProfile(int index) const {

@@ -27,5 +27,5 @@ private:
     QLineEdit* usernameEdit, *passwordEdit;
     QLineEdit* otpEdit;
     QCheckBox* rememberUsernameBox, *rememberPasswordBox;
-    QPushButton* registerButton;
+    QPushButton* loginButton, *registerButton;
 };

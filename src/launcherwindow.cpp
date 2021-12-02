@@ -86,7 +86,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     otpEdit = new QLineEdit();
     layout->addRow("One-Time Password", otpEdit);
 
-    auto loginButton = new QPushButton("Login");
+    loginButton = new QPushButton("Login");
     layout->addRow(loginButton);
 
     registerButton = new QPushButton("Register");
@@ -185,6 +185,15 @@ void LauncherWindow::reloadControls() {
         });
     }
 
+    const bool isLockedOut = !currentProfile().isSapphire && !core.squareLauncher->isGateOpen;
+
+    if(!isLockedOut) {
+        loginButton->setText("Login");
+    } else {
+        loginButton->setText("Login (Maintenance is in progress)");
+    }
+
+    loginButton->setEnabled(!isLockedOut);
     registerButton->setEnabled(currentProfile().isSapphire);
     otpEdit->setEnabled(!currentProfile().isSapphire);
 

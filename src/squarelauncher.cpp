@@ -5,6 +5,8 @@
 #include <QNetworkReply>
 #include <QRegularExpressionMatch>
 #include <QMessageBox>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #include "launchercore.h"
 
@@ -156,4 +158,30 @@ void SquareLauncher::readExpansionVersions(const LoginInformation& info, int max
 
     for(int i = 0; i < max; i++)
         expansionVersions.push_back(window.readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(info.settings->gamePath, QString::number(i + 1))));
+}
+
+void SquareLauncher::gateOpen() {
+    QUrlQuery query;
+    query.addQueryItem("", QString::number(QDateTime::currentMSecsSinceEpoch()));
+
+    QUrl url;
+    url.setUrl("https://frontier.ffxiv.com/worldStatus/gate_status.json");
+    url.setQuery(query);
+
+    QNetworkRequest request;
+    request.setUrl(url);
+    window.buildRequest(request);
+
+    auto reply = window.mgr->get(request);
+    connect(reply, &QNetworkReply::finished, [this, reply] {
+        QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
+
+        if(document.isEmpty() || document.object()["status"].toInt() == 0) {
+            gateStatusRecieved(false);
+            isGateOpen = false;
+        } else {
+            gateStatusRecieved(true);
+            isGateOpen = true;
+        }
+    });
 }
