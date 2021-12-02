@@ -342,6 +342,20 @@ void LauncherCore::readGameVersion() {
     for(auto& profile : profileSettings) {
         profile.bootVersion = readVersion(profile.gamePath + "/boot/ffxivboot.ver");
         profile.gameVersion = readVersion(profile.gamePath + "/game/ffxivgame.ver");
+
+        for(auto dir : QDir(profile.gamePath + "/game/sqpack/").entryList(QDir::Filter::Dirs)) {
+            if(dir.contains("ex") && dir.length() == 3 && dir[2].isDigit()) {
+                const int expacVersion = dir[2].digitValue();
+
+                profile.installedMaxExpansion = std::max(profile.installedMaxExpansion, expacVersion);
+            }
+
+            if(dir == "ffxiv") {
+                profile.installedMaxExpansion = std::max(profile.installedMaxExpansion, 0);
+            }
+        }
+
+        readExpansionVersions(profile, profile.installedMaxExpansion);
     }
 }
 
@@ -460,4 +474,11 @@ void LauncherCore::addUpdateButtons(const ProfileSettings& settings, QMessageBox
     });
 
     messageBox.addButton(QMessageBox::StandardButton::Ok);
+}
+
+void LauncherCore::readExpansionVersions(ProfileSettings& info, int max) {
+    info.expansionVersions.clear();
+
+    for(int i = 0; i < max; i++)
+        info.expansionVersions.push_back(readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(info.gamePath, QString::number(i + 1))));
 }

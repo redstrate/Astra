@@ -92,8 +92,6 @@ void SquareLauncher::login(const LoginInformation& info, const QUrl referer) {
                 auth.region = parts[5].toInt();
                 auth.maxExpansion = parts[13].toInt();
 
-                readExpansionVersions(info, auth.maxExpansion);
-
                 registerSession(info);
             }
         } else {
@@ -155,13 +153,6 @@ QString SquareLauncher::getBootHash(const LoginInformation& info) {
     }
 
     return result;
-}
-
-void SquareLauncher::readExpansionVersions(const LoginInformation& info, int max) {
-    expansionVersions.clear();
-
-    for(int i = 0; i < max; i++)
-        expansionVersions.push_back(window.readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(info.settings->gamePath, QString::number(i + 1))));
 }
 
 void SquareLauncher::gateOpen() {

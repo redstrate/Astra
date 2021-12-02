@@ -91,6 +91,9 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     });
     gameBoxLayout->addWidget(gameDirectoryButton);
 
+    expansionVersionLabel = new QLabel();
+    gameBoxLayout->addWidget(expansionVersionLabel);
+
     auto loginBox = new QGroupBox("Login Options");
     auto loginBoxLayout = new QFormLayout();
     loginBox->setLayout(loginBoxLayout);
@@ -293,6 +296,38 @@ void SettingsWindow::reloadControls() {
     // game
     directXCombo->setCurrentIndex(profile.useDX9 ? 1 : 0);
     currentGameDirectory->setText(profile.gamePath);
+
+    if(profile.installedMaxExpansion == -1) {
+        expansionVersionLabel->setText("No game installed.");
+    } else {
+        QString expacString;
+        if(profile.installedMaxExpansion >= 0) {
+            expacString += "A Realm Reborn";
+            expacString += QString(" (%1)\n").arg(profile.gameVersion);
+        }
+
+        if(profile.installedMaxExpansion >= 1) {
+            expacString += "Heavensward";
+            expacString += QString(" (%1)\n").arg(profile.expansionVersions[0]);
+        }
+
+        if(profile.installedMaxExpansion >= 2) {
+            expacString += "Stormblood";
+            expacString += QString(" (%1)\n").arg(profile.expansionVersions[1]);
+        }
+
+        if(profile.installedMaxExpansion >= 3) {
+            expacString += "Shadowbringers";
+            expacString += QString(" (%1)\n").arg(profile.expansionVersions[2]);
+        }
+
+        if(profile.installedMaxExpansion >= 4) {
+            expacString += "Endwalker";
+            expacString += QString(" (%1)\n").arg(profile.expansionVersions[3]);
+        }
+
+        expansionVersionLabel->setText(expacString);
+    }
 
     // wine
     wineVersionCombo->setCurrentIndex(profile.wineVersion);

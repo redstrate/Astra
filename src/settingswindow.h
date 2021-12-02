@@ -30,6 +30,7 @@ private:
     QLineEdit* nameEdit = nullptr;
     QComboBox* directXCombo = nullptr;
     QLabel* currentGameDirectory = nullptr;
+    QLabel* expansionVersionLabel = nullptr;
 
     // wine
     QComboBox* wineVersionCombo;

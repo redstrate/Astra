@@ -21,6 +21,8 @@ struct ProfileSettings {
     int language = 1; // 1 is english, thats all i know
     QString gamePath, winePath, winePrefixPath;
     QString bootVersion, gameVersion;
+    int installedMaxExpansion = -1;
+    QList<QString> expansionVersions;
 
     // wine
     // 0 = system, 1 = custom, 2 = built-in (mac only)
@@ -97,5 +99,7 @@ signals:
     void settingsChanged();
 
 private:
+    void readExpansionVersions(ProfileSettings& info, int max);
+
     QVector<ProfileSettings> profileSettings;
 };

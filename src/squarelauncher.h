@@ -22,7 +22,6 @@ signals:
 
 private:
     QString getBootHash(const LoginInformation& info);
-    void readExpansionVersions(const LoginInformation& info, int max);
 
     QString stored, SID;
     LoginAuth auth;
