@@ -92,7 +92,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     gameBoxLayout->addWidget(gameDirectoryButton);
 
     expansionVersionLabel = new QLabel();
-    gameBoxLayout->addWidget(expansionVersionLabel);
+    gameBoxLayout->addRow("Version Info", expansionVersionLabel);
 
     auto loginBox = new QGroupBox("Login Options");
     auto loginBoxLayout = new QFormLayout();
@@ -301,6 +301,10 @@ void SettingsWindow::reloadControls() {
         expansionVersionLabel->setText("No game installed.");
     } else {
         QString expacString;
+
+        expacString += "Boot";
+        expacString += QString(" (%1)\n").arg(profile.bootVersion);
+
         if(profile.installedMaxExpansion >= 0) {
             expacString += "A Realm Reborn";
             expacString += QString(" (%1)\n").arg(profile.gameVersion);
