@@ -3,6 +3,7 @@
 #include <QMenuBar>
 #include <keychain.h>
 #include <QFormLayout>
+#include <QApplication>
 
 #include "settingswindow.h"
 #include "squareboot.h"
@@ -52,6 +53,17 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
         this->core.launchExecutable(currentProfile(), {"control.exe"});
     });
 #endif
+
+    QMenu* helpMenu = menuBar()->addMenu("Help");
+    QAction* showAbout = helpMenu->addAction("About xivlauncher");
+    connect(showAbout, &QAction::triggered, [=] {
+        QMessageBox::about(this, "About xivlauncher", "The source code is available <a href='https://github.com/redstrate/xivlauncher'>here</a>.");
+    });
+
+    QAction* showAboutQt = helpMenu->addAction("About Qt");
+    connect(showAboutQt, &QAction::triggered, [=] {
+        QApplication::aboutQt();
+    });
 
     auto layout = new QFormLayout();
 
