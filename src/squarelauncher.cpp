@@ -171,12 +171,8 @@ void SquareLauncher::gateOpen() {
     connect(reply, &QNetworkReply::finished, [this, reply] {
         QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
 
-        if(document.isEmpty() || document.object()["status"].toInt() == 0) {
-            gateStatusRecieved(false);
-            isGateOpen = false;
-        } else {
-            gateStatusRecieved(true);
-            isGateOpen = true;
-        }
+        isGateOpen = !document.isEmpty() && document.object()["status"].toInt() != 0;
+
+        gateStatusRecieved(isGateOpen);
     });
 }
