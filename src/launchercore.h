@@ -12,6 +12,7 @@ class SapphireLauncher;
 class SquareLauncher;
 class SquareBoot;
 class AssetUpdater;
+class Watchdog;
 
 struct ProfileSettings {
     QUuid uuid;
@@ -23,6 +24,7 @@ struct ProfileSettings {
     QString bootVersion, gameVersion;
     int installedMaxExpansion = -1;
     QList<QString> expansionVersions;
+    bool enableWatchdog = false;
 
     // wine
     // 0 = system, 1 = custom, 2 = built-in (mac only)
@@ -63,6 +65,7 @@ class LauncherCore : public QObject {
 Q_OBJECT
 public:
     LauncherCore();
+    ~LauncherCore();
 
     QNetworkAccessManager* mgr;
 
@@ -93,6 +96,7 @@ public:
     SquareBoot* squareBoot;
     SquareLauncher* squareLauncher;
     AssetUpdater* assetUpdater;
+    Watchdog* watchdog;
 
     int defaultProfileIndex = 0;
 signals:

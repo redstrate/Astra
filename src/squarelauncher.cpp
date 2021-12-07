@@ -9,6 +9,7 @@
 #include <QJsonObject>
 
 #include "launchercore.h"
+#include "watchdog.h"
 
 SquareLauncher::SquareLauncher(LauncherCore& window) : window(window) {
 
@@ -123,7 +124,11 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
         if(reply->rawHeaderList().contains("X-Patch-Unique-Id")) {
             auth.SID = reply->rawHeader("X-Patch-Unique-Id");
 
-            window.launchGame(*info.settings, auth);
+            if(info.settings->enableWatchdog) {
+                window.watchdog->launchGame(*info.settings, auth);
+            } else {
+                window.launchGame(*info.settings, auth);
+            }
         } else {
             auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Failed the anti-tamper check. Please restore your game to the original state or update the game.");
             window.addUpdateButtons(*info.settings, *messageBox);

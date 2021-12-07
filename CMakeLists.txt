@@ -10,7 +10,7 @@ find_package(Qt5 COMPONENTS Core Widgets Network CONFIG REQUIRED)
 
 add_subdirectory(external)
 
-add_executable(xivlauncher
+set(SRC
         src/main.cpp
         src/launchercore.cpp
         src/sapphirelauncher.cpp
@@ -21,9 +21,29 @@ add_executable(xivlauncher
         src/assetupdater.cpp
         src/assetupdater.h
         src/launcherwindow.cpp
-        src/launcherwindow.h)
+        src/launcherwindow.h
+        src/watchdog.h
+        src/watchdog.cpp)
 
-target_link_libraries(xivlauncher Qt5::Core Qt5::Widgets Qt5::Network qt5keychain QuaZip)
+set(LIBRARIES
+        Qt5::Core Qt5::Widgets Qt5::Network qt5keychain QuaZip)
+
+if(UNIX)
+    set(SRC ${SRC}
+            src/gameparser.h
+            src/gameparser.cpp)
+
+    set(LIBRARIES ${LIBRARIES}
+            tesseract
+            lept
+            X11
+            Xcomposite
+            Xrender)
+endif()
+
+add_executable(xivlauncher ${SRC})
+
+target_link_libraries(xivlauncher PUBLIC ${LIBRARIES})
 
 # disgusting, thanks qtkeychain and quazip
 target_include_directories(xivlauncher PRIVATE

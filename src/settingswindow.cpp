@@ -91,6 +91,17 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     });
     gameBoxLayout->addWidget(gameDirectoryButton);
 
+#if defined(Q_OS_LINUX)
+    enableWatchdog = new QCheckBox("Enable Watchdog (X11 only)");
+    gameBoxLayout->addWidget(enableWatchdog);
+
+    connect(enableWatchdog, &QCheckBox::stateChanged, [this](int state) {
+        getCurrentProfile().enableWatchdog = state;
+
+        this->core.saveSettings();
+    });
+#endif
+
     expansionVersionLabel = new QLabel();
     gameBoxLayout->addRow("Version Info", expansionVersionLabel);
 
@@ -343,6 +354,7 @@ void SettingsWindow::reloadControls() {
     useEsync->setChecked(profile.useEsync);
     useGamescope->setChecked(profile.useGamescope);
     useGamemode->setChecked(profile.useGamemode);
+    enableWatchdog->setChecked(profile.enableWatchdog);
 #endif
 
     // login

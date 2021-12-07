@@ -34,6 +34,7 @@
 #include "settingswindow.h"
 #include "blowfish.h"
 #include "assetupdater.h"
+#include "watchdog.h"
 
 void LauncherCore::setSSL(QNetworkRequest& request) {
     QSslConfiguration config;
@@ -150,7 +151,10 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
         connect(gameProcess, &QProcess::readyReadStandardOutput, [this, gameProcess, profile] {
             QString output = gameProcess->readAllStandardOutput();
 
+            qDebug() << "Now launching dalamud...";
+
             auto dalamudProcess = new QProcess();
+            dalamudProcess->setProcessChannelMode(QProcess::ForwardedChannels);
 
             QStringList dalamudEnv = gameProcess->environment();
 
@@ -300,6 +304,7 @@ void LauncherCore::readInitialInformation() {
         profile.useGamemode = settings.value("useGamemode", false).toBool();
         profile.useGamescope = settings.value("useGamescope", false).toBool();
         profile.enableDXVKhud = settings.value("enableDXVKhud", false).toBool();
+        profile.enableWatchdog = settings.value("enableWatchdog", false).toBool();
 
         profile.enableDalamud = settings.value("enableDalamud", false).toBool();
 
@@ -365,6 +370,7 @@ LauncherCore::LauncherCore() : settings(QSettings::IniFormat, QSettings::UserSco
     squareLauncher = new SquareLauncher(*this);
     squareBoot = new SquareBoot(*this, *squareLauncher);
     assetUpdater = new AssetUpdater(*this);
+    watchdog = new Watchdog(*this);
 
     readInitialInformation();
 
@@ -373,6 +379,10 @@ LauncherCore::LauncherCore() : settings(QSettings::IniFormat, QSettings::UserSco
 
     // TODO: we really should call this "heavy" signal
     connect(squareLauncher, &SquareLauncher::gateStatusRecieved, this, &LauncherCore::settingsChanged);
+}
+
+LauncherCore::~LauncherCore() noexcept {
+    delete watchdog;
 }
 
 ProfileSettings LauncherCore::getProfile(int index) const {
@@ -462,6 +472,7 @@ void LauncherCore::saveSettings() {
         settings.setValue("rememberPassword", profile.rememberPassword);
 
         settings.setValue("enableDalamud", profile.enableDalamud);
+        settings.setValue("enableWatchdog", profile.enableWatchdog);
 
         settings.endGroup();
     }

@@ -39,6 +39,7 @@ private:
     QLabel* winePrefixDirectory;
 
     QCheckBox* useGamescope, *useEsync, *useGamemode;
+    QCheckBox* enableWatchdog;
 
     // login
     QCheckBox* encryptArgumentsBox = nullptr;
