@@ -138,8 +138,6 @@ void Watchdog::launchGame(const ProfileSettings &settings, LoginAuth auth) {
                 } else {
                     auto result = parser->parseImage(qimageFromXImage(image));
                     if (result != lastResult) {
-                        lastResult = result;
-
                         switch (result.state) {
                             case ScreenState::InLoginQueue: {
                                 icon->showMessage("Watchdog",
@@ -165,6 +163,8 @@ void Watchdog::launchGame(const ProfileSettings &settings, LoginAuth auth) {
                             }
                                 break;
                         }
+
+                        lastResult = result;
                     }
 
                     XFreePixmap(display, picture);
