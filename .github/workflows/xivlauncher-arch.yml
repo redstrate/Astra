@@ -1,0 +1,25 @@
+name: xivlauncher Arch Linux CI
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Compile
+        run: |
+          pacman -Syu --noconfirm base-devel qt5-tools qt5-base libsecret cmake git tesseract libxcomposite
+          mkdir build && cd build
+          cmake -DCMAKE_BUILD_TYPE=None -DBUILD_SHARED_LIBS=OFF ..
+          make
+          install -Dm 755 xivlauncher -t /tmp/xivlauncher
+
+      - name: Archive the artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: xivlauncher-build
+          path: /tmp/xivlauncher
+
