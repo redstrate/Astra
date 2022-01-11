@@ -27,6 +27,4 @@ private:
     LoginAuth auth;
 
     LauncherCore& window;
-
-    QList<QString> expansionVersions;
 };
