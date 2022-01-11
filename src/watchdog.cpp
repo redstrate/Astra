@@ -138,6 +138,10 @@ void Watchdog::launchGame(const ProfileSettings &settings, LoginAuth auth) {
                 } else {
                     auto result = parser->parseImage(qimageFromXImage(image));
                     if (result != lastResult) {
+                        // skip OCR errors (TODO: should be handled by GameParser itself)
+                        if(result.state == ScreenState::InLoginQueue && result.playersInQueue == 0)
+                            return;
+
                         switch (result.state) {
                             case ScreenState::InLoginQueue: {
                                 icon->showMessage("Watchdog",
