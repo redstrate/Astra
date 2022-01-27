@@ -91,7 +91,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     });
     gameBoxLayout->addWidget(gameDirectoryButton);
 
-#if defined(Q_OS_LINUX)
+#ifdef ENABLE_WATCHDOG
     enableWatchdog = new QCheckBox("Enable Watchdog (X11 only)");
     gameBoxLayout->addWidget(enableWatchdog);
 
@@ -354,6 +354,9 @@ void SettingsWindow::reloadControls() {
     useEsync->setChecked(profile.useEsync);
     useGamescope->setChecked(profile.useGamescope);
     useGamemode->setChecked(profile.useGamemode);
+#endif
+
+#ifdef ENABLE_WATCHDOG
     enableWatchdog->setChecked(profile.enableWatchdog);
 #endif
 

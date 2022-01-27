@@ -8,6 +8,14 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(Qt5 COMPONENTS Core Widgets Network CONFIG REQUIRED)
 
+option(ENABLE_WATCHDOG "Build with Tesseract support (needed for Watchdog)" OFF)
+
+if(ENABLE_WATCHDOG)
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(TESSERACT REQUIRED tesseract)
+    pkg_search_module(LEPTONICA REQUIRED lept)
+endif()
+
 add_subdirectory(external)
 
 set(SRC
@@ -21,21 +29,23 @@ set(SRC
         src/assetupdater.cpp
         src/assetupdater.h
         src/launcherwindow.cpp
-        src/launcherwindow.h
-        src/watchdog.h
-        src/watchdog.cpp)
+        src/launcherwindow.h)
 
 set(LIBRARIES
         Qt5::Core Qt5::Widgets Qt5::Network qt5keychain QuaZip)
 
-if(UNIX)
-    set(SRC ${SRC}
-            src/gameparser.h
-            src/gameparser.cpp)
+if(ENABLE_WATCHDOG)
+    set(LIBRARIES ${LIBRARIES} ${TESSERACT_LIBRARIES} ${LEPTONICA_LIBRARIES})
 
+    set(SRC ${SRC}
+        src/watchdog.h
+        src/watchdog.cpp
+        src/gameparser.h
+        src/gameparser.cpp)
+endif()
+
+if(UNIX)
     set(LIBRARIES ${LIBRARIES}
-            tesseract
-            lept
             X11
             Xcomposite
             Xrender)
@@ -50,6 +60,12 @@ target_include_directories(xivlauncher PRIVATE
         ${CMAKE_BINARY_DIR}/_deps/qtkeychain-src
         ${CMAKE_BINARY_DIR}/_deps/qtkeychain-build
         ${CMAKE_BINARY_DIR}/_deps/quazip-src)
+
+if(ENABLE_WATCHDOG)
+    target_include_directories(xivlauncher PRIVATE ${TESSERACT_INCLUDE_DIRS} ${LEPTONICA_INCLUDE_DIRS})
+
+    target_compile_definitions(xivlauncher PRIVATE ENABLE_WATCHDOG)
+endif()
 
 install(TARGETS xivlauncher
         DESTINATION "${INSTALL_BIN_PATH}"

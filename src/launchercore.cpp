@@ -34,7 +34,10 @@
 #include "settingswindow.h"
 #include "blowfish.h"
 #include "assetupdater.h"
+
+#ifdef ENABLE_WATCHDOG
 #include "watchdog.h"
+#endif
 
 void LauncherCore::setSSL(QNetworkRequest& request) {
     QSslConfiguration config;
@@ -370,7 +373,10 @@ LauncherCore::LauncherCore() : settings(QSettings::IniFormat, QSettings::UserSco
     squareLauncher = new SquareLauncher(*this);
     squareBoot = new SquareBoot(*this, *squareLauncher);
     assetUpdater = new AssetUpdater(*this);
+
+#ifdef ENABLE_WATCHDOG
     watchdog = new Watchdog(*this);
+#endif
 
     readInitialInformation();
 
@@ -382,7 +388,9 @@ LauncherCore::LauncherCore() : settings(QSettings::IniFormat, QSettings::UserSco
 }
 
 LauncherCore::~LauncherCore() noexcept {
+#ifdef ENABLE_WATCHDOG
     delete watchdog;
+#endif
 }
 
 ProfileSettings LauncherCore::getProfile(int index) const {
