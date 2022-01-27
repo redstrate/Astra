@@ -294,7 +294,7 @@ void LauncherCore::readInitialInformation() {
         }
 
         // login
-        profile.encryptArguments = settings.value("encryptArguments", false).toBool();
+        profile.encryptArguments = settings.value("encryptArguments", true).toBool();
         profile.isSapphire = settings.value("isSapphire", false).toBool();
         profile.lobbyURL = settings.value("lobbyURL", "").toString();
         profile.rememberUsername = settings.value("rememberUsername", false).toBool();

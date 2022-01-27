@@ -40,7 +40,7 @@ struct ProfileSettings {
     bool enableDalamud = false;
 
     // login
-    bool encryptArguments = false;
+    bool encryptArguments = true;
     bool isSapphire = false;
     QString lobbyURL;
     bool rememberUsername = false, rememberPassword = false;
