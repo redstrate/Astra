@@ -173,33 +173,20 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
         });
     }
 
-    if(profile.encryptArguments) {
-        QString argJoined;
-        for(auto arg : gameArgs) {
-            argJoined += QString(" /%1 =%2").arg(arg.key, arg.value);
-        }
+    const QString argFormat = profile.encryptArguments ? " /%1 =%2" : "%1=%2";
 
-        auto earg = encryptGameArg(argJoined);
-        arguments.append(earg);
-        launchExecutable(profile, gameProcess, arguments);
-    } else {
-        if(profile.enableDalamud) {
-            // nativelauncher requires arg[3] to be the arguments, put inside of a quoted string. if this is encrypted, that's easy but this is not
-            // TODO: combine with code above (they do the same thing lol)
-            QString finalArg;
-            for(auto arg : gameArgs) {
-                finalArg.append(QString(" %1=%2").arg(arg.key, arg.value));
-            }
-
-            arguments.append(finalArg);
-        } else {
-            for(auto arg : gameArgs) {
-                arguments.append(QString("%1=%2").arg(arg.key, arg.value));
-            }
-        }
-
-        launchExecutable(profile, gameProcess, arguments);
+    QString argJoined;
+    for(const auto& arg : gameArgs) {
+        argJoined += argFormat.arg(arg.key, arg.value);
     }
+
+    if(profile.encryptArguments) {
+        arguments.append(encryptGameArg(argJoined));
+    } else {
+        arguments.append(argJoined);
+    }
+
+    launchExecutable(profile, gameProcess, arguments);
 }
 
 void LauncherCore::launchExecutable(const ProfileSettings& profile, const QStringList args) {
