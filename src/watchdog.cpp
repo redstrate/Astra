@@ -5,7 +5,6 @@
 #include <QGuiApplication>
 #include <QMenu>
 
-#if defined(Q_OS_LINUX)
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/extensions/Xcomposite.h>
@@ -60,12 +59,8 @@ QImage qimageFromXImage(XImage *xi) {
 
     return image;
 }
-#endif
 
 void Watchdog::launchGame(const ProfileSettings &settings, LoginAuth auth) {
-    // TODO: stubbed out on other platforms
-    // (you can't actually enable it on other platforms, so this is fine for now.)
-#if defined(Q_OS_LINUX)
     if(icon == nullptr) {
         icon = new QSystemTrayIcon();
     }
@@ -180,5 +175,4 @@ void Watchdog::launchGame(const ProfileSettings &settings, LoginAuth auth) {
     });
 
     timer->start(5000);
-#endif
 }
