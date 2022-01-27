@@ -3,6 +3,8 @@
 #include <QNetworkReply>
 #include <QFile>
 #include <QStandardPaths>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #include <quazip/JlCompress.h>
 
@@ -10,6 +12,7 @@
 
 const QString dalamudRemotePath = "https://goatcorp.github.io/dalamud-distrib/";
 const QString dalamudVersion = "latest";
+const QString dalamudVersionPath = dalamudRemotePath + "/version";
 
 const QString nativeLauncherRemotePath = "https://github.com/redstrate/nativelauncher/releases/download/";
 const QString nativeLauncherVersion = "v1.0.0";
@@ -25,8 +28,38 @@ void AssetUpdater::update(const ProfileSettings& profile) {
 
     const bool hasDalamud = QFile::exists(dataDir + "/NativeLauncher.exe") && QFile::exists(dataDir + "/Dalamud");
 
+    bool isDalamudUpdated = false;
+    if(hasDalamud) {
+        if(remoteDalamudVersion.isEmpty()) {
+            QNetworkRequest request(dalamudVersionPath);
+
+            auto reply = launcher.mgr->get(request);
+            reply->setObjectName("DalamudVersionCheck");
+            currentSettings = &profile; // TODO: this is dirty, should change
+
+            return;
+        } else {
+            if(QFile::exists(dataDir + "/Dalamud/Dalamud.deps.json")) {
+                QFile depsJson(dataDir + "/Dalamud/Dalamud.deps.json");
+                depsJson.open(QFile::ReadOnly);
+                QJsonDocument doc = QJsonDocument::fromJson(depsJson.readAll());
+
+                // TODO: UGLY
+                QString versionString = doc["targets"].toObject()[".NETCoreApp,Version=v5.0"].toObject().keys().filter("Dalamud")[0];
+                versionString = versionString.remove("Dalamud/");
+
+                if(versionString != remoteDalamudVersion) {
+                    isDalamudUpdated = false;
+                } else {
+                    isDalamudUpdated = true;
+                }
+            }
+        }
+    }
+
+
     // first we determine if we need dalamud
-    const bool needsDalamud = profile.enableDalamud && !hasDalamud;
+    const bool needsDalamud = profile.enableDalamud && (!hasDalamud || !isDalamudUpdated);
     if(needsDalamud) {
         // download nativelauncher release (needed to launch the game with fixed ACLs)
         {
@@ -70,6 +103,12 @@ void AssetUpdater::finishDownload(QNetworkReply* reply) {
         file.close();
 
         checkIfFinished();
+    } else if(reply->objectName() == "DalamudVersionCheck") {
+        QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+        remoteDalamudVersion = doc["AssemblyVersion"].toString();
+
+        update(*currentSettings);
+        currentSettings = nullptr;
     }
 }
 

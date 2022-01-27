@@ -22,5 +22,9 @@ signals:
 private:
     LauncherCore& launcher;
 
+    const ProfileSettings* currentSettings = nullptr;
+
+    QString remoteDalamudVersion;
+
     QTemporaryDir tempDir;
 };
