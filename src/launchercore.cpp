@@ -149,6 +149,10 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
     }
 
     auto gameProcess = new QProcess(this);
+    if(profile.useSteam) {
+        gameArgs.push_back({"IsSteam", "1"});
+        gameProcess->environment() << "IS_FFXIV_LAUNCH_FROM_STEAM=1";
+    }
 
     if(profile.enableDalamud) {
         connect(gameProcess, &QProcess::readyReadStandardOutput, [this, gameProcess, profile] {
