@@ -44,6 +44,7 @@ struct ProfileSettings {
     bool isSapphire = false;
     QString lobbyURL;
     bool rememberUsername = false, rememberPassword = false;
+    bool useSteam = false;
 };
 
 struct LoginInformation {

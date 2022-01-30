@@ -163,6 +163,14 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     });
     loginBoxLayout->addRow("Remember Password?", rememberPasswordBox);
 
+    useSteamBox = new QCheckBox();
+    connect(useSteamBox, &QCheckBox::stateChanged, [=](int) {
+        getCurrentProfile().useSteam = useSteamBox->isChecked();
+
+        this->core.saveSettings();
+    });
+    loginBoxLayout->addRow("Use Steam?", useSteamBox);
+
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     auto wineBox = new QGroupBox("Wine Options");
     auto wineBoxLayout = new QFormLayout();
@@ -367,6 +375,7 @@ void SettingsWindow::reloadControls() {
     lobbyServerURL->setText(profile.lobbyURL);
     rememberUsernameBox->setChecked(profile.rememberUsername);
     rememberPasswordBox->setChecked(profile.rememberPassword);
+    useSteamBox->setChecked(profile.useSteam);
 
     enableDalamudBox->setChecked(profile.enableDalamud);
 

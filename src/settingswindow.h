@@ -47,6 +47,7 @@ private:
     QComboBox* serverType = nullptr;
     QLineEdit* lobbyServerURL = nullptr;
     QCheckBox* rememberUsernameBox = nullptr, *rememberPasswordBox = nullptr;
+    QCheckBox* useSteamBox = nullptr;
 
     bool currentlyReloadingControls = false;
 

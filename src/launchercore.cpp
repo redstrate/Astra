@@ -299,6 +299,7 @@ void LauncherCore::readInitialInformation() {
         profile.lobbyURL = settings.value("lobbyURL", "").toString();
         profile.rememberUsername = settings.value("rememberUsername", false).toBool();
         profile.rememberPassword = settings.value("rememberPassword", false).toBool();
+        profile.useSteam = settings.value("useSteam", false).toBool();
 
         profile.useDX9 = settings.value("useDX9", false).toBool();
         profile.useEsync = settings.value("useEsync", false).toBool();
@@ -476,6 +477,7 @@ void LauncherCore::saveSettings() {
         settings.setValue("lobbyURL", profile.lobbyURL);
         settings.setValue("rememberUsername", profile.rememberUsername);
         settings.setValue("rememberPassword", profile.rememberPassword);
+        settings.setValue("useSteam", profile.useSteam);
 
         settings.setValue("enableDalamud", profile.enableDalamud);
         settings.setValue("enableWatchdog", profile.enableWatchdog);
