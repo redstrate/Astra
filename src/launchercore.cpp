@@ -153,15 +153,22 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
         gameArgs.push_back({"IsSteam", "1"});
         gameProcess->environment() << "IS_FFXIV_LAUNCH_FROM_STEAM=1";
     }
+    gameProcess->setProcessChannelMode(QProcess::MergedChannels);
 
     if(profile.enableDalamud) {
         connect(gameProcess, &QProcess::readyReadStandardOutput, [this, gameProcess, profile] {
             QString output = gameProcess->readAllStandardOutput();
+            bool success;
+            int dec = output.toInt(&success, 10);
+            if(!success)
+              return;
+            
+            qDebug() << "got output: " << output;
 
             qDebug() << "Now launching dalamud...";
 
             auto dalamudProcess = new QProcess();
-            dalamudProcess->setProcessChannelMode(QProcess::ForwardedChannels);
+            dalamudProcess->setProcessChannelMode(QProcess::MergedChannels);
 
             QStringList dalamudEnv = gameProcess->environment();
 
