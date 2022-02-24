@@ -15,6 +15,8 @@ public:
     ProfileSettings currentProfile() const;
     ProfileSettings& currentProfile();
 
+    void openPath(const QString path);
+
 public slots:
     void reloadControls();
 

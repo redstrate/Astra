@@ -20,7 +20,6 @@ public slots:
     void reloadControls();
 
 private:
-    void openPath(const QString path);
     ProfileSettings& getCurrentProfile();
 
     QListWidget* profileWidget = nullptr;

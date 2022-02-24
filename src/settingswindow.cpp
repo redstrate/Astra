@@ -129,7 +129,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
         auto gameDirectoryButton = new QPushButton("Open Game Directory");
         connect(gameDirectoryButton, &QPushButton::pressed,
-                [this] { openPath(getCurrentProfile().gamePath); });
+                [&window, this] { window.openPath(getCurrentProfile().gamePath); });
         gameDirButtonLayout->addWidget(gameDirectoryButton);
 
 #ifdef ENABLE_WATCHDOG
@@ -275,7 +275,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
         auto openPrefixButton = new QPushButton("Open Wine Prefix");
         connect(openPrefixButton, &QPushButton::pressed,
-                [this] { openPath(getCurrentProfile().winePrefixPath); });
+                [&window, this] { window.openPath(getCurrentProfile().winePrefixPath); });
         winePrefixButtonLayout->addWidget(openPrefixButton);
 
         auto enableDXVKhud = new QCheckBox("Enable DXVK HUD");
@@ -485,15 +485,4 @@ void SettingsWindow::reloadControls() {
 
 ProfileSettings& SettingsWindow::getCurrentProfile() {
     return this->core.getProfile(profileWidget->currentRow());
-}
-
-void SettingsWindow::openPath(const QString path) {
-#if defined(Q_OS_WIN)
-    // for some reason, windows requires special treatment (what else is new?)
-        const QFileInfo fileInfo(path);
-
-        QProcess::startDetached("explorer.exe", QStringList(QDir::toNativeSeparators(fileInfo.canonicalFilePath())));
-#else
-    QDesktopServices::openUrl("file://" + path);
-#endif
 }
