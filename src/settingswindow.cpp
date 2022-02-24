@@ -121,14 +121,6 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     });
     loginBoxLayout->addRow("Encrypt Game Arguments", encryptArgumentsBox);
 
-    enableDalamudBox = new QCheckBox();
-    connect(enableDalamudBox, &QCheckBox::stateChanged, [=](int) {
-        getCurrentProfile().enableDalamud = enableDalamudBox->isChecked();
-
-        this->core.saveSettings();
-    });
-    loginBoxLayout->addRow("Enable Dalamud Injection", enableDalamudBox);
-
     serverType = new QComboBox();
     serverType->insertItem(0, "Square Enix");
     serverType->insertItem(1, "Sapphire");
@@ -178,7 +170,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     auto wineBoxLayout = new QFormLayout();
     wineBox->setLayout(wineBoxLayout);
 
-    mainLayout->addWidget(wineBox, 1, 2, 2, 2);
+    mainLayout->addWidget(wineBox, 1, 2, 1, 1);
 
     winePathLabel = new QLabel();
     winePathLabel->setWordWrap(true);
@@ -294,6 +286,20 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
         this->core.saveSettings();
     });
 #endif
+
+    auto dalamudBox = new QGroupBox("Dalamud Options");
+    auto dalamudBoxLayout = new QFormLayout();
+    dalamudBox->setLayout(dalamudBoxLayout);
+
+    enableDalamudBox = new QCheckBox();
+    connect(enableDalamudBox, &QCheckBox::stateChanged, [=](int) {
+        getCurrentProfile().enableDalamud = enableDalamudBox->isChecked();
+
+        this->core.saveSettings();
+    });
+    dalamudBoxLayout->addRow("Enable Dalamud Injection", enableDalamudBox);
+
+    mainLayout->addWidget(dalamudBox, 2, 2, 1, 1);
 
     reloadControls();
 }
