@@ -29,14 +29,14 @@ private:
     // game
     QLineEdit* nameEdit = nullptr;
     QComboBox* directXCombo = nullptr;
-    QLabel* currentGameDirectory = nullptr;
+    QLineEdit* currentGameDirectory = nullptr;
     QLabel* expansionVersionLabel = nullptr;
 
     // wine
     QComboBox* wineVersionCombo;
     QPushButton* selectWineButton;
-    QLabel* winePathLabel;
-    QLabel* winePrefixDirectory;
+    QLineEdit* winePathLabel;
+    QLineEdit* winePrefixDirectory;
 
     QCheckBox* useGamescope, *useEsync, *useGamemode;
     QCheckBox* enableWatchdog;

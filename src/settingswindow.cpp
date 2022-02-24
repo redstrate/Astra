@@ -72,8 +72,8 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
         this->core.saveSettings();
     });
 
-    currentGameDirectory = new QLabel();
-    currentGameDirectory->setWordWrap(true);
+    currentGameDirectory = new QLineEdit();
+    currentGameDirectory->setReadOnly(true);
     gameBoxLayout->addRow("Game Directory", currentGameDirectory);
 
     auto selectDirectoryButton = new QPushButton("Select Game Directory");
@@ -172,8 +172,8 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
     mainLayout->addWidget(wineBox, 1, 2, 1, 1);
 
-    winePathLabel = new QLabel();
-    winePathLabel->setWordWrap(true);
+    winePathLabel = new QLineEdit();
+    winePathLabel->setReadOnly(true);
     wineBoxLayout->addRow("Wine Executable", winePathLabel);
 
     wineVersionCombo = new QComboBox();
@@ -205,8 +205,8 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
         this->reloadControls();
     });
 
-    winePrefixDirectory = new QLabel();
-    winePrefixDirectory->setWordWrap(true);
+    winePrefixDirectory = new QLineEdit();
+    winePrefixDirectory->setReadOnly(true);
     wineBoxLayout->addRow("Wine Prefix", winePrefixDirectory);
 
     auto selectPrefixButton = new QPushButton("Select Wine Prefix");
