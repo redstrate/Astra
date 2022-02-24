@@ -45,28 +45,11 @@ void AssetUpdater::update(const ProfileSettings& profile) {
 
             return;
         } else {
-            if (QFile::exists(dataDir + "/Dalamud/Dalamud.deps.json")) {
-                QFile depsJson(dataDir + "/Dalamud/Dalamud.deps.json");
-                depsJson.open(QFile::ReadOnly);
-                QJsonDocument doc = QJsonDocument::fromJson(depsJson.readAll());
-
-                // TODO: UGLY
-                QString versionString =
-                    doc["targets"]
-                        .toObject()[".NETCoreApp,Version=v5.0"]
-                        .toObject()
-                        .keys()
-                        .filter("Dalamud")[0];
-                versionString = versionString.remove("Dalamud/");
-
-                qInfo() << "Dalamud version installed: " << versionString;
-
-                if (versionString != remoteDalamudVersion) {
-                    isDalamudUpdated = false;
-                } else {
-                    qInfo() << "No need to update Dalamud.";
-                    isDalamudUpdated = true;
-                }
+            if (profile.dalamudVersion != remoteDalamudVersion) {
+                isDalamudUpdated = false;
+            } else {
+                qInfo() << "No need to update Dalamud.";
+                isDalamudUpdated = true;
             }
         }
     }

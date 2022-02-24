@@ -43,11 +43,14 @@ private:
 
     // login
     QCheckBox* encryptArgumentsBox = nullptr;
-    QCheckBox* enableDalamudBox = nullptr;
     QComboBox* serverType = nullptr;
     QLineEdit* lobbyServerURL = nullptr;
     QCheckBox* rememberUsernameBox = nullptr, *rememberPasswordBox = nullptr;
     QCheckBox* useSteamBox = nullptr;
+
+    // dalamud
+    QCheckBox* enableDalamudBox = nullptr;
+    QLabel* dalamudVersionLabel = nullptr;
 
     bool currentlyReloadingControls = false;
 

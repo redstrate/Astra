@@ -289,6 +289,27 @@ void LauncherCore::readInitialInformation() {
 #endif
         readWineInfo(profile);
 
+        const QString dataDir =
+            QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+
+        const bool hasDalamud = QFile::exists(dataDir + "/Dalamud");
+        if (hasDalamud) {
+            if (QFile::exists(dataDir + "/Dalamud/Dalamud.deps.json")) {
+                QFile depsJson(dataDir + "/Dalamud/Dalamud.deps.json");
+                depsJson.open(QFile::ReadOnly);
+                QJsonDocument doc = QJsonDocument::fromJson(depsJson.readAll());
+
+                // TODO: UGLY
+                QString versionString =
+                    doc["targets"]
+                        .toObject()[".NETCoreApp,Version=v5.0"]
+                        .toObject()
+                        .keys()
+                        .filter("Dalamud")[0];
+                profile.dalamudVersion = versionString.remove("Dalamud/");
+            }
+        }
+
         if(settings.contains("gamePath") && settings.value("gamePath").canConvert<QString>() && !settings.value("gamePath").toString().isEmpty()) {
             profile.gamePath = settings.value("gamePath").toString();
         } else {

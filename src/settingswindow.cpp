@@ -105,7 +105,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 #endif
 
     expansionVersionLabel = new QLabel();
-    gameBoxLayout->addRow("Version Info", expansionVersionLabel);
+    gameBoxLayout->addRow("Game Version", expansionVersionLabel);
 
     auto loginBox = new QGroupBox("Login Options");
     auto loginBoxLayout = new QFormLayout();
@@ -291,6 +291,8 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     auto dalamudBoxLayout = new QFormLayout();
     dalamudBox->setLayout(dalamudBoxLayout);
 
+    mainLayout->addWidget(dalamudBox, 2, 2, 1, 1);
+
     enableDalamudBox = new QCheckBox();
     connect(enableDalamudBox, &QCheckBox::stateChanged, [=](int) {
         getCurrentProfile().enableDalamud = enableDalamudBox->isChecked();
@@ -299,7 +301,8 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     });
     dalamudBoxLayout->addRow("Enable Dalamud Injection", enableDalamudBox);
 
-    mainLayout->addWidget(dalamudBox, 2, 2, 1, 1);
+    dalamudVersionLabel = new QLabel();
+    dalamudBoxLayout->addRow("Dalamud Version", dalamudVersionLabel);
 
     reloadControls();
 }
@@ -390,7 +393,13 @@ void SettingsWindow::reloadControls() {
     rememberPasswordBox->setChecked(profile.rememberPassword);
     useSteamBox->setChecked(profile.useSteam);
 
+    // dalamud
     enableDalamudBox->setChecked(profile.enableDalamud);
+    if(profile.dalamudVersion.isEmpty()) {
+        dalamudVersionLabel->setText("Dalamud is not installed.");
+    } else {
+        dalamudVersionLabel->setText(profile.dalamudVersion);
+    }
 
     window.reloadControls();
 

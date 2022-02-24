@@ -47,6 +47,8 @@ struct ProfileSettings {
         int refreshRate = 0;
     } gamescope;
 
+    QString dalamudVersion; // TODO: move out of profile settings
+
     // login
     bool encryptArguments = true;
     bool isSapphire = false;
