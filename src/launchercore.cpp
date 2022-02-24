@@ -266,6 +266,9 @@ QString LauncherCore::readVersion(QString path) {
 void LauncherCore::readInitialInformation() {
     defaultProfileIndex = settings.value("defaultProfile", 0).toInt();
 
+    gamescopeAvailable = checkIfInPath("gamescope");
+    gamemodeAvailable = checkIfInPath("gamemoderun");
+
     auto profiles = settings.childGroups();
 
     // create the Default profile if it doesnt exist
@@ -348,8 +351,13 @@ void LauncherCore::readInitialInformation() {
 
         profile.useDX9 = settings.value("useDX9", false).toBool();
         profile.useEsync = settings.value("useEsync", false).toBool();
-        profile.useGamemode = settings.value("useGamemode", false).toBool();
-        profile.useGamescope = settings.value("useGamescope", false).toBool();
+
+        if(gamescopeAvailable)
+            profile.useGamescope = settings.value("useGamescope", false).toBool();
+
+        if(gamemodeAvailable)
+            profile.useGamemode = settings.value("useGamemode", false).toBool();
+
         profile.enableDXVKhud = settings.value("enableDXVKhud", false).toBool();
         profile.enableWatchdog = settings.value("enableWatchdog", false).toBool();
 
@@ -559,4 +567,13 @@ void LauncherCore::readExpansionVersions(ProfileSettings& info, int max) {
 
     for(int i = 0; i < max; i++)
         info.expansionVersions.push_back(readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(info.gamePath, QString::number(i + 1))));
+}
+
+bool LauncherCore::checkIfInPath(const QString program) {
+    // TODO: also check /usr/local/bin, /bin32 etc (basically read $PATH)
+    const QString directory = "/usr/bin";
+
+    QFileInfo fileInfo(directory + "/" + program);
+
+    return fileInfo.exists() && fileInfo.isFile();
 }

@@ -88,7 +88,7 @@ public:
     int addProfile();
     int deleteProfile(QString name);
 
-    void launchGame(const ProfileSettings& settings, const LoginAuth auth);
+    void launchGame(const ProfileSettings& settings, LoginAuth auth);
     void launchExecutable(const ProfileSettings& settings, QStringList args);
     void launchExecutable(const ProfileSettings& settings, QProcess* process, QStringList args);
     void buildRequest(QNetworkRequest& request);
@@ -109,12 +109,16 @@ public:
     AssetUpdater* assetUpdater;
     Watchdog* watchdog;
 
+    bool gamescopeAvailable = false;
+    bool gamemodeAvailable = false;
+
     int defaultProfileIndex = 0;
 signals:
     void settingsChanged();
 
 private:
     void readExpansionVersions(ProfileSettings& info, int max);
+    bool checkIfInPath(QString program);
 
     QVector<ProfileSettings> profileSettings;
 };

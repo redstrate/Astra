@@ -273,17 +273,18 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     });
     gamescopeButtonLayout->addWidget(gamescopeLabel);
 
-    auto gamescopeCfg = new QPushButton("Configure...");
-    connect(gamescopeCfg, &QPushButton::pressed, [&] {
+    configureGamescopeButton = new QPushButton("Configure...");
+    connect(configureGamescopeButton, &QPushButton::pressed, [&] {
         auto gamescopeSettingsWindow = new GamescopeSettingsWindow(getCurrentProfile(), this->core, this);
         gamescopeSettingsWindow->show();
     });
-    gamescopeButtonLayout->addWidget(gamescopeCfg);
+    gamescopeButtonLayout->addWidget(configureGamescopeButton);
 
     connect(useGamescope, &QCheckBox::stateChanged, [this](int state) {
         getCurrentProfile().useGamescope = state;
 
         this->core.saveSettings();
+        this->reloadControls();
     });
 
     useGamemode = new QCheckBox("Use Gamemode");
@@ -393,6 +394,11 @@ void SettingsWindow::reloadControls() {
     useEsync->setChecked(profile.useEsync);
     useGamescope->setChecked(profile.useGamescope);
     useGamemode->setChecked(profile.useGamemode);
+
+    useGamemode->setEnabled(core.gamemodeAvailable);
+    useGamescope->setEnabled(core.gamescopeAvailable);
+
+    configureGamescopeButton->setEnabled(profile.useGamescope);
 #endif
 
 #ifdef ENABLE_WATCHDOG

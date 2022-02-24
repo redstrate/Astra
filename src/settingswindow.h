@@ -37,6 +37,7 @@ private:
     QPushButton* selectWineButton;
     QLineEdit* winePathLabel;
     QLineEdit* winePrefixDirectory;
+    QPushButton* configureGamescopeButton;
 
     QCheckBox* useGamescope, *useEsync, *useGamemode;
     QCheckBox* enableWatchdog;
