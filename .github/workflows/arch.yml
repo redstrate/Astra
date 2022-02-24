@@ -1,4 +1,4 @@
-name: xivlauncher Arch Linux CI
+name: Arch Linux CI
 
 on: [push, pull_request, workflow_dispatch]
 
@@ -15,11 +15,11 @@ jobs:
           mkdir build && cd build
           cmake -DCMAKE_BUILD_TYPE=None -DBUILD_SHARED_LIBS=OFF ..
           make
-          install -Dm 755 xivlauncher -t /tmp/xivlauncher
+          install -Dm 755 astra -t /tmp/astra
 
       - name: Archive the artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: xivlauncher-build
-          path: /tmp/xivlauncher
+          name: Arch Linux Executable
+          path: /tmp/astra
 
