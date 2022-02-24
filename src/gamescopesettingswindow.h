@@ -14,5 +14,5 @@ struct ProfileSettings;
 
 class GamescopeSettingsWindow : public QDialog {
 public:
-    GamescopeSettingsWindow(ProfileSettings& settings, QWidget* parent = nullptr);
+    GamescopeSettingsWindow(ProfileSettings& settings, LauncherCore& core, QWidget* parent = nullptr);
 };

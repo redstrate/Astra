@@ -275,7 +275,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
     auto gamescopeCfg = new QPushButton("Configure...");
     connect(gamescopeCfg, &QPushButton::pressed, [&] {
-        auto gamescopeSettingsWindow = new GamescopeSettingsWindow(getCurrentProfile(), this);
+        auto gamescopeSettingsWindow = new GamescopeSettingsWindow(getCurrentProfile(), this->core, this);
         gamescopeSettingsWindow->show();
     });
     gamescopeButtonLayout->addWidget(gamescopeCfg);
