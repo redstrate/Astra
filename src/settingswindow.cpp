@@ -20,8 +20,17 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     setWindowTitle("Settings");
     setWindowModality(Qt::WindowModality::ApplicationModal);
 
-    auto mainLayout = new QGridLayout(this);
+    auto mainLayout = new QVBoxLayout(this);
     setLayout(mainLayout);
+
+    auto tabWidget = new QTabWidget();
+    mainLayout->addWidget(tabWidget);
+
+    auto profileTabWidget = new QWidget();
+    tabWidget->addTab(profileTabWidget, "Profiles");
+
+    auto profileLayout = new QGridLayout();
+    profileTabWidget->setLayout(profileLayout);
 
     profileWidget = new QListWidget();
     profileWidget->addItem("INVALID *DEBUG*");
@@ -29,7 +38,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
     connect(profileWidget, &QListWidget::currentRowChanged, this, &SettingsWindow::reloadControls);
 
-    mainLayout->addWidget(profileWidget, 0, 0, 0, 1);
+    profileLayout->addWidget(profileWidget, 0, 0, 0, 1);
 
     auto addProfileButton = new QPushButton("Add Profile");
     connect(addProfileButton, &QPushButton::pressed, [=] {
@@ -37,7 +46,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
         this->core.saveSettings();
     });
-    mainLayout->addWidget(addProfileButton, 2, 0);
+    profileLayout->addWidget(addProfileButton, 2, 0);
 
     deleteProfileButton = new QPushButton("Delete Profile");
     connect(deleteProfileButton, &QPushButton::pressed, [=] {
@@ -45,7 +54,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
         this->core.saveSettings();
     });
-    mainLayout->addWidget(deleteProfileButton, 3, 0);
+    profileLayout->addWidget(deleteProfileButton, 3, 0);
 
     nameEdit = new QLineEdit();
     connect(nameEdit, &QLineEdit::editingFinished, [=] {
@@ -54,13 +63,13 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
         reloadControls();
         this->core.saveSettings();
     });
-    mainLayout->addWidget(nameEdit, 0, 1);
+    profileLayout->addWidget(nameEdit, 0, 1);
 
     auto gameBox = new QGroupBox("Game Options");
     auto gameBoxLayout = new QFormLayout();
     gameBox->setLayout(gameBoxLayout);
 
-    mainLayout->addWidget(gameBox, 1, 1);
+    profileLayout->addWidget(gameBox, 1, 1);
 
     directXCombo = new QComboBox();
     directXCombo->addItem("DirectX 11");
@@ -116,7 +125,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     auto loginBoxLayout = new QFormLayout();
     loginBox->setLayout(loginBoxLayout);
 
-    mainLayout->addWidget(loginBox, 2, 1);
+    profileLayout->addWidget(loginBox, 2, 1);
 
     encryptArgumentsBox = new QCheckBox();
     connect(encryptArgumentsBox, &QCheckBox::stateChanged, [=](int) {
@@ -175,7 +184,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     auto wineBoxLayout = new QFormLayout();
     wineBox->setLayout(wineBoxLayout);
 
-    mainLayout->addWidget(wineBox, 1, 2, 1, 1);
+    profileLayout->addWidget(wineBox, 1, 2, 1, 1);
 
     winePathLabel = new QLineEdit();
     winePathLabel->setReadOnly(true);
@@ -307,7 +316,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     auto dalamudBoxLayout = new QFormLayout();
     dalamudBox->setLayout(dalamudBoxLayout);
 
-    mainLayout->addWidget(dalamudBox, 2, 2, 1, 1);
+    profileLayout->addWidget(dalamudBox, 2, 2, 1, 1);
 
     enableDalamudBox = new QCheckBox();
     connect(enableDalamudBox, &QCheckBox::stateChanged, [=](int) {
