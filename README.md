@@ -1,36 +1,34 @@
-# xivlauncher
+# Astra
 
-Finally, a cross-platform FFXIV launcher. It should run on Windows, macOS and Linux!
+Astra is a FFXIV launcher that supports
+**multiple profiles**, **Dalamud mods**, _and_ **macOS and Linux**!
 
-Compared to XIVQuickLauncher and the official launcher, this supports
-**multiple profiles**, **Dalamud mods**, _and_ **macOS and Linux**! This means you no longer
-have to suffer running your FFXIV launcher through Wine. Under Linux, you have **Watchdog** available to help you through the login queue.
+At the moment, there are a few caveats that are good to know if you use these features:
+* There is no **game patching** support, but the launcher will prompt you to launch another launcher anyway.
+* There is no **news list** yet.
+* The **Steam support is untested.**
 
-As of this moment, the three missing major features are **game patching**, **external tool launching** and **the news list**.
-If you don't use these features then the launcher is still usable.
+Despite this, the launcher is still usable and I use it myself on a regular basis on Linux. I suggest you read more in the [FAQ](https://github.com/redstrate/astra/wiki/Frequently-Asked-Questions)!
 
-More information can be found in the [FAQ](https://github.com/redstrate/xivlauncher/wiki/Frequently-Asked-Questions).
-
-![screenshot](https://github.com/redstrate/xivlauncher/blob/main/misc/screenshot.png?raw=true)
+![screenshot](https://github.com/redstrate/astra/blob/main/misc/screenshot.png?raw=true)
 
 ## Features
-* Can use native (Windows) and Wine (macOS, Linux) versions of FFXIV.
+* Can use native (Windows) and Wine-based (macOS, Linux) versions of FFXIV.
 * You can use Dalamud, which is downloaded within the launcher just like XIVQuickLauncher. 
 * Can connect to the official Square Enix servers _as well_ as Sapphire servers.
 * Multiple profile support!
-  * For example, having a regular Square Enix profile and a test Sapphire profile. Or maybe one for DX11 and another for DX9?
+  * For example, you can have a regular Square Enix profile and a testing Sapphire profile. Or maybe one for DX11 and another for DX9?
+  * These also have seperate, saved logins.
   * All settings can be configured per-profile! 
-* Saving username and/or password. These are saved per-profile, and are encrypted using your system wallet.
-* Encrypted game argument support similiar to what XIVQuickLauncher and the official ffxivboot already does.
+* Securely saving username and/or password. These are saved per-profile, and are encrypted using your system wallet, and will never be stored unencrypted.
+* Encrypted game argument support similiar to what XIVQuickLauncher and the official ffxivboot does, preventing other programs from snooping your login token.
 * Enable several (Linux) Wine-specific performance enhancements such as enabling Esync.
-* You have a **Watchdog** available to help you through queues.
-  * Only works on X11 and Linux (at the moment)
+* On Linux, take advantafe of Watchdog to help notify you if you've moved in the login queue.
+  * Only works on X11.
   * Will send you a notification on any change in the login queue. (moving up, logged in, lobby error, etc)
-  * Can view your spot in the queue easily by using the system tray icon.
+  * You can view your spot in the queue easily by using the system tray icon.
 
 ## Usage
-Pre-compiled binaries are not (yet) available, so you must compile from source. Please see the relevant
-usage guide for your platform:
-* [Windows](https://github.com/redstrate/xivlauncher/wiki/Windows-Usage)
-* [macOS](https://github.com/redstrate/xivlauncher/wiki/macOS-Usage)
-* [Linux](https://github.com/redstrate/xivlauncher/wiki/Linux-Usage)
+* On [Windows](https://github.com/redstrate/astra/wiki/Windows-Usage)
+* On [macOS](https://github.com/redstrate/astra/wiki/macOS-Usage)
+* On [Linux](https://github.com/redstrate/astra/wiki/Linux-Usage)

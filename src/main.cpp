@@ -15,9 +15,9 @@ int main(int argc, char* argv[]) {
     QCoreApplication::setOrganizationDomain("redstrate.com");
 
 #ifdef NDEBUG
-    QCoreApplication::setApplicationName("xivlauncher");
+    QCoreApplication::setApplicationName("astra");
 #else
-    QCoreApplication::setApplicationName("xivlauncher-debug");
+    QCoreApplication::setApplicationName("astra-debug");
 #endif
 
     LauncherCore c;

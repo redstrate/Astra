@@ -12,6 +12,8 @@
 #include "assetupdater.h"
 
 LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindow(parent), core(core) {
+    setWindowTitle("Astra");
+
     connect(&core, &LauncherCore::settingsChanged, this, &LauncherWindow::reloadControls);
 
     QMenu* fileMenu = menuBar()->addMenu("File");
@@ -55,9 +57,9 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
 #endif
 
     QMenu* helpMenu = menuBar()->addMenu("Help");
-    QAction* showAbout = helpMenu->addAction("About xivlauncher");
+    QAction* showAbout = helpMenu->addAction("About Astra");
     connect(showAbout, &QAction::triggered, [=] {
-        QMessageBox::about(this, "About xivlauncher", "The source code is available <a href='https://github.com/redstrate/xivlauncher'>here</a>.");
+        QMessageBox::about(this, "About Astra", "The source code is available <a href='https://github.com/redstrate/astra'>here</a>.");
     });
 
     QAction* showAboutQt = helpMenu->addAction("About Qt");

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(xivlauncher)
+project(Astra)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -51,23 +51,23 @@ if(UNIX)
             Xrender)
 endif()
 
-add_executable(xivlauncher ${SRC})
+add_executable(astra ${SRC})
 
-target_link_libraries(xivlauncher PUBLIC ${LIBRARIES})
+target_link_libraries(astra PUBLIC ${LIBRARIES})
 
 # disgusting, thanks qtkeychain and quazip
-target_include_directories(xivlauncher PRIVATE
+target_include_directories(astra PRIVATE
         ${CMAKE_BINARY_DIR}/_deps/qtkeychain-src
         ${CMAKE_BINARY_DIR}/_deps/qtkeychain-build
         ${CMAKE_BINARY_DIR}/_deps/quazip-src)
 
 if(ENABLE_WATCHDOG)
-    target_include_directories(xivlauncher PRIVATE ${TESSERACT_INCLUDE_DIRS} ${LEPTONICA_INCLUDE_DIRS})
+    target_include_directories(astra PRIVATE ${TESSERACT_INCLUDE_DIRS} ${LEPTONICA_INCLUDE_DIRS})
 
-    target_compile_definitions(xivlauncher PRIVATE ENABLE_WATCHDOG)
+    target_compile_definitions(astra PRIVATE ENABLE_WATCHDOG)
 endif()
 
-install(TARGETS xivlauncher
+install(TARGETS astra
         DESTINATION "${INSTALL_BIN_PATH}"
         )
 
@@ -79,8 +79,8 @@ if(WIN32)
     find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${QT_BIN_DIR}")
 
     # Run windeployqt immediately after build
-    add_custom_command(TARGET xivlauncher
+    add_custom_command(TARGET astra
             POST_BUILD
-            COMMAND "${WINDEPLOYQT_ENV_SETUP}" && "${WINDEPLOYQT_EXECUTABLE}" \"$<TARGET_FILE:xivlauncher>\"
+            COMMAND "${WINDEPLOYQT_ENV_SETUP}" && "${WINDEPLOYQT_EXECUTABLE}" \"$<TARGET_FILE:astra>\"
             )
 endif()
