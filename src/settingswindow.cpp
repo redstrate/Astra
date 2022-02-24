@@ -244,12 +244,12 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 #endif
 
 #if defined(Q_OS_LINUX)
-    useEsync = new QCheckBox("Use Esync");
+    useEsync = new QCheckBox("Use Better Sync Primitives (Esync, Fsync, and Futex2)");
     wineBoxLayout->addWidget(useEsync);
 
     auto esyncLabel = new QPushButton("?");
     connect(esyncLabel, &QPushButton::pressed, [esyncLabel] {
-        QToolTip::showText(esyncLabel->mapToGlobal(QPoint()), "Improves general game performance, but requires a Wine built with the Esync patches.\nIf you use the latest Wine staging, it should work.");
+        QToolTip::showText(esyncLabel->mapToGlobal(QPoint()), "This may improve game performance, but requires a Wine and kernel with the patches included.");
     });
     wineBoxLayout->addWidget(esyncLabel);
 

@@ -232,8 +232,11 @@ void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* pr
     if(profile.useGamemode)
         arguments.push_back("gamemoderun");
 
-    if(profile.useEsync)
+    if(profile.useEsync) {
         env << "WINEESYNC=1";
+        env << "WINEFSYNC=1";
+        env << "WINEFSYNC_FUTEX2=1";
+    }
 #endif
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
