@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QProcess>
 #include <QGridLayout>
+#include <QToolTip>
 
 #include "launchercore.h"
 #include "launcherwindow.h"
@@ -236,7 +237,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     wineBoxLayout->addWidget(openPrefixButton);
 
     auto enableDXVKhud = new QCheckBox("Enable DXVK HUD");
-    wineBoxLayout->addWidget(enableDXVKhud);
+    wineBoxLayout->addRow("Wine Tweaks", enableDXVKhud);
 
     connect(enableDXVKhud, &QCheckBox::stateChanged, [this](int state) {
         getCurrentProfile().enableDXVKhud = state;
@@ -248,9 +249,10 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     useEsync = new QCheckBox("Use Esync");
     wineBoxLayout->addWidget(useEsync);
 
-    auto esyncLabel = new QLabel("Improves general game performance, but requires a Wine built with the Esync patches.\n"
-                                 "If you use the latest Wine staging, it should work.");
-    esyncLabel->setWordWrap(true);
+    auto esyncLabel = new QPushButton("?");
+    connect(esyncLabel, &QPushButton::pressed, [esyncLabel] {
+        QToolTip::showText(esyncLabel->mapToGlobal(QPoint()), "Improves general game performance, but requires a Wine built with the Esync patches.\nIf you use the latest Wine staging, it should work.");
+    });
     wineBoxLayout->addWidget(esyncLabel);
 
     connect(useEsync, &QCheckBox::stateChanged, [this](int state) {
@@ -262,9 +264,10 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     useGamescope = new QCheckBox("Use Gamescope");
     wineBoxLayout->addWidget(useGamescope);
 
-    auto gamescopeLabel = new QLabel("Use the SteamOS compositor that uses Wayland.\n"
-                                 "If you are experiencing input issues on XWayland, try this option if you have it installed.");
-    gamescopeLabel->setWordWrap(true);
+    auto gamescopeLabel = new QPushButton("?");
+    connect(gamescopeLabel, &QPushButton::pressed, [gamescopeLabel] {
+        QToolTip::showText(gamescopeLabel->mapToGlobal(QPoint()), "Use the SteamOS compositor that uses Wayland.\nIf you are experiencing input issues on XWayland, try this option if you have it installed.");
+    });
     wineBoxLayout->addWidget(gamescopeLabel);
 
     connect(useGamescope, &QCheckBox::stateChanged, [this](int state) {
@@ -276,9 +279,10 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     useGamemode = new QCheckBox("Use Gamemode");
     wineBoxLayout->addWidget(useGamemode);
 
-    auto gamemodeLabel = new QLabel("Use Feral Interactive's GameMode, which applies a couple of performance enhancements.\n"
-                                     "May give a slight performance boost, but requires GameMode to be installed.\n");
-    gamemodeLabel->setWordWrap(true);
+    auto gamemodeLabel = new QPushButton("?");
+    connect(gamemodeLabel, &QPushButton::pressed, [gamemodeLabel] {
+       QToolTip::showText(gamemodeLabel->mapToGlobal(QPoint()), "Use Feral Interactive's GameMode, which applies a couple of performance enhancements.\nMay give a slight performance boost, but requires GameMode to be installed.");
+    });
     wineBoxLayout->addWidget(gamemodeLabel);
 
     connect(useGamemode, &QCheckBox::stateChanged, [this](int state) {
