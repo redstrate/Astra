@@ -76,6 +76,11 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     currentGameDirectory->setReadOnly(true);
     gameBoxLayout->addRow("Game Directory", currentGameDirectory);
 
+    auto gameDirButtonLayout = new QHBoxLayout();
+    auto gameDirButtonContainer = new QWidget();
+    gameDirButtonContainer->setLayout(gameDirButtonLayout);
+    gameBoxLayout->addWidget(gameDirButtonContainer);
+
     auto selectDirectoryButton = new QPushButton("Select Game Directory");
     connect(selectDirectoryButton, &QPushButton::pressed, [this] {
         getCurrentProfile().gamePath = QFileDialog::getExistingDirectory(this, "Open Game Directory");
@@ -85,13 +90,13 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
         this->core.readGameVersion();
     });
-    gameBoxLayout->addWidget(selectDirectoryButton);
+    gameDirButtonLayout->addWidget(selectDirectoryButton);
 
     auto gameDirectoryButton = new QPushButton("Open Game Directory");
     connect(gameDirectoryButton, &QPushButton::pressed, [this] {
         openPath(getCurrentProfile().gamePath);
     });
-    gameBoxLayout->addWidget(gameDirectoryButton);
+    gameDirButtonLayout->addWidget(gameDirectoryButton);
 
 #ifdef ENABLE_WATCHDOG
     enableWatchdog = new QCheckBox("Enable Watchdog (X11 only)");
@@ -209,6 +214,11 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     winePrefixDirectory->setReadOnly(true);
     wineBoxLayout->addRow("Wine Prefix", winePrefixDirectory);
 
+    auto winePrefixButtonLayout = new QHBoxLayout();
+    auto winePrefixButtonContainer = new QWidget();
+    winePrefixButtonContainer->setLayout(winePrefixButtonLayout);
+    wineBoxLayout->addWidget(winePrefixButtonContainer);
+
     auto selectPrefixButton = new QPushButton("Select Wine Prefix");
     connect(selectPrefixButton, &QPushButton::pressed, [this] {
         getCurrentProfile().winePrefixPath = QFileDialog::getExistingDirectory(this, "Open Wine Prefix");
@@ -216,13 +226,13 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
         this->core.saveSettings();
         this->reloadControls();
     });
-    wineBoxLayout->addWidget(selectPrefixButton);
+    winePrefixButtonLayout->addWidget(selectPrefixButton);
 
     auto openPrefixButton = new QPushButton("Open Wine Prefix");
     connect(openPrefixButton, &QPushButton::pressed, [this] {
         openPath(getCurrentProfile().winePrefixPath);
     });
-    wineBoxLayout->addWidget(openPrefixButton);
+    winePrefixButtonLayout->addWidget(openPrefixButton);
 
     auto enableDXVKhud = new QCheckBox("Enable DXVK HUD");
     wineBoxLayout->addRow("Wine Tweaks", enableDXVKhud);
@@ -252,18 +262,23 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
     useGamescope = new QCheckBox("Use Gamescope");
     wineBoxLayout->addWidget(useGamescope);
 
+    auto gamescopeButtonLayout = new QHBoxLayout();
+    auto gamescopeButtonContainer = new QWidget();
+    gamescopeButtonContainer->setLayout(gamescopeButtonLayout);
+    wineBoxLayout->addWidget(gamescopeButtonContainer);
+
     auto gamescopeLabel = new QPushButton("?");
     connect(gamescopeLabel, &QPushButton::pressed, [gamescopeLabel] {
         QToolTip::showText(gamescopeLabel->mapToGlobal(QPoint()), "Use the SteamOS compositor that uses Wayland.\nIf you are experiencing input issues on XWayland, try this option if you have it installed.");
     });
-    wineBoxLayout->addWidget(gamescopeLabel);
+    gamescopeButtonLayout->addWidget(gamescopeLabel);
 
     auto gamescopeCfg = new QPushButton("Configure...");
     connect(gamescopeCfg, &QPushButton::pressed, [&] {
         auto gamescopeSettingsWindow = new GamescopeSettingsWindow(getCurrentProfile(), this);
         gamescopeSettingsWindow->show();
     });
-    wineBoxLayout->addWidget(gamescopeCfg);
+    gamescopeButtonLayout->addWidget(gamescopeCfg);
 
     connect(useGamescope, &QCheckBox::stateChanged, [this](int state) {
         getCurrentProfile().useGamescope = state;
