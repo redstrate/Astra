@@ -10,7 +10,7 @@ At the moment, there are a few caveats that are good to know if you use these fe
 
 Despite this, the launcher is still usable and I use it myself on a regular basis on Linux. I suggest you read more in the [FAQ](https://github.com/redstrate/astra/wiki/Frequently-Asked-Questions)!
 
-![screenshot](https://github.com/redstrate/astra/blob/main/misc/screenshot.png?raw=true)
+![screenshot](https://github.com/redstrate/astra/blob/main/misc/screenshot.webp?raw=true)
 
 ## Features
 * Can use native (Windows) and Wine-based (macOS, Linux) versions of FFXIV.
