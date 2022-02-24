@@ -122,19 +122,23 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     connect(core.assetUpdater, &AssetUpdater::finishedUpdating, [=] {
         auto info = LoginInformation{&currentProfile(), usernameEdit->text(), passwordEdit->text(), otpEdit->text()};
 
+#ifndef QT_DEBUG
         if(currentProfile().rememberUsername) {
             auto job = new QKeychain::WritePasswordJob("LauncherWindow");
             job->setTextData(usernameEdit->text());
             job->setKey(currentProfile().name + "-username");
             job->start();
         }
+#endif
 
+#ifndef QT_DEBUG
         if(currentProfile().rememberPassword) {
             auto job = new QKeychain::WritePasswordJob("LauncherWindow");
             job->setTextData(passwordEdit->text());
             job->setKey(currentProfile().name + "-password");
             job->start();
         }
+#endif
 
         if(currentProfile().isSapphire) {
             this->core.sapphireLauncher->login(currentProfile().lobbyURL, info);
@@ -196,6 +200,7 @@ void LauncherWindow::reloadControls() {
     }
 
     rememberUsernameBox->setChecked(currentProfile().rememberUsername);
+#ifndef QT_DEBUG
     if(currentProfile().rememberUsername) {
         auto job = new QKeychain::ReadPasswordJob("LauncherWindow");
         job->setKey(currentProfile().name + "-username");
@@ -205,8 +210,10 @@ void LauncherWindow::reloadControls() {
             usernameEdit->setText(job->textData());
         });
     }
+#endif
 
     rememberPasswordBox->setChecked(currentProfile().rememberPassword);
+#ifndef QT_DEBUG
     if(currentProfile().rememberPassword) {
         auto job = new QKeychain::ReadPasswordJob("LauncherWindow");
         job->setKey(currentProfile().name + "-password");
@@ -216,6 +223,7 @@ void LauncherWindow::reloadControls() {
             passwordEdit->setText(job->textData());
         });
     }
+#endif
 
     const bool canLogin = currentProfile().isSapphire || (!currentProfile().isSapphire && core.squareLauncher->isGateOpen);
 
