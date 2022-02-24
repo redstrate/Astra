@@ -212,8 +212,21 @@ void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* pr
 #if defined(Q_OS_LINUX)
     if(profile.useGamescope) {
         arguments.push_back("gamescope");
-        arguments.push_back("-f");
-        arguments.push_back("-b");
+
+        if(profile.gamescope.fullscreen)
+            arguments.push_back("-f");
+
+        if(profile.gamescope.borderless)
+            arguments.push_back("-b");
+
+        if(profile.gamescope.width >= 0)
+            arguments.push_back("-w " + QString::number(profile.gamescope.width));
+
+        if(profile.gamescope.height >= 0)
+            arguments.push_back("-h " + QString::number(profile.gamescope.height));
+
+        if(profile.gamescope.refreshRate >= 0)
+            arguments.push_back("-r " + QString::number(profile.gamescope.refreshRate));
     }
 
     if(profile.useGamemode)
@@ -318,6 +331,13 @@ void LauncherCore::readInitialInformation() {
         profile.useGamescope = settings.value("useGamescope", false).toBool();
         profile.enableDXVKhud = settings.value("enableDXVKhud", false).toBool();
         profile.enableWatchdog = settings.value("enableWatchdog", false).toBool();
+
+        // gamescope
+        profile.gamescope.fullscreen = settings.value("gamescopeFullscreen", true).toBool();
+        profile.gamescope.borderless = settings.value("gamescopeBorderless", true).toBool();
+        profile.gamescope.width = settings.value("gamescopeWidth", 0).toInt();
+        profile.gamescope.height = settings.value("gamescopeHeight", 0).toInt();
+        profile.gamescope.refreshRate = settings.value("gamescopeRefreshRate", 0).toInt();
 
         profile.enableDalamud = settings.value("enableDalamud", false).toBool();
 
@@ -481,6 +501,13 @@ void LauncherCore::saveSettings() {
         settings.setValue("useEsync", profile.useEsync);
         settings.setValue("useGamescope", profile.useGamescope);
         settings.setValue("useGamemode", profile.useGamemode);
+
+        // gamescope
+        settings.setValue("gamescopeFullscreen", profile.gamescope.fullscreen);
+        settings.setValue("gamescopeBorderless", profile.gamescope.borderless);
+        settings.setValue("gamescopeWidth", profile.gamescope.width);
+        settings.setValue("gamescopeHeight", profile.gamescope.height);
+        settings.setValue("gamescopeRefreshRate", profile.gamescope.refreshRate);
 
         // login
         settings.setValue("encryptArguments", profile.encryptArguments);

@@ -29,7 +29,9 @@ set(SRC
         src/assetupdater.cpp
         src/assetupdater.h
         src/launcherwindow.cpp
-        src/launcherwindow.h)
+        src/launcherwindow.h
+        src/gamescopesettingswindow.cpp
+        src/gamescopesettingswindow.h)
 
 set(LIBRARIES
         Qt5::Core Qt5::Widgets Qt5::Network qt5keychain QuaZip)

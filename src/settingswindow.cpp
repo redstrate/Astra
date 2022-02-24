@@ -14,8 +14,9 @@
 
 #include "launchercore.h"
 #include "launcherwindow.h"
+#include "gamescopesettingswindow.h"
 
-SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidget* parent) : core(core), window(window), QWidget(parent) {
+SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidget* parent) : core(core), window(window), QDialog(parent) {
     setWindowTitle("Settings");
     setWindowModality(Qt::WindowModality::ApplicationModal);
 
@@ -269,6 +270,13 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
         QToolTip::showText(gamescopeLabel->mapToGlobal(QPoint()), "Use the SteamOS compositor that uses Wayland.\nIf you are experiencing input issues on XWayland, try this option if you have it installed.");
     });
     wineBoxLayout->addWidget(gamescopeLabel);
+
+    auto gamescopeCfg = new QPushButton("Configure...");
+    connect(gamescopeCfg, &QPushButton::pressed, [&] {
+        auto gamescopeSettingsWindow = new GamescopeSettingsWindow(getCurrentProfile(), this);
+        gamescopeSettingsWindow->show();
+    });
+    wineBoxLayout->addWidget(gamescopeCfg);
 
     connect(useGamescope, &QCheckBox::stateChanged, [this](int state) {
         getCurrentProfile().useGamescope = state;

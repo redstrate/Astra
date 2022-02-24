@@ -20,7 +20,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
 
     QAction* settingsAction = fileMenu->addAction("Settings...");
     connect(settingsAction, &QAction::triggered, [=] {
-        auto window = new SettingsWindow(*this, this->core);
+        auto window = new SettingsWindow(*this, this->core, this);
         connect(&this->core, &LauncherCore::settingsChanged, window, &SettingsWindow::reloadControls);
         window->show();
     });

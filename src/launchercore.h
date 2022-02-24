@@ -39,6 +39,14 @@ struct ProfileSettings {
     bool enableDXVKhud = false;
     bool enableDalamud = false;
 
+    struct GamescopeOptions {
+        bool fullscreen = true;
+        bool borderless = true;
+        int width = 0;
+        int height = 0;
+        int refreshRate = 0;
+    } gamescope;
+
     // login
     bool encryptArguments = true;
     bool isSapphire = false;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QWidget>
+#include <QDialog>
 #include <QListWidget>
 #include <QComboBox>
 #include <QLineEdit>
@@ -12,7 +12,7 @@ class LauncherCore;
 class LauncherWindow;
 struct ProfileSettings;
 
-class SettingsWindow : public QWidget {
+class SettingsWindow : public QDialog {
 public:
     SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidget* parent = nullptr);
 
