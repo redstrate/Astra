@@ -269,7 +269,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
     auto gamescopeLabel = new QPushButton("?");
     connect(gamescopeLabel, &QPushButton::pressed, [gamescopeLabel] {
-        QToolTip::showText(gamescopeLabel->mapToGlobal(QPoint()), "Use the SteamOS compositor that uses Wayland.\nIf you are experiencing input issues on XWayland, try this option if you have it installed.");
+        QToolTip::showText(gamescopeLabel->mapToGlobal(QPoint()), "Use the micro-compositor compositor that uses Wayland and XWayland to create a nested session.\nIf you primarily use fullscreen mode, this may improve input handling especially on Wayland.");
     });
     gamescopeButtonLayout->addWidget(gamescopeLabel);
 
@@ -287,12 +287,12 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
         this->reloadControls();
     });
 
-    useGamemode = new QCheckBox("Use Gamemode");
+    useGamemode = new QCheckBox("Use GameMode");
     wineBoxLayout->addWidget(useGamemode);
 
     auto gamemodeLabel = new QPushButton("?");
     connect(gamemodeLabel, &QPushButton::pressed, [gamemodeLabel] {
-       QToolTip::showText(gamemodeLabel->mapToGlobal(QPoint()), "Use Feral Interactive's GameMode, which applies a couple of performance enhancements.\nMay give a slight performance boost, but requires GameMode to be installed.");
+       QToolTip::showText(gamemodeLabel->mapToGlobal(QPoint()), "A special game performance enhancer, which automatically tunes your CPU scheduler among other things. This may improve game performance.");
     });
     wineBoxLayout->addWidget(gamemodeLabel);
 
