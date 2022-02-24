@@ -180,11 +180,6 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
     mainLayout->addWidget(wineBox, 1, 2, 2, 2);
 
-    auto infoLabel = new QLabel("This is a list of possible enhancements you can make to your Wine gaming experience.\n"
-                                "This is all stuff you can do outside of the launcher, but we can take care of it for you.");
-    infoLabel->setWordWrap(true);
-    wineBoxLayout->addWidget(infoLabel);
-
     winePathLabel = new QLabel();
     winePathLabel->setWordWrap(true);
     wineBoxLayout->addRow("Wine Executable", winePathLabel);
