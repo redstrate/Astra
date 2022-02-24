@@ -1,0 +1,9 @@
+﻿---
+IndentWidth: '4'
+Language: Cpp
+NamespaceIndentation: All
+PointerAlignment: Left
+TabWidth: '0'
+UseTab: Never
+
+...
