@@ -26,6 +26,9 @@ private:
     QListWidget* profileWidget = nullptr;
     QPushButton* deleteProfileButton = nullptr;
 
+    // general
+    QCheckBox* closeWhenLaunched = nullptr;
+
     // game
     QLineEdit* nameEdit = nullptr;
     QComboBox* directXCombo = nullptr;

@@ -197,7 +197,14 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
         arguments.append(argJoined);
     }
 
+    connect(gameProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+            [=](int exitCode, QProcess::ExitStatus exitStatus){
+                gameClosed();
+            });
+
     launchExecutable(profile, gameProcess, arguments);
+
+    successfulLaunch();
 }
 
 void LauncherCore::launchExecutable(const ProfileSettings& profile, const QStringList args) {
@@ -268,6 +275,8 @@ QString LauncherCore::readVersion(QString path) {
 
 void LauncherCore::readInitialInformation() {
     defaultProfileIndex = settings.value("defaultProfile", 0).toInt();
+
+    appSettings.closeWhenLaunched = settings.value("closeWhenLaunched", true).toBool();
 
     gamescopeAvailable = checkIfInPath("gamescope");
     gamemodeAvailable = checkIfInPath("gamemoderun");
@@ -512,6 +521,7 @@ int LauncherCore::deleteProfile(QString name) {
 
 void LauncherCore::saveSettings() {
     settings.setValue("defaultProfile", defaultProfileIndex);
+    settings.setValue("closeWhenLaunched", appSettings.closeWhenLaunched);
 
     for(int i = 0; i < profileSettings.size(); i++) {
         const auto& profile = profileSettings[i];

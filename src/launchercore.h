@@ -57,6 +57,10 @@ struct ProfileSettings {
     bool useSteam = false;
 };
 
+struct AppSettings {
+    bool closeWhenLaunched = true;
+};
+
 struct LoginInformation {
     const ProfileSettings* settings = nullptr;
 
@@ -112,9 +116,13 @@ public:
     bool gamescopeAvailable = false;
     bool gamemodeAvailable = false;
 
+    AppSettings appSettings;
+
     int defaultProfileIndex = 0;
 signals:
     void settingsChanged();
+    void successfulLaunch();
+    void gameClosed();
 
 private:
     void readExpansionVersions(ProfileSettings& info, int max);

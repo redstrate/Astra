@@ -146,6 +146,15 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
         }
     });
 
+    connect(&core, &LauncherCore::successfulLaunch, [&] {
+        hide();
+    });
+
+    connect(&core, &LauncherCore::gameClosed, [&] {
+        if(core.appSettings.closeWhenLaunched)
+            QCoreApplication::quit();
+    });
+
     reloadControls();
 }
 
