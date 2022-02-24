@@ -11,9 +11,6 @@
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
-    QCoreApplication::setOrganizationName("redstrate");
-    QCoreApplication::setOrganizationDomain("redstrate.com");
-
 #ifdef NDEBUG
     QCoreApplication::setApplicationName("astra");
 #else
