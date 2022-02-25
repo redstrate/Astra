@@ -156,7 +156,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
     gameProcess->setProcessChannelMode(QProcess::MergedChannels);
 
     if(profile.enableDalamud) {
-        connect(gameProcess, &QProcess::readyReadStandardOutput, [this, gameProcess, profile] {
+        connect(gameProcess, &QProcess::readyReadStandardOutput, [this, gameProcess, profile, dataDir] {
             QString output = gameProcess->readAllStandardOutput();
             bool success;
             int dec = output.toInt(&success, 10);
@@ -167,8 +167,21 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
 
             qDebug() << "Now launching dalamud...";
 
+            QJsonObject startInfo;
+            startInfo["WorkingDirectory"] = QJsonValue();
+            startInfo["ConfigurationPath"] = dataDir + "/dalamudConfig.json";
+            startInfo["PluginDirectory"] = dataDir + "/installedPlugins";
+            startInfo["AssetDirectory"] = dataDir + "/DalamudAssets";
+            startInfo["DefaultPluginDirectory"] = dataDir + "/devPlugins";
+            startInfo["DelayInitializeMs"] = 5;
+            startInfo["GameVersion"] = profile.gameVersion;
+            startInfo["Language"] = profile.language;
+            startInfo["OptOutMbCollection"] = false;
+
+            QString argsEncoded = QJsonDocument(startInfo).toJson().toBase64();
+
             auto dalamudProcess = new QProcess();
-            dalamudProcess->setProcessChannelMode(QProcess::MergedChannels);
+            dalamudProcess->setProcessChannelMode(QProcess::ForwardedChannels);
 
             QStringList dalamudEnv = gameProcess->environment();
 
@@ -180,7 +193,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
 
             QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
-            dalamudProcess->start(profile.winePath, {dataDir + "/Dalamud/" + "Dalamud.Injector.exe", output});
+            dalamudProcess->start(profile.winePath, {dataDir + "/Dalamud/" + "Dalamud.Injector.exe", output, argsEncoded});
         });
     }
 
