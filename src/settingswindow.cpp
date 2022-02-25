@@ -191,7 +191,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
             this->core.saveSettings();
         });
-        loginBoxLayout->addRow("Remember Username?", rememberUsernameBox);
+        loginBoxLayout->addRow("Remember Username", rememberUsernameBox);
 
         rememberPasswordBox = new QCheckBox();
         connect(rememberPasswordBox, &QCheckBox::stateChanged, [=](int) {
@@ -200,7 +200,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
             this->core.saveSettings();
         });
-        loginBoxLayout->addRow("Remember Password?", rememberPasswordBox);
+        loginBoxLayout->addRow("Remember Password", rememberPasswordBox);
 
         useSteamBox = new QCheckBox();
         connect(useSteamBox, &QCheckBox::stateChanged, [=](int) {
@@ -208,7 +208,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
             this->core.saveSettings();
         });
-        loginBoxLayout->addRow("Use Steam?", useSteamBox);
+        loginBoxLayout->addRow("Is Steam Account", useSteamBox);
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
         auto wineBox = new QGroupBox("Wine Options");
