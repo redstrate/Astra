@@ -323,6 +323,13 @@ void LauncherCore::readInitialInformation() {
                         .filter("Dalamud")[0];
                 profile.dalamudVersion = versionString.remove("Dalamud/");
             }
+
+            if(QFile::exists(dataDir + "/DalamudAssets/asset.ver")) {
+                QFile assetJson(dataDir + "/DalamudAssets/asset.ver");
+                assetJson.open(QFile::ReadOnly | QFile::Text);
+
+                profile.dalamudAssetVersion = QString(assetJson.readAll()).toInt();
+            }
         }
 
         if(settings.contains("gamePath") && settings.value("gamePath").canConvert<QString>() && !settings.value("gamePath").toString().isEmpty()) {

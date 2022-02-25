@@ -16,6 +16,9 @@ public:
     void finishDownload(QNetworkReply* reply);
     void beginInstall();
 
+    void checkIfDalamudAssetsDone();
+    void checkIfFinished();
+
 signals:
     void finishedUpdating();
 
@@ -27,4 +30,11 @@ private:
     QString remoteDalamudVersion;
 
     QTemporaryDir tempDir;
+
+    bool doneDownloadingDalamud = true;
+    bool doneDownloadingNativelauncher = true;
+    bool needsInstall = false;
+
+    int remoteDalamudAssetVersion;
+    QList<QString> dalamudAssetNeededFilenames;
 };

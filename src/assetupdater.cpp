@@ -5,14 +5,20 @@
 #include <QJsonObject>
 #include <QNetworkReply>
 #include <QStandardPaths>
+#include <QJsonArray>
 
 #include <quazip/JlCompress.h>
 
 #include "launchercore.h"
 
-const QString dalamudRemotePath = "https://goatcorp.github.io/dalamud-distrib/";
-const QString dalamudVersion = "latest";
-const QString dalamudVersionPath = dalamudRemotePath + "version";
+const QString baseGoatcorpDomain = "https://goatcorp.github.io";
+
+const QString dalamudRemotePath = baseGoatcorpDomain + "/dalamud-distrib";
+const QString dalamudVersion = "/latest";
+const QString dalamudVersionPath = dalamudRemotePath + "/version";
+
+const QString dalamudAssetRemotePath = baseGoatcorpDomain + "/DalamudAssets";
+const QString dalamudAssetManifestPath = dalamudAssetRemotePath + "/asset.json";
 
 const QString nativeLauncherRemotePath =
     "https://github.com/redstrate/nativelauncher/releases/download/";
@@ -26,6 +32,12 @@ AssetUpdater::AssetUpdater(LauncherCore& launcher) : launcher(launcher) {
 }
 
 void AssetUpdater::update(const ProfileSettings& profile) {
+    // non-dalamud users can bypass this process since it's not needed
+    if(!profile.enableDalamud) {
+        finishedUpdating();
+        return;
+    }
+
     const QString dataDir =
         QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
@@ -54,6 +66,99 @@ void AssetUpdater::update(const ProfileSettings& profile) {
         }
     }
 
+   {
+        qInfo() << "Checking Dalamud assets...";
+
+        // we want to prevent logging in before we actually check the version
+        dalamudAssetNeededFilenames.append("dummy");
+
+        // first we want to fetch the list of assets required
+        QNetworkRequest request(dalamudAssetManifestPath);
+
+        auto reply = launcher.mgr->get(request);
+
+        connect(reply, &QNetworkReply::finished, [reply, this, profile] {
+            // lol, they actually provide invalid json. let's fix it if it's borked
+            QString badJson = reply->readAll();
+
+            qInfo() << reply->errorString();
+            qInfo() << "Got asset manifest: " << badJson;
+
+            auto lastCommaLoc = badJson.lastIndexOf(',');
+            auto lastBracketLoc = badJson.lastIndexOf('{');
+
+            qInfo() << "Location of last comma: " << lastCommaLoc;
+            qInfo() << "Location of last bracket: " << lastBracketLoc;
+
+            // basically, if { supersedes the last ,
+            if (lastCommaLoc > lastBracketLoc) {
+                qInfo() << "Dalamud server gave bad json, attempting to fix...";
+                badJson.remove(lastCommaLoc, 1);
+            } else {
+                qInfo() << "Got valid json.";
+            }
+
+            QJsonDocument doc = QJsonDocument::fromJson(badJson.toUtf8());
+
+            qInfo() << "Dalamud asset remote version" << doc.object()["Version"].toInt();
+            qInfo() << "Dalamud asset local version" << profile.dalamudAssetVersion;
+
+            remoteDalamudAssetVersion = doc.object()["Version"].toInt();
+
+            if(remoteDalamudAssetVersion != profile.dalamudAssetVersion) {
+                qInfo() << "Dalamud assets out of date.";
+
+                dalamudAssetNeededFilenames.clear();
+
+                for(auto assetObject : doc.object()["Assets"].toArray()) {
+                    {
+                        qInfo() << "Starting download for " << assetObject.toObject()["FileName"];
+
+                        dalamudAssetNeededFilenames.append(assetObject.toObject()["FileName"].toString());
+
+                        QNetworkRequest assetRequest(assetObject.toObject()["Url"].toString());
+                        auto assetReply = launcher.mgr->get(assetRequest);
+
+                        connect(assetReply, &QNetworkReply::finished, [this, assetReply, assetObject = assetObject.toObject()] {
+                            const QString dataDir =
+                                QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/DalamudAssets/";
+
+                            if (!QDir().exists(dataDir))
+                                QDir().mkdir(dataDir);
+
+                            const QString fileName = assetObject["FileName"].toString();
+                            const QList<QString> dirPath = fileName.left(fileName.lastIndexOf("/")).split('/');
+
+                            qInfo() << "Needed directories: " << dirPath;
+
+                            QString build = dataDir;
+                            for(auto dir : dirPath) {
+                                if (!QDir().exists(build + dir))
+                                    QDir().mkdir(build + dir);
+
+                                build += dir + "/";
+                            }
+
+                            QFile file(dataDir + assetObject["FileName"].toString());
+                            file.open(QIODevice::WriteOnly);
+                            file.write(assetReply->readAll());
+                            file.close();
+
+                            dalamudAssetNeededFilenames.removeOne(assetObject["FileName"].toString());
+                            checkIfDalamudAssetsDone();
+                        });
+                    }
+                }
+            } else {
+                dalamudAssetNeededFilenames.clear();
+
+                qInfo() << "Dalamud assets up to date.";
+
+                checkIfFinished();
+            }
+        });
+    }
+
     // first we determine if we need dalamud
     const bool needsDalamud =
         profile.enableDalamud && (!hasDalamud || !isDalamudUpdated);
@@ -62,6 +167,8 @@ void AssetUpdater::update(const ProfileSettings& profile) {
         // ACLs)
         {
             qInfo() << "Downloading NativeLauncher...";
+            doneDownloadingNativelauncher = false;
+            needsInstall = true;
 
             QNetworkRequest request(nativeLauncherRemotePath +
                                     nativeLauncherVersion +
@@ -74,6 +181,8 @@ void AssetUpdater::update(const ProfileSettings& profile) {
         // download dalamud (... duh)
         {
             qInfo() << "Downloading Dalamud...";
+            doneDownloadingDalamud = false;
+            needsInstall = true;
 
             QNetworkRequest request(dalamudRemotePath + dalamudVersion +
                                     ".zip");
@@ -81,20 +190,10 @@ void AssetUpdater::update(const ProfileSettings& profile) {
             auto reply = launcher.mgr->get(request);
             reply->setObjectName("Dalamud");
         }
-    } else {
-        // non-dalamud users can bypass this process since it's not needed
-        finishedUpdating();
     }
 }
 
 void AssetUpdater::finishDownload(QNetworkReply* reply) {
-    const auto checkIfFinished = [=] {
-        if (QFile::exists(tempDir.path() + "/NativeLauncher.exe") &&
-            QFile::exists(tempDir.path() + "/latest.zip")) {
-            beginInstall();
-        }
-    };
-
     if (reply->objectName() == "Dalamud") {
         qInfo() << "Dalamud finished downloading!";
 
@@ -103,6 +202,7 @@ void AssetUpdater::finishDownload(QNetworkReply* reply) {
         file.write(reply->readAll());
         file.close();
 
+        doneDownloadingDalamud = true;
         checkIfFinished();
     } else if (reply->objectName() == "NativeLauncher") {
         qInfo() << "NativeLauncher finished downloading!";
@@ -112,6 +212,7 @@ void AssetUpdater::finishDownload(QNetworkReply* reply) {
         file.write(reply->readAll());
         file.close();
 
+        doneDownloadingNativelauncher = true;
         checkIfFinished();
     } else if (reply->objectName() == "DalamudVersionCheck") {
         QByteArray str = reply->readAll();
@@ -149,5 +250,31 @@ void AssetUpdater::beginInstall() {
         finishedUpdating();
     } else {
         // STUB: install failure
+    }
+}
+
+void AssetUpdater::checkIfDalamudAssetsDone() {
+    if(dalamudAssetNeededFilenames.empty()) {
+        qInfo() << "Finished downloading Dalamud assets.";
+
+        const QString dataDir =
+            QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/DalamudAssets/";
+
+        QFile file(dataDir + "asset.ver");
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        file.write(QString::number(remoteDalamudAssetVersion).toUtf8());
+        file.close();
+
+        checkIfFinished();
+    }
+}
+void AssetUpdater::checkIfFinished() {
+    if (doneDownloadingDalamud &&
+        doneDownloadingNativelauncher &&
+        dalamudAssetNeededFilenames.empty()) {
+        if(needsInstall)
+            beginInstall();
+        else
+            finishedUpdating();
     }
 }

@@ -48,6 +48,7 @@ struct ProfileSettings {
     } gamescope;
 
     QString dalamudVersion; // TODO: move out of profile settings
+    int dalamudAssetVersion = -1;
 
     // login
     bool encryptArguments = true;

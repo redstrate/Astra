@@ -372,6 +372,9 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
         dalamudVersionLabel = new QLabel();
         dalamudBoxLayout->addRow("Dalamud Version", dalamudVersionLabel);
+
+        dalamudAssetVersionLabel = new QLabel();
+        dalamudBoxLayout->addRow("Dalamud Asset Version", dalamudAssetVersionLabel);
     }
 
     reloadControls();
@@ -476,6 +479,12 @@ void SettingsWindow::reloadControls() {
         dalamudVersionLabel->setText("Dalamud is not installed.");
     } else {
         dalamudVersionLabel->setText(profile.dalamudVersion);
+    }
+
+    if(profile.dalamudAssetVersion == -1) {
+        dalamudAssetVersionLabel->setText("Dalamud assets are not installed.");
+    } else {
+        dalamudAssetVersionLabel->setText(QString::number(profile.dalamudAssetVersion));
     }
 
     window.reloadControls();
