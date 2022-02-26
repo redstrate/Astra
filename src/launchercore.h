@@ -95,8 +95,19 @@ public:
     int deleteProfile(QString name);
 
     void launchGame(const ProfileSettings& settings, LoginAuth auth);
+
     void launchExecutable(const ProfileSettings& settings, QStringList args);
+
+    /*
+     * Used for processes that should be wrapped in gamescope, etc.
+     */
+    void launchGameExecutable(const ProfileSettings& settings, QProcess* process, QStringList args);
+
+    /*
+     * This just wraps it in wine if needed.
+     */
     void launchExecutable(const ProfileSettings& settings, QProcess* process, QStringList args);
+
     void buildRequest(QNetworkRequest& request);
     void setSSL(QNetworkRequest& request);
     QString readVersion(QString path);

@@ -203,8 +203,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
 
             auto list = dalamudProcess->processEnvironment().toStringList();
 
-            // TODO: what if we aren't on wine?
-            dalamudProcess->start(profile.winePath, {dataDir + "/Dalamud/" + "Dalamud.Injector.exe", output, argsEncoded});
+            launchExecutable(profile, dalamudProcess, {dataDir + "/Dalamud/" + "Dalamud.Injector.exe", output, argsEncoded});
         });
     }
 
@@ -226,19 +225,19 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
                 gameClosed();
             });
 
-    launchExecutable(profile, gameProcess, arguments);
+    launchGameExecutable(profile, gameProcess, arguments);
 
     successfulLaunch();
 }
 
 void LauncherCore::launchExecutable(const ProfileSettings& profile, const QStringList args) {
     auto process = new QProcess(this);
+    process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     launchExecutable(profile, process, args);
 }
 
-void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* process, const QStringList args) {
+void LauncherCore::launchGameExecutable(const ProfileSettings& profile, QProcess* process, const QStringList args) {
     QList<QString> arguments;
-    auto env = process->processEnvironment();
 
 #if defined(Q_OS_LINUX)
     if(profile.useGamescope) {
@@ -262,7 +261,18 @@ void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* pr
 
     if(profile.useGamemode)
         arguments.push_back("gamemoderun");
+#endif
 
+    arguments.append(args);
+
+    launchExecutable(profile, process, args);
+}
+
+void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* process, const QStringList args) {
+    QList<QString> arguments;
+    auto env = process->processEnvironment();
+
+#if defined(Q_OS_LINUX)
     if(profile.useEsync) {
         env.insert("WINEESYNC", QString::number(1));
         env.insert("WINEFSYNC", QString::number(1));
@@ -272,9 +282,6 @@ void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* pr
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     env.insert("WINEPREFIX", profile.winePrefixPath);
-
-    if(profile.enableDXVKhud)
-        env.insert("DXVK_HUD", "full");
 
     arguments.push_back(profile.winePath);
 #endif
@@ -286,6 +293,8 @@ void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* pr
 
     process->setWorkingDirectory(profile.gamePath + "/game/");
     process->setProcessEnvironment(env);
+
+    qDebug() << "launching " << executable << " with args" << arguments;
 
     process->start(executable, arguments);
 }
