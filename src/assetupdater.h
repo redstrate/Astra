@@ -28,12 +28,17 @@ private:
     const ProfileSettings* currentSettings = nullptr;
 
     QString remoteDalamudVersion;
+    QString remoteRuntimeVersion;
 
     QTemporaryDir tempDir;
 
     bool doneDownloadingDalamud = true;
     bool doneDownloadingNativelauncher = true;
-    bool needsInstall = false;
+    bool doneDownloadingRuntimeCore = true;
+    bool doneDownloadingRuntimeDesktop = true;
+    bool needsRuntimeInstall = false;
+    bool needsDalamudInstall = false;
+    bool needsNativeInstall = false;
 
     int remoteDalamudAssetVersion;
     QList<QString> dalamudAssetNeededFilenames;

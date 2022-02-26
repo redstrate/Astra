@@ -49,6 +49,7 @@ struct ProfileSettings {
 
     QString dalamudVersion; // TODO: move out of profile settings
     int dalamudAssetVersion = -1;
+    QString runtimeVersion;
 
     // login
     bool encryptArguments = true;

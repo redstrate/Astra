@@ -149,14 +149,21 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
     }
 
     auto gameProcess = new QProcess(this);
+
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+
     if(profile.useSteam) {
         gameArgs.push_back({"IsSteam", "1"});
-        gameProcess->environment() << "IS_FFXIV_LAUNCH_FROM_STEAM=1";
+        env.insert("IS_FFXIV_LAUNCH_FROM_STEAM", QString::number(1));
     }
+    env.insert("DALAMUD_RUNTIME", "Z:" + dataDir.replace('/', '\\') + "\\DalamudRuntime");
+
+    gameProcess->setProcessEnvironment(env);
+
     gameProcess->setProcessChannelMode(QProcess::MergedChannels);
 
     if(profile.enableDalamud) {
-        connect(gameProcess, &QProcess::readyReadStandardOutput, [this, gameProcess, profile, dataDir] {
+        connect(gameProcess, &QProcess::readyReadStandardOutput, [this, gameProcess, profile] {
             QString output = gameProcess->readAllStandardOutput();
             bool success;
             int dec = output.toInt(&success, 10);
@@ -167,13 +174,16 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
 
             qDebug() << "Now launching dalamud...";
 
+            QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+            dataDir = "Z:" + dataDir.replace('/', '\\');
+
             QJsonObject startInfo;
-            startInfo["WorkingDirectory"] = QJsonValue();
-            startInfo["ConfigurationPath"] = dataDir + "/dalamudConfig.json";
-            startInfo["PluginDirectory"] = dataDir + "/installedPlugins";
-            startInfo["AssetDirectory"] = dataDir + "/DalamudAssets";
-            startInfo["DefaultPluginDirectory"] = dataDir + "/devPlugins";
-            startInfo["DelayInitializeMs"] = 5;
+            startInfo["WorkingDirectory"] = dataDir;
+            startInfo["ConfigurationPath"] = dataDir + "\\dalamudConfig.json";
+            startInfo["PluginDirectory"] = dataDir + "\\installedPlugins";
+            startInfo["AssetDirectory"] = dataDir + "\\DalamudAssets";
+            startInfo["DefaultPluginDirectory"] = dataDir + "\\devPlugins";
+            startInfo["DelayInitializeMs"] = 0;
             startInfo["GameVersion"] = profile.gameVersion;
             startInfo["Language"] = profile.language;
             startInfo["OptOutMbCollection"] = false;
@@ -183,16 +193,17 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
             auto dalamudProcess = new QProcess();
             dalamudProcess->setProcessChannelMode(QProcess::ForwardedChannels);
 
-            QStringList dalamudEnv = gameProcess->environment();
+            QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+            env.insert("DALAMUD_RUNTIME", dataDir + "\\DalamudRuntime");
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-            dalamudEnv << "XL_WINEONLINUX=true";
+            env.insert("XL_WINEONLINUX", "true");
 #endif
+            dalamudProcess->setProcessEnvironment(env);
 
-            dalamudProcess->setEnvironment(dalamudEnv);
+            auto list = dalamudProcess->processEnvironment().toStringList();
 
-            QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-
+            // TODO: what if we aren't on wine?
             dalamudProcess->start(profile.winePath, {dataDir + "/Dalamud/" + "Dalamud.Injector.exe", output, argsEncoded});
         });
     }
@@ -227,7 +238,7 @@ void LauncherCore::launchExecutable(const ProfileSettings& profile, const QStrin
 
 void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* process, const QStringList args) {
     QList<QString> arguments;
-    QStringList env = QProcess::systemEnvironment();
+    auto env = process->processEnvironment();
 
 #if defined(Q_OS_LINUX)
     if(profile.useGamescope) {
@@ -253,17 +264,17 @@ void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* pr
         arguments.push_back("gamemoderun");
 
     if(profile.useEsync) {
-        env << "WINEESYNC=1";
-        env << "WINEFSYNC=1";
-        env << "WINEFSYNC_FUTEX2=1";
+        env.insert("WINEESYNC", QString::number(1));
+        env.insert("WINEFSYNC", QString::number(1));
+        env.insert("WINEFSYNC_FUTEX2", QString::number(1));
     }
 #endif
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
-    env << "WINEPREFIX=" + profile.winePrefixPath;
+    env.insert("WINEPREFIX", profile.winePrefixPath);
 
     if(profile.enableDXVKhud)
-        env << "DXVK_HUD=full";
+        env.insert("DXVK_HUD", "full");
 
     arguments.push_back(profile.winePath);
 #endif
@@ -274,7 +285,7 @@ void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* pr
     arguments.removeFirst();
 
     process->setWorkingDirectory(profile.gamePath + "/game/");
-    process->setEnvironment(env);
+    process->setProcessEnvironment(env);
 
     process->start(executable, arguments);
 }
@@ -342,6 +353,13 @@ void LauncherCore::readInitialInformation() {
                 assetJson.open(QFile::ReadOnly | QFile::Text);
 
                 profile.dalamudAssetVersion = QString(assetJson.readAll()).toInt();
+            }
+
+            if(QFile::exists(dataDir + "/DalamudRuntime/runtime.ver")) {
+                QFile runtimeVer(dataDir + "/DalamudRuntime/runtime.ver");
+                runtimeVer.open(QFile::ReadOnly | QFile::Text);
+
+                profile.runtimeVersion = QString(runtimeVer.readAll());
             }
         }
 

@@ -43,26 +43,51 @@ void AssetUpdater::update(const ProfileSettings& profile) {
 
     qInfo() << "Starting update sequence...";
 
-    const bool hasDalamud = QFile::exists(dataDir + "/NativeLauncher.exe") &&
-                            QFile::exists(dataDir + "/Dalamud");
-
     bool isDalamudUpdated = false;
-    if (hasDalamud) {
-        if (remoteDalamudVersion.isEmpty()) {
-            QNetworkRequest request(dalamudVersionPath);
+    if (remoteDalamudVersion.isEmpty()) {
+        QNetworkRequest request(dalamudVersionPath);
 
-            auto reply = launcher.mgr->get(request);
-            reply->setObjectName("DalamudVersionCheck");
-            currentSettings = &profile; // TODO: this is dirty, should change
+        auto reply = launcher.mgr->get(request);
+        reply->setObjectName("DalamudVersionCheck");
+        currentSettings = &profile; // TODO: this is dirty, should change
 
-            return;
+        return;
+    } else {
+        if (profile.dalamudVersion != remoteDalamudVersion) {
+            isDalamudUpdated = false;
         } else {
-            if (profile.dalamudVersion != remoteDalamudVersion) {
-                isDalamudUpdated = false;
-            } else {
-                qInfo() << "No need to update Dalamud.";
-                isDalamudUpdated = true;
+            qInfo() << "No need to update Dalamud.";
+            isDalamudUpdated = true;
+        }
+
+        if(profile.runtimeVersion != remoteRuntimeVersion) {
+            doneDownloadingRuntimeCore = false;
+            doneDownloadingRuntimeDesktop = false;
+            needsRuntimeInstall = true;
+
+            // core
+            {
+                QNetworkRequest request(
+                    QString("https://dotnetcli.azureedge.net/dotnet/Runtime/%1/dotnet-runtime-%1-win-x64.zip")
+                        .arg(remoteRuntimeVersion));
+
+                auto reply = launcher.mgr->get(request);
+                reply->setObjectName("Dotnet-core");
             }
+
+            // desktop
+            {
+                QNetworkRequest request(
+                    QString("https://dotnetcli.azureedge.net/dotnet/WindowsDesktop/%1/windowsdesktop-runtime-%1-win-x64.zip")
+                        .arg(remoteRuntimeVersion));
+
+                auto reply = launcher.mgr->get(request);
+                reply->setObjectName("Dotnet-desktop");
+            }
+        } else {
+            qInfo() << "No need to update Runtime.";
+            doneDownloadingRuntimeCore = true;
+            doneDownloadingRuntimeDesktop = true;
         }
     }
 
@@ -159,16 +184,26 @@ void AssetUpdater::update(const ProfileSettings& profile) {
         });
     }
 
-    // first we determine if we need dalamud
-    const bool needsDalamud =
-        profile.enableDalamud && (!hasDalamud || !isDalamudUpdated);
-    if (needsDalamud) {
+    if(remoteDalamudVersion != profile.dalamudVersion) {
+        qInfo() << "Downloading Dalamud...";
+        doneDownloadingDalamud = false;
+        needsDalamudInstall = true;
+
+        QNetworkRequest request(dalamudRemotePath + dalamudVersion +
+                                ".zip");
+
+        auto reply = launcher.mgr->get(request);
+        reply->setObjectName("Dalamud");
+    }
+
+    const bool hasNative = QFile::exists(dataDir + "/NativeLauncher.exe");
+    if (!hasNative) {
         // download nativelauncher release (needed to launch the game with fixed
         // ACLs)
         {
             qInfo() << "Downloading NativeLauncher...";
             doneDownloadingNativelauncher = false;
-            needsInstall = true;
+            needsNativeInstall = true;
 
             QNetworkRequest request(nativeLauncherRemotePath +
                                     nativeLauncherVersion +
@@ -176,19 +211,6 @@ void AssetUpdater::update(const ProfileSettings& profile) {
 
             auto reply = launcher.mgr->get(request);
             reply->setObjectName("NativeLauncher");
-        }
-
-        // download dalamud (... duh)
-        {
-            qInfo() << "Downloading Dalamud...";
-            doneDownloadingDalamud = false;
-            needsInstall = true;
-
-            QNetworkRequest request(dalamudRemotePath + dalamudVersion +
-                                    ".zip");
-
-            auto reply = launcher.mgr->get(request);
-            reply->setObjectName("Dalamud");
         }
     }
 }
@@ -203,6 +225,7 @@ void AssetUpdater::finishDownload(QNetworkReply* reply) {
         file.close();
 
         doneDownloadingDalamud = true;
+
         checkIfFinished();
     } else if (reply->objectName() == "NativeLauncher") {
         qInfo() << "NativeLauncher finished downloading!";
@@ -213,6 +236,7 @@ void AssetUpdater::finishDownload(QNetworkReply* reply) {
         file.close();
 
         doneDownloadingNativelauncher = true;
+
         checkIfFinished();
     } else if (reply->objectName() == "DalamudVersionCheck") {
         QByteArray str = reply->readAll();
@@ -228,29 +252,83 @@ void AssetUpdater::finishDownload(QNetworkReply* reply) {
 
         QJsonDocument doc = QJsonDocument::fromJson(reassmbled.toUtf8());
         remoteDalamudVersion = doc["AssemblyVersion"].toString();
+        remoteRuntimeVersion = doc["RuntimeVersion"].toString();
 
         qInfo() << "Latest Dalamud version reported: " << remoteDalamudVersion;
+        qInfo() << "Latest NET runtime reported: " << remoteRuntimeVersion;
 
         update(*currentSettings);
         currentSettings = nullptr;
+    } else if(reply->objectName() == "Dotnet-core") {
+        qInfo() << "Dotnet-core finished downloading!";
+
+        QFile file(tempDir.path() + "/dotnet-core.zip");
+        file.open(QIODevice::WriteOnly);
+        file.write(reply->readAll());
+        file.close();
+
+        doneDownloadingRuntimeCore = true;
+
+        checkIfFinished();
+    } else if(reply->objectName() == "Dotnet-desktop") {
+        qInfo() << "Dotnet-desktop finished downloading!";
+
+        QFile file(tempDir.path() + "/dotnet-desktop.zip");
+        file.open(QIODevice::WriteOnly);
+        file.write(reply->readAll());
+        file.close();
+
+        doneDownloadingRuntimeDesktop = true;
+
+        checkIfFinished();
     }
 }
 
 void AssetUpdater::beginInstall() {
-    QString dataDir =
+    const QString dataDir =
         QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
-    bool success = !JlCompress::extractDir(tempDir.path() + "/latest.zip",
-                                           dataDir + "/Dalamud")
-                        .empty();
-    if (success) {
+    if(needsDalamudInstall) {
+        bool success = !JlCompress::extractDir(tempDir.path() + "/latest.zip",
+                                               dataDir + "/Dalamud")
+                            .empty();
+
+        if(!success) {
+            // TODO: handle failure here
+        } else {
+            needsDalamudInstall = false;
+        }
+    }
+
+    if(needsNativeInstall) {
         QFile::copy(tempDir.path() + "/NativeLauncher.exe",
                     dataDir + "/NativeLauncher.exe");
 
-        finishedUpdating();
-    } else {
-        // STUB: install failure
+        needsNativeInstall = false;
     }
+
+    if(needsRuntimeInstall) {
+        bool success = !JlCompress::extractDir(tempDir.path() + "/dotnet-core.zip",
+                                               dataDir + "/DalamudRuntime")
+                            .empty();
+
+        success |= !JlCompress::extractDir(tempDir.path() + "/dotnet-desktop.zip",
+                                           dataDir + "/DalamudRuntime")
+                        .empty();
+
+        if(!success) {
+            // TODO: handle failure here
+        } else {
+            QFile file(dataDir + "/DalamudRuntime/runtime.ver");
+            file.open(QIODevice::WriteOnly | QIODevice::Text);
+            file.write(remoteRuntimeVersion.toUtf8());
+            file.close();
+
+            needsRuntimeInstall = false;
+        }
+    }
+
+    checkIfFinished();
 }
 
 void AssetUpdater::checkIfDalamudAssetsDone() {
@@ -268,11 +346,14 @@ void AssetUpdater::checkIfDalamudAssetsDone() {
         checkIfFinished();
     }
 }
+
 void AssetUpdater::checkIfFinished() {
     if (doneDownloadingDalamud &&
         doneDownloadingNativelauncher &&
+        doneDownloadingRuntimeCore &&
+        doneDownloadingRuntimeDesktop &&
         dalamudAssetNeededFilenames.empty()) {
-        if(needsInstall)
+        if(needsRuntimeInstall || needsNativeInstall || needsDalamudInstall)
             beginInstall();
         else
             finishedUpdating();
