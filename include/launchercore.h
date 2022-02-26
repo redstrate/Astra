@@ -141,5 +141,9 @@ private:
     void readExpansionVersions(ProfileSettings& info, int max);
     bool checkIfInPath(QString program);
 
+    QString getDefaultGamePath();
+    QString getDefaultWinePrefixPath();
+    int getDefaultWineVersion();
+
     QVector<ProfileSettings> profileSettings;
 };

@@ -278,12 +278,8 @@ void LauncherCore::readInitialInformation() {
         settings.beginGroup(uuid);
 
         profile.name = settings.value("name", "Default").toString();
+        profile.wineVersion = settings.value("wineVersion", getDefaultWineVersion()).toInt();
 
-#if defined(Q_OS_MAC)
-        profile.wineVersion = settings.value("wineVersion", 2).toInt();
-#else
-        profile.wineVersion = settings.value("wineVersion", 0).toInt();
-#endif
         readWineInfo(profile);
 
         const QString dataDir =
@@ -324,29 +320,13 @@ void LauncherCore::readInitialInformation() {
         if(settings.contains("gamePath") && settings.value("gamePath").canConvert<QString>() && !settings.value("gamePath").toString().isEmpty()) {
             profile.gamePath = settings.value("gamePath").toString();
         } else {
-#if defined(Q_OS_WIN)
-            profile.gamePath = "C:\\Program Files (x86)\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn";
-#endif
-
-#if defined(Q_OS_MAC)
-            profile.gamePath = QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
-#endif
-
-#if defined(Q_OS_LINUX)
-            profile.gamePath = QDir::homePath() + "/.wine/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
-#endif
+            profile.gamePath = getDefaultGamePath();
         }
 
         if(settings.contains("winePrefixPath") && settings.value("winePrefixPath").canConvert<QString>() && !settings.value("winePrefixPath").toString().isEmpty()) {
             profile.winePrefixPath = settings.value("winePrefixPath").toString();
         } else {
-#if defined(Q_OS_MACOS)
-            profile.winePrefixPath = QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy";
-#endif
-
-#if defined(Q_OS_LINUX)
-            profile.winePrefixPath = QDir::homePath() + "/.wine";
-#endif
+            profile.winePrefixPath = getDefaultWinePrefixPath();
         }
 
         ProfileSettings defaultSettings;
@@ -493,6 +473,13 @@ int LauncherCore::addProfile() {
     newProfile.uuid = QUuid::createUuid();
     newProfile.name = "New Profile";
 
+    newProfile.wineVersion = getDefaultWineVersion();
+
+    readWineInfo(newProfile);
+
+    newProfile.gamePath = getDefaultGamePath();
+    newProfile.winePrefixPath = getDefaultWinePrefixPath();
+
     profileSettings.append(newProfile);
 
     settingsChanged();
@@ -587,4 +574,36 @@ bool LauncherCore::checkIfInPath(const QString program) {
     QFileInfo fileInfo(directory + "/" + program);
 
     return fileInfo.exists() && fileInfo.isFile();
+}
+
+QString LauncherCore::getDefaultWinePrefixPath() {
+#if defined(Q_OS_MACOS)
+    return QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy";
+#endif
+
+#if defined(Q_OS_LINUX)
+    return QDir::homePath() + "/.wine";
+#endif
+}
+
+QString LauncherCore::getDefaultGamePath() {
+#if defined(Q_OS_WIN)
+    return "C:\\Program Files (x86)\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn";
+#endif
+
+#if defined(Q_OS_MAC)
+    return QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
+#endif
+
+#if defined(Q_OS_LINUX)
+    return QDir::homePath() + "/.wine/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
+#endif
+}
+
+int LauncherCore::getDefaultWineVersion() {
+#if defined(Q_OS_MAC)
+    return 2;
+#else
+    return 0;
+#endif
 }
