@@ -188,6 +188,15 @@ void LauncherCore::launchExecutable(const ProfileSettings& profile, const QStrin
 void LauncherCore::launchGameExecutable(const ProfileSettings& profile, QProcess* process, const QStringList args) {
     QList<QString> arguments;
 
+    arguments.append(args);
+
+    launchExecutable(profile, process, arguments);
+}
+
+void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* process, const QStringList args) {
+    QList<QString> arguments;
+    auto env = process->processEnvironment();
+
 #if defined(Q_OS_LINUX)
     if(profile.useGamescope) {
         arguments.push_back("gamescope");
@@ -198,28 +207,19 @@ void LauncherCore::launchGameExecutable(const ProfileSettings& profile, QProcess
         if(profile.gamescope.borderless)
             arguments.push_back("-b");
 
-        if(profile.gamescope.width >= 0)
+        if(profile.gamescope.width > 0)
             arguments.push_back("-w " + QString::number(profile.gamescope.width));
 
-        if(profile.gamescope.height >= 0)
+        if(profile.gamescope.height > 0)
             arguments.push_back("-h " + QString::number(profile.gamescope.height));
 
-        if(profile.gamescope.refreshRate >= 0)
+        if(profile.gamescope.refreshRate > 0)
             arguments.push_back("-r " + QString::number(profile.gamescope.refreshRate));
     }
 
     if(profile.useGamemode)
         arguments.push_back("gamemoderun");
 #endif
-
-    arguments.append(args);
-
-    launchExecutable(profile, process, args);
-}
-
-void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* process, const QStringList args) {
-    QList<QString> arguments;
-    auto env = process->processEnvironment();
 
 #if defined(Q_OS_LINUX)
     if(profile.useEsync) {
