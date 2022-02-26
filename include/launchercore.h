@@ -47,10 +47,6 @@ struct ProfileSettings {
         int refreshRate = 0;
     } gamescope;
 
-    QString dalamudVersion; // TODO: move out of profile settings
-    int dalamudAssetVersion = -1;
-    QString runtimeVersion;
-
     // login
     bool encryptArguments = true;
     bool isSapphire = false;
@@ -130,6 +126,10 @@ public:
     bool gamemodeAvailable = false;
 
     AppSettings appSettings;
+
+    QString dalamudVersion;
+    int dalamudAssetVersion = -1;
+    QString runtimeVersion;
 
     int defaultProfileIndex = 0;
 signals:

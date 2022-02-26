@@ -53,14 +53,14 @@ void AssetUpdater::update(const ProfileSettings& profile) {
 
         return;
     } else {
-        if (profile.dalamudVersion != remoteDalamudVersion) {
+        if (launcher.dalamudVersion != remoteDalamudVersion) {
             isDalamudUpdated = false;
         } else {
             qInfo() << "No need to update Dalamud.";
             isDalamudUpdated = true;
         }
 
-        if(profile.runtimeVersion != remoteRuntimeVersion) {
+        if(launcher.runtimeVersion != remoteRuntimeVersion) {
             doneDownloadingRuntimeCore = false;
             doneDownloadingRuntimeDesktop = false;
             needsRuntimeInstall = true;
@@ -126,11 +126,11 @@ void AssetUpdater::update(const ProfileSettings& profile) {
             QJsonDocument doc = QJsonDocument::fromJson(badJson.toUtf8());
 
             qInfo() << "Dalamud asset remote version" << doc.object()["Version"].toInt();
-            qInfo() << "Dalamud asset local version" << profile.dalamudAssetVersion;
+            qInfo() << "Dalamud asset local version" << launcher.dalamudAssetVersion;
 
             remoteDalamudAssetVersion = doc.object()["Version"].toInt();
 
-            if(remoteDalamudAssetVersion != profile.dalamudAssetVersion) {
+            if(remoteDalamudAssetVersion != launcher.dalamudAssetVersion) {
                 qInfo() << "Dalamud assets out of date.";
 
                 dalamudAssetNeededFilenames.clear();
@@ -184,7 +184,7 @@ void AssetUpdater::update(const ProfileSettings& profile) {
         });
     }
 
-    if(remoteDalamudVersion != profile.dalamudVersion) {
+    if(remoteDalamudVersion != launcher.dalamudVersion) {
         qInfo() << "Downloading Dalamud...";
         doneDownloadingDalamud = false;
         needsDalamudInstall = true;

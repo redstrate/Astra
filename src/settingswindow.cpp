@@ -475,16 +475,16 @@ void SettingsWindow::reloadControls() {
 
     // dalamud
     enableDalamudBox->setChecked(profile.enableDalamud);
-    if(profile.dalamudVersion.isEmpty()) {
+    if(core.dalamudVersion.isEmpty()) {
         dalamudVersionLabel->setText("Dalamud is not installed.");
     } else {
-        dalamudVersionLabel->setText(profile.dalamudVersion);
+        dalamudVersionLabel->setText(core.dalamudVersion);
     }
 
-    if(profile.dalamudAssetVersion == -1) {
+    if(core.dalamudAssetVersion == -1) {
         dalamudAssetVersionLabel->setText("Dalamud assets are not installed.");
     } else {
-        dalamudAssetVersionLabel->setText(QString::number(profile.dalamudAssetVersion));
+        dalamudAssetVersionLabel->setText(QString::number(core.dalamudAssetVersion));
     }
 
     window.reloadControls();

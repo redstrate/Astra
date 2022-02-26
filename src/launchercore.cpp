@@ -263,6 +263,41 @@ void LauncherCore::readInitialInformation() {
     gamescopeAvailable = checkIfInPath("gamescope");
     gamemodeAvailable = checkIfInPath("gamemoderun");
 
+    const QString dataDir =
+        QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+
+    const bool hasDalamud = QFile::exists(dataDir + "/Dalamud");
+    if (hasDalamud) {
+        if (QFile::exists(dataDir + "/Dalamud/Dalamud.deps.json")) {
+            QFile depsJson(dataDir + "/Dalamud/Dalamud.deps.json");
+            depsJson.open(QFile::ReadOnly);
+            QJsonDocument doc = QJsonDocument::fromJson(depsJson.readAll());
+
+            // TODO: UGLY
+            QString versionString =
+                doc["targets"]
+                    .toObject()[".NETCoreApp,Version=v5.0"]
+                    .toObject()
+                    .keys()
+                    .filter("Dalamud")[0];
+            dalamudVersion = versionString.remove("Dalamud/");
+        }
+
+        if(QFile::exists(dataDir + "/DalamudAssets/asset.ver")) {
+            QFile assetJson(dataDir + "/DalamudAssets/asset.ver");
+            assetJson.open(QFile::ReadOnly | QFile::Text);
+
+            dalamudAssetVersion = QString(assetJson.readAll()).toInt();
+        }
+
+        if(QFile::exists(dataDir + "/DalamudRuntime/runtime.ver")) {
+            QFile runtimeVer(dataDir + "/DalamudRuntime/runtime.ver");
+            runtimeVer.open(QFile::ReadOnly | QFile::Text);
+
+            runtimeVersion = QString(runtimeVer.readAll());
+        }
+    }
+
     auto profiles = settings.childGroups();
 
     // create the Default profile if it doesnt exist
@@ -281,41 +316,6 @@ void LauncherCore::readInitialInformation() {
         profile.wineVersion = settings.value("wineVersion", getDefaultWineVersion()).toInt();
 
         readWineInfo(profile);
-
-        const QString dataDir =
-            QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-
-        const bool hasDalamud = QFile::exists(dataDir + "/Dalamud");
-        if (hasDalamud) {
-            if (QFile::exists(dataDir + "/Dalamud/Dalamud.deps.json")) {
-                QFile depsJson(dataDir + "/Dalamud/Dalamud.deps.json");
-                depsJson.open(QFile::ReadOnly);
-                QJsonDocument doc = QJsonDocument::fromJson(depsJson.readAll());
-
-                // TODO: UGLY
-                QString versionString =
-                    doc["targets"]
-                        .toObject()[".NETCoreApp,Version=v5.0"]
-                        .toObject()
-                        .keys()
-                        .filter("Dalamud")[0];
-                profile.dalamudVersion = versionString.remove("Dalamud/");
-            }
-
-            if(QFile::exists(dataDir + "/DalamudAssets/asset.ver")) {
-                QFile assetJson(dataDir + "/DalamudAssets/asset.ver");
-                assetJson.open(QFile::ReadOnly | QFile::Text);
-
-                profile.dalamudAssetVersion = QString(assetJson.readAll()).toInt();
-            }
-
-            if(QFile::exists(dataDir + "/DalamudRuntime/runtime.ver")) {
-                QFile runtimeVer(dataDir + "/DalamudRuntime/runtime.ver");
-                runtimeVer.open(QFile::ReadOnly | QFile::Text);
-
-                profile.runtimeVersion = QString(runtimeVer.readAll());
-            }
-        }
 
         if(settings.contains("gamePath") && settings.value("gamePath").canConvert<QString>() && !settings.value("gamePath").toString().isEmpty()) {
             profile.gamePath = settings.value("gamePath").toString();
