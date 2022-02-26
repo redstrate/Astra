@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(Astra)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -21,17 +20,19 @@ add_subdirectory(external)
 set(SRC
         src/main.cpp
         src/launchercore.cpp
+        include/launchercore.h
+        include/squarelauncher.h
         src/sapphirelauncher.cpp
         src/squareboot.cpp
         src/squarelauncher.cpp
         src/settingswindow.cpp
         src/blowfish.cpp
         src/assetupdater.cpp
-        src/assetupdater.h
+        include/assetupdater.h
         src/launcherwindow.cpp
-        src/launcherwindow.h
+        include/launcherwindow.h
         src/gamescopesettingswindow.cpp
-        src/gamescopesettingswindow.h)
+        include/gamescopesettingswindow.h)
 
 set(LIBRARIES
         Qt5::Core Qt5::Widgets Qt5::Network qt5keychain QuaZip)
@@ -40,9 +41,9 @@ if(ENABLE_WATCHDOG)
     set(LIBRARIES ${LIBRARIES} ${TESSERACT_LIBRARIES} ${LEPTONICA_LIBRARIES})
 
     set(SRC ${SRC}
-        src/watchdog.h
+            include/watchdog.h
         src/watchdog.cpp
-        src/gameparser.h
+            include/gameparser.h
         src/gameparser.cpp)
 endif()
 
@@ -58,7 +59,10 @@ add_executable(astra ${SRC})
 target_link_libraries(astra PUBLIC ${LIBRARIES})
 
 # disgusting, thanks qtkeychain and quazip
-target_include_directories(astra PRIVATE
+target_include_directories(astra
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        PRIVATE
         ${CMAKE_BINARY_DIR}/_deps/qtkeychain-src
         ${CMAKE_BINARY_DIR}/_deps/qtkeychain-build
         ${CMAKE_BINARY_DIR}/_deps/quazip-src)
