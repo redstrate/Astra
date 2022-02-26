@@ -349,34 +349,36 @@ void LauncherCore::readInitialInformation() {
 #endif
         }
 
-        // login
-        profile.encryptArguments = settings.value("encryptArguments", true).toBool();
-        profile.isSapphire = settings.value("isSapphire", false).toBool();
-        profile.lobbyURL = settings.value("lobbyURL", "").toString();
-        profile.rememberUsername = settings.value("rememberUsername", false).toBool();
-        profile.rememberPassword = settings.value("rememberPassword", false).toBool();
-        profile.useSteam = settings.value("useSteam", false).toBool();
+        ProfileSettings defaultSettings;
 
-        profile.useDX9 = settings.value("useDX9", false).toBool();
-        profile.useEsync = settings.value("useEsync", false).toBool();
+        // login
+        profile.encryptArguments = settings.value("encryptArguments", defaultSettings.encryptArguments).toBool();
+        profile.isSapphire = settings.value("isSapphire", defaultSettings.isSapphire).toBool();
+        profile.lobbyURL = settings.value("lobbyURL", defaultSettings.lobbyURL).toString();
+        profile.rememberUsername = settings.value("rememberUsername", defaultSettings.rememberUsername).toBool();
+        profile.rememberPassword = settings.value("rememberPassword", defaultSettings.rememberPassword).toBool();
+        profile.useSteam = settings.value("useSteam", defaultSettings.useSteam).toBool();
+
+        profile.useDX9 = settings.value("useDX9", defaultSettings.useDX9).toBool();
+        profile.useEsync = settings.value("useEsync", defaultSettings.useEsync).toBool();
 
         if(gamescopeAvailable)
-            profile.useGamescope = settings.value("useGamescope", false).toBool();
+            profile.useGamescope = settings.value("useGamescope", defaultSettings.useGamescope).toBool();
 
         if(gamemodeAvailable)
-            profile.useGamemode = settings.value("useGamemode", false).toBool();
+            profile.useGamemode = settings.value("useGamemode", defaultSettings.useGamemode).toBool();
 
-        profile.enableDXVKhud = settings.value("enableDXVKhud", false).toBool();
-        profile.enableWatchdog = settings.value("enableWatchdog", false).toBool();
+        profile.enableDXVKhud = settings.value("enableDXVKhud", defaultSettings.enableDXVKhud).toBool();
+        profile.enableWatchdog = settings.value("enableWatchdog", defaultSettings.enableWatchdog).toBool();
 
         // gamescope
-        profile.gamescope.fullscreen = settings.value("gamescopeFullscreen", true).toBool();
-        profile.gamescope.borderless = settings.value("gamescopeBorderless", true).toBool();
-        profile.gamescope.width = settings.value("gamescopeWidth", 0).toInt();
-        profile.gamescope.height = settings.value("gamescopeHeight", 0).toInt();
-        profile.gamescope.refreshRate = settings.value("gamescopeRefreshRate", 0).toInt();
+        profile.gamescope.fullscreen = settings.value("gamescopeFullscreen", defaultSettings.gamescope.fullscreen).toBool();
+        profile.gamescope.borderless = settings.value("gamescopeBorderless", defaultSettings.gamescope.borderless).toBool();
+        profile.gamescope.width = settings.value("gamescopeWidth", defaultSettings.gamescope.width).toInt();
+        profile.gamescope.height = settings.value("gamescopeHeight", defaultSettings.gamescope.height).toInt();
+        profile.gamescope.refreshRate = settings.value("gamescopeRefreshRate", defaultSettings.gamescope.refreshRate).toInt();
 
-        profile.enableDalamud = settings.value("enableDalamud", false).toBool();
+        profile.enableDalamud = settings.value("enableDalamud", defaultSettings.enableDalamud).toBool();
 
         profileSettings[settings.value("index").toInt()] = profile;
 
