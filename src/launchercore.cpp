@@ -11,7 +11,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QCheckBox>
-#include <keychain.h>
+#include <qt5keychain/keychain.h>
 #include <QMessageBox>
 #include <QMenuBar>
 #include <QCoreApplication>

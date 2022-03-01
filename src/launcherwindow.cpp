@@ -1,7 +1,7 @@
 #include "launcherwindow.h"
 
 #include <QMenuBar>
-#include <keychain.h>
+#include <qt5keychain/keychain.h>
 #include <QFormLayout>
 #include <QApplication>
 #include <QDesktopServices>

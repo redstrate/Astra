@@ -15,7 +15,6 @@ if(ENABLE_WATCHDOG)
     pkg_search_module(LEPTONICA REQUIRED lept)
 endif()
 
-add_subdirectory(external)
 
 set(SRC
         src/main.cpp
@@ -34,8 +33,24 @@ set(SRC
         src/gamescopesettingswindow.cpp
         include/gamescopesettingswindow.h)
 
+find_package(Qt5Keychain)
+if(TARGET Qt5Keychain::Qt5Keychain)
+    message("Using system library for Qt5 Keychain")
+
+    set(LIBRARIES Qt5Keychain::Qt5Keychain ${LIBRARIES})
+endif()
+
+find_package(QuaZip-Qt5)
+if(TARGET QuaZip::QuaZip)
+    message("Using system library for Quazip")
+
+    set(LIBRARIES QuaZip::QuaZip ${LIBRARIES})
+endif()
+
+add_subdirectory(external)
+
 set(LIBRARIES
-        Qt5::Core Qt5::Widgets Qt5::Network ${KEYCHAIN_LIBRARIES} ${QUAZIP_LIBRARIES})
+        Qt5::Core Qt5::Widgets Qt5::Network Qt5Keychain::Qt5Keychain ${LIBRARIES})
 
 if(ENABLE_WATCHDOG)
     set(LIBRARIES ${LIBRARIES} ${TESSERACT_LIBRARIES} ${LEPTONICA_LIBRARIES})
@@ -58,7 +73,6 @@ add_executable(astra ${SRC})
 
 target_link_libraries(astra PUBLIC ${LIBRARIES})
 
-# disgusting, thanks qtkeychain and quazip
 target_include_directories(astra
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
