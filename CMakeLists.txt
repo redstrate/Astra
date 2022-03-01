@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(Qt5 COMPONENTS Core Widgets Network CONFIG REQUIRED)
 
 option(ENABLE_WATCHDOG "Build with Tesseract support (needed for Watchdog)" OFF)
+option(USE_OWN_LIBRARIES "Build with own libraries" OFF)
 
 if(ENABLE_WATCHDOG)
     find_package(PkgConfig REQUIRED)
@@ -33,24 +34,63 @@ set(SRC
         src/gamescopesettingswindow.cpp
         include/gamescopesettingswindow.h)
 
-find_package(Qt5Keychain)
+include(FetchContent)
+
+if(NOT USE_OWN_LIBRARIES)
+    find_package(Qt5Keychain)
+endif()
+
 if(TARGET Qt5Keychain::Qt5Keychain)
     message("Using system library for Qt5 Keychain")
 
     set(LIBRARIES Qt5Keychain::Qt5Keychain ${LIBRARIES})
+    set(KEYCHAIN_INCLUDE_DIRS ${QTKEYCHAIN_INCLUDE_DIRS}/qt5keychain) # this is to be consistent with the built-in lib?
+else()
+    message("Using built-in qt keychain")
+
+    FetchContent_Declare(
+            qtkeychain
+            GIT_REPOSITORY https://github.com/frankosterfeld/qtkeychain.git
+            GIT_TAG        v0.12.0
+    )
+
+    set(BUILD_WITH_QT6 OFF CACHE BOOL "" FORCE)
+    set(QTKEYCHAIN_STATIC ON CACHE BOOL "" FORCE)
+
+    FetchContent_MakeAvailable(qtkeychain)
+
+    set(LIBRARIES qt5keychain ${LIBRARIES})
+    set(KEYCHAIN_INCLUDE_DIRS
+            ${CMAKE_BINARY_DIR}/_deps/qtkeychain-src
+            ${CMAKE_BINARY_DIR}/_deps/qtkeychain-build)
 endif()
 
-find_package(QuaZip-Qt5)
+if(NOT USE_OWN_LIBRARIES)
+    find_package(QuaZip-Qt5)
+endif()
+
 if(TARGET QuaZip::QuaZip)
     message("Using system library for Quazip")
 
     set(LIBRARIES QuaZip::QuaZip ${LIBRARIES})
+else()
+    message("Using built-in quazip")
+
+    FetchContent_Declare(
+            quazip
+            GIT_REPOSITORY https://github.com/stachenov/quazip.git
+            GIT_TAG        v1.2
+    )
+    FetchContent_MakeAvailable(quazip)
+
+    set(LIBRARIES QuaZip ${LIBRARIES})
+    set(QUAZIP_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/_deps/quazip-src/quazip)
 endif()
 
 add_subdirectory(external)
 
 set(LIBRARIES
-        Qt5::Core Qt5::Widgets Qt5::Network Qt5Keychain::Qt5Keychain ${LIBRARIES})
+        Qt5::Core Qt5::Widgets Qt5::Network ${LIBRARIES})
 
 if(ENABLE_WATCHDOG)
     set(LIBRARIES ${LIBRARIES} ${TESSERACT_LIBRARIES} ${LEPTONICA_LIBRARIES})

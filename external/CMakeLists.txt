@@ -1,6 +1,8 @@
 include(FetchContent)
 
 if(NOT TARGET Qt5Keychain::Qt5Keychain)
+    message("Using built-in qt keychain")
+
     FetchContent_Declare(
             qtkeychain
             GIT_REPOSITORY https://github.com/frankosterfeld/qtkeychain.git
@@ -20,6 +22,8 @@ endif()
 
 
 if(NOT TARGET QuaZip::QuaZip)
+    message("Using built-in quazip")
+
     FetchContent_Declare(
             quazip
             GIT_REPOSITORY https://github.com/stachenov/quazip.git

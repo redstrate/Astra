@@ -3,7 +3,7 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
-#include <qt5keychain/keychain.h>
+#include <keychain.h>
 
 #include "sapphirelauncher.h"
 #include "squareboot.h"
