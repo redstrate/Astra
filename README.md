@@ -12,7 +12,7 @@ At the moment, there are a few caveats that are good to know if you use these fe
 * There is no **news list** yet.
 * The **Steam support is untested.**
 
-Despite this, the launcher is still usable and I use it myself on a regular basis on Linux. I suggest you read more in the [FAQ](https://github.com/redstrate/astra/wiki/Frequently-Asked-Questions)!
+Despite this, the launcher is still usable and I use it myself on a regular basis on Linux. I suggest you read more in the [FAQ](https://man.sr.ht/~redstrate/astra/faq.md)!
 
 ![screenshot](misc/screenshot.webp?raw=true)
 
@@ -33,6 +33,19 @@ Despite this, the launcher is still usable and I use it myself on a regular basi
   * You can view your spot in the queue easily by using the system tray icon.
 
 ## Usage
-* On [Windows](https://github.com/redstrate/astra/wiki/Windows-Usage)
-* On [macOS](https://github.com/redstrate/astra/wiki/macOS-Usage)
-* On [Linux](https://github.com/redstrate/astra/wiki/Linux-Usage)
+There's lots of information located on [the wiki](https://man.sr.ht/~redstrate/astra/). However, there are several pages dedicated to using Astra:
+
+* On [Windows](https://man.sr.ht/~redstrate/astra/windows-usage.md)
+* On [macOS](https://man.sr.ht/~redstrate/astra/macos-usage.md)
+* On [Linux](https://man.sr.ht/~redstrate/astra/linux-usage.md)
+
+## Contributing and Support
+Astra is primarily hosted at **sourcehut**, with the project located [here](https://sr.ht/~redstrate/astra/). There is multiple
+ways to contribute patches:
+* You can send a PR through the [Github mirror](https://github.com/redstrate/astra/pulls).
+* If you have a sourcehut account, you can use the [web contributing interface](https://git.sr.ht/~redstrate/astra/send-email).
+* If you refuse to use Github or sourcehut, you may always send me an email on [the astra mailing list](https://lists.sr.ht/~redstrate/astra-dev).
+
+If you do send a patch through the mailing list, please prefix the subject with PATCH so it's properly filtered.
+
+If you wish to **report an issue or discuss something**, the [the same astra-dev mailing list](https://lists.sr.ht/~redstrate/astra-dev) for now.
