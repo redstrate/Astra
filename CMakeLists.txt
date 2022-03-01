@@ -35,15 +35,15 @@ set(SRC
         include/gamescopesettingswindow.h)
 
 set(LIBRARIES
-        Qt5::Core Qt5::Widgets Qt5::Network qt5keychain QuaZip)
+        Qt5::Core Qt5::Widgets Qt5::Network ${KEYCHAIN_LIBRARIES} ${QUAZIP_LIBRARIES})
 
 if(ENABLE_WATCHDOG)
     set(LIBRARIES ${LIBRARIES} ${TESSERACT_LIBRARIES} ${LEPTONICA_LIBRARIES})
 
     set(SRC ${SRC}
-            include/watchdog.h
+        include/watchdog.h
         src/watchdog.cpp
-            include/gameparser.h
+        include/gameparser.h
         src/gameparser.cpp)
 endif()
 
@@ -63,9 +63,8 @@ target_include_directories(astra
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         PRIVATE
-        ${CMAKE_BINARY_DIR}/_deps/qtkeychain-src
-        ${CMAKE_BINARY_DIR}/_deps/qtkeychain-build
-        ${CMAKE_BINARY_DIR}/_deps/quazip-src)
+        ${KEYCHAIN_INCLUDE_DIRS}
+        ${QUAZIP_INCLUDE_DIRS})
 
 if(ENABLE_WATCHDOG)
     target_include_directories(astra PRIVATE ${TESSERACT_INCLUDE_DIRS} ${LEPTONICA_INCLUDE_DIRS})
@@ -74,11 +73,10 @@ if(ENABLE_WATCHDOG)
 endif()
 
 install(TARGETS astra
-        DESTINATION "${INSTALL_BIN_PATH}"
-        )
+        DESTINATION "${INSTALL_BIN_PATH}")
 
 if(WIN32)
-    get_target_property(QMAKE_EXE Qt6::qmake IMPORTED_LOCATION)
+    get_target_property(QMAKE_EXE Qt5::qmake IMPORTED_LOCATION)
     get_filename_component(QT_BIN_DIR "${QMAKE_EXE}" DIRECTORY)
 
     find_program(WINDEPLOYQT_ENV_SETUP qtenv2.bat HINTS "${QT_BIN_DIR}")

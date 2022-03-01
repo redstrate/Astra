@@ -7,7 +7,7 @@
 #include <QStandardPaths>
 #include <QJsonArray>
 
-#include <quazip/JlCompress.h>
+#include <JlCompress.h>
 
 #include "launchercore.h"
 
