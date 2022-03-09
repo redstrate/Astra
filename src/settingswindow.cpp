@@ -58,7 +58,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
         connect(profileWidget, &QListWidget::currentRowChanged, this,
                 &SettingsWindow::reloadControls);
 
-        profileLayout->addWidget(profileWidget, 0, 0, 0, 1);
+        profileLayout->addWidget(profileWidget, 0, 0, 3, 1);
 
         auto addProfileButton = new QPushButton("Add Profile");
         connect(addProfileButton, &QPushButton::pressed, [=] {
@@ -66,7 +66,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
             this->core.saveSettings();
         });
-        profileLayout->addWidget(addProfileButton, 2, 0);
+        profileLayout->addWidget(addProfileButton, 3, 0);
 
         deleteProfileButton = new QPushButton("Delete Profile");
         connect(deleteProfileButton, &QPushButton::pressed, [=] {
@@ -75,7 +75,7 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
 
             this->core.saveSettings();
         });
-        profileLayout->addWidget(deleteProfileButton, 3, 0);
+        profileLayout->addWidget(deleteProfileButton, 0, 2);
 
         nameEdit = new QLineEdit();
         connect(nameEdit, &QLineEdit::editingFinished, [=] {
