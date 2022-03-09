@@ -50,12 +50,22 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     QAction* settingsAction = fileMenu->addAction("Configure Astra...");
     settingsAction->setIcon(QIcon::fromTheme("settings"));
     connect(settingsAction, &QAction::triggered, [=] {
-        auto window = new SettingsWindow(*this, this->core, this);
+        auto window = new SettingsWindow(0, *this, this->core, this);
+        connect(&this->core, &LauncherCore::settingsChanged, window, &SettingsWindow::reloadControls);
+        window->show();
+    });
+
+    QAction* profilesAction = fileMenu->addAction("Configure Profiles...");
+    profilesAction->setIcon(QIcon::fromTheme("settings"));
+    connect(profilesAction, &QAction::triggered, [=] {
+        auto window = new SettingsWindow(1, *this, this->core, this);
         connect(&this->core, &LauncherCore::settingsChanged, window, &SettingsWindow::reloadControls);
         window->show();
     });
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
+    fileMenu->addSeparator();
+
     QAction* wineCfg = fileMenu->addAction("Configure Wine...");
     wineCfg->setIcon(QIcon::fromTheme("settings"));
     connect(wineCfg, &QAction::triggered, [=] {

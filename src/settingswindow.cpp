@@ -16,7 +16,7 @@
 #include "launcherwindow.h"
 #include "gamescopesettingswindow.h"
 
-SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidget* parent) : core(core), window(window), QDialog(parent) {
+SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherCore& core, QWidget* parent) : core(core), window(window), QDialog(parent) {
     setWindowTitle("Settings");
     setWindowModality(Qt::WindowModality::ApplicationModal);
 
@@ -376,6 +376,8 @@ SettingsWindow::SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidg
         dalamudAssetVersionLabel = new QLabel();
         dalamudBoxLayout->addRow("Dalamud Asset Version", dalamudAssetVersionLabel);
     }
+
+    tabWidget->setCurrentIndex(defaultTab);
 
     reloadControls();
 }

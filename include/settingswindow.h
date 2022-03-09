@@ -14,7 +14,7 @@ struct ProfileSettings;
 
 class SettingsWindow : public QDialog {
 public:
-    SettingsWindow(LauncherWindow& window, LauncherCore& core, QWidget* parent = nullptr);
+    SettingsWindow(int defaultTab, LauncherWindow& window, LauncherCore& core, QWidget* parent = nullptr);
 
 public slots:
     void reloadControls();
