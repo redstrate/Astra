@@ -32,7 +32,9 @@ set(SRC
         src/launcherwindow.cpp
         include/launcherwindow.h
         src/gamescopesettingswindow.cpp
-        include/gamescopesettingswindow.h)
+        include/gamescopesettingswindow.h
+        src/fiinparser.cpp
+        include/fiinparser.h)
 
 include(FetchContent)
 
