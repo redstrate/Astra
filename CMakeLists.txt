@@ -34,7 +34,9 @@ set(SRC
         src/gamescopesettingswindow.cpp
         include/gamescopesettingswindow.h
         src/fiinparser.cpp
-        include/fiinparser.h)
+        include/fiinparser.h
+        include/headline.h
+        src/headline.cpp)
 
 include(FetchContent)
 
