@@ -42,7 +42,12 @@ void getHeadline(LauncherCore& core, std::function<void(Headline)> return_func) 
             news.id = object["id"].toString();
             news.tag = object["tag"].toString();
             news.title = object["title"].toString();
-            news.url = QUrl(object["url"].toString());
+
+            if(object["url"].toString().isEmpty()) {
+                news.url = QUrl(QString("https://na.finalfantasyxiv.com/lodestone/news/detail/%1").arg(news.id));
+            } else {
+                news.url = QUrl(object["url"].toString());
+            }
 
             return news;
         };
