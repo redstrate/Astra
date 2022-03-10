@@ -11,7 +11,6 @@ Astra is a FFXIV launcher that supports
 
 At the moment, there are a few caveats that are good to know if you use these features:
 * There is no **game patching** support, but the launcher will prompt you to launch another launcher anyway.
-* There is no **news list** yet.
 * The **Steam support is untested.**
 
 Despite this, the launcher is still usable and I use it myself on a regular basis on Linux. I suggest you read more in the [FAQ](https://man.sr.ht/~redstrate/astra/faq.md)!
