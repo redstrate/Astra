@@ -5,12 +5,16 @@
 #include <QFormLayout>
 #include <QApplication>
 #include <QDesktopServices>
+#include <QNetworkReply>
+#include <QTreeWidgetItem>
+#include <QHeaderView>
 
 #include "settingswindow.h"
 #include "squareboot.h"
 #include "squarelauncher.h"
 #include "sapphirelauncher.h"
 #include "assetupdater.h"
+#include "headline.h"
 
 LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindow(parent), core(core) {
     setWindowTitle("Astra");
@@ -86,44 +90,62 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
         QApplication::aboutQt();
     });
 
-    auto layout = new QFormLayout();
+    auto layout = new QGridLayout();
+
+    bannerImageView = new QLabel();
+    layout->addWidget(bannerImageView, 0, 0);
+
+    newsListView = new QTreeWidget();
+    newsListView->setColumnCount(2);
+    newsListView->setHeaderLabels({"Title", "Date"});
+    newsListView->header()->setStretchLastSection(true);
+    newsListView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    connect(newsListView, &QTreeWidget::itemClicked, [](QTreeWidgetItem* item, int column) {
+        auto url = item->data(0, Qt::UserRole).toUrl();
+        qInfo() << "clicked" << url;
+        QDesktopServices::openUrl(url);
+    });
+    layout->addWidget(newsListView, 1, 0);
+
+    auto loginLayout = new QFormLayout();
+    layout->addLayout(loginLayout, 0, 1, 1, 1);
 
     profileSelect = new QComboBox();
     connect(profileSelect, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=](int index) {
         reloadControls();
     });
 
-    layout->addRow("Profile", profileSelect);
+    loginLayout->addRow("Profile", profileSelect);
 
     usernameEdit = new QLineEdit();
-    layout->addRow("Username", usernameEdit);
+    loginLayout->addRow("Username", usernameEdit);
 
     rememberUsernameBox = new QCheckBox();
     connect(rememberUsernameBox, &QCheckBox::stateChanged, [=](int) {
         currentProfile().rememberUsername = rememberUsernameBox->isChecked();
         this->core.saveSettings();
     });
-    layout->addRow("Remember Username?", rememberUsernameBox);
+    loginLayout->addRow("Remember Username?", rememberUsernameBox);
 
     passwordEdit = new QLineEdit();
     passwordEdit->setEchoMode(QLineEdit::EchoMode::Password);
-    layout->addRow("Password", passwordEdit);
+    loginLayout->addRow("Password", passwordEdit);
 
     rememberPasswordBox = new QCheckBox();
     connect(rememberPasswordBox, &QCheckBox::stateChanged, [=](int) {
         currentProfile().rememberPassword = rememberPasswordBox->isChecked();
         this->core.saveSettings();
     });
-    layout->addRow("Remember Password?", rememberPasswordBox);
+    loginLayout->addRow("Remember Password?", rememberPasswordBox);
 
     otpEdit = new QLineEdit();
-    layout->addRow("One-Time Password", otpEdit);
+    loginLayout->addRow("One-Time Password", otpEdit);
 
     loginButton = new QPushButton("Login");
-    layout->addRow(loginButton);
+    loginLayout->addRow(loginButton);
 
     registerButton = new QPushButton("Register");
-    layout->addRow(registerButton);
+    loginLayout->addRow(registerButton);
 
     auto emptyWidget = new QWidget();
     emptyWidget->setLayout(layout);
@@ -179,6 +201,11 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     });
 
     reloadControls();
+
+    getHeadline(core, [this](Headline headline) {
+        this->headline = headline;
+        reloadControls();
+    });
 }
 
 ProfileSettings LauncherWindow::currentProfile() const {
@@ -194,6 +221,52 @@ void LauncherWindow::reloadControls() {
         return;
 
     currentlyReloadingControls = true;
+
+    if(!headline.banner.empty()) {
+        auto request = QNetworkRequest(headline.banner[0].bannerImage);
+        core.buildRequest(request);
+
+        auto reply = core.mgr->get(request);
+        connect(reply, &QNetworkReply::finished, [=] {
+            QPixmap pixmap;
+            pixmap.loadFromData(reply->readAll());
+            bannerImageView->setPixmap(pixmap);
+        });
+
+        QTreeWidgetItem* newsItem = new QTreeWidgetItem((QTreeWidgetItem*)nullptr, QStringList("News"));
+        for(auto news : headline.news) {
+            QTreeWidgetItem* item = new QTreeWidgetItem();
+            item->setText(0, news.title);
+            item->setText(1, QLocale().toString(news.date, QLocale::ShortFormat));
+            item->setData(0, Qt::UserRole, news.url);
+
+            newsItem->addChild(item);
+        }
+
+        QTreeWidgetItem* pinnedItem = new QTreeWidgetItem((QTreeWidgetItem*)nullptr, QStringList("Pinned"));
+        for(auto pinned : headline.pinned) {
+            QTreeWidgetItem* item = new QTreeWidgetItem();
+            item->setText(0, pinned.title);
+            item->setText(1, QLocale().toString(pinned.date, QLocale::ShortFormat));
+            item->setData(0, Qt::UserRole, pinned.url);
+
+            pinnedItem->addChild(item);
+        }
+
+        QTreeWidgetItem* topicsItem = new QTreeWidgetItem((QTreeWidgetItem*)nullptr, QStringList("Topics"));
+        for(auto news : headline.topics) {
+            QTreeWidgetItem* item = new QTreeWidgetItem();
+            item->setText(0, news.title);
+            item->setText(1, QLocale().toString(news.date, QLocale::ShortFormat));
+            item->setData(0, Qt::UserRole, news.url);
+
+            qInfo() << news.url;
+
+            topicsItem->addChild(item);
+        }
+
+        newsListView->insertTopLevelItems(0, QList<QTreeWidgetItem*>({newsItem, pinnedItem, topicsItem}));
+    }
 
     const int oldIndex = profileSelect->currentIndex();
 

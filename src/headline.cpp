@@ -38,7 +38,7 @@ void getHeadline(LauncherCore& core, std::function<void(Headline)> return_func) 
 
         const auto parseNews = [](QJsonObject object) -> News {
             News news;
-            news.date = QDateTime::fromString(object["date"].toString());
+            news.date = QDateTime::fromString(object["date"].toString(), Qt::DateFormat::ISODate);
             news.id = object["id"].toString();
             news.tag = object["tag"].toString();
             news.title = object["title"].toString();
@@ -60,9 +60,14 @@ void getHeadline(LauncherCore& core, std::function<void(Headline)> return_func) 
             headline.news.push_back(news);
         }
 
-        for(auto pinnedObject : document.object()["news"].toArray()) {
+        for(auto pinnedObject : document.object()["pinned"].toArray()) {
             auto pinned = parseNews(pinnedObject.toObject());
             headline.pinned.push_back(pinned);
+        }
+
+        for(auto pinnedObject : document.object()["topics"].toArray()) {
+            auto pinned = parseNews(pinnedObject.toObject());
+            headline.topics.push_back(pinned);
         }
 
         return_func(headline);

@@ -22,6 +22,8 @@ struct Headline {
     QList<News> news;
 
     QList<News> pinned;
+
+    QList<News> topics;
 };
 
 class LauncherCore;

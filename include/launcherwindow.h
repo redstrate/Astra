@@ -4,8 +4,10 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QPushButton>
+#include <QTreeWidget>
 
 #include "launchercore.h"
+#include "headline.h"
 
 class LauncherWindow : public QMainWindow {
     Q_OBJECT
@@ -23,7 +25,12 @@ public slots:
 private:
     LauncherCore& core;
 
+    Headline headline;
+
     bool currentlyReloadingControls = false;
+
+    QLabel* bannerImageView;
+    QTreeWidget* newsListView;
 
     QComboBox* profileSelect;
     QLineEdit* usernameEdit, *passwordEdit;
