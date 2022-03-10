@@ -36,7 +36,9 @@ set(SRC
         src/fiinparser.cpp
         include/fiinparser.h
         include/headline.h
-        src/headline.cpp)
+        src/headline.cpp
+        include/indexparser.h
+        src/indexparser.cpp)
 
 include(FetchContent)
 
