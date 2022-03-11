@@ -108,7 +108,7 @@ if(ENABLE_WATCHDOG)
         src/gameparser.cpp)
 endif()
 
-if(UNIX)
+if(UNIX AND NOT APPLE)
     set(LIBRARIES ${LIBRARIES}
             X11
             Xcomposite
