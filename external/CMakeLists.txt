@@ -11,6 +11,7 @@ if(NOT TARGET Qt5Keychain::Qt5Keychain)
 
     set(BUILD_WITH_QT6 OFF CACHE BOOL "" FORCE)
     set(QTKEYCHAIN_STATIC ON CACHE BOOL "" FORCE)
+    set(BUILD_TRANSLATIONS OFF CACHE BOOL "" FORCE)
 
     FetchContent_MakeAvailable(qtkeychain)
 
