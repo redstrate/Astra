@@ -55,6 +55,7 @@ private:
     QCheckBox* enableDalamudBox = nullptr;
     QLabel* dalamudVersionLabel = nullptr;
     QLabel* dalamudAssetVersionLabel = nullptr;
+    QCheckBox* dalamudOptOutBox = nullptr;
 
     bool currentlyReloadingControls = false;
 

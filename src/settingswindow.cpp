@@ -364,11 +364,19 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
 
         enableDalamudBox = new QCheckBox();
         connect(enableDalamudBox, &QCheckBox::stateChanged, [=](int) {
-            getCurrentProfile().enableDalamud = enableDalamudBox->isChecked();
+            getCurrentProfile().dalamud.enabled = enableDalamudBox->isChecked();
 
             this->core.saveSettings();
         });
         dalamudBoxLayout->addRow("Enable Dalamud Injection", enableDalamudBox);
+
+        dalamudOptOutBox = new QCheckBox();
+        connect(dalamudOptOutBox, &QCheckBox::stateChanged, [=](int) {
+            getCurrentProfile().dalamud.optOutOfMbCollection = dalamudOptOutBox->isChecked();
+
+            this->core.saveSettings();
+        });
+        dalamudBoxLayout->addRow("Opt Out of Automatic Marketboard Collection", dalamudOptOutBox);
 
         dalamudVersionLabel = new QLabel();
         dalamudBoxLayout->addRow("Dalamud Version", dalamudVersionLabel);
@@ -476,7 +484,7 @@ void SettingsWindow::reloadControls() {
     useSteamBox->setChecked(profile.useSteam);
 
     // dalamud
-    enableDalamudBox->setChecked(profile.enableDalamud);
+    enableDalamudBox->setChecked(profile.dalamud.enabled);
     if(core.dalamudVersion.isEmpty()) {
         dalamudVersionLabel->setText("Dalamud is not installed.");
     } else {
@@ -488,6 +496,8 @@ void SettingsWindow::reloadControls() {
     } else {
         dalamudAssetVersionLabel->setText(QString::number(core.dalamudAssetVersion));
     }
+
+    dalamudOptOutBox->setChecked(profile.dalamud.optOutOfMbCollection);
 
     window.reloadControls();
 

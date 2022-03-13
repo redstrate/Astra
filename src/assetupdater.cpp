@@ -33,7 +33,7 @@ AssetUpdater::AssetUpdater(LauncherCore& launcher) : launcher(launcher) {
 
 void AssetUpdater::update(const ProfileSettings& profile) {
     // non-dalamud users can bypass this process since it's not needed
-    if(!profile.enableDalamud) {
+    if(!profile.dalamud.enabled) {
         finishedUpdating();
         return;
     }

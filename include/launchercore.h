@@ -37,7 +37,6 @@ struct ProfileSettings {
     bool useEsync = false, useGamescope = false, useGamemode = false;
     bool useDX9 = false;
     bool enableDXVKhud = false;
-    bool enableDalamud = false;
 
     struct GamescopeOptions {
         bool fullscreen = true;
@@ -46,6 +45,11 @@ struct ProfileSettings {
         int height = 0;
         int refreshRate = 0;
     } gamescope;
+
+    struct DalamudOptions {
+        bool enabled = false;
+        bool optOutOfMbCollection = false;
+    } dalamud;
 
     // login
     bool encryptArguments = true;

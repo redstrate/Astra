@@ -64,7 +64,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
 
     QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
-    if(profile.enableDalamud) {
+    if(profile.dalamud.enabled) {
         arguments.push_back(dataDir + "/NativeLauncher.exe");
     }
 
@@ -111,7 +111,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
 
     gameProcess->setProcessChannelMode(QProcess::MergedChannels);
 
-    if(profile.enableDalamud) {
+    if(profile.dalamud.enabled) {
         connect(gameProcess, &QProcess::readyReadStandardOutput, [this, gameProcess, profile] {
             QString output = gameProcess->readAllStandardOutput();
             bool success;
@@ -135,7 +135,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
             startInfo["DelayInitializeMs"] = 0;
             startInfo["GameVersion"] = profile.gameVersion;
             startInfo["Language"] = profile.language;
-            startInfo["OptOutMbCollection"] = false;
+            startInfo["OptOutMbCollection"] = profile.dalamud.optOutOfMbCollection;
 
             QString argsEncoded = QJsonDocument(startInfo).toJson().toBase64();
 
@@ -358,7 +358,8 @@ void LauncherCore::readInitialInformation() {
         profile.gamescope.height = settings.value("gamescopeHeight", defaultSettings.gamescope.height).toInt();
         profile.gamescope.refreshRate = settings.value("gamescopeRefreshRate", defaultSettings.gamescope.refreshRate).toInt();
 
-        profile.enableDalamud = settings.value("enableDalamud", defaultSettings.enableDalamud).toBool();
+        profile.dalamud.enabled = settings.value("enableDalamud", defaultSettings.dalamud.enabled).toBool();
+        profile.dalamud.optOutOfMbCollection = settings.value("dalamudOptOut", defaultSettings.dalamud.optOutOfMbCollection).toBool();
 
         profileSettings[settings.value("index").toInt()] = profile;
 
@@ -544,7 +545,8 @@ void LauncherCore::saveSettings() {
         settings.setValue("rememberPassword", profile.rememberPassword);
         settings.setValue("useSteam", profile.useSteam);
 
-        settings.setValue("enableDalamud", profile.enableDalamud);
+        settings.setValue("enableDalamud", profile.dalamud.enabled);
+        settings.setValue("dalamudOptOut", profile.dalamud.optOutOfMbCollection);
         settings.setValue("enableWatchdog", profile.enableWatchdog);
 
         settings.endGroup();
