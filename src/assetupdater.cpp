@@ -226,6 +226,8 @@ void AssetUpdater::finishDownload(QNetworkReply* reply) {
 
         doneDownloadingDalamud = true;
 
+        launcher.dalamudVersion = remoteDalamudVersion;
+
         checkIfFinished();
     } else if (reply->objectName() == "NativeLauncher") {
         qInfo() << "NativeLauncher finished downloading!";
@@ -334,6 +336,8 @@ void AssetUpdater::beginInstall() {
 void AssetUpdater::checkIfDalamudAssetsDone() {
     if(dalamudAssetNeededFilenames.empty()) {
         qInfo() << "Finished downloading Dalamud assets.";
+
+        launcher.dalamudAssetVersion = remoteDalamudAssetVersion;
 
         const QString dataDir =
             QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/DalamudAssets/";
