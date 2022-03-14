@@ -38,7 +38,8 @@ set(SRC
         include/headline.h
         src/headline.cpp
         include/indexparser.h
-        src/indexparser.cpp)
+        src/indexparser.cpp
+        include/config.h)
 
 include(FetchContent)
 
