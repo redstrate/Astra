@@ -586,6 +586,8 @@ QString LauncherCore::getDefaultWinePrefixPath() {
 #if defined(Q_OS_LINUX)
     return QDir::homePath() + "/.wine";
 #endif
+
+    return "";
 }
 
 QString LauncherCore::getDefaultGamePath() {
