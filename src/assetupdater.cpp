@@ -35,6 +35,10 @@ AssetUpdater::AssetUpdater(LauncherCore& launcher) : launcher(launcher) {
 
     dialog = new QProgressDialog("Updating assets...", "Cancel", 0, 0);
 
+    connect(dialog, &QProgressDialog::canceled, [this] {
+        wantsCancel = true;
+    });
+
     dataDir =
         QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 }
@@ -46,6 +50,9 @@ void AssetUpdater::update(const ProfileSettings& profile) {
         return;
     }
 
+    wantsCancel = false;
+    dialog->show();
+
     // first, we want to collect all of the remote versions
 
     qInfo() << "Starting update sequence...";
@@ -54,6 +61,9 @@ void AssetUpdater::update(const ProfileSettings& profile) {
     // dalamud assets
     {
         // we want to prevent logging in before we actually check the version
+        dalamudAssetNeededFilenames.clear();
+        remoteDalamudAssetVersion = -1;
+
         dalamudAssetNeededFilenames.append("dummy");
 
         // first we want to fetch the list of assets required
@@ -100,6 +110,9 @@ void AssetUpdater::update(const ProfileSettings& profile) {
     // they're all updated in unison, so there's no reason to have multiple checks
     {
         QNetworkRequest request(dalamudVersionManifestURL);
+
+        remoteDalamudVersion.clear();
+        remoteRuntimeVersion.clear();
 
         auto reply = launcher.mgr->get(request);
         connect(reply, &QNetworkReply::finished, [this, profile, reply] {
@@ -173,6 +186,9 @@ void AssetUpdater::beginInstall() {
 }
 
 void AssetUpdater::checkIfDalamudAssetsDone() {
+    if(wantsCancel)
+        return;
+
     if(dalamudAssetNeededFilenames.empty()) {
         qInfo() << "Finished downloading Dalamud assets.";
 
@@ -188,6 +204,9 @@ void AssetUpdater::checkIfDalamudAssetsDone() {
 }
 
 void AssetUpdater::checkIfFinished() {
+    if(wantsCancel)
+        return;
+
     if (doneDownloadingDalamud &&
         doneDownloadingNativelauncher &&
         doneDownloadingRuntimeCore &&
@@ -203,7 +222,11 @@ void AssetUpdater::checkIfFinished() {
         }
     }
 }
+
 void AssetUpdater::checkIfCheckingIsDone() {
+    if(wantsCancel)
+        return;
+
     if(remoteDalamudVersion.isEmpty() || remoteRuntimeVersion.isEmpty() || remoteDalamudAssetVersion == -1) {
         return;
     }

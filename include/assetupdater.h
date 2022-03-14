@@ -49,4 +49,6 @@ private:
     QJsonArray remoteDalamudAssetArray;
 
     QString dataDir;
+
+    bool wantsCancel = false;
 };
