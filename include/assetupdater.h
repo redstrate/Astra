@@ -2,6 +2,8 @@
 
 #include <QObject>
 #include <QTemporaryDir>
+#include <QProgressDialog>
+#include <QJsonArray>
 
 class LauncherCore;
 class QNetworkReply;
@@ -13,9 +15,9 @@ public:
     AssetUpdater(LauncherCore& launcher);
 
     void update(const ProfileSettings& profile);
-    void finishDownload(QNetworkReply* reply);
     void beginInstall();
 
+    void checkIfCheckingIsDone();
     void checkIfDalamudAssetsDone();
     void checkIfFinished();
 
@@ -24,6 +26,8 @@ signals:
 
 private:
     LauncherCore& launcher;
+
+    QProgressDialog* dialog;
 
     const ProfileSettings* currentSettings = nullptr;
 
@@ -40,6 +44,9 @@ private:
     bool needsDalamudInstall = false;
     bool needsNativeInstall = false;
 
-    int remoteDalamudAssetVersion;
+    int remoteDalamudAssetVersion = -1;
     QList<QString> dalamudAssetNeededFilenames;
+    QJsonArray remoteDalamudAssetArray;
+
+    QString dataDir;
 };
