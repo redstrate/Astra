@@ -76,21 +76,13 @@ void AssetUpdater::update(const ProfileSettings& profile) {
             // lol, they actually provide invalid json. let's fix it if it's borked
             QString badJson = reply->readAll();
 
-            qInfo() << reply->errorString();
-            qInfo() << "Got asset manifest: " << badJson;
-
             auto lastCommaLoc = badJson.lastIndexOf(',');
             auto lastBracketLoc = badJson.lastIndexOf('{');
-
-            qInfo() << "Location of last comma: " << lastCommaLoc;
-            qInfo() << "Location of last bracket: " << lastBracketLoc;
 
             // basically, if { supersedes the last ,
             if (lastCommaLoc > lastBracketLoc) {
                 qInfo() << "Dalamud server gave bad json, attempting to fix...";
                 badJson.remove(lastCommaLoc, 1);
-            } else {
-                qInfo() << "Got valid json.";
             }
 
             QJsonDocument doc = QJsonDocument::fromJson(badJson.toUtf8());
@@ -334,8 +326,6 @@ void AssetUpdater::checkIfCheckingIsDone() {
 
         for(auto assetObject : remoteDalamudAssetArray) {
             {
-                qInfo() << "Starting download for " << assetObject.toObject()["FileName"];
-
                 dalamudAssetNeededFilenames.append(assetObject.toObject()["FileName"].toString());
 
                 QNetworkRequest assetRequest(assetObject.toObject()["Url"].toString());
@@ -347,8 +337,6 @@ void AssetUpdater::checkIfCheckingIsDone() {
 
                     const QString fileName = assetObject["FileName"].toString();
                     const QList<QString> dirPath = fileName.left(fileName.lastIndexOf("/")).split('/');
-
-                    qInfo() << "Needed directories: " << dirPath;
 
                     QString build = dataDir + "/DalamudAssets/";
                     for(auto dir : dirPath) {
