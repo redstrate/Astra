@@ -33,12 +33,6 @@ const QString dotnetDesktopPackageURL =
 AssetUpdater::AssetUpdater(LauncherCore& launcher) : launcher(launcher) {
     launcher.mgr->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
 
-    dialog = new QProgressDialog("Updating assets...", "Cancel", 0, 0);
-
-    connect(dialog, &QProgressDialog::canceled, [this] {
-        wantsCancel = true;
-    });
-
     dataDir =
         QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 }
@@ -50,8 +44,7 @@ void AssetUpdater::update(const ProfileSettings& profile) {
         return;
     }
 
-    wantsCancel = false;
-    dialog->show();
+    dialog = new QProgressDialog("Updating assets...", "Cancel", 0, 0);
 
     // first, we want to collect all of the remote versions
 
@@ -178,7 +171,7 @@ void AssetUpdater::beginInstall() {
 }
 
 void AssetUpdater::checkIfDalamudAssetsDone() {
-    if(wantsCancel)
+    if(dialog->wasCanceled())
         return;
 
     if(dalamudAssetNeededFilenames.empty()) {
@@ -196,7 +189,7 @@ void AssetUpdater::checkIfDalamudAssetsDone() {
 }
 
 void AssetUpdater::checkIfFinished() {
-    if(wantsCancel)
+    if(dialog->wasCanceled())
         return;
 
     if (doneDownloadingDalamud &&
@@ -216,7 +209,7 @@ void AssetUpdater::checkIfFinished() {
 }
 
 void AssetUpdater::checkIfCheckingIsDone() {
-    if(wantsCancel)
+    if(dialog->wasCanceled())
         return;
 
     if(remoteDalamudVersion.isEmpty() || remoteRuntimeVersion.isEmpty() || remoteDalamudAssetVersion == -1) {
