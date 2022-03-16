@@ -7,6 +7,8 @@
 #include <QMessageBox>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QPushButton>
+#include <QDesktopServices>
 
 #include "launchercore.h"
 
@@ -113,7 +115,13 @@ void SquareLauncher::login(const LoginInformation& info, const QUrl referer) {
 
             if(!playable) {
                 auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Your game is unplayable. Please check that you have the right license selected, and a subscription to play.");
-                window.addUpdateButtons(*info.settings, *messageBox);
+
+                auto launcherButton = messageBox->addButton("Open Mog Station", QMessageBox::HelpRole);
+                connect(launcherButton, &QPushButton::clicked, [=] {
+                    QDesktopServices::openUrl(QUrl("https://sqex.to/Msp"));
+                });
+
+                messageBox->addButton(QMessageBox::StandardButton::Ok);
 
                 messageBox->show();
 
