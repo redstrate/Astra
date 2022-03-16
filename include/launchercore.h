@@ -14,6 +14,12 @@ class SquareBoot;
 class AssetUpdater;
 class Watchdog;
 
+enum class GameLicense {
+    WindowsStandalone,
+    WindowsSteam,
+    macOS
+};
+
 struct ProfileSettings {
     QUuid uuid;
     QString name;
@@ -56,7 +62,8 @@ struct ProfileSettings {
     bool isSapphire = false;
     QString lobbyURL;
     bool rememberUsername = false, rememberPassword = false;
-    bool useSteam = false;
+
+    GameLicense license = GameLicense::WindowsStandalone;
 };
 
 struct AppSettings {

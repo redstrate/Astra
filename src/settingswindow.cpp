@@ -177,6 +177,22 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
 
         loginBoxLayout->addRow("Server Lobby", serverType);
 
+        gameLicenseBox = new QComboBox();
+        gameLicenseBox->insertItem(0, "Windows Standalone");
+        gameLicenseBox->insertItem(1, "Windows Steam");
+        gameLicenseBox->insertItem(2, "macOS");
+
+        connect(gameLicenseBox,
+                static_cast<void (QComboBox::*)(int)>(
+                    &QComboBox::currentIndexChanged),
+                [=](int index) {
+                    getCurrentProfile().license = (GameLicense)index;
+
+                    this->core.saveSettings();
+                });
+
+        loginBoxLayout->addRow("Game License", gameLicenseBox);
+
         lobbyServerURL = new QLineEdit();
         connect(lobbyServerURL, &QLineEdit::editingFinished, [=] {
             getCurrentProfile().lobbyURL = lobbyServerURL->text();
@@ -201,14 +217,6 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
             this->core.saveSettings();
         });
         loginBoxLayout->addRow("Remember Password", rememberPasswordBox);
-
-        useSteamBox = new QCheckBox();
-        connect(useSteamBox, &QCheckBox::stateChanged, [=](int) {
-            getCurrentProfile().useSteam = useSteamBox->isChecked();
-
-            this->core.saveSettings();
-        });
-        loginBoxLayout->addRow("Is Steam Account", useSteamBox);
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
         auto wineBox = new QGroupBox("Wine Options");
@@ -481,7 +489,7 @@ void SettingsWindow::reloadControls() {
     lobbyServerURL->setText(profile.lobbyURL);
     rememberUsernameBox->setChecked(profile.rememberUsername);
     rememberPasswordBox->setChecked(profile.rememberPassword);
-    useSteamBox->setChecked(profile.useSteam);
+    gameLicenseBox->setCurrentIndex((int)profile.license);
 
     // dalamud
     enableDalamudBox->setChecked(profile.dalamud.enabled);

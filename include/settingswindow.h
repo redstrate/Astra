@@ -49,7 +49,7 @@ private:
     QComboBox* serverType = nullptr;
     QLineEdit* lobbyServerURL = nullptr;
     QCheckBox* rememberUsernameBox = nullptr, *rememberPasswordBox = nullptr;
-    QCheckBox* useSteamBox = nullptr;
+    QComboBox* gameLicenseBox = nullptr;
 
     // dalamud
     QCheckBox* enableDalamudBox = nullptr;

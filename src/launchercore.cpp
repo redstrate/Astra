@@ -101,7 +101,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
-    if(profile.useSteam) {
+    if(profile.license == GameLicense::WindowsSteam) {
         gameArgs.push_back({"IsSteam", "1"});
         env.insert("IS_FFXIV_LAUNCH_FROM_STEAM", QString::number(1));
     }
@@ -337,7 +337,7 @@ void LauncherCore::readInitialInformation() {
         profile.lobbyURL = settings.value("lobbyURL", defaultSettings.lobbyURL).toString();
         profile.rememberUsername = settings.value("rememberUsername", defaultSettings.rememberUsername).toBool();
         profile.rememberPassword = settings.value("rememberPassword", defaultSettings.rememberPassword).toBool();
-        profile.useSteam = settings.value("useSteam", defaultSettings.useSteam).toBool();
+        profile.license = (GameLicense)settings.value("license", (int)defaultSettings.license).toInt();
 
         profile.useDX9 = settings.value("useDX9", defaultSettings.useDX9).toBool();
         profile.useEsync = settings.value("useEsync", defaultSettings.useEsync).toBool();
@@ -543,7 +543,7 @@ void LauncherCore::saveSettings() {
         settings.setValue("lobbyURL", profile.lobbyURL);
         settings.setValue("rememberUsername", profile.rememberUsername);
         settings.setValue("rememberPassword", profile.rememberPassword);
-        settings.setValue("useSteam", profile.useSteam);
+        settings.setValue("license", (int)profile.license);
 
         settings.setValue("enableDalamud", profile.dalamud.enabled);
         settings.setValue("dalamudOptOut", profile.dalamud.optOutOfMbCollection);

@@ -36,7 +36,7 @@ void SquareLauncher::getStored(const LoginInformation& info) {
     query.addQueryItem("isft", "0");
     query.addQueryItem("cssmode", "1");
     query.addQueryItem("isnew", "1");
-    query.addQueryItem("issteam", info.settings->useSteam ? "1" : "0");
+    query.addQueryItem("issteam", info.settings->license == GameLicense::WindowsSteam ? "1" : "0");
 
     QUrl url("https://ffxiv-login.square-enix.com/oauth/ffxivarr/login/top");
     url.setQuery(query);
