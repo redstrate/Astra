@@ -31,12 +31,22 @@ QString getFileHash(QString file) {
 
 void SquareLauncher::getStored(const LoginInformation& info) {
     QUrlQuery query;
+    // en is always used to the top url
     query.addQueryItem("lng", "en");
+    // for some reason, we always use region 3. the actual region is acquired later
     query.addQueryItem("rgn", "3");
-    query.addQueryItem("isft", "0");
+    query.addQueryItem("isft", info.settings->license == GameLicense::FreeTrial ? "1" : "0");
     query.addQueryItem("cssmode", "1");
     query.addQueryItem("isnew", "1");
-    query.addQueryItem("issteam", info.settings->license == GameLicense::WindowsSteam ? "1" : "0");
+    query.addQueryItem("launchver", "3");
+
+    if(info.settings->license == GameLicense::WindowsSteam) {
+        query.addQueryItem("issteam", "1");
+
+        // TODO: get steam ticket information from steam api
+        query.addQueryItem("session_ticket", "1");
+        query.addQueryItem("ticket_size", "1");
+    }
 
     QUrl url("https://ffxiv-login.square-enix.com/oauth/ffxivarr/login/top");
     url.setQuery(query);
@@ -48,6 +58,21 @@ void SquareLauncher::getStored(const LoginInformation& info) {
 
     connect(reply, &QNetworkReply::finished, [=] {
         auto str = QString(reply->readAll());
+
+        // fetches Steam username
+        if(info.settings->license == GameLicense::WindowsSteam) {
+            QRegularExpression re(R"lit(<input name=""sqexid"" type=""hidden"" value=""(?<sqexid>.*)""\/>)lit");
+            QRegularExpressionMatch match = re.match(str);
+
+            if(match.hasMatch()) {
+                username = match.captured(1);
+            } else {
+                auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Could not get Steam username, have you attached your account?");
+                messageBox->show();
+            }
+        } else {
+            username = info.username;
+        }
 
         QRegularExpression re(R"lit(\t<\s*input .* name="_STORED_" value="(?<stored>.*)">)lit");
         QRegularExpressionMatch match = re.match(str);
@@ -86,18 +111,29 @@ void SquareLauncher::login(const LoginInformation& info, const QUrl referer) {
             const bool terms = parts[3] == "1";
             const bool playable = parts[9] == "1";
 
-            if(!terms || !playable) {
-                auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Your game is unplayable. You may need to accept the terms from the official launcher.");
+            if(!playable) {
+                auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Your game is unplayable. Please check that you have the right license selected, and a subscription to play.");
                 window.addUpdateButtons(*info.settings, *messageBox);
 
                 messageBox->show();
-            } else {
-                SID = parts[1];
-                auth.region = parts[5].toInt();
-                auth.maxExpansion = parts[13].toInt();
 
-                registerSession(info);
+                return;
             }
+
+            if(!terms) {
+                auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Your game is unplayable. You need to accept the terms of service from the official launcher.");
+                window.addUpdateButtons(*info.settings, *messageBox);
+
+                messageBox->show();
+
+                return;
+            }
+
+            SID = parts[1];
+            auth.region = parts[5].toInt();
+            auth.maxExpansion = parts[13].toInt();
+
+            registerSession(info);
         } else {
             auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Invalid username/password.");
             messageBox->show();

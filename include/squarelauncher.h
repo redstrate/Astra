@@ -23,7 +23,7 @@ signals:
 private:
     QString getBootHash(const LoginInformation& info);
 
-    QString stored, SID;
+    QString stored, SID, username;
     LoginAuth auth;
 
     LauncherCore& window;

@@ -105,7 +105,13 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
         gameArgs.push_back({"IsSteam", "1"});
         env.insert("IS_FFXIV_LAUNCH_FROM_STEAM", QString::number(1));
     }
-    env.insert("DALAMUD_RUNTIME", "Z:" + dataDir.replace('/', '\\') + "\\DalamudRuntime");
+
+    if(profile.dalamud.enabled) {
+        // TODO: this depends on the default wine Z: path existing, which may not
+        // always the case.
+        env.insert("DALAMUD_RUNTIME",
+                   "Z:" + dataDir.replace('/', '\\') + "\\DalamudRuntime");
+    }
 
     gameProcess->setProcessEnvironment(env);
 

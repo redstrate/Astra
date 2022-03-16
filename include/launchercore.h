@@ -17,7 +17,8 @@ class Watchdog;
 enum class GameLicense {
     WindowsStandalone,
     WindowsSteam,
-    macOS
+    macOS,
+    FreeTrial
 };
 
 struct ProfileSettings {
