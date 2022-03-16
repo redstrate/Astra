@@ -143,7 +143,15 @@ void SquareLauncher::login(const LoginInformation& info, const QUrl referer) {
 
             registerSession(info);
         } else {
-            auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Invalid username/password.");
+            QRegularExpression re(R"lit(window.external.user\("login=auth,ng,err,(?<launchParams>.*)\);)lit");
+            QRegularExpressionMatch match = re.match(str);
+
+            const auto parts = match.captured(1).split(',');
+
+            // there's a stray quote at the end of the error string, so let's remove that
+            QString errorStr = match.captured(1).chopped(1);
+
+            auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", errorStr);
             messageBox->show();
         }
     });
