@@ -19,6 +19,7 @@ have more questions, I suggest reading the [FAQ](https://man.sr.ht/~redstrate/as
 ![screenshot](misc/screenshot.webp?raw=true)
 
 ## Features
+* Can **bootstrap a new FFXIV installation** if it can't find one. You can skip the installer entirely!
 * Can use **native (Windows)** and **Wine-based (macOS, Linux)** versions of FFXIV.
 * You can use **Dalamud**, which is downloaded within the launcher just like XIVQuickLauncher. 
 * Can connect to the **official Square Enix servers** _as well_ as **Sapphire servers**.

@@ -33,13 +33,11 @@ set(SRC
         include/launcherwindow.h
         src/gamescopesettingswindow.cpp
         include/gamescopesettingswindow.h
-        src/fiinparser.cpp
-        include/fiinparser.h
         include/headline.h
         src/headline.cpp
-        include/indexparser.h
-        src/indexparser.cpp
-        include/config.h)
+        include/config.h
+        include/gameinstaller.h
+        src/gameinstaller.cpp)
 
 include(FetchContent)
 
@@ -118,7 +116,7 @@ endif()
 
 add_executable(astra ${SRC})
 
-target_link_libraries(astra PUBLIC ${LIBRARIES})
+target_link_libraries(astra PUBLIC ${LIBRARIES} libxiv)
 
 target_include_directories(astra
         PUBLIC

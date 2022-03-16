@@ -4,9 +4,11 @@
 #include <QApplication>
 #include <QCommandLineParser>
 #include <keychain.h>
+#include <QDir>
 
 #include "sapphirelauncher.h"
 #include "squareboot.h"
+#include "gameinstaller.h"
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
@@ -84,6 +86,21 @@ int main(int argc, char* argv[]) {
         } else {
             c.squareBoot->bootCheck(info);
         }
+    }
+
+    if(!QDir(c.getProfile(c.defaultProfileIndex).gamePath).exists()) {
+        auto messageBox = new QMessageBox(QMessageBox::Information, "No Game Found", "No game was found to be installed yet. Would you like to install FFXIV now?");
+
+        auto installButton = messageBox->addButton("Install Game", QMessageBox::HelpRole);
+        c.connect(installButton, &QPushButton::clicked, [&c, messageBox] {
+            installGame(c, [messageBox] {
+                messageBox->close();
+            });
+        });
+
+        messageBox->addButton(QMessageBox::StandardButton::No);
+
+        messageBox->show();
     }
 
     LauncherWindow w(c);

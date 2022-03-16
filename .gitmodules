@@ -1,0 +1,3 @@
+[submodule "external/libxiv"]
+	path = external/libxiv
+	url = ../libxiv.git
