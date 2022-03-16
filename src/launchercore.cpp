@@ -48,16 +48,21 @@ void LauncherCore::setSSL(QNetworkRequest& request) {
     request.setSslConfiguration(config);
 }
 
-void LauncherCore::buildRequest(QNetworkRequest& request) {
+void LauncherCore::buildRequest(const ProfileSettings& settings, QNetworkRequest& request) {
     setSSL(request);
-    request.setHeader(QNetworkRequest::UserAgentHeader,
-                      QString("SQEXAuthor/2.0.0(Windows 6.2; ja-jp; %1)").arg(QString(QSysInfo::bootUniqueId())));
+
+    if(settings.license == GameLicense::macOS) {
+        request.setHeader(QNetworkRequest::UserAgentHeader, "macSQEXAuthor/2.0.0(MacOSX; ja-jp)");
+    } else {
+        request.setHeader(QNetworkRequest::UserAgentHeader,
+                          QString("SQEXAuthor/2.0.0(Windows 6.2; ja-jp; %1)").arg(QString(QSysInfo::bootUniqueId())));
+    }
+
     request.setRawHeader("Accept",
                          "image/gif, image/jpeg, image/pjpeg, application/x-ms-application, application/xaml+xml, application/x-ms-xbap, */*");
     request.setRawHeader("Accept-Encoding", "gzip, deflate");
     request.setRawHeader("Accept-Language", "en-us");
 }
-
 
 void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth auth) {
     QList<QString> arguments;

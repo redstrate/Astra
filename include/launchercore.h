@@ -116,7 +116,7 @@ public:
      */
     void launchExecutable(const ProfileSettings& settings, QProcess* process, QStringList args);
 
-    void buildRequest(QNetworkRequest& request);
+    void buildRequest(const ProfileSettings& settings, QNetworkRequest& request);
     void setSSL(QNetworkRequest& request);
     QString readVersion(QString path);
     void readInitialInformation();

@@ -212,7 +212,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
 
         if(!headline.banner.empty()) {
             auto request = QNetworkRequest(headline.banner[0].bannerImage);
-            core.buildRequest(request);
+            core.buildRequest(currentProfile(), request);
 
             auto reply = core.mgr->get(request);
             connect(reply, &QNetworkReply::finished, [=] {

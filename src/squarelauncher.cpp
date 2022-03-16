@@ -54,7 +54,7 @@ void SquareLauncher::getStored(const LoginInformation& info) {
     url.setQuery(query);
 
     auto request = QNetworkRequest(url);
-    window.buildRequest(request);
+    window.buildRequest(*info.settings, request);
 
     QNetworkReply* reply = window.mgr->get(request);
 
@@ -96,7 +96,7 @@ void SquareLauncher::login(const LoginInformation& info, const QUrl referer) {
     postData.addQueryItem("otppw", info.oneTimePassword);
 
     QNetworkRequest request(QUrl("https://ffxiv-login.square-enix.com/oauth/ffxivarr/login/login.send"));
-    window.buildRequest(request);
+    window.buildRequest(*info.settings, request);
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
     request.setRawHeader("Referer", referer.toEncoded());
     request.setRawHeader("Cache-Control", "no-cache");
@@ -229,7 +229,9 @@ void SquareLauncher::gateOpen() {
 
     QNetworkRequest request;
     request.setUrl(url);
-    window.buildRequest(request);
+
+    // TODO: really?
+    window.buildRequest(window.getProfile(window.defaultProfileIndex), request);
 
     auto reply = window.mgr->get(request);
     connect(reply, &QNetworkReply::finished, [this, reply] {

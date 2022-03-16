@@ -22,7 +22,12 @@ void SquareBoot::bootCheck(LoginInformation& info) {
     url.setQuery(query);
 
     auto request = QNetworkRequest(url);
-    request.setRawHeader("User-Agent", "FFXIV PATCH CLIENT");
+    if(info.settings->license == GameLicense::macOS) {
+        request.setRawHeader("User-Agent", "FFXIV-MAC PATCH CLIENT");
+    } else {
+        request.setRawHeader("User-Agent", "FFXIV PATCH CLIENT");
+    }
+
     request.setRawHeader("Host", "patch-bootver.ffxiv.com");
 
     auto reply = window.mgr->get(request);

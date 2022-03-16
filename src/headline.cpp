@@ -23,7 +23,8 @@ void getHeadline(LauncherCore& core, std::function<void(Headline)> return_func) 
 
     auto request = QNetworkRequest(QString("%1&%2").arg(url.toString(), QString::number(QDateTime::currentMSecsSinceEpoch())));
 
-    core.buildRequest(request);
+    // TODO: really?
+    core.buildRequest(core.getProfile(core.defaultProfileIndex), request);
 
     qInfo() << request.url();
     request.setRawHeader("Accept", "application/json, text/plain, */*");
