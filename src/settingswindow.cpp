@@ -486,7 +486,11 @@ void SettingsWindow::reloadControls() {
     encryptArgumentsBox->setChecked(profile.encryptArguments);
     serverType->setCurrentIndex(profile.isSapphire ? 1 : 0);
     lobbyServerURL->setEnabled(profile.isSapphire);
-    lobbyServerURL->setText(profile.lobbyURL);
+    if(profile.isSapphire) {
+        lobbyServerURL->setText(profile.lobbyURL);
+    } else {
+        lobbyServerURL->setText("neolobby0X.ffxiv.com");
+    }
     rememberUsernameBox->setChecked(profile.rememberUsername);
     rememberPasswordBox->setChecked(profile.rememberPassword);
     gameLicenseBox->setCurrentIndex((int)profile.license);
