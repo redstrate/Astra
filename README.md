@@ -6,35 +6,42 @@ mirror](https://img.shields.io/badge/mirror-GitHub-black.svg?logo=github)](https
 [![ryne.moe
 mirror](https://img.shields.io/badge/mirror-ryne.moe-red.svg?logo=git)](https://git.ryne.moe/redstrate/astra)
 
-Astra is a FFXIV launcher that supports
-**multiple profiles**, **Dalamud mods**, _and_ **macOS and Linux**!
+A FFXIV launcher that supports **multiple profiles** and **Dalamud mods**. It also supports Windows, macOS and Linux natively!
 
-At the moment, there are a few caveats that are good to know if you use these features:
-* There is no **game patching** support, but the launcher will prompt you to launch another launcher anyway.
+### Beta Notice
+Astra is **beta software**. At the moment, there are a few caveats that are good to know if you use these features:
+* There is no **game patching** support, but the launcher will still prompt you to update.
 * The **Steam support is untested.**
 
-Despite this, the launcher is still usable and I use it myself on a regular basis on Linux. I suggest you read more in the [FAQ](https://man.sr.ht/~redstrate/astra/faq.md)!
+Despite this, the launcher is still usable, and I use it myself on a regular basis on Linux. If you
+have more questions, I suggest reading the [FAQ](https://man.sr.ht/~redstrate/astra/faq.md).
 
 ![screenshot](misc/screenshot.webp?raw=true)
 
 ## Features
-* Can use native (Windows) and Wine-based (macOS, Linux) versions of FFXIV.
-* You can use Dalamud, which is downloaded within the launcher just like XIVQuickLauncher. 
-* Can connect to the official Square Enix servers _as well_ as Sapphire servers.
-* Multiple profile support!
+* Can use **native (Windows)** and **Wine-based (macOS, Linux)** versions of FFXIV.
+* You can use **Dalamud**, which is downloaded within the launcher just like XIVQuickLauncher. 
+* Can connect to the **official Square Enix servers** _as well_ as **Sapphire servers**.
+* **Multiple profiles**!
   * For example, you can have a regular Square Enix profile and a testing Sapphire profile. Or maybe one for DX11 and another for DX9?
   * These also have seperate, saved logins.
   * All settings can be configured per-profile! 
-* Securely saving username and/or password. These are saved per-profile, and are encrypted using your system wallet, and will never be stored unencrypted.
-* Encrypted game argument support similiar to what XIVQuickLauncher and the official ffxivboot does, preventing other programs from snooping your login token.
-* Enable several (Linux) Wine-specific performance enhancements such as enabling Esync.
-* On Linux, take advantafe of Watchdog to help notify you if you've moved in the login queue.
-  * Only works on X11.
-  * Will send you a notification on any change in the login queue. (moving up, logged in, lobby error, etc)
-  * You can view your spot in the queue easily by using the system tray icon.
+* **Securely saving username and/or password**. These are saved per-profile, and are encrypted using your system wallet, and will never be stored unencrypted.
+* **Encrypted game argument** support similiar to what XIVQuickLauncher and the official ffxivboot does, preventing other programs from snooping your login token.
+* Enable several Linux-specific Wine performance enhancements such as **enabling Fsync/Esync/Futex2**.
+
+## Installation
+Pre-compiled binaries are not yet available. However if you use Arch Linux, there is a PKGBUILD available in the AUR 
+for [tagged releases](https://aur.archlinux.org/packages/astra-launcher) and [straight from git](https://aur.archlinux.org/packages/astra-launcher-git). You may install it through `makepkg` or your favorite AUR helper:
+
+```
+$ aur sync astra-launcher
+```
+
 
 ## Usage
-There's lots of information located on [the wiki](https://man.sr.ht/~redstrate/astra/). However, there are several pages dedicated to using Astra:
+There's lots of information located on [the wiki](https://man.sr.ht/~redstrate/astra/)! Here's pages dedicated to
+using/building Astra on it's supported platforms:
 
 * On [Windows](https://man.sr.ht/~redstrate/astra/windows-usage.md)
 * On [macOS](https://man.sr.ht/~redstrate/astra/macos-usage.md)
@@ -45,8 +52,10 @@ Astra is primarily hosted at **sourcehut**, with the project located [here](http
 ways to contribute patches:
 * You can send a PR through the [Github mirror](https://github.com/redstrate/astra/pulls).
 * If you have a sourcehut account, you can use the [web contributing interface](https://git.sr.ht/~redstrate/astra/send-email).
-* If you refuse to use Github or sourcehut, you may always send me an email on [the astra mailing list](https://lists.sr.ht/~redstrate/astra-dev).
+* If you do not want to use Github or sourcehut, you may always send an email on [the astra-dev mailing list](https://lists.sr.ht/~redstrate/astra-dev).
 
 If you do send a patch through the mailing list, please prefix the subject with PATCH so it's properly filtered.
 
 If you wish to **report an issue or discuss something**, the [the same astra-dev mailing list](https://lists.sr.ht/~redstrate/astra-dev) for now.
+I highly encourage you to send an email through the mailing list instead of contacting me privately if possible, so
+other people may benefit from the solution.
