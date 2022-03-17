@@ -425,7 +425,7 @@ void SettingsWindow::reloadControls() {
     directXCombo->setCurrentIndex(profile.useDX9 ? 1 : 0);
     currentGameDirectory->setText(profile.gamePath);
 
-    if(profile.installedMaxExpansion == -1) {
+    if(profile.gameVersion.isEmpty()) {
         expansionVersionLabel->setText("No game installed.");
     } else {
         QString expacString;

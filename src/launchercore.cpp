@@ -411,16 +411,13 @@ void LauncherCore::readGameVersion() {
     for(auto& profile : profileSettings) {
         profile.bootVersion = readVersion(profile.gamePath + "/boot/ffxivboot.ver");
         profile.gameVersion = readVersion(profile.gamePath + "/game/ffxivgame.ver");
+        profile.installedMaxExpansion = 0;
 
         for(auto dir : QDir(profile.gamePath + "/game/sqpack/").entryList(QDir::Filter::Dirs)) {
             if(dir.contains("ex") && dir.length() == 3 && dir[2].isDigit()) {
                 const int expacVersion = dir[2].digitValue();
 
                 profile.installedMaxExpansion = std::max(profile.installedMaxExpansion, expacVersion);
-            }
-
-            if(dir == "ffxiv") {
-                profile.installedMaxExpansion = std::max(profile.installedMaxExpansion, 0);
             }
         }
 
