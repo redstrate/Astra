@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QProgressDialog>
 #include "launchercore.h"
 
 class SquareLauncher;
@@ -11,6 +12,8 @@ public:
     void bootCheck(LoginInformation& info);
 
 private:
+    QProgressDialog* dialog;
+
     LauncherCore& window;
     SquareLauncher& launcher;
 };

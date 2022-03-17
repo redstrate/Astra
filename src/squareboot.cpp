@@ -15,6 +15,10 @@ SquareBoot::SquareBoot(LauncherCore& window, SquareLauncher& launcher) : window(
 }
 
 void SquareBoot::bootCheck(LoginInformation& info) {
+    dialog = new QProgressDialog();
+    dialog->setLabelText("Checking the FINAL FANTASY XIV Updater/Launcher version.");
+    dialog->show();
+
     QUrlQuery query;
     query.addQueryItem("time", QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd-HH-mm"));
 
@@ -38,8 +42,12 @@ void SquareBoot::bootCheck(LoginInformation& info) {
         const QString response = reply->readAll();
 
         if(response.isEmpty()) {
+            dialog->hide();
+
             launcher.getStored(info);
         } else {
+            dialog->setLabelText("Updating the FINAL FANTASY XIV Updater/Launcher version.");
+
             // TODO: move this out into a dedicated function, we need to use this for regular game patches later on
             // TODO: create a nice progress window like ffxivboot has
             // TODO: improve flow when updating boot, maybe do at launch ala official launcher?
@@ -56,8 +64,17 @@ void SquareBoot::bootCheck(LoginInformation& info) {
                 QString name = patchParts[4];
                 QString url = patchParts[5];
 
+                // TODO: show bytes recieved/total in the progress window, and speed
+                dialog->setLabelText("Updating the FINAL FANTASY XIV Updater/Launcher version.\nDownloading ffxivboot - " + name);
+                dialog->setMinimum(0);
+                dialog->setMaximum(length);
+
                 QNetworkRequest patchRequest(url);
                 auto patchReply = window.mgr->get(patchRequest);
+                connect(patchReply, &QNetworkReply::downloadProgress, [=](int recieved, int total) {
+                    dialog->setValue(recieved);
+                });
+
                 connect(patchReply, &QNetworkReply::finished, [=] {
                     const QString dataDir =
                         QStandardPaths::writableLocation(QStandardPaths::TempLocation);
@@ -75,9 +92,9 @@ void SquareBoot::bootCheck(LoginInformation& info) {
 
                     processPatch((dataDir + "/" + name + ".patch").toStdString(), (info.settings->gamePath + "/boot").toStdString());
 
-                    auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Successfully updated", "ffxivboot is now updated to " + name);
+                    info.settings->bootVersion = name;
 
-                    messageBox->show();
+                    launcher.getStored(info);
                 });
             }
         }

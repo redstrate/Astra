@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
         }
     }
     if(parser.isSet(autologinOption)) {
-        const auto profile = c.getProfile(c.defaultProfileIndex);
+        auto profile = c.getProfile(c.defaultProfileIndex);
 
         if(!profile.rememberUsername || !profile.rememberPassword) {
             qInfo() << "Profile does not have a username and/or password saved, autologin disabled.";
@@ -93,7 +93,9 @@ int main(int argc, char* argv[]) {
 
         auto installButton = messageBox->addButton("Install Game", QMessageBox::HelpRole);
         c.connect(installButton, &QPushButton::clicked, [&c, messageBox] {
-            installGame(c, [messageBox] {
+            installGame(c, [messageBox, &c] {
+                c.readGameVersion();
+
                 messageBox->close();
             });
         });
