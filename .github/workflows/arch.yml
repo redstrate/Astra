@@ -9,6 +9,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
       - name: Compile
         run: |
           pacman -Syu --noconfirm base-devel qt5-tools qt5-base libsecret cmake git tesseract libxcomposite
