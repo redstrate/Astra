@@ -17,15 +17,7 @@
 #include <QCoreApplication>
 #include <QStandardPaths>
 #include <QRegularExpressionMatch>
-
-#if defined(Q_OS_MAC)
-#include <sys/sysctl.h>
-#include <mach/mach_time.h>
-#endif
-
-#if defined(Q_OS_WIN)
-#include <windows.h>
-#endif
+#include <algorithm>
 
 #include "launchercore.h"
 #include "sapphirelauncher.h"

@@ -4,41 +4,17 @@
 #include "blowfish.h"
 
 // from xivdev
-char ChecksumTable[] = {
+static char ChecksumTable[] = {
     'f', 'X', '1', 'p', 'G', 't', 'd', 'S',
     '5', 'C', 'A', 'P', '4', '_', 'V', 'L'
 };
 
-char GetChecksum(unsigned int key) {
+inline char GetChecksum(unsigned int key) {
     auto value = key & 0x000F0000;
     return ChecksumTable[value >> 16];
 }
 
-#if defined(Q_OS_MAC)
-// this is pretty much what wine does :-0
-inline uint32_t TickCount() {
-    struct mach_timebase_info convfact;
-    mach_timebase_info(&convfact);
-
-    return (mach_absolute_time() * convfact.numer) / (convfact.denom * 1000000);
-}
-#endif
-
-#if defined(Q_OS_LINUX)
-inline uint32_t TickCount() {
-    struct timespec ts;
-
-    clock_gettime(CLOCK_MONOTONIC, &ts);
-
-    return (ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
-}
-#endif
-
-#if defined(Q_OS_WIN)
-inline uint32_t TickCount() {
-    return GetTickCount();
-}
-#endif
+uint32_t TickCount();
 
 inline QString encryptGameArg(QString arg) {
     unsigned int rawTicks = TickCount();

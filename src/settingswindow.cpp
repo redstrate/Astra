@@ -462,10 +462,12 @@ void SettingsWindow::reloadControls() {
     }
 
     // wine
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
     wineVersionCombo->setCurrentIndex(profile.wineVersion);
     selectWineButton->setEnabled(profile.wineVersion == 1);
     winePathLabel->setText(profile.winePath);
     winePrefixDirectory->setText(profile.winePrefixPath);
+#endif
 
 #if defined(Q_OS_LINUX)
     useEsync->setChecked(profile.useEsync);

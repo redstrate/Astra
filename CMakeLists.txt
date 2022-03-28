@@ -16,7 +16,6 @@ if(ENABLE_WATCHDOG)
     pkg_search_module(LEPTONICA REQUIRED lept)
 endif()
 
-
 set(SRC
         src/main.cpp
         src/launchercore.cpp
@@ -37,12 +36,13 @@ set(SRC
         src/headline.cpp
         include/config.h
         include/gameinstaller.h
-        src/gameinstaller.cpp)
+        src/gameinstaller.cpp
+        src/encryptedarg.cpp)
 
 include(FetchContent)
 
 if(NOT USE_OWN_LIBRARIES)
-    find_package(Qt5Keychain)
+    find_package(Qt5Keychain QUIET)
 endif()
 
 if(TARGET Qt5Keychain::Qt5Keychain)
@@ -71,7 +71,7 @@ else()
 endif()
 
 if(NOT USE_OWN_LIBRARIES)
-    find_package(QuaZip-Qt5)
+    find_package(QuaZip-Qt5 QUIET)
 endif()
 
 if(TARGET QuaZip::QuaZip)
@@ -86,10 +86,38 @@ else()
             GIT_REPOSITORY https://github.com/stachenov/quazip.git
             GIT_TAG        v1.2
     )
+
+    set(QUAZIP_USE_QT_ZLIB ON CACHE BOOL "" FORCE)
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+
     FetchContent_MakeAvailable(quazip)
 
     set(LIBRARIES QuaZip ${LIBRARIES})
     set(QUAZIP_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/_deps/quazip-src/quazip)
+endif()
+
+if(NOT USE_OWN_LIBRARIES)
+    find_package(fmt QUIET)
+endif()
+
+if(TARGET fmt::fmt)
+    message("Using system library for fmt")
+
+    set(LIBRARIES fmt::fmt ${LIBRARIES})
+else()
+    message("Using built-in fmt")
+
+    FetchContent_Declare(
+            fmt
+            GIT_REPOSITORY https://github.com/fmtlib/fmt
+            GIT_TAG        master
+    )
+
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+
+    FetchContent_MakeAvailable(fmt)
+
+    set(LIBRARIES fmt::fmt ${LIBRARIES})
 endif()
 
 add_subdirectory(external)
