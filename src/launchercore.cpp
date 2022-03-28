@@ -332,6 +332,10 @@ void LauncherCore::readInitialInformation() {
             profile.winePrefixPath = getDefaultWinePrefixPath();
         }
 
+        if(settings.contains("winePath") && settings.value("winePath").canConvert<QString>() && !settings.value("winePath").toString().isEmpty()) {
+            profile.winePath = settings.value("winePath").toString();
+        }
+
         ProfileSettings defaultSettings;
 
         // login
