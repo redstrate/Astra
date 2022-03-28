@@ -358,7 +358,7 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
 
             this->core.saveSettings();
         });
-        dalamudBoxLayout->addRow("Enable Dalamud Injection", enableDalamudBox);
+        dalamudBoxLayout->addRow("Enable Dalamud Plugins", enableDalamudBox);
 
         dalamudOptOutBox = new QCheckBox();
         connect(dalamudOptOutBox, &QCheckBox::stateChanged, [=](int) {
