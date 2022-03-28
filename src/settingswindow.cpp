@@ -301,13 +301,7 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
             "Use Better Sync Primitives (Esync, Fsync, and Futex2)");
         wineBoxLayout->addWidget(useEsync);
 
-        auto esyncLabel = new QPushButton("?");
-        connect(esyncLabel, &QPushButton::pressed, [esyncLabel] {
-            QToolTip::showText(
-                esyncLabel->mapToGlobal(QPoint()),
-                "This may improve game performance, but requires a Wine and kernel with the patches included.");
-        });
-        wineBoxLayout->addWidget(esyncLabel);
+        useEsync->setToolTip("This may improve game performance, but requires a Wine and kernel with the patches included.");
 
         connect(useEsync, &QCheckBox::stateChanged, [this](int state) {
             getCurrentProfile().useEsync = state;
@@ -318,18 +312,12 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
         useGamescope = new QCheckBox("Use Gamescope");
         wineBoxLayout->addWidget(useGamescope);
 
+        useGamescope->setToolTip("Use the micro-compositor compositor that uses Wayland and XWayland to create a nested session.\nIf you primarily use fullscreen mode, this may improve input handling especially on Wayland.");
+
         auto gamescopeButtonLayout = new QHBoxLayout();
         auto gamescopeButtonContainer = new QWidget();
         gamescopeButtonContainer->setLayout(gamescopeButtonLayout);
         wineBoxLayout->addWidget(gamescopeButtonContainer);
-
-        auto gamescopeLabel = new QPushButton("?");
-        connect(gamescopeLabel, &QPushButton::pressed, [gamescopeLabel] {
-            QToolTip::showText(
-                gamescopeLabel->mapToGlobal(QPoint()),
-                "Use the micro-compositor compositor that uses Wayland and XWayland to create a nested session.\nIf you primarily use fullscreen mode, this may improve input handling especially on Wayland.");
-        });
-        gamescopeButtonLayout->addWidget(gamescopeLabel);
 
         configureGamescopeButton = new QPushButton("Configure...");
         connect(configureGamescopeButton, &QPushButton::pressed, [&] {
@@ -349,13 +337,7 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
         useGamemode = new QCheckBox("Use GameMode");
         wineBoxLayout->addWidget(useGamemode);
 
-        auto gamemodeLabel = new QPushButton("?");
-        connect(gamemodeLabel, &QPushButton::pressed, [gamemodeLabel] {
-            QToolTip::showText(
-                gamemodeLabel->mapToGlobal(QPoint()),
-                "A special game performance enhancer, which automatically tunes your CPU scheduler among other things. This may improve game performance.");
-        });
-        wineBoxLayout->addWidget(gamemodeLabel);
+        useGamemode->setToolTip("A special game performance enhancer, which automatically tunes your CPU scheduler among other things. This may improve game performance.");
 
         connect(useGamemode, &QCheckBox::stateChanged, [this](int state) {
             getCurrentProfile().useGamemode = state;
