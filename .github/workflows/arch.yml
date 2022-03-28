@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          pacman -Syu --noconfirm base-devel qt5-tools qt5-base libsecret cmake git tesseract libxcomposite
+          pacman -Syu --noconfirm base-devel qt5-tools qt5-base libsecret cmake git tesseract libxcomposite unshield
 
       - uses: actions/checkout@v2
         with:
