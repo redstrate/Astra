@@ -8,12 +8,16 @@ jobs:
     container: archlinux:latest
 
     steps:
+      - name: Install dependencies
+        run: |
+          pacman -Syu --noconfirm base-devel qt5-tools qt5-base libsecret cmake git tesseract libxcomposite
+
       - uses: actions/checkout@v2
         with:
           submodules: 'recursive'
+
       - name: Compile
         run: |
-          pacman -Syu --noconfirm base-devel qt5-tools qt5-base libsecret cmake git tesseract libxcomposite
           mkdir build && cd build
           cmake -DCMAKE_BUILD_TYPE=None -DBUILD_SHARED_LIBS=OFF ..
           make
