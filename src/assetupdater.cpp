@@ -66,19 +66,8 @@ void AssetUpdater::update(const ProfileSettings& profile) {
         connect(reply, &QNetworkReply::finished, [reply, this, profile] {
             dialog->setLabelText("Checking for Dalamud asset updates...");
 
-            // lol, they actually provide invalid json. let's fix it if it's borked
-            QString badJson = reply->readAll();
-
-            auto lastCommaLoc = badJson.lastIndexOf(',');
-            auto lastBracketLoc = badJson.lastIndexOf('{');
-
-            // basically, if { supersedes the last ,
-            if (lastCommaLoc > lastBracketLoc) {
-                qInfo() << "Dalamud server gave bad json, attempting to fix...";
-                badJson.remove(lastCommaLoc, 1);
-            }
-
-            QJsonDocument doc = QJsonDocument::fromJson(badJson.toUtf8());
+            // TODO: handle asset failure
+            QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
 
             qInfo() << "Dalamud asset remote version" << doc.object()["Version"].toInt();
             qInfo() << "Dalamud asset local version" << launcher.dalamudAssetVersion;
