@@ -159,7 +159,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
         });
     }
 
-    const QString argFormat = profile.encryptArguments ? " /%1 =%2" : "%1=%2";
+    const QString argFormat = profile.encryptArguments ? " /%1 =%2" : " %1=%2";
 
     QString argJoined;
     for(const auto& arg : gameArgs) {
