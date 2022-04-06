@@ -18,6 +18,7 @@
 #include <QStandardPaths>
 #include <QRegularExpressionMatch>
 #include <algorithm>
+#include <QTcpServer>
 
 #include "launchercore.h"
 #include "sapphirelauncher.h"
@@ -63,6 +64,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
 
     if(profile.dalamud.enabled) {
         arguments.push_back(dataDir + "/NativeLauncher.exe");
+        arguments.push_back("5248"); // TODO: make port configurable/random
     }
 
     // now for the actual game...
@@ -112,52 +114,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
 
     gameProcess->setProcessEnvironment(env);
 
-    gameProcess->setProcessChannelMode(QProcess::MergedChannels);
-
-    if(profile.dalamud.enabled) {
-        connect(gameProcess, &QProcess::readyReadStandardOutput, [this, gameProcess, profile] {
-            QString output = gameProcess->readAllStandardOutput();
-            bool success;
-            int dec = output.toInt(&success, 10);
-            if(!success)
-              return;
-            
-            qDebug() << "got output: " << output;
-
-            qDebug() << "Now launching dalamud...";
-
-            QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-            dataDir = "Z:" + dataDir.replace('/', '\\');
-
-            QJsonObject startInfo;
-            startInfo["WorkingDirectory"] = dataDir;
-            startInfo["ConfigurationPath"] = dataDir + "\\dalamudConfig.json";
-            startInfo["PluginDirectory"] = dataDir + "\\installedPlugins";
-            startInfo["AssetDirectory"] = dataDir + "\\DalamudAssets";
-            startInfo["DefaultPluginDirectory"] = dataDir + "\\devPlugins";
-            startInfo["DelayInitializeMs"] = 0;
-            startInfo["GameVersion"] = profile.gameVersion;
-            startInfo["Language"] = profile.language;
-            startInfo["OptOutMbCollection"] = profile.dalamud.optOutOfMbCollection;
-
-            QString argsEncoded = QJsonDocument(startInfo).toJson().toBase64();
-
-            auto dalamudProcess = new QProcess();
-            dalamudProcess->setProcessChannelMode(QProcess::ForwardedChannels);
-
-            QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-            env.insert("DALAMUD_RUNTIME", dataDir + "\\DalamudRuntime");
-
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-            env.insert("XL_WINEONLINUX", "true");
-#endif
-            dalamudProcess->setProcessEnvironment(env);
-
-            auto list = dalamudProcess->processEnvironment().toStringList();
-
-            launchExecutable(profile, dalamudProcess, {dataDir + "/Dalamud/" + "Dalamud.Injector.exe", output, argsEncoded});
-        });
-    }
+    gameProcess->setProcessChannelMode(QProcess::ForwardedChannels);
 
     const QString argFormat = profile.encryptArguments ? " /%1 =%2" : " %1=%2";
 
@@ -172,10 +129,57 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
         arguments.append(argJoined);
     }
 
-    connect(gameProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-            [=](int exitCode, QProcess::ExitStatus exitStatus){
-                gameClosed();
+    if(profile.dalamud.enabled) {
+        auto socket = new QTcpServer();
+
+        connect(socket, &QTcpServer::newConnection, [this, profile, socket] {
+            auto connection = socket->nextPendingConnection();
+
+            connect(connection, &QTcpSocket::readyRead, [this, connection, profile, socket] {
+                QString output = connection->readAll();
+                bool success;
+                int exitCode = output.toInt(&success, 10);
+
+                if(exitCode != -1 && success) {
+                    QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+                    dataDir = "Z:" + dataDir.replace('/', '\\');
+
+                    QJsonObject startInfo;
+                    startInfo["WorkingDirectory"] = dataDir;
+                    startInfo["ConfigurationPath"] = dataDir + "\\dalamudConfig.json";
+                    startInfo["PluginDirectory"] = dataDir + "\\installedPlugins";
+                    startInfo["AssetDirectory"] = dataDir + "\\DalamudAssets";
+                    startInfo["DefaultPluginDirectory"] = dataDir + "\\devPlugins";
+                    startInfo["DelayInitializeMs"] = 0;
+                    startInfo["GameVersion"] = profile.gameVersion;
+                    startInfo["Language"] = profile.language;
+                    startInfo["OptOutMbCollection"] = profile.dalamud.optOutOfMbCollection;
+
+                    QString argsEncoded = QJsonDocument(startInfo).toJson().toBase64();
+
+                    auto dalamudProcess = new QProcess();
+                    dalamudProcess->setProcessChannelMode(QProcess::ForwardedChannels);
+
+                    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+                    env.insert("DALAMUD_RUNTIME", dataDir + "\\DalamudRuntime");
+
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+                    env.insert("XL_WINEONLINUX", "true");
+#endif
+                    dalamudProcess->setProcessEnvironment(env);
+
+                    auto list = dalamudProcess->processEnvironment().toStringList();
+
+                    launchExecutable(profile, dalamudProcess, {dataDir + "/Dalamud/" + "Dalamud.Injector.exe", QString::number(exitCode), argsEncoded});
+
+                    connection->close();
+                    socket->close();
+                }
             });
+        });
+
+        socket->listen(QHostAddress::Any, 5248);
+    }
 
     launchGameExecutable(profile, gameProcess, arguments);
 
