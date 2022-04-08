@@ -21,9 +21,10 @@ const QString baseDalamudAssetDistribution = baseGoatDomain + "/DalamudAssets";
 const QString dalamudAssetManifestURL = baseDalamudAssetDistribution + "/asset.json";
 
 const QString baseNativeLauncherDistribution =
-    "https://github.com/redstrate/nativelauncher/releases/download/";
+    "https://xiv.zone/astra-distrib/nativelauncher";
 const QString nativeLauncherLatestPackageURL =
-    baseNativeLauncherDistribution + "/latest/NativeLauncher.exe";
+    baseNativeLauncherDistribution + "/NativeLauncher.exe";
+const QString nativeLauncherVersionManifestURL = baseNativeLauncherDistribution + "/version";
 
 const QString dotnetRuntimePackageURL =
     "https://dotnetcli.azureedge.net/dotnet/Runtime/%1/dotnet-runtime-%1-win-x64.zip";
@@ -80,6 +81,24 @@ void AssetUpdater::update(const ProfileSettings& profile) {
         });
     }
 
+    // native launcher
+    {
+        QNetworkRequest request(nativeLauncherVersionManifestURL);
+
+        remoteNativeLauncherVersion.clear();
+
+        auto reply = launcher.mgr->get(request);
+        connect(reply, &QNetworkReply::finished, [this, profile, reply] {
+            dialog->setLabelText("Checking for native launcher updates...");
+
+            remoteNativeLauncherVersion = reply->readAll().trimmed();
+
+            qInfo() << "Latest native launcher version reported: " << remoteNativeLauncherVersion;
+
+            checkIfCheckingIsDone();
+        });
+    }
+
     // dalamud injector / net runtime / nativelauncher
     // they're all updated in unison, so there's no reason to have multiple checks
     {
@@ -123,16 +142,31 @@ void AssetUpdater::beginInstall() {
 
         if(!success) {
             // TODO: handle failure here
+            qInfo() << "Failed to install Dalamud!";
         } else {
             needsDalamudInstall = false;
         }
     }
 
     if(needsNativeInstall) {
-        QFile::copy(tempDir.path() + "/NativeLauncher.exe",
+        qInfo() << "Installing native launcher...";
+
+        if(QFile::exists(dataDir + "/NativeLauncher.exe"))
+            QFile::remove(dataDir + "/NativeLauncher.exe");
+
+        bool success = QFile::copy(tempDir.path() + "/NativeLauncher.exe",
                     dataDir + "/NativeLauncher.exe");
 
-        needsNativeInstall = false;
+        if(!success) {
+            qInfo() << "Failed to install native launcher!";
+        } else {
+            QFile file(dataDir + "/nativelauncher.ver");
+            file.open(QIODevice::WriteOnly | QIODevice::Text);
+            file.write(remoteNativeLauncherVersion.toUtf8());
+            file.close();
+
+            needsNativeInstall = false;
+        }
     }
 
     if(needsRuntimeInstall) {
@@ -145,7 +179,7 @@ void AssetUpdater::beginInstall() {
                         .empty();
 
         if(!success) {
-            // TODO: handle failure here
+            qInfo() << "Failed to install dotnet!";
         } else {
             QFile file(dataDir + "/DalamudRuntime/runtime.ver");
             file.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -201,7 +235,7 @@ void AssetUpdater::checkIfCheckingIsDone() {
     if(dialog->wasCanceled())
         return;
 
-    if(remoteDalamudVersion.isEmpty() || remoteRuntimeVersion.isEmpty() || remoteDalamudAssetVersion == -1) {
+    if(remoteDalamudVersion.isEmpty() || remoteRuntimeVersion.isEmpty() || remoteDalamudAssetVersion == -1 || remoteNativeLauncherVersion.isEmpty()) {
         return;
     }
 
@@ -212,8 +246,6 @@ void AssetUpdater::checkIfCheckingIsDone() {
 
     // dalamud injector / net runtime
     if(launcher.runtimeVersion != remoteRuntimeVersion) {
-        doneDownloadingRuntimeCore = false;
-        doneDownloadingRuntimeDesktop = false;
         needsRuntimeInstall = true;
 
         // core
@@ -267,7 +299,7 @@ void AssetUpdater::checkIfCheckingIsDone() {
 
     if(remoteDalamudVersion != launcher.dalamudVersion) {
         qInfo() << "Downloading Dalamud...";
-        doneDownloadingDalamud = false;
+
         needsDalamudInstall = true;
 
         QNetworkRequest request(dalamudLatestPackageURL);
@@ -346,14 +378,11 @@ void AssetUpdater::checkIfCheckingIsDone() {
         checkIfFinished();
     }
 
-    // nativelauncher
-    const bool hasNative = QFile::exists(dataDir + "/NativeLauncher.exe");
-    if (!hasNative) {
-        // download nativelauncher release (needed to launch the game with fixed
-        // ACLs)
+    if(remoteNativeLauncherVersion != launcher.nativeLauncherVersion) {
+        qInfo() << "Native launcher out of date.";
 
-        qInfo() << "Downloading NativeLauncher...";
-        doneDownloadingNativelauncher = false;
+        dialog->setLabelText("Updating native launcher...");
+
         needsNativeInstall = true;
 
         QNetworkRequest request(nativeLauncherLatestPackageURL);
@@ -361,8 +390,6 @@ void AssetUpdater::checkIfCheckingIsDone() {
         auto reply = launcher.mgr->get(request);
         connect(reply, &QNetworkReply::finished, [this, reply] {
             qInfo() << "NativeLauncher finished downloading!";
-
-            dialog->setLabelText("Updating Nativelauncher...");
 
             QFile file(tempDir.path() + "/NativeLauncher.exe");
             file.open(QIODevice::WriteOnly);
@@ -373,5 +400,11 @@ void AssetUpdater::checkIfCheckingIsDone() {
 
             checkIfFinished();
         });
+    } else {
+        qInfo() << "Native launcher up to date.";
+
+        doneDownloadingNativelauncher = true;
+
+        checkIfFinished();
     }
 }

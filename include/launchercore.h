@@ -142,6 +142,7 @@ public:
     QString dalamudVersion;
     int dalamudAssetVersion = -1;
     QString runtimeVersion;
+    QString nativeLauncherVersion;
 
     int defaultProfileIndex = 0;
 signals:

@@ -33,13 +33,14 @@ private:
 
     QString remoteDalamudVersion;
     QString remoteRuntimeVersion;
+    QString remoteNativeLauncherVersion;
 
     QTemporaryDir tempDir;
 
-    bool doneDownloadingDalamud = true;
-    bool doneDownloadingNativelauncher = true;
-    bool doneDownloadingRuntimeCore = true;
-    bool doneDownloadingRuntimeDesktop = true;
+    bool doneDownloadingDalamud = false;
+    bool doneDownloadingNativelauncher = false;
+    bool doneDownloadingRuntimeCore = false;
+    bool doneDownloadingRuntimeDesktop = false;
     bool needsRuntimeInstall = false;
     bool needsDalamudInstall = false;
     bool needsNativeInstall = false;

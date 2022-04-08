@@ -305,6 +305,13 @@ void LauncherCore::readInitialInformation() {
         }
     }
 
+    if(QFile::exists(dataDir + "/nativelauncher.ver")) {
+        QFile nativeVer(dataDir + "/nativelauncher.ver");
+        nativeVer.open(QFile::ReadOnly | QFile::Text);
+
+        nativeLauncherVersion = QString(nativeVer.readAll());
+    }
+
     auto profiles = settings.childGroups();
 
     // create the Default profile if it doesnt exist
