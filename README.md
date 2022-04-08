@@ -6,7 +6,7 @@ mirror](https://img.shields.io/badge/mirror-GitHub-black.svg?logo=github)](https
 [![ryne.moe
 mirror](https://img.shields.io/badge/mirror-ryne.moe-red.svg?logo=git)](https://git.ryne.moe/redstrate/astra)
 
-A FFXIV launcher that supports **multiple profiles** and **Dalamud mods**. It also supports Windows, macOS and Linux natively!
+A FFXIV launcher that supports **multiple profiles** and **Dalamud plugins**. It also supports Windows, macOS and Linux natively!
 
 ### Beta Notice
 Astra is **beta software**. At the moment, there are a few caveats that are good to know if you use these features:
@@ -21,7 +21,7 @@ have more questions, I suggest reading the [FAQ](https://man.sr.ht/~redstrate/as
 ## Features
 * Can **bootstrap a new FFXIV installation** if it can't find one. You can skip the installer entirely!
 * Can use **native (Windows)** and **Wine-based (macOS, Linux)** versions of FFXIV.
-* You can use **Dalamud**, which is downloaded within the launcher just like XIVQuickLauncher. 
+* You can use **Dalamud plugins**, which is downloaded within the launcher just like XIVQuickLauncher. 
 * Can connect to the **official Square Enix servers** _as well_ as **Sapphire servers**.
 * **Multiple profiles**!
   * For example, you can have a regular Square Enix profile and a testing Sapphire profile. Or maybe one for DX11 and another for DX9?
