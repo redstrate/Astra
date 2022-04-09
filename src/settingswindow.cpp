@@ -264,6 +264,9 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
             this->reloadControls();
         });
 
+        wineVersionLabel = new QLabel();
+        wineBoxLayout->addRow("Wine Version", wineVersionLabel);
+
         winePrefixDirectory = new QLineEdit();
         winePrefixDirectory->setReadOnly(true);
         wineBoxLayout->addRow("Wine Prefix", winePrefixDirectory);
@@ -450,6 +453,12 @@ void SettingsWindow::reloadControls() {
 
     // wine
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+    if(!profile.isWineInstalled()) {
+        wineVersionLabel->setText("Wine is not installed.");
+    } else {
+        wineVersionLabel->setText(profile.wineVersion);
+    }
+
     wineTypeCombo->setCurrentIndex((int)profile.wineType);
     selectWineButton->setEnabled(profile.wineType == WineType::Custom);
     winePathLabel->setText(profile.winePath);
