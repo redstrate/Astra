@@ -126,7 +126,12 @@ public:
     /*
      * This just wraps it in wine if needed.
      */
-    void launchExecutable(const ProfileSettings& settings, QProcess* process, QStringList args);
+    void launchExecutable(const ProfileSettings& settings, QProcess* process, QStringList args, bool isGame);
+
+    /*
+     * Launches an external tool. Gamescope for example is intentionally excluded.
+     */
+    void launchExternalTool(const ProfileSettings& settings, QStringList args);
 
     void buildRequest(const ProfileSettings& settings, QNetworkRequest& request);
     void setSSL(QNetworkRequest& request);

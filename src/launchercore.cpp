@@ -170,7 +170,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
 
                     auto list = dalamudProcess->processEnvironment().toStringList();
 
-                    launchExecutable(profile, dalamudProcess, {dataDir + "/Dalamud/" + "Dalamud.Injector.exe", QString::number(exitCode), argsEncoded});
+                    launchExecutable(profile, dalamudProcess, {dataDir + "/Dalamud/" + "Dalamud.Injector.exe", QString::number(exitCode), argsEncoded}, false);
 
                     connection->close();
                     socket->close();
@@ -189,7 +189,13 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
 void LauncherCore::launchExecutable(const ProfileSettings& profile, const QStringList args) {
     auto process = new QProcess(this);
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(profile, process, args);
+    launchExecutable(profile, process, args, true);
+}
+
+void LauncherCore::launchExternalTool(const ProfileSettings& profile, const QStringList args) {
+    auto process = new QProcess(this);
+    process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    launchExecutable(profile, process, args, false);
 }
 
 void LauncherCore::launchGameExecutable(const ProfileSettings& profile, QProcess* process, const QStringList args) {
@@ -197,35 +203,40 @@ void LauncherCore::launchGameExecutable(const ProfileSettings& profile, QProcess
 
     arguments.append(args);
 
-    launchExecutable(profile, process, arguments);
+    launchExecutable(profile, process, arguments, true);
 }
 
-void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* process, const QStringList args) {
+void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* process, const QStringList args, bool isGame) {
     QList<QString> arguments;
     auto env = process->processEnvironment();
 
 #if defined(Q_OS_LINUX)
-    if(profile.useGamescope) {
-        arguments.push_back("gamescope");
+    if (isGame) {
+        if (profile.useGamescope) {
+            arguments.push_back("gamescope");
 
-        if(profile.gamescope.fullscreen)
-            arguments.push_back("-f");
+            if (profile.gamescope.fullscreen)
+                arguments.push_back("-f");
 
-        if(profile.gamescope.borderless)
-            arguments.push_back("-b");
+            if (profile.gamescope.borderless)
+                arguments.push_back("-b");
 
-        if(profile.gamescope.width > 0)
-            arguments.push_back("-w " + QString::number(profile.gamescope.width));
+            if (profile.gamescope.width > 0)
+                arguments.push_back("-w " +
+                                    QString::number(profile.gamescope.width));
 
-        if(profile.gamescope.height > 0)
-            arguments.push_back("-h " + QString::number(profile.gamescope.height));
+            if (profile.gamescope.height > 0)
+                arguments.push_back("-h " +
+                                    QString::number(profile.gamescope.height));
 
-        if(profile.gamescope.refreshRate > 0)
-            arguments.push_back("-r " + QString::number(profile.gamescope.refreshRate));
+            if (profile.gamescope.refreshRate > 0)
+                arguments.push_back(
+                    "-r " + QString::number(profile.gamescope.refreshRate));
+        }
+
+        if (profile.useGamemode)
+            arguments.push_back("gamemoderun");
     }
-
-    if(profile.useGamemode)
-        arguments.push_back("gamemoderun");
 #endif
 
 #if defined(Q_OS_LINUX)
@@ -247,7 +258,9 @@ void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* pr
     auto executable = arguments[0];
     arguments.removeFirst();
 
-    process->setWorkingDirectory(profile.gamePath + "/game/");
+    if (isGame)
+        process->setWorkingDirectory(profile.gamePath + "/game/");
+
     process->setProcessEnvironment(env);
 
     qDebug() << "launching " << executable << " with args" << arguments;

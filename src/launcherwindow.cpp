@@ -74,7 +74,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     wineCfg = fileMenu->addAction("Configure Wine...");
     wineCfg->setIcon(QIcon::fromTheme("settings"));
     connect(wineCfg, &QAction::triggered, [=] {
-        this->core.launchExecutable(currentProfile(), {"winecfg.exe"});
+        this->core.launchExternalTool(currentProfile(), {"winecfg.exe"});
     });
 #endif
 
