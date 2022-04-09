@@ -92,7 +92,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     QAction* showAboutQt = helpMenu->addAction("About Qt");
     showAboutQt->setIcon(QIcon::fromTheme("help-about"));
     connect(showAboutQt, &QAction::triggered, [=] {
-        QApplication::aboutQt();
+        QMessageBox::aboutQt(this);
     });
 
     auto layout = new QGridLayout();
