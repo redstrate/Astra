@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
         w.show();
 
         if(!QDir(c.getProfile(c.defaultProfileIndex).gamePath).exists()) {
-            auto messageBox = new QMessageBox(QMessageBox::Information, "No Game Found", "No game was found to be installed yet. Would you like to install FFXIV now?", QMessageBox::NoButton, &w);
+            auto messageBox = new QMessageBox(QMessageBox::Information, "No Game Found", "FFXIV is not installed. Would you like to install it now?", QMessageBox::NoButton, &w);
 
             auto installButton = messageBox->addButton("Install Game", QMessageBox::HelpRole);
             c.connect(installButton, &QPushButton::clicked, [&c, messageBox] {
