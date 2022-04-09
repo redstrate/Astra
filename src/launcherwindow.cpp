@@ -53,7 +53,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     QMenu* fileMenu = menuBar()->addMenu("Settings");
 
     QAction* settingsAction = fileMenu->addAction("Configure Astra...");
-    settingsAction->setIcon(QIcon::fromTheme("settings"));
+    settingsAction->setIcon(QIcon::fromTheme("configure"));
     connect(settingsAction, &QAction::triggered, [=] {
         auto window = new SettingsWindow(0, *this, this->core, this);
         connect(&this->core, &LauncherCore::settingsChanged, window, &SettingsWindow::reloadControls);
@@ -61,7 +61,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     });
 
     QAction* profilesAction = fileMenu->addAction("Configure Profiles...");
-    profilesAction->setIcon(QIcon::fromTheme("settings"));
+    profilesAction->setIcon(QIcon::fromTheme("configure"));
     connect(profilesAction, &QAction::triggered, [=] {
         auto window = new SettingsWindow(1, *this, this->core, this);
         connect(&this->core, &LauncherCore::settingsChanged, window, &SettingsWindow::reloadControls);
@@ -72,7 +72,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     fileMenu->addSeparator();
 
     wineCfg = fileMenu->addAction("Configure Wine...");
-    wineCfg->setIcon(QIcon::fromTheme("settings"));
+    wineCfg->setIcon(QIcon::fromTheme("configure"));
     connect(wineCfg, &QAction::triggered, [=] {
         this->core.launchExternalTool(currentProfile(), {"winecfg.exe"});
     });
