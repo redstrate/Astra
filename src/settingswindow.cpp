@@ -127,7 +127,7 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
         });
         gameDirButtonLayout->addWidget(selectDirectoryButton);
 
-        auto gameDirectoryButton = new QPushButton("Open Game Directory");
+        gameDirectoryButton = new QPushButton("Open Game Directory");
         connect(gameDirectoryButton, &QPushButton::pressed,
                 [&window, this] { window.openPath(getCurrentProfile().gamePath); });
         gameDirButtonLayout->addWidget(gameDirectoryButton);
@@ -142,6 +142,8 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
             this->core.saveSettings();
         });
 #endif
+
+        gameDirectoryButton->setEnabled(getCurrentProfile().isGameInstalled());
 
         expansionVersionLabel = new QLabel();
         gameBoxLayout->addRow("Game Version", expansionVersionLabel);
@@ -410,7 +412,7 @@ void SettingsWindow::reloadControls() {
     directXCombo->setCurrentIndex(profile.useDX9 ? 1 : 0);
     currentGameDirectory->setText(profile.gamePath);
 
-    if(profile.gameVersion.isEmpty()) {
+    if(!profile.isGameInstalled()) {
         expansionVersionLabel->setText("No game installed.");
     } else {
         QString expacString;

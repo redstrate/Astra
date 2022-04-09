@@ -33,6 +33,7 @@ private:
     QComboBox* directXCombo = nullptr;
     QLineEdit* currentGameDirectory = nullptr;
     QLabel* expansionVersionLabel = nullptr;
+    QPushButton* gameDirectoryButton = nullptr;
 
     // wine
     QComboBox* wineVersionCombo;

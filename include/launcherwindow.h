@@ -32,6 +32,11 @@ private:
     QLabel* bannerImageView;
     QTreeWidget* newsListView;
 
+    QAction* launchOfficial;
+    QAction* launchSysInfo;
+    QAction* launchCfgBackup;
+    QAction* openGameDir;
+
     QComboBox* profileSelect;
     QLineEdit* usernameEdit, *passwordEdit;
     QLineEdit* otpEdit;

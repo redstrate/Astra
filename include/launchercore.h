@@ -33,6 +33,10 @@ struct ProfileSettings {
     QList<QString> expansionVersions;
     bool enableWatchdog = false;
 
+    bool isGameInstalled() const {
+        return !gameVersion.isEmpty();
+    }
+
     // wine
     // 0 = system, 1 = custom, 2 = built-in (mac only)
     // TODO: yes, i know this should be an enum

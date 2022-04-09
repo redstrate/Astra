@@ -24,19 +24,19 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
 
     QMenu* toolsMenu = menuBar()->addMenu("Tools");
 
-    QAction* launchOfficial = toolsMenu->addAction("Open Official Client...");
+    launchOfficial = toolsMenu->addAction("Open Official Client...");
     launchOfficial->setIcon(QIcon::fromTheme("application-x-executable"));
     connect(launchOfficial, &QAction::triggered, [=] {
         this->core.launchExecutable(currentProfile(), {currentProfile().gamePath + "/boot/ffxivboot.exe"});
     });
 
-    QAction* launchSysInfo = toolsMenu->addAction("Open System Info...");
+    launchSysInfo = toolsMenu->addAction("Open System Info...");
     launchSysInfo->setIcon(QIcon::fromTheme("application-x-executable"));
     connect(launchSysInfo, &QAction::triggered, [=] {
         this->core.launchExecutable(currentProfile(), {currentProfile().gamePath + "/boot/ffxivsysinfo64.exe"});
     });
 
-    QAction* launchCfgBackup = toolsMenu->addAction("Open Config Backup...");
+    launchCfgBackup = toolsMenu->addAction("Open Config Backup...");
     launchCfgBackup->setIcon(QIcon::fromTheme("application-x-executable"));
     connect(launchCfgBackup, &QAction::triggered, [=] {
         this->core.launchExecutable(currentProfile(), {currentProfile().gamePath + "/boot/ffxivconfig64.exe"});
@@ -44,7 +44,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
 
     toolsMenu->addSeparator();
 
-    QAction* openGameDir = toolsMenu->addAction("Open Game Directory...");
+    openGameDir = toolsMenu->addAction("Open Game Directory...");
     openGameDir->setIcon(QIcon::fromTheme("document-open"));
     connect(openGameDir, &QAction::triggered, [=] {
         openPath(currentProfile().gamePath);
@@ -312,17 +312,24 @@ void LauncherWindow::reloadControls() {
     }
 #endif
 
-    const bool canLogin = currentProfile().isSapphire || (!currentProfile().isSapphire && core.squareLauncher->isGateOpen);
+    const bool canLogin = currentProfile().isSapphire || (!currentProfile().isSapphire && core.squareLauncher->isGateOpen) && currentProfile().isGameInstalled();
 
     if(canLogin) {
         loginButton->setText("Login");
-    } else {
+    } else if(!core.squareLauncher->isGateOpen) {
         loginButton->setText("Login (Maintenance is in progress)");
+    } else {
+        loginButton->setText("Login (Game is not installed)");
     }
 
     loginButton->setEnabled(canLogin);
     registerButton->setEnabled(currentProfile().isSapphire);
     otpEdit->setEnabled(!currentProfile().isSapphire);
+
+    launchOfficial->setEnabled(currentProfile().isGameInstalled());
+    launchSysInfo->setEnabled(currentProfile().isGameInstalled());
+    launchCfgBackup->setEnabled(currentProfile().isGameInstalled());
+    openGameDir->setEnabled(currentProfile().isGameInstalled());
 
     currentlyReloadingControls = false;
 }
