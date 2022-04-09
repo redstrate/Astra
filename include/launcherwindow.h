@@ -42,4 +42,8 @@ private:
     QLineEdit* otpEdit;
     QCheckBox* rememberUsernameBox, *rememberPasswordBox;
     QPushButton* loginButton, *registerButton;
+
+#if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
+    QAction* wineCfg;
+#endif
 };

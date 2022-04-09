@@ -71,7 +71,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     fileMenu->addSeparator();
 
-    QAction* wineCfg = fileMenu->addAction("Configure Wine...");
+    wineCfg = fileMenu->addAction("Configure Wine...");
     wineCfg->setIcon(QIcon::fromTheme("settings"));
     connect(wineCfg, &QAction::triggered, [=] {
         this->core.launchExecutable(currentProfile(), {"winecfg.exe"});
@@ -330,6 +330,10 @@ void LauncherWindow::reloadControls() {
     launchSysInfo->setEnabled(currentProfile().isGameInstalled());
     launchCfgBackup->setEnabled(currentProfile().isGameInstalled());
     openGameDir->setEnabled(currentProfile().isGameInstalled());
+
+#if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
+    wineCfg->setEnabled(currentProfile().isWineInstalled());
+#endif
 
     currentlyReloadingControls = false;
 }

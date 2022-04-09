@@ -21,6 +21,12 @@ enum class GameLicense {
     FreeTrial
 };
 
+enum class WineType {
+    System,
+    Custom,
+    Builtin // macos only
+};
+
 struct ProfileSettings {
     QUuid uuid;
     QString name;
@@ -28,7 +34,7 @@ struct ProfileSettings {
     // game
     int language = 1; // 1 is english, thats all i know
     QString gamePath, winePath, winePrefixPath;
-    QString bootVersion, gameVersion;
+    QString bootVersion, gameVersion, wineVersion;
     int installedMaxExpansion = -1;
     QList<QString> expansionVersions;
     bool enableWatchdog = false;
@@ -37,14 +43,16 @@ struct ProfileSettings {
         return !gameVersion.isEmpty();
     }
 
-    // wine
-    // 0 = system, 1 = custom, 2 = built-in (mac only)
-    // TODO: yes, i know this should be an enum
+    bool isWineInstalled() const {
+        return !wineVersion.isEmpty();
+    }
+
 #if defined(Q_OS_MAC)
-    int wineVersion = 2;
+    WineType wineType = WineType::Builtin;
 #else
-    int wineVersion = 0;
+    WineType wineType = WineType::System;
 #endif
+
     bool useEsync = false, useGamescope = false, useGamemode = false;
     bool useDX9 = false;
     bool enableDXVKhud = false;
@@ -160,7 +168,6 @@ private:
 
     QString getDefaultGamePath();
     QString getDefaultWinePrefixPath();
-    int getDefaultWineVersion();
 
     QVector<ProfileSettings> profileSettings;
 };

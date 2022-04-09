@@ -231,25 +231,25 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
         winePathLabel->setReadOnly(true);
         wineBoxLayout->addRow("Wine Executable", winePathLabel);
 
-        wineVersionCombo = new QComboBox();
+        wineTypeCombo = new QComboBox();
 
 #if defined(Q_OS_MAC)
-        wineVersionCombo->insertItem(2, "FFXIV Built-In");
+        wineTypeCombo->insertItem(2, "FFXIV Built-In");
 #endif
 
-        wineVersionCombo->insertItem(0, "System Wine");
-        wineVersionCombo->insertItem(1, "Custom Path...");
+        wineTypeCombo->insertItem(0, "System Wine");
+        wineTypeCombo->insertItem(1, "Custom Wine");
 
-        wineBoxLayout->addWidget(wineVersionCombo);
+        wineBoxLayout->addWidget(wineTypeCombo);
 
         selectWineButton = new QPushButton("Select Wine Executable");
         wineBoxLayout->addWidget(selectWineButton);
 
-        connect(wineVersionCombo,
+        connect(wineTypeCombo,
                 static_cast<void (QComboBox::*)(int)>(
                     &QComboBox::currentIndexChanged),
                 [this](int index) {
-                    getCurrentProfile().wineVersion = index;
+                    getCurrentProfile().wineType = (WineType)index;
 
                     this->core.readWineInfo(getCurrentProfile());
                     this->core.saveSettings();
@@ -450,8 +450,8 @@ void SettingsWindow::reloadControls() {
 
     // wine
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-    wineVersionCombo->setCurrentIndex(profile.wineVersion);
-    selectWineButton->setEnabled(profile.wineVersion == 1);
+    wineTypeCombo->setCurrentIndex((int)profile.wineType);
+    selectWineButton->setEnabled(profile.wineType == WineType::Custom);
     winePathLabel->setText(profile.winePath);
     winePrefixDirectory->setText(profile.winePrefixPath);
 #endif

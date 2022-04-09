@@ -327,7 +327,6 @@ void LauncherCore::readInitialInformation() {
         settings.beginGroup(uuid);
 
         profile.name = settings.value("name", "Default").toString();
-        profile.wineVersion = settings.value("wineVersion", getDefaultWineVersion()).toInt();
 
         readWineInfo(profile);
 
@@ -358,6 +357,9 @@ void LauncherCore::readInitialInformation() {
         profile.license = (GameLicense)settings.value("license", (int)defaultSettings.license).toInt();
 
         profile.useDX9 = settings.value("useDX9", defaultSettings.useDX9).toBool();
+
+        // wine
+        profile.wineType = (WineType)settings.value("wineType", (int)defaultSettings.wineType).toInt();
         profile.useEsync = settings.value("useEsync", defaultSettings.useEsync).toBool();
 
         if(gamescopeAvailable)
@@ -367,6 +369,7 @@ void LauncherCore::readInitialInformation() {
             profile.useGamemode = settings.value("useGamemode", defaultSettings.useGamemode).toBool();
 
         profile.enableDXVKhud = settings.value("enableDXVKhud", defaultSettings.enableDXVKhud).toBool();
+
         profile.enableWatchdog = settings.value("enableWatchdog", defaultSettings.enableWatchdog).toBool();
 
         // gamescope
@@ -389,28 +392,40 @@ void LauncherCore::readInitialInformation() {
 
 void LauncherCore::readWineInfo(ProfileSettings& profile) {
 #if defined(Q_OS_MAC)
-    switch(profile.wineVersion) {
-        case 0: // system wine
+    switch(profile.wineType) {
+        case WineType::System: // system wine
             profile.winePath = "/usr/local/bin/wine64";
             break;
-        case 1: // custom path
+        case WineType::Custom: // custom path
             profile.winePath = profile.winePath;
             break;
-        case 2: // ffxiv built-in (for mac users)
+        case WineType::Builtin: // ffxiv built-in (for mac users)
             profile.winePath = "/Applications/FINAL FANTASY XIV ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine";
             break;
     }
 #endif
 
 #if defined(Q_OS_LINUX)
-    switch(profile.wineVersion) {
-            case 0: // system wine (should be in $PATH)
-                profile.winePath = "wine";
+    switch(profile.wineType) {
+            case WineType::System: // system wine (should be in $PATH)
+                profile.winePath = "/usr/bin/wine";
                 break;
-            case 1: // custom pth
+            case WineType::Custom: // custom pth
                 profile.winePath = profile.winePath;
                 break;
         }
+#endif
+
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+    auto wineProcess = new QProcess();
+    wineProcess->setProcessChannelMode(QProcess::MergedChannels);
+
+    connect(wineProcess, &QProcess::readyRead, this, [wineProcess, &profile] {
+        profile.wineVersion = wineProcess->readAllStandardOutput().trimmed();
+    });
+
+    wineProcess->start(profile.winePath, {"--version"});
+    wineProcess->waitForFinished();
 #endif
 }
 
@@ -489,8 +504,6 @@ int LauncherCore::addProfile() {
     newProfile.uuid = QUuid::createUuid();
     newProfile.name = "New Profile";
 
-    newProfile.wineVersion = getDefaultWineVersion();
-
     readWineInfo(newProfile);
 
     newProfile.gamePath = getDefaultGamePath();
@@ -537,7 +550,7 @@ void LauncherCore::saveSettings() {
         settings.setValue("gamePath", profile.gamePath);
 
         // wine
-        settings.setValue("wineVersion", profile.wineVersion);
+        settings.setValue("wineType", (int)profile.wineType);
         settings.setValue("winePath", profile.winePath);
         settings.setValue("winePrefixPath", profile.winePrefixPath);
 
@@ -616,13 +629,5 @@ QString LauncherCore::getDefaultGamePath() {
 
 #if defined(Q_OS_LINUX)
     return QDir::homePath() + "/.wine/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
-#endif
-}
-
-int LauncherCore::getDefaultWineVersion() {
-#if defined(Q_OS_MAC)
-    return 2;
-#else
-    return 0;
 #endif
 }

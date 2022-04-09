@@ -36,7 +36,7 @@ private:
     QPushButton* gameDirectoryButton = nullptr;
 
     // wine
-    QComboBox* wineVersionCombo;
+    QComboBox* wineTypeCombo;
     QPushButton* selectWineButton;
     QLineEdit* winePathLabel;
     QLineEdit* winePrefixDirectory;
