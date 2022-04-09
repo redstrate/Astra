@@ -180,8 +180,8 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
         loginBoxLayout->addRow("Server Lobby", serverType);
 
         gameLicenseBox = new QComboBox();
-        gameLicenseBox->insertItem(0, "Windows Standalone");
-        gameLicenseBox->insertItem(1, "Windows Steam");
+        gameLicenseBox->insertItem(0, "Windows (Standalone)");
+        gameLicenseBox->insertItem(1, "Windows (Steam)");
         gameLicenseBox->insertItem(2, "macOS");
 
         connect(gameLicenseBox,
