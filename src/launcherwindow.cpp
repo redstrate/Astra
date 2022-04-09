@@ -318,6 +318,10 @@ void LauncherWindow::reloadControls() {
         loginButton->setText("Login");
     } else if(!core.squareLauncher->isGateOpen) {
         loginButton->setText("Login (Maintenance is in progress)");
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+    } else if(!currentProfile().isWineInstalled()) {
+        loginButton->setText("Login (Wine is not installed)");
+#endif
     } else {
         loginButton->setText("Login (Game is not installed)");
     }
