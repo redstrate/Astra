@@ -88,26 +88,26 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if(!QDir(c.getProfile(c.defaultProfileIndex).gamePath).exists()) {
-        auto messageBox = new QMessageBox(QMessageBox::Information, "No Game Found", "No game was found to be installed yet. Would you like to install FFXIV now?");
-
-        auto installButton = messageBox->addButton("Install Game", QMessageBox::HelpRole);
-        c.connect(installButton, &QPushButton::clicked, [&c, messageBox] {
-            installGame(c, [messageBox, &c] {
-                c.readGameVersion();
-
-                messageBox->close();
-            });
-        });
-
-        messageBox->addButton(QMessageBox::StandardButton::No);
-
-        messageBox->show();
-    }
-
     LauncherWindow w(c);
     if(!parser.isSet(noguiOption)) {
         w.show();
+
+        if(!QDir(c.getProfile(c.defaultProfileIndex).gamePath).exists()) {
+            auto messageBox = new QMessageBox(QMessageBox::Information, "No Game Found", "No game was found to be installed yet. Would you like to install FFXIV now?", QMessageBox::NoButton, &w);
+
+            auto installButton = messageBox->addButton("Install Game", QMessageBox::HelpRole);
+            c.connect(installButton, &QPushButton::clicked, [&c, messageBox] {
+                installGame(c, [messageBox, &c] {
+                    c.readGameVersion();
+
+                    messageBox->close();
+                });
+            });
+
+            messageBox->addButton(QMessageBox::StandardButton::No);
+
+            messageBox->show();
+        }
     }
 
     return app.exec();
