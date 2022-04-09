@@ -9,6 +9,7 @@
 #include "sapphirelauncher.h"
 #include "squareboot.h"
 #include "gameinstaller.h"
+#include "config.h"
 
 int main(int argc, char* argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -22,12 +23,13 @@ int main(int argc, char* argv[]) {
     QCoreApplication::setApplicationName("astra-debug");
 #endif
 
-    LauncherCore c;
+    QCoreApplication::setApplicationVersion(version);
 
     QCommandLineParser parser;
     parser.setApplicationDescription("Cross-platform FFXIV Launcher");
-    parser.addHelpOption();
-    parser.addVersionOption();
+
+    auto helpOption = parser.addHelpOption();
+    auto versionOption = parser.addVersionOption();
 
     QCommandLineOption noguiOption("nogui", "Don't open a main window.");
     parser.addOption(noguiOption);
@@ -40,6 +42,16 @@ int main(int argc, char* argv[]) {
 
     parser.process(app);
 
+    if(parser.isSet(versionOption)) {
+        parser.showVersion();
+    }
+
+    if(parser.isSet(helpOption)) {
+        parser.showHelp();
+    }
+
+    LauncherCore c;
+
     if(parser.isSet(profileOption)) {
         c.defaultProfileIndex = c.getProfileIndex(parser.value(profileOption));
 
@@ -48,6 +60,7 @@ int main(int argc, char* argv[]) {
             return 0;
         }
     }
+
     if(parser.isSet(autologinOption)) {
         auto profile = c.getProfile(c.defaultProfileIndex);
 
