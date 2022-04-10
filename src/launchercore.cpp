@@ -370,6 +370,7 @@ void LauncherCore::readInitialInformation() {
         profile.lobbyURL = settings.value("lobbyURL", defaultSettings.lobbyURL).toString();
         profile.rememberUsername = settings.value("rememberUsername", defaultSettings.rememberUsername).toBool();
         profile.rememberPassword = settings.value("rememberPassword", defaultSettings.rememberPassword).toBool();
+        profile.useOneTimePassword = settings.value("useOneTimePassword", defaultSettings.useOneTimePassword).toBool();
         profile.license = (GameLicense)settings.value("license", (int)defaultSettings.license).toInt();
 
         profile.useDX9 = settings.value("useDX9", defaultSettings.useDX9).toBool();
@@ -589,6 +590,7 @@ void LauncherCore::saveSettings() {
         settings.setValue("lobbyURL", profile.lobbyURL);
         settings.setValue("rememberUsername", profile.rememberUsername);
         settings.setValue("rememberPassword", profile.rememberPassword);
+        settings.setValue("useOneTimePassword", profile.useOneTimePassword);
         settings.setValue("license", (int)profile.license);
 
         settings.setValue("enableDalamud", profile.dalamud.enabled);

@@ -239,6 +239,16 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
         });
         loginBoxLayout->addRow("Remember Password", rememberPasswordBox);
 
+        useOneTimePassword = new QCheckBox();
+        connect(useOneTimePassword, &QCheckBox::stateChanged, [=](int) {
+            getCurrentProfile().useOneTimePassword =
+                useOneTimePassword->isChecked();
+
+            this->core.saveSettings();
+            this->window.reloadControls();
+        });
+        loginBoxLayout->addRow("Use One-time Password", useOneTimePassword);
+
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
         auto wineBox = new QGroupBox("Wine Options");
         auto wineBoxLayout = new QFormLayout();
@@ -516,6 +526,7 @@ void SettingsWindow::reloadControls() {
     }
     rememberUsernameBox->setChecked(profile.rememberUsername);
     rememberPasswordBox->setChecked(profile.rememberPassword);
+    useOneTimePassword->setChecked(profile.useOneTimePassword);
     gameLicenseBox->setCurrentIndex((int)profile.license);
 
     // dalamud

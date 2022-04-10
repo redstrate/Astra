@@ -110,7 +110,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
         QDesktopServices::openUrl(url);
     });
 
-    auto loginLayout = new QFormLayout();
+    loginLayout = new QFormLayout();
     layout->addLayout(loginLayout, 0, 1, 1, 1);
 
     profileSelect = new QComboBox();
@@ -142,13 +142,8 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     loginLayout->addRow("Remember Password?", rememberPasswordBox);
 
     otpEdit = new QLineEdit();
-    loginLayout->addRow("One-Time Password", otpEdit);
-
     loginButton = new QPushButton("Login");
-    loginLayout->addRow(loginButton);
-
     registerButton = new QPushButton("Register");
-    loginLayout->addRow(registerButton);
 
     auto emptyWidget = new QWidget();
     emptyWidget->setLayout(layout);
@@ -274,10 +269,6 @@ void LauncherWindow::reloadControls() {
         loginButton->setText("Login (Game is not installed)");
     }
 
-    loginButton->setEnabled(canLogin);
-    registerButton->setEnabled(currentProfile().isSapphire);
-    otpEdit->setEnabled(!currentProfile().isSapphire);
-
     launchOfficial->setEnabled(currentProfile().isGameInstalled());
     launchSysInfo->setEnabled(currentProfile().isGameInstalled());
     launchCfgBackup->setEnabled(currentProfile().isGameInstalled());
@@ -291,6 +282,30 @@ void LauncherWindow::reloadControls() {
     bannerImageView->hide();
     layout->removeWidget(newsListView);
     newsListView->hide();
+
+    auto field = loginLayout->labelForField(otpEdit);
+    if(field != nullptr)
+        field->deleteLater();
+
+    loginLayout->takeRow(otpEdit);
+    otpEdit->hide();
+
+    if(currentProfile().useOneTimePassword && !currentProfile().isSapphire) {
+        loginLayout->addRow("One-Time Password", otpEdit);
+        otpEdit->show();
+    }
+
+    loginLayout->takeRow(loginButton);
+    loginButton->setEnabled(canLogin);
+    loginLayout->addRow(loginButton);
+
+    loginLayout->takeRow(registerButton);
+    registerButton->hide();
+
+    if(currentProfile().isSapphire) {
+        loginLayout->addRow(registerButton);
+        registerButton->show();
+    }
 
     if(core.appSettings.showBanners || core.appSettings.showNewsList) {
         int totalRow = 0;

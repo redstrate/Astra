@@ -75,6 +75,7 @@ struct ProfileSettings {
     bool isSapphire = false;
     QString lobbyURL;
     bool rememberUsername = false, rememberPassword = false;
+    bool useOneTimePassword = false;
 
     GameLicense license = GameLicense::WindowsStandalone;
 };

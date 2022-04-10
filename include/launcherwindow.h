@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QTreeWidget>
 #include <QGridLayout>
+#include <QFormLayout>
 
 #include "launchercore.h"
 #include "headline.h"
@@ -31,6 +32,7 @@ private:
     bool currentlyReloadingControls = false;
 
     QGridLayout* layout;
+    QFormLayout* loginLayout;
 
     QLabel* bannerImageView;
     QTreeWidget* newsListView;
