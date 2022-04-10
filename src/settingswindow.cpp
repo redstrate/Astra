@@ -41,6 +41,24 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
             core.saveSettings();
         });
         layout->addWidget(closeWhenLaunched);
+
+        showBanner = new QCheckBox("Show news banners");
+        connect(showBanner, &QCheckBox::stateChanged, [&](int state) {
+            core.appSettings.showBanners = state;
+
+            core.saveSettings();
+            window.reloadControls();
+        });
+        layout->addWidget(showBanner);
+
+        showNewsList = new QCheckBox("Show news list");
+        connect(showNewsList, &QCheckBox::stateChanged, [&](int state) {
+            core.appSettings.showNewsList = state;
+
+            core.saveSettings();
+            window.reloadControls();
+        });
+        layout->addWidget(showNewsList);
     }
 
     // profile tab
@@ -409,6 +427,8 @@ void SettingsWindow::reloadControls() {
     profileWidget->setCurrentRow(oldRow);
 
     closeWhenLaunched->setChecked(core.appSettings.closeWhenLaunched);
+    showBanner->setChecked(core.appSettings.showBanners);
+    showNewsList->setChecked(core.appSettings.showNewsList);
 
     // deleting the main profile is unsupported behavior
     deleteProfileButton->setEnabled(core.profileList().size() > 1);

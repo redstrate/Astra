@@ -5,6 +5,7 @@
 #include <QCheckBox>
 #include <QPushButton>
 #include <QTreeWidget>
+#include <QGridLayout>
 
 #include "launchercore.h"
 #include "headline.h"
@@ -28,6 +29,8 @@ private:
     Headline headline;
 
     bool currentlyReloadingControls = false;
+
+    QGridLayout* layout;
 
     QLabel* bannerImageView;
     QTreeWidget* newsListView;

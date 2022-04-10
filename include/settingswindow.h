@@ -27,6 +27,8 @@ private:
 
     // general
     QCheckBox* closeWhenLaunched = nullptr;
+    QCheckBox* showBanner = nullptr;
+    QCheckBox* showNewsList = nullptr;
 
     // game
     QLineEdit* nameEdit = nullptr;

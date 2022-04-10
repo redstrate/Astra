@@ -95,10 +95,9 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
         QMessageBox::aboutQt(this);
     });
 
-    auto layout = new QGridLayout();
+    layout = new QGridLayout();
 
     bannerImageView = new QLabel();
-    layout->addWidget(bannerImageView, 0, 0);
 
     newsListView = new QTreeWidget();
     newsListView->setColumnCount(2);
@@ -110,7 +109,6 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
         qInfo() << "clicked" << url;
         QDesktopServices::openUrl(url);
     });
-    layout->addWidget(newsListView, 1, 0);
 
     auto loginLayout = new QFormLayout();
     layout->addLayout(loginLayout, 0, 1, 1, 1);
@@ -206,61 +204,6 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     });
 
     reloadControls();
-
-    getHeadline(core, [&](Headline headline) {
-        this->headline = headline;
-
-        if(!headline.banner.empty()) {
-            auto request = QNetworkRequest(headline.banner[0].bannerImage);
-            core.buildRequest(currentProfile(), request);
-
-            auto reply = core.mgr->get(request);
-            connect(reply, &QNetworkReply::finished, [=] {
-                QPixmap pixmap;
-                pixmap.loadFromData(reply->readAll());
-                bannerImageView->setPixmap(pixmap);
-            });
-
-            QTreeWidgetItem* newsItem = new QTreeWidgetItem((QTreeWidgetItem*)nullptr, QStringList("News"));
-            for(auto news : headline.news) {
-                QTreeWidgetItem* item = new QTreeWidgetItem();
-                item->setText(0, news.title);
-                item->setText(1, QLocale().toString(news.date, QLocale::ShortFormat));
-                item->setData(0, Qt::UserRole, news.url);
-
-                newsItem->addChild(item);
-            }
-
-            QTreeWidgetItem* pinnedItem = new QTreeWidgetItem((QTreeWidgetItem*)nullptr, QStringList("Pinned"));
-            for(auto pinned : headline.pinned) {
-                QTreeWidgetItem* item = new QTreeWidgetItem();
-                item->setText(0, pinned.title);
-                item->setText(1, QLocale().toString(pinned.date, QLocale::ShortFormat));
-                item->setData(0, Qt::UserRole, pinned.url);
-
-                pinnedItem->addChild(item);
-            }
-
-            QTreeWidgetItem* topicsItem = new QTreeWidgetItem((QTreeWidgetItem*)nullptr, QStringList("Topics"));
-            for(auto news : headline.topics) {
-                QTreeWidgetItem* item = new QTreeWidgetItem();
-                item->setText(0, news.title);
-                item->setText(1, QLocale().toString(news.date, QLocale::ShortFormat));
-                item->setData(0, Qt::UserRole, news.url);
-
-                qInfo() << news.url;
-
-                topicsItem->addChild(item);
-            }
-
-            newsListView->insertTopLevelItems(0, QList<QTreeWidgetItem*>({newsItem, pinnedItem, topicsItem}));
-
-            for(int i = 0; i < 3; i++) {
-                newsListView->expandItem(newsListView->topLevelItem(i));
-                newsListView->resizeColumnToContents(i);
-            }
-        }
-    });
 }
 
 ProfileSettings LauncherWindow::currentProfile() const {
@@ -343,6 +286,95 @@ void LauncherWindow::reloadControls() {
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     wineCfg->setEnabled(currentProfile().isWineInstalled());
 #endif
+
+    layout->removeWidget(bannerImageView);
+    bannerImageView->hide();
+    layout->removeWidget(newsListView);
+    newsListView->hide();
+
+    if(core.appSettings.showBanners || core.appSettings.showNewsList) {
+        int totalRow = 0;
+        if(core.appSettings.showBanners) {
+            bannerImageView->show();
+            layout->addWidget(bannerImageView, totalRow++, 0);
+        }
+
+        if(core.appSettings.showNewsList) {
+            newsListView->show();
+            layout->addWidget(newsListView, totalRow++, 0);
+        }
+
+        newsListView->clear();
+
+        getHeadline(core, [&](Headline headline) {
+            this->headline = headline;
+
+            if (!headline.banner.empty()) {
+                if(core.appSettings.showBanners) {
+                    auto request =
+                        QNetworkRequest(headline.banner[0].bannerImage);
+                    core.buildRequest(currentProfile(), request);
+
+                    auto reply = core.mgr->get(request);
+                    connect(reply, &QNetworkReply::finished, [=] {
+                        QPixmap pixmap;
+                        pixmap.loadFromData(reply->readAll());
+                        bannerImageView->setPixmap(pixmap);
+                    });
+                }
+
+                if(core.appSettings.showNewsList) {
+                    QTreeWidgetItem* newsItem = new QTreeWidgetItem(
+                        (QTreeWidgetItem*)nullptr, QStringList("News"));
+                    for (auto news : headline.news) {
+                        QTreeWidgetItem* item = new QTreeWidgetItem();
+                        item->setText(0, news.title);
+                        item->setText(1, QLocale().toString(
+                                             news.date, QLocale::ShortFormat));
+                        item->setData(0, Qt::UserRole, news.url);
+
+                        newsItem->addChild(item);
+                    }
+
+                    QTreeWidgetItem* pinnedItem = new QTreeWidgetItem(
+                        (QTreeWidgetItem*)nullptr, QStringList("Pinned"));
+                    for (auto pinned : headline.pinned) {
+                        QTreeWidgetItem* item = new QTreeWidgetItem();
+                        item->setText(0, pinned.title);
+                        item->setText(1,
+                                      QLocale().toString(pinned.date,
+                                                         QLocale::ShortFormat));
+                        item->setData(0, Qt::UserRole, pinned.url);
+
+                        pinnedItem->addChild(item);
+                    }
+
+                    QTreeWidgetItem* topicsItem = new QTreeWidgetItem(
+                        (QTreeWidgetItem*)nullptr, QStringList("Topics"));
+                    for (auto news : headline.topics) {
+                        QTreeWidgetItem* item = new QTreeWidgetItem();
+                        item->setText(0, news.title);
+                        item->setText(1, QLocale().toString(
+                                             news.date, QLocale::ShortFormat));
+                        item->setData(0, Qt::UserRole, news.url);
+
+                        qInfo() << news.url;
+
+                        topicsItem->addChild(item);
+                    }
+
+                    newsListView->insertTopLevelItems(
+                        0, QList<QTreeWidgetItem*>(
+                               {newsItem, pinnedItem, topicsItem}));
+
+                    for (int i = 0; i < 3; i++) {
+                        newsListView->expandItem(newsListView->topLevelItem(i));
+                        newsListView->resizeColumnToContents(i);
+                    }
+                }
+            }
+        });
+    }
 
     currentlyReloadingControls = false;
 }

@@ -81,6 +81,8 @@ struct ProfileSettings {
 
 struct AppSettings {
     bool closeWhenLaunched = true;
+    bool showBanners = true;
+    bool showNewsList = true;
 };
 
 struct LoginInformation {

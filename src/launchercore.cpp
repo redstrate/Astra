@@ -278,7 +278,10 @@ QString LauncherCore::readVersion(QString path) {
 void LauncherCore::readInitialInformation() {
     defaultProfileIndex = settings.value("defaultProfile", 0).toInt();
 
-    appSettings.closeWhenLaunched = settings.value("closeWhenLaunched", true).toBool();
+    auto defaultAppSettings = AppSettings();
+    appSettings.closeWhenLaunched = settings.value("closeWhenLaunched", defaultAppSettings.closeWhenLaunched).toBool();
+    appSettings.showBanners = settings.value("showBanners", defaultAppSettings.showBanners).toBool();
+    appSettings.showNewsList = settings.value("showNewsList", defaultAppSettings.showNewsList).toBool();
 
     gamescopeAvailable = checkIfInPath("gamescope");
     gamemodeAvailable = checkIfInPath("gamemoderun");
@@ -549,6 +552,8 @@ int LauncherCore::deleteProfile(QString name) {
 void LauncherCore::saveSettings() {
     settings.setValue("defaultProfile", defaultProfileIndex);
     settings.setValue("closeWhenLaunched", appSettings.closeWhenLaunched);
+    settings.setValue("showBanners", appSettings.showBanners);
+    settings.setValue("showNewsList", appSettings.showNewsList);
 
     for(int i = 0; i < profileSettings.size(); i++) {
         const auto& profile = profileSettings[i];
