@@ -103,8 +103,8 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     newsListView = new QTreeWidget();
     newsListView->setColumnCount(2);
     newsListView->setHeaderLabels({"Title", "Date"});
-    newsListView->header()->setStretchLastSection(true);
-    newsListView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    //newsListView->header()->setStretchLastSection(true);
+    //newsListView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     connect(newsListView, &QTreeWidget::itemClicked, [](QTreeWidgetItem* item, int column) {
         auto url = item->data(0, Qt::UserRole).toUrl();
         qInfo() << "clicked" << url;
@@ -254,6 +254,11 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
             }
 
             newsListView->insertTopLevelItems(0, QList<QTreeWidgetItem*>({newsItem, pinnedItem, topicsItem}));
+
+            for(int i = 0; i < 3; i++) {
+                newsListView->expandItem(newsListView->topLevelItem(i));
+                newsListView->resizeColumnToContents(i);
+            }
         }
     });
 }
