@@ -16,6 +16,7 @@
 #include "assetupdater.h"
 #include "headline.h"
 #include "config.h"
+#include "aboutwindow.h"
 
 LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindow(parent), core(core) {
     setWindowTitle("Astra");
@@ -84,11 +85,8 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     QAction* showAbout = helpMenu->addAction("About Astra");
     showAbout->setIcon(QIcon::fromTheme("help-about"));
     connect(showAbout, &QAction::triggered, [=] {
-        QString aboutText;
-        aboutText.append(QString("Version: %1\n").arg(version));
-        aboutText.append("The source code is available at https://sr.ht/~redstrate/astra.");
-
-        QMessageBox::about(this, "About Astra", aboutText);
+        auto window = new AboutWindow(this);
+        window->show();
     });
 
     QAction* showAboutQt = helpMenu->addAction("About Qt");

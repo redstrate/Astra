@@ -37,7 +37,9 @@ set(SRC
         include/config.h
         include/gameinstaller.h
         src/gameinstaller.cpp
-        src/encryptedarg.cpp)
+        src/encryptedarg.cpp
+        src/aboutwindow.cpp
+        include/aboutwindow.h)
 
 include(FetchContent)
 
@@ -146,12 +148,20 @@ add_executable(astra ${SRC})
 
 target_link_libraries(astra PUBLIC ${LIBRARIES} libxiv)
 
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE LICENSE_TXT)
+STRING(REPLACE "\n" " \\n" LICENSE_TXT ${LICENSE_TXT})
+STRING(REPLACE "\"" "\"\"" LICENSE_TXT ${LICENSE_TXT})
+
+configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/license.h.in
+        ${CMAKE_BINARY_DIR}/license.h)
+
 target_include_directories(astra
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         PRIVATE
         ${KEYCHAIN_INCLUDE_DIRS}
-        ${QUAZIP_INCLUDE_DIRS})
+        ${QUAZIP_INCLUDE_DIRS}
+        ${CMAKE_BINARY_DIR})
 
 if(ENABLE_WATCHDOG)
     target_include_directories(astra PRIVATE ${TESSERACT_INCLUDE_DIRS} ${LEPTONICA_INCLUDE_DIRS})
