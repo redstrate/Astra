@@ -146,6 +146,7 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
         gameDirectoryButton->setEnabled(getCurrentProfile().isGameInstalled());
 
         expansionVersionLabel = new QLabel();
+        expansionVersionLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
         gameBoxLayout->addRow("Game Version", expansionVersionLabel);
 
         auto loginBox = new QGroupBox("Login Options");
@@ -265,6 +266,7 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
         });
 
         wineVersionLabel = new QLabel();
+        wineVersionLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
         wineBoxLayout->addRow("Wine Version", wineVersionLabel);
 
         winePrefixDirectory = new QLineEdit();
@@ -374,12 +376,15 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
         dalamudBoxLayout->addRow("Opt Out of Automatic Marketboard Collection", dalamudOptOutBox);
 
         dalamudVersionLabel = new QLabel();
+        dalamudVersionLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
         dalamudBoxLayout->addRow("Dalamud Version", dalamudVersionLabel);
 
         dalamudAssetVersionLabel = new QLabel();
+        dalamudAssetVersionLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
         dalamudBoxLayout->addRow("Dalamud Asset Version", dalamudAssetVersionLabel);
 
         nativeLauncherVersionLabel = new QLabel();
+        nativeLauncherVersionLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
         dalamudBoxLayout->addRow("Native Launcher Version", nativeLauncherVersionLabel);
     }
 
