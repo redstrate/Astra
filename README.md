@@ -53,10 +53,10 @@ Astra is primarily hosted at **sourcehut**, with the project located [here](http
 ways to contribute patches:
 * You can send a PR through the [Github mirror](https://github.com/redstrate/astra/pulls).
 * If you have a sourcehut account, you can use the [web contributing interface](https://git.sr.ht/~redstrate/astra/send-email).
-* If you do not want to use Github or sourcehut, you may always send an email on [the astra-dev mailing list](https://lists.sr.ht/~redstrate/astra-dev).
+* If you do not want to use Github or sourcehut, you may always send the patch through [the mailing list](https://lists.sr.ht/~redstrate/astra-dev).
 
 If you do send a patch through the mailing list, please prefix the subject with PATCH so it's properly filtered.
 
-If you wish to **report an issue or discuss something**, the [the same astra-dev mailing list](https://lists.sr.ht/~redstrate/astra-dev) for now.
+If you wish to **report an issue or discuss something**, also use [the mailing list](https://lists.sr.ht/~redstrate/astra-dev) for now.
 I highly encourage you to send an email through the mailing list instead of contacting me privately if possible, so
 other people may benefit from the solution.
