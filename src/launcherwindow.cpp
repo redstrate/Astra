@@ -54,6 +54,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
 
     QAction* settingsAction = fileMenu->addAction("Configure Astra...");
     settingsAction->setIcon(QIcon::fromTheme("configure"));
+    settingsAction->setMenuRole(QAction::MenuRole::NoRole);
     connect(settingsAction, &QAction::triggered, [=] {
         auto window = new SettingsWindow(0, *this, this->core, this);
         connect(&this->core, &LauncherCore::settingsChanged, window, &SettingsWindow::reloadControls);
@@ -62,6 +63,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
 
     QAction* profilesAction = fileMenu->addAction("Configure Profiles...");
     profilesAction->setIcon(QIcon::fromTheme("configure"));
+    profilesAction->setMenuRole(QAction::MenuRole::NoRole);
     connect(profilesAction, &QAction::triggered, [=] {
         auto window = new SettingsWindow(1, *this, this->core, this);
         connect(&this->core, &LauncherCore::settingsChanged, window, &SettingsWindow::reloadControls);
