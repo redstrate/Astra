@@ -140,7 +140,7 @@ int main(int argc, char* argv[]) {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
         if(!defaultProfile.isWineInstalled()) {
             auto messageBox = new QMessageBox(&w);
-            messageBox->setIcon(QMessageBox::Icon::Question);
+            messageBox->setIcon(QMessageBox::Icon::Critical);
             messageBox->setText("No Wine Found");
             messageBox->setInformativeText("Wine is not installed but is required to FFXIV on this operating system.");
             messageBox->setWindowModality(Qt::WindowModal);
