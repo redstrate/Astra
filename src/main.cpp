@@ -108,10 +108,21 @@ int main(int argc, char* argv[]) {
     if(!parser.isSet(noguiOption)) {
         w.show();
 
-        if(!QDir(c.getProfile(c.defaultProfileIndex).gamePath).exists()) {
-            auto messageBox = new QMessageBox(QMessageBox::Information, "No Game Found", "FFXIV is not installed. Would you like to install it now?", QMessageBox::NoButton, &w);
+        auto defaultProfile = c.getProfile(c.defaultProfileIndex);
 
-            auto installButton = messageBox->addButton("Install Game", QMessageBox::HelpRole);
+        if(!defaultProfile.isGameInstalled()) {
+            auto messageBox = new QMessageBox(&w);
+            messageBox->setIcon(QMessageBox::Icon::Question);
+            messageBox->setText("No Game Found");
+            messageBox->setInformativeText("FFXIV is not installed. Would you like to install it now?");
+
+            QString detailedText = QString("Astra will install FFXIV for you at '%1'").arg(c.getProfile(c.defaultProfileIndex).gamePath);
+            detailedText.append("\n\nIf you do not wish to install it to this location, please set it in your default profile first.");
+
+            messageBox->setDetailedText(detailedText);
+            messageBox->setWindowModality(Qt::WindowModal);
+
+            auto installButton = messageBox->addButton("Install Game", QMessageBox::YesRole);
             c.connect(installButton, &QPushButton::clicked, [&c, messageBox] {
                 installGame(c, [messageBox, &c] {
                     c.readGameVersion();
@@ -121,9 +132,25 @@ int main(int argc, char* argv[]) {
             });
 
             messageBox->addButton(QMessageBox::StandardButton::No);
+            messageBox->setDefaultButton(installButton);
 
-            messageBox->show();
+            messageBox->exec();
         }
+
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+        if(!defaultProfile.isWineInstalled()) {
+            auto messageBox = new QMessageBox(&w);
+            messageBox->setIcon(QMessageBox::Icon::Question);
+            messageBox->setText("No Wine Found");
+            messageBox->setInformativeText("Wine is not installed but is required to FFXIV on this operating system.");
+            messageBox->setWindowModality(Qt::WindowModal);
+
+            messageBox->addButton(QMessageBox::StandardButton::Ok);
+            messageBox->setDefaultButton(QMessageBox::StandardButton::Ok);
+
+            messageBox->exec();
+        }
+#endif
     }
 
     return app.exec();
