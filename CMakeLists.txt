@@ -3,8 +3,6 @@ project(Astra)
 
 set(CMAKE_AUTOMOC ON)
 
-set(CMAKE_CXX_STANDARD 17)
-
 find_package(Qt5 COMPONENTS Core Widgets Network CONFIG REQUIRED)
 
 option(ENABLE_WATCHDOG "Build with Tesseract support (needed for Watchdog)" OFF)
@@ -147,6 +145,8 @@ endif()
 add_executable(astra ${SRC})
 
 target_link_libraries(astra PUBLIC ${LIBRARIES} libxiv)
+target_compile_features(astra PUBLIC cxx_std_17)
+set_target_properties(astra PROPERTIES CXX_EXTENSIONS OFF)
 
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE LICENSE_TXT)
 STRING(REPLACE "\n" " \\n" LICENSE_TXT ${LICENSE_TXT})
