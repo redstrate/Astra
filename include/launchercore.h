@@ -27,6 +27,12 @@ enum class WineType {
     Builtin // macos only
 };
 
+enum class DalamudChannel {
+    Stable,
+    Staging,
+    Net5
+};
+
 struct ProfileSettings {
     QUuid uuid;
     QString name;
@@ -68,6 +74,7 @@ struct ProfileSettings {
     struct DalamudOptions {
         bool enabled = false;
         bool optOutOfMbCollection = false;
+        DalamudChannel channel = DalamudChannel::Stable;
     } dalamud;
 
     // login

@@ -403,6 +403,22 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
         });
         dalamudBoxLayout->addRow("Opt Out of Automatic Marketboard Collection", dalamudOptOutBox);
 
+        dalamudChannel = new QComboBox();
+        dalamudChannel->insertItem(0, "Stable");
+        dalamudChannel->insertItem(1, "Staging");
+        dalamudChannel->insertItem(2, ".NET 5");
+
+        connect(dalamudChannel,
+                static_cast<void (QComboBox::*)(int)>(
+                    &QComboBox::currentIndexChanged),
+                [=](int index) {
+                    getCurrentProfile().dalamud.channel = (DalamudChannel)index;
+
+                    this->core.saveSettings();
+                });
+
+        dalamudBoxLayout->addRow("Dalamud Update Channel", dalamudChannel);
+
         dalamudVersionLabel = new QLabel();
         dalamudVersionLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
         dalamudBoxLayout->addRow("Dalamud Version", dalamudVersionLabel);
@@ -550,6 +566,7 @@ void SettingsWindow::reloadControls() {
     }
 
     dalamudOptOutBox->setChecked(profile.dalamud.optOutOfMbCollection);
+    dalamudChannel->setCurrentIndex((int)profile.dalamud.channel);
 
     window.reloadControls();
 

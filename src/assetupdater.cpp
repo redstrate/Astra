@@ -13,9 +13,9 @@
 
 const QString baseGoatDomain = "https://goatcorp.github.io";
 
-const QString baseDalamudDistribution = baseGoatDomain + "/dalamud-distrib";
-const QString dalamudLatestPackageURL = baseDalamudDistribution + "/latest.zip";
-const QString dalamudVersionManifestURL = baseDalamudDistribution + "/version";
+const QString baseDalamudDistribution = baseGoatDomain + "/dalamud-distrib/";
+const QString dalamudLatestPackageURL = baseDalamudDistribution + "%1latest.zip";
+const QString dalamudVersionManifestURL = baseDalamudDistribution + "%1version";
 
 const QString baseDalamudAssetDistribution = baseGoatDomain + "/DalamudAssets";
 const QString dalamudAssetManifestURL = baseDalamudAssetDistribution + "/asset.json";
@@ -30,6 +30,12 @@ const QString dotnetRuntimePackageURL =
     "https://dotnetcli.azureedge.net/dotnet/Runtime/%1/dotnet-runtime-%1-win-x64.zip";
 const QString dotnetDesktopPackageURL =
     "https://dotnetcli.azureedge.net/dotnet/WindowsDesktop/%1/windowsdesktop-runtime-%1-win-x64.zip";
+
+QMap<DalamudChannel, QString> channelToDistribPrefix = {
+    {DalamudChannel::Stable, "/"},
+    {DalamudChannel::Staging, "stg/"},
+    {DalamudChannel::Net5, "net5/"}
+};
 
 AssetUpdater::AssetUpdater(LauncherCore& launcher) : launcher(launcher) {
     launcher.mgr->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
@@ -102,7 +108,9 @@ void AssetUpdater::update(const ProfileSettings& profile) {
     // dalamud injector / net runtime / nativelauncher
     // they're all updated in unison, so there's no reason to have multiple checks
     {
-        QNetworkRequest request(dalamudVersionManifestURL);
+        QNetworkRequest request(dalamudVersionManifestURL.arg(channelToDistribPrefix[profile.dalamud.channel]));
+
+        chosenChannel = profile.dalamud.channel;
 
         remoteDalamudVersion.clear();
         remoteRuntimeVersion.clear();
@@ -302,7 +310,7 @@ void AssetUpdater::checkIfCheckingIsDone() {
 
         needsDalamudInstall = true;
 
-        QNetworkRequest request(dalamudLatestPackageURL);
+        QNetworkRequest request(dalamudLatestPackageURL.arg(channelToDistribPrefix[chosenChannel]));
 
         auto reply = launcher.mgr->get(request);
         connect(reply, &QNetworkReply::finished, [this, reply] {

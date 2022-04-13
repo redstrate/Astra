@@ -5,6 +5,8 @@
 #include <QProgressDialog>
 #include <QJsonArray>
 
+#include "launchercore.h"
+
 class LauncherCore;
 class QNetworkReply;
 struct ProfileSettings;
@@ -29,7 +31,7 @@ private:
 
     QProgressDialog* dialog;
 
-    const ProfileSettings* currentSettings = nullptr;
+    DalamudChannel chosenChannel;
 
     QString remoteDalamudVersion;
     QString remoteRuntimeVersion;

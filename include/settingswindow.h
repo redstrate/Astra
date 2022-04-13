@@ -62,6 +62,7 @@ private:
     QLabel* dalamudAssetVersionLabel = nullptr;
     QLabel* nativeLauncherVersionLabel = nullptr;
     QCheckBox* dalamudOptOutBox = nullptr;
+    QComboBox* dalamudChannel = nullptr;
 
     bool currentlyReloadingControls = false;
 

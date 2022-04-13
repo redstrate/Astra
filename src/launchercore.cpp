@@ -296,13 +296,23 @@ void LauncherCore::readInitialInformation() {
             depsJson.open(QFile::ReadOnly);
             QJsonDocument doc = QJsonDocument::fromJson(depsJson.readAll());
 
-            // TODO: UGLY
-            QString versionString =
-                doc["targets"]
-                    .toObject()[".NETCoreApp,Version=v5.0"]
-                    .toObject()
-                    .keys()
-                    .filter("Dalamud")[0];
+            QString versionString;
+            if(doc["targets"].toObject().contains(".NETCoreApp,Version=v5.0")) {
+                versionString =
+                    doc["targets"]
+                        .toObject()[".NETCoreApp,Version=v5.0"]
+                        .toObject()
+                        .keys()
+                        .filter("Dalamud")[0];
+            } else {
+                versionString =
+                    doc["targets"]
+                        .toObject()[".NETCoreApp,Version=v6.0"]
+                        .toObject()
+                        .keys()
+                        .filter("Dalamud")[0];
+            }
+
             dalamudVersion = versionString.remove("Dalamud/");
         }
 
@@ -398,6 +408,7 @@ void LauncherCore::readInitialInformation() {
 
         profile.dalamud.enabled = settings.value("enableDalamud", defaultSettings.dalamud.enabled).toBool();
         profile.dalamud.optOutOfMbCollection = settings.value("dalamudOptOut", defaultSettings.dalamud.optOutOfMbCollection).toBool();
+        profile.dalamud.channel = (DalamudChannel)settings.value("dalamudChannel", (int)defaultSettings.dalamud.channel).toInt();
 
         profileSettings[settings.value("index").toInt()] = profile;
 
@@ -595,6 +606,7 @@ void LauncherCore::saveSettings() {
 
         settings.setValue("enableDalamud", profile.dalamud.enabled);
         settings.setValue("dalamudOptOut", profile.dalamud.optOutOfMbCollection);
+        settings.setValue("dalamudChannel", (int)profile.dalamud.channel);
         settings.setValue("enableWatchdog", profile.enableWatchdog);
 
         settings.endGroup();
