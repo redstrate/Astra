@@ -28,7 +28,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     launchOfficial = toolsMenu->addAction("Open Official Client...");
     launchOfficial->setIcon(QIcon::fromTheme("application-x-executable"));
     connect(launchOfficial, &QAction::triggered, [=] {
-        this->core.launchExecutable(currentProfile(), {currentProfile().gamePath + "/boot/ffxivboot.exe"});
+        this->core.launchExecutable(currentProfile(), {currentProfile().gamePath + "/boot/ffxivboot64.exe"});
     });
 
     launchSysInfo = toolsMenu->addAction("Open System Info...");
