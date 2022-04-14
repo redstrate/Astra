@@ -8,6 +8,7 @@
 #include <QNetworkReply>
 #include <QTreeWidgetItem>
 #include <QHeaderView>
+#include <QDirIterator>
 
 #include "settingswindow.h"
 #include "squareboot.h"
@@ -18,6 +19,7 @@
 #include "config.h"
 #include "aboutwindow.h"
 #include "gameinstaller.h"
+#include "encryptedarg.h"
 
 LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindow(parent), core(core) {
     setWindowTitle("Astra");
@@ -26,10 +28,58 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
 
     QMenu* toolsMenu = menuBar()->addMenu("Tools");
 
-    launchOfficial = toolsMenu->addAction("Open Official Client...");
+    launchOfficial = toolsMenu->addAction("Open Official Launcher...");
     launchOfficial->setIcon(QIcon::fromTheme("application-x-executable"));
     connect(launchOfficial, &QAction::triggered, [=] {
-        this->core.launchExecutable(currentProfile(), {currentProfile().gamePath + "/boot/ffxivboot64.exe"});
+        struct Argument {
+            QString key, value;
+        };
+
+        QString executeArg("%1%2%3%4");
+        QDateTime dateTime = QDateTime::currentDateTime();
+        executeArg = executeArg.arg(dateTime.date().month() + 1, 2, 10, QLatin1Char('0'));
+        executeArg = executeArg.arg(dateTime.date().day(), 2, 10, QLatin1Char('0'));
+        executeArg = executeArg.arg(dateTime.time().hour(), 2, 10, QLatin1Char('0'));
+        executeArg = executeArg.arg(dateTime.time().minute(), 2, 10, QLatin1Char('0'));
+
+        QList<Argument> arguments;
+        arguments.push_back({"ExecuteArg", executeArg});
+
+        // find user path
+        QString userPath;
+
+        // TODO: don't put this here
+        QString searchDir;
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+        searchDir = currentProfile().winePrefixPath + "/drive_c/Users";
+#else
+        searchDir = "C:/Users";
+#endif
+
+        QDirIterator it(searchDir);
+        while (it.hasNext()) {
+            QString dir = it.next();
+            QFileInfo fi(dir);
+            QString fileName = fi.fileName();
+
+            // FIXME: is there no easier way to filter out these in Qt?
+            if(fi.fileName() != "Public" && fi.fileName() != "." && fi.fileName() != "..") {
+                userPath = fileName;
+            }
+        }
+
+        arguments.push_back({"UserPath", QString("C:/Users/%1/Documents/My Games/FINAL FANTASY XIV - A Realm Reborn").arg(userPath)});
+
+        const QString argFormat = " /%1 =%2";
+
+        QString argJoined;
+        for(const auto& arg : arguments) {
+            argJoined += argFormat.arg(arg.key, arg.value);
+        }
+
+        QString finalArg = encryptGameArg(argJoined);
+
+        this->core.launchExecutable(currentProfile(), {currentProfile().gamePath + "/boot/ffxivlauncher64.exe", finalArg});
     });
 
     launchSysInfo = toolsMenu->addAction("Open System Info...");
