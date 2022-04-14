@@ -538,6 +538,7 @@ void SettingsWindow::reloadControls() {
     lobbyServerURL->setEnabled(profile.isSapphire);
     if(profile.isSapphire) {
         lobbyServerURL->setText(profile.lobbyURL);
+        lobbyServerURL->setPlaceholderText("Required...");
     } else {
         lobbyServerURL->setText("neolobby0X.ffxiv.com");
     }

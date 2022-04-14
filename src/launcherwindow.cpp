@@ -289,19 +289,32 @@ void LauncherWindow::reloadControls() {
     }
 #endif
 
-    const bool canLogin = currentProfile().isSapphire || (!currentProfile().isSapphire && core.squareLauncher->isGateOpen) && currentProfile().isGameInstalled();
-
-    if(canLogin) {
-        loginButton->setText("Login");
-    } else if(!core.squareLauncher->isGateOpen) {
-        loginButton->setText("Login (Maintenance is in progress)");
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-    } else if(!currentProfile().isWineInstalled()) {
-        loginButton->setText("Login (Wine is not installed)");
-#endif
+    bool canLogin = true;
+    if(currentProfile().isSapphire) {
+        if(currentProfile().lobbyURL.isEmpty()) {
+            loginButton->setText("Login (Lobby URL is invalid)");
+            canLogin = false;
+        }
     } else {
-        loginButton->setText("Login (Game is not installed)");
+        if(!core.squareLauncher->isGateOpen) {
+            loginButton->setText("Login (Maintenance is in progress)");
+            canLogin = false;
+        }
     }
+
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+    if(!currentProfile().isWineInstalled()) {
+        loginButton->setText("Login (Wine is not installed)");
+        canLogin = false;
+    }
+#endif
+    if(!currentProfile().isGameInstalled()) {
+        loginButton->setText("Login (Game is not installed)");
+        canLogin = false;
+    }
+
+    if(canLogin)
+        loginButton->setText("Login");
 
     launchOfficial->setEnabled(currentProfile().isGameInstalled());
     launchSysInfo->setEnabled(currentProfile().isGameInstalled());
@@ -331,6 +344,7 @@ void LauncherWindow::reloadControls() {
 
     loginLayout->takeRow(loginButton);
     loginButton->setEnabled(canLogin);
+    registerButton->setEnabled(canLogin);
     loginLayout->addRow(loginButton);
 
     loginLayout->takeRow(registerButton);
