@@ -551,7 +551,14 @@ void SettingsWindow::reloadControls() {
     } else {
         useOneTimePassword->setToolTip("");
     }
+
     gameLicenseBox->setCurrentIndex((int)profile.license);
+    gameLicenseBox->setEnabled(!profile.isSapphire);
+    if(!gameLicenseBox->isEnabled()) {
+        gameLicenseBox->setToolTip("Game licenses only matter when logging into the official Square Enix servers.");
+    } else {
+        gameLicenseBox->setToolTip("");
+    }
 
     // dalamud
     enableDalamudBox->setChecked(profile.dalamud.enabled);
