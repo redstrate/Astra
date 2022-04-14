@@ -170,7 +170,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
 
                     auto list = dalamudProcess->processEnvironment().toStringList();
 
-                    launchExecutable(profile, dalamudProcess, {dataDir + "/Dalamud/" + "Dalamud.Injector.exe", QString::number(exitCode), argsEncoded}, false);
+                    launchExecutable(profile, dalamudProcess, {dataDir + "/Dalamud/" + "Dalamud.Injector.exe", QString::number(exitCode), argsEncoded}, false, true);
 
                     connection->close();
                     socket->close();
@@ -189,13 +189,13 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
 void LauncherCore::launchExecutable(const ProfileSettings& profile, const QStringList args) {
     auto process = new QProcess(this);
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(profile, process, args, true);
+    launchExecutable(profile, process, args, true, true);
 }
 
 void LauncherCore::launchExternalTool(const ProfileSettings& profile, const QStringList args) {
     auto process = new QProcess(this);
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(profile, process, args, false);
+    launchExecutable(profile, process, args, false, true);
 }
 
 void LauncherCore::launchGameExecutable(const ProfileSettings& profile, QProcess* process, const QStringList args) {
@@ -203,12 +203,24 @@ void LauncherCore::launchGameExecutable(const ProfileSettings& profile, QProcess
 
     arguments.append(args);
 
-    launchExecutable(profile, process, arguments, true);
+    launchExecutable(profile, process, arguments, true, true);
 }
 
-void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* process, const QStringList args, bool isGame) {
+void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* process, const QStringList args, bool isGame, bool needsRegistrySetup) {
     QList<QString> arguments;
     auto env = process->processEnvironment();
+
+    if(needsRegistrySetup) {
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+        if(profile.license == GameLicense::macOS) {
+            addRegistryKey(profile, "HKEY_CURRENT_USER\\Software\\Wine", "HideWineExports", "0");
+        } else {
+            addRegistryKey(profile, "HKEY_CURRENT_USER\\Software\\Wine", "HideWineExports", "1");
+        }
+#endif
+    }
+
+    process->setProcessChannelMode(QProcess::ForwardedChannels);
 
 #if defined(Q_OS_LINUX)
     if (isGame) {
@@ -673,4 +685,11 @@ QString LauncherCore::getDefaultGamePath() {
 #if defined(Q_OS_LINUX)
     return QDir::homePath() + "/.wine/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
 #endif
+}
+
+void LauncherCore::addRegistryKey(const ProfileSettings& settings,
+                                  QString key, QString value, QString data) {
+    auto process = new QProcess(this);
+    process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    launchExecutable(settings, process, {"reg", "add", key, "/v", value, "/d", data, "/f" }, false, false);
 }

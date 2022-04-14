@@ -111,7 +111,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     wineCfg->setMenuRole(QAction::MenuRole::NoRole);
     wineCfg->setIcon(QIcon::fromTheme("configure"));
     connect(wineCfg, &QAction::triggered, [=] {
-        this->core.launchExternalTool(currentProfile(), {"winecfg.exe"});
+        this->core.launchExternalTool(currentProfile(), {"regedit.exe"});
     });
 #endif
 
