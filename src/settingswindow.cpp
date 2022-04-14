@@ -545,6 +545,12 @@ void SettingsWindow::reloadControls() {
     rememberUsernameBox->setChecked(profile.rememberUsername);
     rememberPasswordBox->setChecked(profile.rememberPassword);
     useOneTimePassword->setChecked(profile.useOneTimePassword);
+    useOneTimePassword->setEnabled(!profile.isSapphire);
+    if(!useOneTimePassword->isEnabled()) {
+        useOneTimePassword->setToolTip("OTP is not supported by Sapphire servers.");
+    } else {
+        useOneTimePassword->setToolTip("");
+    }
     gameLicenseBox->setCurrentIndex((int)profile.license);
 
     // dalamud
