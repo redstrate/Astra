@@ -458,7 +458,7 @@ void SettingsWindow::reloadControls() {
     showNewsList->setChecked(core.appSettings.showNewsList);
 
     // deleting the main profile is unsupported behavior
-    deleteProfileButton->setEnabled(core.profileList().size() > 1);
+    deleteProfileButton->setEnabled(profileWidget->currentRow() != 0);
 
     ProfileSettings& profile = core.getProfile(profileWidget->currentRow());
     nameEdit->setText(profile.name);
