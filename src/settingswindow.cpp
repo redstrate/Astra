@@ -263,7 +263,7 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
         wineTypeCombo = new QComboBox();
 
 #if defined(Q_OS_MAC)
-        wineTypeCombo->insertItem(2, "FFXIV Built-In");
+        wineTypeCombo->insertItem(2, "FFXIV for Mac");
         wineTypeCombo->insertItem(3, "XIV on Mac");
 #endif
 
