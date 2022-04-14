@@ -264,6 +264,7 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
 
 #if defined(Q_OS_MAC)
         wineTypeCombo->insertItem(2, "FFXIV Built-In");
+        wineTypeCombo->insertItem(3, "XIV on Mac");
 #endif
 
         wineTypeCombo->insertItem(0, "System Wine");

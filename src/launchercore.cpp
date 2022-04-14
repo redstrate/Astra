@@ -250,6 +250,14 @@ void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* pr
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     env.insert("WINEPREFIX", profile.winePrefixPath);
 
+    // XIV on Mac bundle their own Wine install directory, complete with libs etc
+    if(profile.wineType == WineType::XIVOnMac) {
+        // TODO: don't hardcode this
+        QString xivLibPath = "/Applications/XIV on Mac.app/Contents/Resources/wine/lib";
+
+        env.insert("DYLD_FALLBACK_LIBRARY_PATH", xivLibPath);
+    }
+
     arguments.push_back(profile.winePath);
 #endif
 
@@ -354,8 +362,6 @@ void LauncherCore::readInitialInformation() {
 
         profile.name = settings.value("name", "Default").toString();
 
-        readWineInfo(profile);
-
         if(settings.contains("gamePath") && settings.value("gamePath").canConvert<QString>() && !settings.value("gamePath").toString().isEmpty()) {
             profile.gamePath = settings.value("gamePath").toString();
         } else {
@@ -388,6 +394,8 @@ void LauncherCore::readInitialInformation() {
         // wine
         profile.wineType = (WineType)settings.value("wineType", (int)defaultSettings.wineType).toInt();
         profile.useEsync = settings.value("useEsync", defaultSettings.useEsync).toBool();
+
+        readWineInfo(profile);
 
         if(gamescopeAvailable)
             profile.useGamescope = settings.value("useGamescope", defaultSettings.useGamescope).toBool();
@@ -429,6 +437,9 @@ void LauncherCore::readWineInfo(ProfileSettings& profile) {
             break;
         case WineType::Builtin: // ffxiv built-in (for mac users)
             profile.winePath = "/Applications/FINAL FANTASY XIV ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine";
+            break;
+        case WineType::XIVOnMac:
+            profile.winePath = "/Applications/XIV on Mac.app/Contents/Resources/wine/bin/wine64";
             break;
     }
 #endif

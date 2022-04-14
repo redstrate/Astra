@@ -24,7 +24,8 @@ enum class GameLicense {
 enum class WineType {
     System,
     Custom,
-    Builtin // macos only
+    Builtin, // macos only
+    XIVOnMac // macos only
 };
 
 enum class DalamudChannel {

@@ -7,8 +7,8 @@
 
 #include "launchercore.h"
 
-void installGame(LauncherCore& launcher, std::function<void()> returnFunc) {
-    QString installDirectory = launcher.getProfile(launcher.defaultProfileIndex).gamePath;
+void installGame(LauncherCore& launcher, ProfileSettings& profile, std::function<void()> returnFunc) {
+    QString installDirectory = profile.gamePath;
     qDebug() << "Installing game to " << installDirectory << "!";
 
     qDebug() << "Now downloading installer file...";
@@ -27,7 +27,7 @@ void installGame(LauncherCore& launcher, std::function<void()> returnFunc) {
 
         extractBootstrapFiles((dataDir + "/ffxivsetup.exe").toStdString(), installDirectory.toStdString());
 
-        qDebug() << "Done installing!";
+        qDebug() << "Done installing to " << installDirectory << "!";
 
         returnFunc();
     });

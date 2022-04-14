@@ -124,7 +124,7 @@ int main(int argc, char* argv[]) {
 
             auto installButton = messageBox->addButton("Install Game", QMessageBox::YesRole);
             c.connect(installButton, &QPushButton::clicked, [&c, messageBox] {
-                installGame(c, [messageBox, &c] {
+                installGame(c, c.getProfile(c.defaultProfileIndex), [messageBox, &c] {
                     c.readGameVersion();
 
                     messageBox->close();

@@ -17,6 +17,7 @@
 #include "headline.h"
 #include "config.h"
 #include "aboutwindow.h"
+#include "gameinstaller.h"
 
 LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindow(parent), core(core) {
     setWindowTitle("Astra");
@@ -49,6 +50,38 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     openGameDir->setIcon(QIcon::fromTheme("document-open"));
     connect(openGameDir, &QAction::triggered, [=] {
         openPath(currentProfile().gamePath);
+    });
+
+    QMenu* gameMenu = menuBar()->addMenu("Game");
+
+    auto installGameAction = gameMenu->addAction("Install game...");
+    connect(installGameAction, &QAction::triggered, [this] {
+        // TODO: lol duplication
+        auto messageBox = new QMessageBox(this);
+        messageBox->setIcon(QMessageBox::Icon::Question);
+        messageBox->setText("Warning");
+        messageBox->setInformativeText("FFXIV will be installed to your selected game directory.");
+
+        QString detailedText = QString("Astra will install FFXIV for you at '%1'").arg(this->currentProfile().gamePath);
+        detailedText.append("\n\nIf you do not wish to install it to this location, please change your profile settings.");
+
+        messageBox->setDetailedText(detailedText);
+        messageBox->setWindowModality(Qt::WindowModal);
+
+        auto installButton = messageBox->addButton("Install Game", QMessageBox::YesRole);
+        connect(installButton, &QPushButton::clicked, [this, messageBox] {
+            installGame(this->core, this->currentProfile(), [this, messageBox] {
+                this->core.readGameVersion();
+
+                messageBox->close();
+
+            });
+        });
+
+        messageBox->addButton(QMessageBox::StandardButton::No);
+        messageBox->setDefaultButton(installButton);
+
+        messageBox->exec();
     });
 
     QMenu* fileMenu = menuBar()->addMenu("Settings");
