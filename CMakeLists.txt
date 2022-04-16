@@ -51,7 +51,7 @@ if(TARGET Qt5Keychain::Qt5Keychain)
     set(LIBRARIES Qt5Keychain::Qt5Keychain ${LIBRARIES})
     set(KEYCHAIN_INCLUDE_DIRS ${QTKEYCHAIN_INCLUDE_DIRS}/qt5keychain) # this is to be consistent with the built-in lib?
 else()
-    message("Using built-in qt keychain")
+    message("Using downloaded qtkeychain")
 
     FetchContent_Declare(
             qtkeychain
@@ -79,7 +79,7 @@ if(TARGET QuaZip::QuaZip)
 
     set(LIBRARIES QuaZip::QuaZip ${LIBRARIES})
 else()
-    message("Using built-in quazip")
+    message("Using downloaded quazip")
 
     FetchContent_Declare(
             quazip
@@ -105,7 +105,7 @@ if(TARGET fmt::fmt)
 
     set(LIBRARIES fmt::fmt ${LIBRARIES})
 else()
-    message("Using built-in fmt")
+    message("Using downloaded fmt")
 
     FetchContent_Declare(
             fmt
