@@ -6,47 +6,70 @@ mirror](https://img.shields.io/badge/mirror-GitHub-black.svg?logo=github)](https
 [![ryne.moe
 mirror](https://img.shields.io/badge/mirror-ryne.moe-red.svg?logo=git)](https://git.ryne.moe/redstrate/astra)
 
-A FFXIV launcher that supports **multiple profiles** and **Dalamud plugins**. It also supports Windows, macOS and Linux natively!
+A custom FFXIV launcher that supports **multiple accounts/profiles**, **Dalamud plugins** and **runs natively** on
+Windows, macOS and Linux!
 
 ### Beta Notice
-Astra is **beta software**. At the moment, there are a few caveats that are good to know if you use these features:
-* There is no **game patching** support, but the launcher will still prompt you to update.
-* The **Steam support is untested.**
+Astra is **beta software**. Despite this, the launcher is usable for most usecases, except for those noted below:
 
-Despite this, the launcher is still usable, and I use it myself on a regular basis on Linux. If you
-have more questions, I suggest reading the [FAQ](https://man.sr.ht/~redstrate/astra/faq.md).
+* Astra **cannot update the game** on its own yet, however you'll be prompted to use the official launcher to update.
+* Logging into **Steam-linked accounts** is unsupported at the moment.
 
-![screenshot](misc/screenshot.webp?raw=true)
+If you have more questions, please look at the [FAQ](https://man.sr.ht/~redstrate/astra/faq.md).
+
+![Main Screenshot](misc/screenshot.png)
 
 ## Features
-* Can **bootstrap a new FFXIV installation** if it can't find one. You can skip the installer entirely!
-* Can use **native (Windows)** and **Wine-based (macOS, Linux)** versions of FFXIV.
-* You can use **Dalamud plugins**, which is downloaded within the launcher just like XIVQuickLauncher. 
-* Can connect to the **official Square Enix servers** _as well_ as **Sapphire servers**.
-* **Multiple profiles**!
-  * For example, you can have a regular Square Enix profile and a testing Sapphire profile. Or maybe one for DX11 and another for DX9?
-  * These also have seperate, saved logins.
+* **Native versions of the launcher** available for Windows, macOS and Linux. Don't run your launcher through Wine anymore! 
+* Can **install FFXIV** for you if you're on a new computer.
+* Can run FFXIV **natively (Windows)** or through **Wine-based methods (macOS, Linux)**.
+* Easily integrate **Dalamud plugins**, just like XIVQuickLauncher. 
+* Can connect to the **official Square Enix servers** _as well_ as **Sapphire servers**, replacing the need for a whole different launcher.
+* **Multiple profiles** with their own account credentials!
   * All settings can be configured per-profile! 
-* **Securely saving username and/or password**. These are saved per-profile, and are encrypted using your system wallet, and will never be stored unencrypted.
-* **Encrypted game argument** support similiar to what XIVQuickLauncher and the official ffxivboot does, preventing other programs from snooping your login token.
-* Enable several Linux-specific Wine performance enhancements such as **enabling Fsync/Esync/Futex2**.
+* **Save your username and password**! These are encrypted using your system wallet, and will never be stored unencrypted.
+* **Encrypted game arguments** enabled by default, providing the same level of security as the official launcher. 
+* Enable several Linux-specific Wine performance enhancements such as **enabling Fsync/Esync/Futex2** or configuring Gamescope!
 
 ## Installation
-Pre-compiled binaries are not yet available. However if you use Arch Linux, there is a PKGBUILD available in the AUR 
-for [tagged releases](https://aur.archlinux.org/packages/astra-launcher) and [straight from git](https://aur.archlinux.org/packages/astra-launcher-git). You may install it through `makepkg` or your favorite AUR helper:
+There are precompiled binaries available through the [Install page](https://xiv.zone/astra/install) on the official website.
+
+### Windows
+
+Simply extract the zip file into any directory, and run `Astra.exe`. Your user data, Dalamud plugin configs, and passwords
+are not stored in the program directory.
+
+### macOS
+
+Move `Astra.app` into your `/Applications` or `~/Applications` folder and run it. The official macOS builds are
+notarized under my Apple Developer license, so they should work even with gatekeeper enabled.
+
+In order to launch FFXIV, you must have a version of Wine installed on your system. You can install it from homebrew, use it
+from the official FFXIV Mac version, or use XIV on Mac's wine. Just select your preferred "Wine Type" in your profile settings.
+
+### Linux
+
+#### Flatpak
+
+There is a Flatpak app available from the xiv.zone Flatpak repository. Follow the [Flatpak instructions](https://xiv.zone/install#Flatpak)
+to learn how to add it and download Astra.
+
+#### AUR
+
+I maintain the Astra PKGBUILDS, available from the AUR for [tagged releases](https://aur.archlinux.org/packages/astra-launcher) or [straight from git](https://aur.archlinux.org/packages/astra-launcher-git). You may install it through `makepkg` or your favorite AUR helper:
 
 ```
 $ aur sync astra-launcher
 ```
 
 
-## Usage
+## Building
 There's lots of information located on [the wiki](https://man.sr.ht/~redstrate/astra/)! Here's pages dedicated to
-using/building Astra on it's supported platforms:
+building Astra on it's supported platforms:
 
-* On [Windows](https://man.sr.ht/~redstrate/astra/windows-usage.md)
-* On [macOS](https://man.sr.ht/~redstrate/astra/macos-usage.md)
-* On [Linux](https://man.sr.ht/~redstrate/astra/linux-usage.md)
+* [Windows](https://man.sr.ht/~redstrate/astra/windows-usage.md)
+* [macOS](https://man.sr.ht/~redstrate/astra/macos-usage.md)
+* [Linux](https://man.sr.ht/~redstrate/astra/linux-usage.md)
 
 ## Contributing and Support
 Astra is primarily hosted at **sourcehut**, with the project located [here](https://sr.ht/~redstrate/astra/). There is multiple
