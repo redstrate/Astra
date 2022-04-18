@@ -3,7 +3,7 @@
 ### Todo
 - [ ] Steam Deck support
     - [ ] Optional QML Interface
-    - [ ] Flatpak packaging
+    - [X] Flatpak packaging
     - [ ] Better Steam account support
 - [ ] External Tool support
 - [ ] Improve Watchdog stability and platform support
