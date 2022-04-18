@@ -181,6 +181,10 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
         socket->listen(QHostAddress::Any, 5248);
     }
 
+    connect(gameProcess, qOverload<int, QProcess::ExitStatus>(&QProcess::finished), this, [this](int code, QProcess::ExitStatus status) {
+        gameClosed();
+    });
+
     launchGameExecutable(profile, gameProcess, arguments);
 
     successfulLaunch();
