@@ -7,6 +7,7 @@ find_package(Qt5 COMPONENTS Core Widgets Network CONFIG REQUIRED)
 
 option(ENABLE_WATCHDOG "Build with Tesseract support (needed for Watchdog)" OFF)
 option(USE_OWN_LIBRARIES "Build with own libraries" OFF)
+option(BUILD_FLATPAK "Build with Flatpak support in mind" OFF)
 
 if(ENABLE_WATCHDOG)
     find_package(PkgConfig REQUIRED)
@@ -169,6 +170,10 @@ if(ENABLE_WATCHDOG)
     target_include_directories(astra PRIVATE ${TESSERACT_INCLUDE_DIRS} ${LEPTONICA_INCLUDE_DIRS})
 
     target_compile_definitions(astra PRIVATE ENABLE_WATCHDOG)
+endif()
+
+if(BUILD_FLATPAK)
+    target_compile_definitions(astra PRIVATE FLATPAK)
 endif()
 
 install(TARGETS astra

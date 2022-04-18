@@ -220,8 +220,6 @@ void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* pr
 #endif
     }
 
-    process->setProcessChannelMode(QProcess::ForwardedChannels);
-
 #if defined(Q_OS_LINUX)
     if (isGame) {
         if (profile.useGamescope) {
@@ -269,6 +267,11 @@ void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* pr
 
         env.insert("DYLD_FALLBACK_LIBRARY_PATH", xivLibPath);
     }
+
+#if defined(FLATPAK)
+    arguments.push_back("flatpak-spawn");
+    arguments.push_back("--host");
+#endif
 
     arguments.push_back(profile.winePath);
 #endif
@@ -475,7 +478,8 @@ void LauncherCore::readWineInfo(ProfileSettings& profile) {
         profile.wineVersion = wineProcess->readAllStandardOutput().trimmed();
     });
 
-    wineProcess->start(profile.winePath, {"--version"});
+    launchExecutable(profile, wineProcess, {"--version"}, false, false);
+
     wineProcess->waitForFinished();
 #endif
 }
