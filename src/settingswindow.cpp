@@ -268,12 +268,19 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
 #endif
 
         wineTypeCombo->insertItem(0, "System Wine");
+
+        // custom wine selection is broken under flatpak
+#ifndef FLATPAK
         wineTypeCombo->insertItem(1, "Custom Wine");
+#endif
 
         wineBoxLayout->addWidget(wineTypeCombo);
 
         selectWineButton = new QPushButton("Select Wine Executable");
+
+#ifndef FLATPAK
         wineBoxLayout->addWidget(selectWineButton);
+#endif
 
         connect(wineTypeCombo,
                 static_cast<void (QComboBox::*)(int)>(
@@ -294,9 +301,12 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
             this->reloadControls();
         });
 
+        // wine version is reported incorrectly under flatpak too
         wineVersionLabel = new QLabel();
+#ifndef FLATPAK
         wineVersionLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
         wineBoxLayout->addRow("Wine Version", wineVersionLabel);
+#endif
 
         winePrefixDirectory = new QLineEdit();
         winePrefixDirectory->setReadOnly(true);
