@@ -37,7 +37,9 @@ set(SRC
         src/gameinstaller.cpp
         src/encryptedarg.cpp
         src/aboutwindow.cpp
-        include/aboutwindow.h)
+        include/aboutwindow.h
+        src/bannerwidget.cpp
+        include/bannerwidget.h)
 
 include(FetchContent)
 

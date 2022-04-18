@@ -7,6 +7,7 @@
 #include <QTreeWidget>
 #include <QGridLayout>
 #include <QFormLayout>
+#include <QScrollArea>
 
 #include "launchercore.h"
 #include "headline.h"
@@ -25,6 +26,8 @@ public slots:
     void reloadControls();
 
 private:
+    void reloadNews();
+
     LauncherCore& core;
 
     Headline headline;
@@ -34,8 +37,14 @@ private:
     QGridLayout* layout;
     QFormLayout* loginLayout;
 
-    QLabel* bannerImageView;
+    QScrollArea* bannerScrollArea;
+    QWidget* bannerParentWidget;
+    QHBoxLayout* bannerLayout;
     QTreeWidget* newsListView;
+    QTimer* bannerTimer = nullptr;
+    int currentBanner = 0;
+
+    std::vector<QLabel*> bannerWidgets;
 
     QAction* launchOfficial;
     QAction* launchSysInfo;
