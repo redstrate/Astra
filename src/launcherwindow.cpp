@@ -71,13 +71,13 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
             }
         }
 
-        arguments.push_back({"UserPath", QString("C:/Users/%1/Documents/My Games/FINAL FANTASY XIV - A Realm Reborn").arg(userPath)});
+        arguments.push_back({"UserPath", QString(R"(C:\Users\%1\My Documents\My Games\FINAL FANTASY XIV - A Realm Reborn)").arg(userPath)});
 
         const QString argFormat = " /%1 =%2";
 
         QString argJoined;
-        for(const auto& arg : arguments) {
-            argJoined += argFormat.arg(arg.key, arg.value);
+        for(auto& arg : arguments) {
+            argJoined += argFormat.arg(arg.key, arg.value.replace(" ", "  "));
         }
 
         QString finalArg = encryptGameArg(argJoined);
