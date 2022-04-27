@@ -42,6 +42,9 @@ AssetUpdater::AssetUpdater(LauncherCore& launcher) : launcher(launcher) {
 
     dataDir =
         QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+
+    if(!QDir().exists(dataDir))
+        QDir().mkdir(dataDir);
 }
 
 void AssetUpdater::update(const ProfileSettings& profile) {
