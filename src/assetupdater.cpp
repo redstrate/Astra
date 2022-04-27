@@ -354,8 +354,8 @@ void AssetUpdater::checkIfCheckingIsDone() {
                 auto assetReply = launcher.mgr->get(assetRequest);
 
                 connect(assetReply, &QNetworkReply::finished, [this, assetReply, assetObject = assetObject.toObject()] {
-                    if (!QDir().exists(dataDir + "/DalamudAssets/"))
-                        QDir().mkdir(dataDir + "/DalamudAssets/");
+                    if (!QDir().exists(dataDir + "/DalamudAssets"))
+                        QDir().mkdir(dataDir + "/DalamudAssets");
 
                     const QString fileName = assetObject["FileName"].toString();
                     const QList<QString> dirPath = fileName.left(fileName.lastIndexOf("/")).split('/');
