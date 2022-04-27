@@ -243,6 +243,14 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     loginButton = new QPushButton("Login");
     registerButton = new QPushButton("Register");
 
+    connect(otpEdit, &QLineEdit::returnPressed, [this] {
+        this->core.assetUpdater->update(currentProfile());
+    });
+
+    connect(passwordEdit, &QLineEdit::returnPressed, [this] {
+        this->core.assetUpdater->update(currentProfile());
+    });
+
     auto emptyWidget = new QWidget();
     emptyWidget->setLayout(layout);
     setCentralWidget(emptyWidget);
