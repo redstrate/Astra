@@ -267,9 +267,14 @@ void LauncherCore::launchExecutable(const ProfileSettings& profile, QProcess* pr
     // XIV on Mac bundle their own Wine install directory, complete with libs etc
     if(profile.wineType == WineType::XIVOnMac) {
         // TODO: don't hardcode this
-        QString xivLibPath = "/Applications/XIV on Mac.app/Contents/Resources/wine/lib";
+        QString xivLibPath = "/Applications/XIV on Mac.app/Contents/Resources/wine/lib:/Applications/XIV on Mac.app/Contents/Resources/MoltenVK/modern";
 
         env.insert("DYLD_FALLBACK_LIBRARY_PATH", xivLibPath);
+        env.insert("DYLD_VERSIONED_LIBRARY_PATH", xivLibPath);
+        env.insert("MVK_CONFIG_FULL_IMAGE_VIEW_SWIZZLE", "1");
+        env.insert("MVK_CONFIG_RESUME_LOST_DEVICE", "1");
+        env.insert("MVK_ALLOW_METAL_FENCES", "1");
+        env.insert("MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS", "1");
     }
 
 #if defined(FLATPAK)
