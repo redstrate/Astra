@@ -54,7 +54,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
         // TODO: don't put this here
         QString searchDir;
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-        searchDir = currentProfile().winePrefixPath + "/drive_c/Users";
+        searchDir = currentProfile().winePrefixPath + "/drive_c/users";
 #else
         searchDir = "C:/Users";
 #endif
@@ -71,7 +71,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
             }
         }
 
-        arguments.push_back({"UserPath", QString(R"(C:\Users\%1\My Documents\My Games\FINAL FANTASY XIV - A Realm Reborn)").arg(userPath)});
+        arguments.push_back({"UserPath", QString(R"(C:\Users\%1\Documents\My Games\FINAL FANTASY XIV - A Realm Reborn)").arg(userPath)});
 
         const QString argFormat = " /%1 =%2";
 
