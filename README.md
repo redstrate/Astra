@@ -15,7 +15,7 @@ Astra is **beta software**. Despite this, the launcher is usable for most usecas
 * Astra **cannot update the game** on its own yet, however you'll be prompted to use the official launcher to update.
 * Logging into **Steam-linked accounts** is unsupported at the moment.
 
-If you have more questions, please look at the [FAQ](https://man.sr.ht/~redstrate/astra/faq.md).
+If you have more questions, please look at the [FAQ](https://xiv.zone/astra/faq).
 
 ![Main Screenshot](misc/screenshot.png)
 
@@ -32,36 +32,7 @@ If you have more questions, please look at the [FAQ](https://man.sr.ht/~redstrat
 * Enable several Linux-specific Wine performance enhancements such as **enabling Fsync/Esync/Futex2** or configuring Gamescope!
 
 ## Installation
-There are precompiled binaries available through the [Install page](https://xiv.zone/astra/install) on the official website.
-
-### Windows
-
-Simply extract the zip file into any directory, and run `Astra.exe`. Your user data, Dalamud plugin configs, and passwords
-are not stored in the program directory.
-
-### macOS
-
-Move `Astra.app` into your `/Applications` or `~/Applications` folder and run it. The official macOS builds are
-notarized under my Apple Developer license, so they should work even with gatekeeper enabled.
-
-In order to launch FFXIV, you must have a version of Wine installed on your system. You can install it from homebrew, use it
-from the official FFXIV Mac version, or use XIV on Mac's wine. Just select your preferred "Wine Type" in your profile settings.
-
-### Linux
-
-#### Flatpak
-
-There is a Flatpak app available from the xiv.zone Flatpak repository. Follow the [Flatpak instructions](https://xiv.zone/install#Flatpak)
-to learn how to add it and download Astra.
-
-#### AUR
-
-I maintain the Astra PKGBUILDS, available from the AUR for [tagged releases](https://aur.archlinux.org/packages/astra-launcher) or [straight from git](https://aur.archlinux.org/packages/astra-launcher-git). You may install it through `makepkg` or your favorite AUR helper:
-
-```
-$ aur sync astra-launcher
-```
-
+There are precompiled binaries available through the [Install page](https://xiv.zone/astra/install) on the website!
 
 ## Building
 There's lots of information located on [the wiki](https://man.sr.ht/~redstrate/astra/)! Here's pages dedicated to
