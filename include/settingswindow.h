@@ -54,6 +54,7 @@ private:
     QLineEdit* lobbyServerURL = nullptr;
     QCheckBox* rememberUsernameBox = nullptr, *rememberPasswordBox = nullptr;
     QComboBox* gameLicenseBox = nullptr;
+    QCheckBox* freeTrialBox = nullptr;
     QCheckBox* useOneTimePassword = nullptr;
 
     // dalamud

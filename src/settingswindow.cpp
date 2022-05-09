@@ -221,6 +221,15 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
 
         loginBoxLayout->addRow("Game License", gameLicenseBox);
 
+        freeTrialBox = new QCheckBox();
+        connect(freeTrialBox, &QCheckBox::stateChanged, [=](int) {
+            getCurrentProfile().isFreeTrial =
+                freeTrialBox->isChecked();
+
+            this->core.saveSettings();
+        });
+        loginBoxLayout->addRow("Is Free Trial", freeTrialBox);
+
         rememberUsernameBox = new QCheckBox();
         connect(rememberUsernameBox, &QCheckBox::stateChanged, [=](int) {
             getCurrentProfile().rememberUsername =
@@ -554,6 +563,8 @@ void SettingsWindow::reloadControls() {
     } else {
         gameLicenseBox->setToolTip("");
     }
+
+    freeTrialBox->setChecked(profile.isFreeTrial);
 
     // dalamud
     enableDalamudBox->setChecked(profile.dalamud.enabled);

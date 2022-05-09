@@ -17,8 +17,7 @@ class Watchdog;
 enum class GameLicense {
     WindowsStandalone,
     WindowsSteam,
-    macOS,
-    FreeTrial
+    macOS
 };
 
 enum class WineType {
@@ -86,6 +85,7 @@ struct ProfileSettings {
     bool useOneTimePassword = false;
 
     GameLicense license = GameLicense::WindowsStandalone;
+    bool isFreeTrial = false;
 };
 
 struct AppSettings {

@@ -37,7 +37,7 @@ void SquareLauncher::getStored(const LoginInformation& info) {
     query.addQueryItem("lng", "en");
     // for some reason, we always use region 3. the actual region is acquired later
     query.addQueryItem("rgn", "3");
-    query.addQueryItem("isft", info.settings->license == GameLicense::FreeTrial ? "1" : "0");
+    query.addQueryItem("isft", info.settings->isFreeTrial ? "1" : "0");
     query.addQueryItem("cssmode", "1");
     query.addQueryItem("isnew", "1");
     query.addQueryItem("launchver", "3");

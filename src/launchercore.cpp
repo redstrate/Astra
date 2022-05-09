@@ -414,6 +414,7 @@ void LauncherCore::readInitialInformation() {
         profile.rememberPassword = settings.value("rememberPassword", defaultSettings.rememberPassword).toBool();
         profile.useOneTimePassword = settings.value("useOneTimePassword", defaultSettings.useOneTimePassword).toBool();
         profile.license = (GameLicense)settings.value("license", (int)defaultSettings.license).toInt();
+        profile.isFreeTrial = settings.value("isFreeTrial", defaultSettings.isFreeTrial).toBool();
 
         profile.useDX9 = settings.value("useDX9", defaultSettings.useDX9).toBool();
 
@@ -655,6 +656,7 @@ void LauncherCore::saveSettings() {
         settings.setValue("rememberPassword", profile.rememberPassword);
         settings.setValue("useOneTimePassword", profile.useOneTimePassword);
         settings.setValue("license", (int)profile.license);
+        settings.setValue("isFreeTrial", profile.isFreeTrial);
 
         settings.setValue("enableDalamud", profile.dalamud.enabled);
         settings.setValue("dalamudOptOut", profile.dalamud.optOutOfMbCollection);
