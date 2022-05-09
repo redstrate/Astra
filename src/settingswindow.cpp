@@ -198,6 +198,13 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
 
         loginBoxLayout->addRow("Server Lobby", serverType);
 
+        lobbyServerURL = new QLineEdit();
+        connect(lobbyServerURL, &QLineEdit::editingFinished, [=] {
+            getCurrentProfile().lobbyURL = lobbyServerURL->text();
+            this->core.saveSettings();
+        });
+        loginBoxLayout->addRow("Lobby URL", lobbyServerURL);
+
         gameLicenseBox = new QComboBox();
         gameLicenseBox->insertItem(0, "Windows (Standalone)");
         gameLicenseBox->insertItem(1, "Windows (Steam)");
@@ -213,13 +220,6 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
                 });
 
         loginBoxLayout->addRow("Game License", gameLicenseBox);
-
-        lobbyServerURL = new QLineEdit();
-        connect(lobbyServerURL, &QLineEdit::editingFinished, [=] {
-            getCurrentProfile().lobbyURL = lobbyServerURL->text();
-            this->core.saveSettings();
-        });
-        loginBoxLayout->addRow("Lobby URL", lobbyServerURL);
 
         rememberUsernameBox = new QCheckBox();
         connect(rememberUsernameBox, &QCheckBox::stateChanged, [=](int) {
