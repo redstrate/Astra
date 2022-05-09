@@ -41,13 +41,13 @@ struct ProfileSettings {
     // game
     int language = 1; // 1 is english, thats all i know
     QString gamePath, winePath, winePrefixPath;
-    QString bootVersion, gameVersion, wineVersion;
+    QString bootVersion, wineVersion;
     int installedMaxExpansion = -1;
-    QList<QString> expansionVersions;
+    QVector<QString> gameVersions;
     bool enableWatchdog = false;
 
     bool isGameInstalled() const {
-        return !gameVersion.isEmpty();
+        return !gameVersions.isEmpty();
     }
 
     bool isWineInstalled() const {
@@ -175,14 +175,17 @@ public:
     QString nativeLauncherVersion;
 
     int defaultProfileIndex = 0;
+
+    QVector<QString> expansionNames;
+
 signals:
     void settingsChanged();
     void successfulLaunch();
     void gameClosed();
 
 private:
-    void readExpansionVersions(ProfileSettings& info, int max);
     bool checkIfInPath(QString program);
+    void readGameData(ProfileSettings& profile);
 
     QString getDefaultGamePath();
     QString getDefaultWinePrefixPath();

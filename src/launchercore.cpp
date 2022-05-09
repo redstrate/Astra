@@ -28,6 +28,8 @@
 #include "blowfish.h"
 #include "assetupdater.h"
 #include "encryptedarg.h"
+#include "gamedata.h"
+#include "exdparser.h"
 
 #ifdef ENABLE_WATCHDOG
 #include "watchdog.h"
@@ -86,7 +88,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
     gameArgs.push_back({"DEV.TestSID", auth.SID});
     gameArgs.push_back({"SYS.Region", QString::number(auth.region)});
     gameArgs.push_back({"language", QString::number(profile.language)});
-    gameArgs.push_back({"ver", profile.gameVersion});
+    gameArgs.push_back({"ver", profile.gameVersions[0]});
 
     if(!auth.lobbyhost.isEmpty()) {
         gameArgs.push_back({"DEV.GMServerHost", auth.frontierHost});
@@ -151,7 +153,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
                     startInfo["AssetDirectory"] = dataDir + "\\DalamudAssets";
                     startInfo["DefaultPluginDirectory"] = dataDir + "\\devPlugins";
                     startInfo["DelayInitializeMs"] = 0;
-                    startInfo["GameVersion"] = profile.gameVersion;
+                    startInfo["GameVersion"] = profile.gameVersions[0];
                     startInfo["Language"] = profile.language;
                     startInfo["OptOutMbCollection"] = profile.dalamud.optOutOfMbCollection;
 
@@ -496,18 +498,38 @@ void LauncherCore::readWineInfo(ProfileSettings& profile) {
 void LauncherCore::readGameVersion() {
     for(auto& profile : profileSettings) {
         profile.bootVersion = readVersion(profile.gamePath + "/boot/ffxivboot.ver");
-        profile.gameVersion = readVersion(profile.gamePath + "/game/ffxivgame.ver");
         profile.installedMaxExpansion = 0;
 
-        for(auto dir : QDir(profile.gamePath + "/game/sqpack/").entryList(QDir::Filter::Dirs)) {
-            if(dir.contains("ex") && dir.length() == 3 && dir[2].isDigit()) {
-                const int expacVersion = dir[2].digitValue();
+        auto sqpackDirectories = QDir(profile.gamePath + "/game/sqpack/").entryList(QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot);
+        profile.gameVersions.resize(sqpackDirectories.size());
 
-                profile.installedMaxExpansion = std::max(profile.installedMaxExpansion, expacVersion);
+        for(auto dir : sqpackDirectories) {
+            if(dir.contains("ex") || dir == "ffxiv") {
+                int expansion = -1;
+
+                // we're going to treat ffxiv as ex0
+                if(dir == "ffxiv") {
+                    expansion = 0;
+
+                    profile.gameVersions[0] = readVersion(profile.gamePath +  QString("/game/ffxivgame.ver"));
+                } else {
+                    QString originalName = dir.remove("ex");
+                    bool ok = false;
+                    int convertedInt = originalName.toInt(&ok);
+                    if(ok)
+                        expansion = convertedInt;
+
+                    profile.gameVersions[convertedInt] = readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(profile.gamePath, QString::number(expansion)));
+                }
+
+                if(expansion != -1) {
+                    profile.installedMaxExpansion = std::max(profile.installedMaxExpansion, expansion);
+                }
             }
         }
 
-        readExpansionVersions(profile, profile.installedMaxExpansion);
+        if(profile.installedMaxExpansion >= 0)
+            readGameData(profile);
     }
 }
 
@@ -658,13 +680,6 @@ void LauncherCore::addUpdateButtons(const ProfileSettings& settings, QMessageBox
     messageBox.addButton(QMessageBox::StandardButton::Ok);
 }
 
-void LauncherCore::readExpansionVersions(ProfileSettings& info, int max) {
-    info.expansionVersions.clear();
-
-    for(int i = 0; i < max; i++)
-        info.expansionVersions.push_back(readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(info.gamePath, QString::number(i + 1))));
-}
-
 bool LauncherCore::checkIfInPath(const QString program) {
     // TODO: also check /usr/local/bin, /bin32 etc (basically read $PATH)
     const QString directory = "/usr/bin";
@@ -705,4 +720,17 @@ void LauncherCore::addRegistryKey(const ProfileSettings& settings,
     auto process = new QProcess(this);
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     launchExecutable(settings, process, {"reg", "add", key, "/v", value, "/d", data, "/f" }, false, false);
+}
+
+void LauncherCore::readGameData(ProfileSettings& profile) {
+    GameData data(profile.gamePath.toStdString() + "/game/sqpack");
+
+    if(auto exh = data.readExcelSheet("ExVersion")) {
+        auto path = getEXDFilename(*exh, "exversion", "en", exh->pages[0]);
+        auto exd = readEXD(*exh, *data.extractFile("exd/" + path), exh->pages[0]);
+
+        for(auto row : exd.rows) {
+            expansionNames.push_back(row.data[0].data.c_str());
+        }
+    }
 }

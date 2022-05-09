@@ -161,7 +161,7 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
     QUrl url;
     url.setScheme("https");
     url.setHost("patch-gamever.ffxiv.com");
-    url.setPath(QString("/http/win32/ffxivneo_release_game/%1/%2").arg(info.settings->gameVersion, SID));
+    url.setPath(QString("/http/win32/ffxivneo_release_game/%1/%2").arg(info.settings->gameVersions[0], SID));
 
     auto request = QNetworkRequest(url);
     window.setSSL(request);
@@ -171,8 +171,8 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
 
     QString report = info.settings->bootVersion + "=" + getBootHash(info);
 
-    for(int i = 0; i < info.settings->installedMaxExpansion; i++)
-        report += QString("\nex%1\t%2").arg(QString::number(i + 1), info.settings->expansionVersions[i]);
+    for(int i = 1; i < info.settings->installedMaxExpansion; i++)
+        report += QString("\nex%1\t%2").arg(QString::number(i), info.settings->gameVersions[i]);
 
     auto reply = window.mgr->post(request, report.toUtf8());
     connect(reply, &QNetworkReply::finished, [=] {

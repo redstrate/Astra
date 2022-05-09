@@ -485,29 +485,14 @@ void SettingsWindow::reloadControls() {
         expacString += "Boot";
         expacString += QString(" (%1)\n").arg(profile.bootVersion);
 
-        if(profile.installedMaxExpansion >= 0) {
-            expacString += "A Realm Reborn";
-            expacString += QString(" (%1)\n").arg(profile.gameVersion);
-        }
+        for(int i = 0; i < profile.gameVersions.size(); i++) {
+            QString expansionName = "Unknown Expansion";
+            if(i < core.expansionNames.size()) {
+                expansionName = core.expansionNames[i];
+            }
 
-        if(profile.installedMaxExpansion >= 1) {
-            expacString += "Heavensward";
-            expacString += QString(" (%1)\n").arg(profile.expansionVersions[0]);
-        }
-
-        if(profile.installedMaxExpansion >= 2) {
-            expacString += "Stormblood";
-            expacString += QString(" (%1)\n").arg(profile.expansionVersions[1]);
-        }
-
-        if(profile.installedMaxExpansion >= 3) {
-            expacString += "Shadowbringers";
-            expacString += QString(" (%1)\n").arg(profile.expansionVersions[2]);
-        }
-
-        if(profile.installedMaxExpansion >= 4) {
-            expacString += "Endwalker";
-            expacString += QString(" (%1)\n").arg(profile.expansionVersions[3]);
+            expacString += expansionName;
+            expacString += QString(" (%1)\n").arg(profile.gameVersions[i]);
         }
 
         expansionVersionLabel->setText(expacString);
