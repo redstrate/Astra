@@ -279,9 +279,9 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
 #endif
 
         if(currentProfile().isSapphire) {
-            //this->core.sapphireLauncher->login(currentProfile().lobbyURL, info);
+            this->core.sapphireLauncher->login(currentProfile().lobbyURL, info);
         } else {
-            this->core.squareBoot->bootCheck(info);
+            this->core.squareBoot->checkGateStatus(info);
         }
     });
 
@@ -373,11 +373,6 @@ void LauncherWindow::reloadControls() {
     if(currentProfile().isSapphire) {
         if(currentProfile().lobbyURL.isEmpty()) {
             loginButton->setText("Login (Lobby URL is invalid)");
-            canLogin = false;
-        }
-    } else {
-        if(!core.squareLauncher->isGateOpen) {
-            loginButton->setText("Login (Maintenance is in progress)");
             canLogin = false;
         }
     }

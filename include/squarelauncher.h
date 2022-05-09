@@ -7,18 +7,11 @@ class SquareLauncher : public QObject {
 public:
     SquareLauncher(LauncherCore& window);
 
-    void gateOpen();
-
     void getStored(const LoginInformation& info);
 
     void login(const LoginInformation& info, QUrl referer);
 
     void registerSession(const LoginInformation& info);
-
-    bool isGateOpen = false;
-
-signals:
-    void gateStatusRecieved(bool gateOpen);
 
 private:
     QString getBootHash(const LoginInformation& info);

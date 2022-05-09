@@ -9,7 +9,9 @@ class SquareBoot : public QObject {
 public:
     SquareBoot(LauncherCore& window, SquareLauncher& launcher);
 
-    void bootCheck(LoginInformation& info);
+    void checkGateStatus(const LoginInformation& info);
+
+    void bootCheck(const LoginInformation& info);
 
 private:
     QProgressDialog* dialog;

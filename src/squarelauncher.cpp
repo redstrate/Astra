@@ -218,35 +218,3 @@ QString SquareLauncher::getBootHash(const LoginInformation& info) {
 
     return result;
 }
-
-void SquareLauncher::gateOpen() {
-    QUrlQuery query;
-    query.addQueryItem("", QString::number(QDateTime::currentMSecsSinceEpoch()));
-
-    QUrl url;
-    url.setUrl("https://frontier.ffxiv.com/worldStatus/gate_status.json");
-    url.setQuery(query);
-
-    QNetworkRequest request;
-    request.setUrl(url);
-
-    // TODO: really?
-    window.buildRequest(window.getProfile(window.defaultProfileIndex), request);
-
-    auto reply = window.mgr->get(request);
-    connect(reply, &QNetworkReply::finished, [this, reply] {
-        // I happen to run into this issue often, if I start the launcher really quickly after bootup
-        // it's possible to actually check this quicker than the network is actually available,
-        // causing the launcher to be stuck in "maintenace mode". so if that happens, we try to rerun this logic.
-        // TODO: this selection of errors is currently guesswork, i'm assuming one of these will fit the bill of "internet is unavailable" in
-        // some way.
-        if(reply->error() == QNetworkReply::HostNotFoundError || reply->error() == QNetworkReply::TimeoutError || reply->error() == QNetworkReply::UnknownServerError)
-            gateOpen();
-
-        QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
-
-        isGateOpen = !document.isEmpty() && document.object()["status"].toInt() != 0;
-
-        gateStatusRecieved(isGateOpen);
-    });
-}

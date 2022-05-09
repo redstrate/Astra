@@ -545,12 +545,6 @@ LauncherCore::LauncherCore() : settings(QSettings::IniFormat, QSettings::UserSco
 #endif
 
     readInitialInformation();
-
-    // check gate status before login
-    squareLauncher->gateOpen();
-
-    // TODO: we really should call this "heavy" signal
-    connect(squareLauncher, &SquareLauncher::gateStatusRecieved, this, &LauncherCore::settingsChanged);
 }
 
 LauncherCore::~LauncherCore() noexcept {
