@@ -497,8 +497,7 @@ void LauncherCore::readWineInfo(ProfileSettings& profile) {
 
 void LauncherCore::readGameVersion() {
     for(auto& profile : profileSettings) {
-        profile->bootVersion = readVersion(profile->gamePath + "/boot/ffxivboot.ver");
-        profile->installedMaxExpansion = 0;
+        profile.bootVersion = readVersion(profile.gamePath + "/boot/ffxivboot.ver");
 
         auto sqpackDirectories = QDir(profile->gamePath + "/game/sqpack/").entryList(QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot);
         profile->gameVersions.resize(sqpackDirectories.size());
