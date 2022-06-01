@@ -35,6 +35,9 @@ If you have more questions, please look at the [FAQ](https://xiv.zone/astra/faq)
 There are precompiled binaries available through the [Install page](https://xiv.zone/astra/install) on the website!
 
 ## Building
+**Note:** Some dependencies will automatically be downloaded from the Internet if not found
+on your system. This functionality will change in the future to ease distribution packaging.
+
 There's lots of information located on [the wiki](https://man.sr.ht/~redstrate/astra/)! Here's pages dedicated to
 building Astra on it's supported platforms:
 
