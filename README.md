@@ -6,54 +6,63 @@ mirror](https://img.shields.io/badge/mirror-GitHub-black.svg?logo=github)](https
 [![ryne.moe
 mirror](https://img.shields.io/badge/mirror-ryne.moe-red.svg?logo=git)](https://git.ryne.moe/redstrate/astra)
 
-A custom FFXIV launcher that supports **multiple accounts/profiles**, **Dalamud plugins** and **runs natively** on
-Windows, macOS and Linux!
-
-### Beta Notice
-Astra is **beta software**. Despite this, the launcher is usable for most usecases, except for those noted below:
-
-* Astra **cannot update the game** on its own yet, however you'll be prompted to use the official launcher to update.
-* Logging into **Steam-linked accounts** is unsupported at the moment.
-
-If you have more questions, please look at the [FAQ](https://xiv.zone/astra/faq).
+A custom FFXIV launcher that supports multiple accounts, Dalamud plugins, and Windows/macOS/Linux. Astra is based on Qt,
+which provides a native-feeling GUI but also lean on resources.
 
 ![Main Screenshot](misc/screenshot.png)
 
+### Beta Notice
+Astra is currently in **beta**. The launcher is usable right now, and I even use this as my sole way to play FFXIV.
+There are a few caveats that are good to know beforehand though:
+
+* Astra cannot update the game on its own yet, however you'll be prompted to use the official launcher to update.
+* Logging into Steam-linked accounts is unsupported at the moment.
+
+If you have more questions, please read at the [FAQ](https://xiv.zone/astra/faq) first.
+
 ## Features
-* **Native versions of the launcher** available for Windows, macOS and Linux. Don't run your launcher through Wine anymore! 
-* Can **install FFXIV** for you if you're on a new computer.
-* Can run FFXIV **natively (Windows)** or through **Wine-based methods (macOS, Linux)**.
-* Easily integrate **Dalamud plugins**, just like XIVQuickLauncher. 
-* Can connect to the **official Square Enix servers** _as well_ as **Sapphire servers**, replacing the need for a whole different launcher.
-* **Multiple profiles** with their own account credentials!
-  * All settings can be configured per-profile! 
-* **Save your username and password**! These are encrypted using your system wallet, and will never be stored unencrypted.
-* **Encrypted game arguments** enabled by default, providing the same level of security as the official launcher. 
-* Enable several Linux-specific Wine performance enhancements such as **enabling Fsync/Esync/Futex2** or configuring Gamescope!
+* Traditional desktop interface which looks native to your system, utilizing Qt - a proven application framework.
+  * A Tablet/TV interface designed for touchscreens or handhelds such as the Steam Deck is also available.
+  * Can even run without a GUI, ideal for users comfortable with a CLI or for automation.
+* Native support for Windows, macOS and Linux!
+  * An official Flatpak is also available for Linux distributions which do not yet have a package, or for users who prefer it.
+* Handles running Wine for macOS and Linux users - creating a seamless and native-feeling launcher experience, compared to running other FFXIV launchers in Wine.
+  * Can also easily enable several Linux-specific enhancements such as Fsync or configuring Gamescope.
+* Multiple accounts support!
+  * Almost all settings (including different game installs) can also be set per-profile.
+* Easily install and use Dalamud plugins, just like with XIVQuickLauncher. 
+* Securely login to the official Square Enix lobbies, as well as Sapphire servers.
+  * Game arguments are encrypted by default, providing the same level of security as other launchers.
+  * Saving account usernames and passwords are also supported, and is never stored plaintext.
+* Can easily install FFXIV on new systems right from the launcher, bypassing the normal InstallShield installer.
 
 ## Installation
-There are precompiled binaries available through the [Install page](https://xiv.zone/astra/install) on the website!
+Precompiled binaries for Windows and macOS are available on [here](https://xiv.zone/astra/install).
+
+For Linux users, there is a Flatpak available (although right now it's located in the xiv.dev Flatpak repository, work is ongoing to submit this to Flathub.)
+Instructions can be found in the [Flatpak installation](https://xiv.zone/astra/install/#linux) section.
+
+If you don't prefer Flatpak, I maintain [the AUR version](https://aur.archlinux.org/packages/astra-launcher) for Arch
+Linux users. Distribution packaging is encouraged, so please send an [email on my mailing list](https://lists.sr.ht/~redstrate/public-inbox) for any concerns.
 
 ## Building
-**Note:** Some dependencies will automatically be downloaded from the Internet if not found
-on your system. This functionality will change in the future to ease distribution packaging.
+**Note:** Some dependencies will automatically be downloaded from the Internet if not found  on your system. 
+This functionality will change in the future to ease distribution packaging. You can control this functionality using
+the `USE_OWN_LIBRARIES` CMake option.
 
-There's lots of information located on [the wiki](https://man.sr.ht/~redstrate/astra/)! Here's pages dedicated to
-building Astra on it's supported platforms:
+[The wiki](https://man.sr.ht/~redstrate/astra/) has dedicated platform-specific pages for build instructions as well as important information:
 
 * [Windows](https://man.sr.ht/~redstrate/astra/windows-usage.md)
 * [macOS](https://man.sr.ht/~redstrate/astra/macos-usage.md)
 * [Linux](https://man.sr.ht/~redstrate/astra/linux-usage.md)
 
 ## Contributing and Support
-Astra is primarily hosted at **sourcehut**, with the project located [here](https://sr.ht/~redstrate/astra/). There is multiple
-ways to contribute patches:
-* You can send a PR through the [Github mirror](https://github.com/redstrate/astra/pulls).
-* If you have a sourcehut account, you can use the [web contributing interface](https://git.sr.ht/~redstrate/astra/send-email).
-* If you do not want to use Github or sourcehut, you may always send the patch through [the mailing list](https://lists.sr.ht/~redstrate/astra-dev).
+The best way you can help Astra is by [monetarily supporting me](https://ko-fi.com/redstrate) or by submitting patches to fix bugs or add functionality.
+I work on Astra and my other FFXIV projects in my free time, so any support helps to let me  continue what I do!
 
-If you do send a patch through the mailing list, please prefix the subject with PATCH so it's properly filtered.
+Astra is [lives on sourcehut](https://sr.ht/~redstrate/astra/). There are two ways you can contribute patches:
+* If you prefer GitHub, I accept pull requests on the  [Github mirror](https://github.com/redstrate/astra/pulls).
+* You can send patches by sending an email to [my mailing list](https://lists.sr.ht/~redstrate/public-inbox). If you do send a patch through the mailing list, please prefix the subject with `[PATCH astra]` so it's properly filtered.
 
-If you wish to **report an issue or discuss something**, also use [the mailing list](https://lists.sr.ht/~redstrate/astra-dev) for now.
-I highly encourage you to send an email through the mailing list instead of contacting me privately if possible, so
-other people may benefit from the solution.
+If you just want to report a bug or discuss a feature, please send an email to [my mailing list](https://lists.sr.ht/~redstrate/public-inbox).
+I discourage contacting me privately unless necessary, because other people may have the same problem as you - and I can share the solution with everyone :-)
