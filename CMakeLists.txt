@@ -2,8 +2,9 @@ cmake_minimum_required(VERSION 3.0)
 project(Astra)
 
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
-find_package(Qt5 COMPONENTS Core Widgets Network CONFIG REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Network Quick CONFIG REQUIRED)
 
 option(ENABLE_WATCHDOG "Build with Tesseract support (needed for Watchdog)" OFF)
 option(USE_OWN_LIBRARIES "Build with own libraries" OFF)
@@ -44,7 +45,10 @@ set(SRC
         include/desktopinterface.h
         include/cmdinterface.h
         src/cmdinterface.cpp
-        src/desktopinterface.cpp)
+        src/desktopinterface.cpp
+        include/tabletinterface.h
+        src/tabletinterface.cpp
+        qml/qml.qrc)
 
 include(FetchContent)
 
@@ -130,7 +134,7 @@ endif()
 add_subdirectory(external)
 
 set(LIBRARIES
-        Qt5::Core Qt5::Widgets Qt5::Network ${LIBRARIES})
+        Qt5::Core Qt5::Widgets Qt5::Network Qt5::Quick ${LIBRARIES})
 
 if(ENABLE_WATCHDOG)
     set(LIBRARIES ${LIBRARIES} ${TESSERACT_LIBRARIES} ${LEPTONICA_LIBRARIES})

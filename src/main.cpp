@@ -12,6 +12,7 @@
 #include "config.h"
 #include "desktopinterface.h"
 #include "cmdinterface.h"
+#include "tabletinterface.h"
 
 int main(int argc, char* argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -38,8 +39,14 @@ int main(int argc, char* argv[]) {
     auto helpOption = parser.addHelpOption();
     auto versionOption = parser.addVersionOption();
 
-    QCommandLineOption noguiOption("nogui", "Don't open a main window.");
-    parser.addOption(noguiOption);
+    QCommandLineOption desktopOption("desktop", "Open a desktop interface.");
+    parser.addOption(desktopOption);
+
+    QCommandLineOption tabletOption("tablet", "Open a tablet interface.");
+    parser.addOption(tabletOption);
+
+    QCommandLineOption cliOption("cli", "Don't open a main window, and use the cli interface.");
+    parser.addOption(cliOption);
 
     auto cmd = new CMDInterface(parser);
 
@@ -54,12 +61,13 @@ int main(int argc, char* argv[]) {
     }
 
     LauncherCore c;
-    LauncherWindow w(c);
-    if(!parser.isSet(noguiOption)) {
-        new DesktopInterface(c);
-    } else {
+    if(parser.isSet(tabletOption)) {
+        new TabletInterface(c);
+    } else if(parser.isSet(cliOption)) {
         if(!cmd->parse(parser, c))
             return -1;
+    } else {
+        new DesktopInterface(c);
     }
 
     return app.exec();
