@@ -17,7 +17,6 @@ class LauncherWindow : public QMainWindow {
 public:
     explicit LauncherWindow(LauncherCore& core, QWidget* parent = nullptr);
 
-    ProfileSettings currentProfile() const;
     ProfileSettings& currentProfile();
 
     void openPath(const QString path);

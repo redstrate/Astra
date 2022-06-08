@@ -40,7 +40,7 @@ void SquareBoot::bootCheck(const LoginInformation& info) {
     request.setRawHeader("Host", "patch-bootver.ffxiv.com");
 
     auto reply = window.mgr->get(request);
-    connect(reply, &QNetworkReply::finished, [=] {
+    connect(reply, &QNetworkReply::finished, [=, &info] {
         const QString response = reply->readAll();
 
         if(response.isEmpty()) {
@@ -77,7 +77,7 @@ void SquareBoot::bootCheck(const LoginInformation& info) {
                     dialog->setValue(recieved);
                 });
 
-                connect(patchReply, &QNetworkReply::finished, [=] {
+                connect(patchReply, &QNetworkReply::finished, [&] {
                     const QString dataDir =
                         QStandardPaths::writableLocation(QStandardPaths::TempLocation);
 
@@ -103,7 +103,7 @@ void SquareBoot::bootCheck(const LoginInformation& info) {
     });
 }
 
-void SquareBoot::checkGateStatus(const LoginInformation& info) {
+void SquareBoot::checkGateStatus(LoginInformation* info) {
     QUrlQuery query;
     query.addQueryItem("", QString::number(QDateTime::currentMSecsSinceEpoch()));
 
@@ -115,7 +115,7 @@ void SquareBoot::checkGateStatus(const LoginInformation& info) {
     request.setUrl(url);
 
     // TODO: really?
-    window.buildRequest(*info.settings, request);
+    window.buildRequest(*info->settings, request);
 
     auto reply = window.mgr->get(request);
     connect(reply, &QNetworkReply::finished, [=] {
@@ -132,7 +132,7 @@ void SquareBoot::checkGateStatus(const LoginInformation& info) {
         const bool isGateOpen = !document.isEmpty() && document.object()["status"].toInt() != 0;
 
         if(isGateOpen) {
-            bootCheck(info);
+            bootCheck(*info);
         } else {
             auto messageBox = new QMessageBox(QMessageBox::Icon::Critical,
                                               "Failed to Login",

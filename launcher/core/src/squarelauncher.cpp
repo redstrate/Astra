@@ -58,7 +58,7 @@ void SquareLauncher::getStored(const LoginInformation& info) {
 
     QNetworkReply* reply = window.mgr->get(request);
 
-    connect(reply, &QNetworkReply::finished, [=] {
+    connect(reply, &QNetworkReply::finished, [=, &info] {
         auto str = QString(reply->readAll());
 
         // fetches Steam username
@@ -102,7 +102,7 @@ void SquareLauncher::login(const LoginInformation& info, const QUrl referer) {
     request.setRawHeader("Cache-Control", "no-cache");
 
     auto reply = window.mgr->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
-    connect(reply, &QNetworkReply::finished, [=] {
+    connect(reply, &QNetworkReply::finished, [=, &info] {
         auto str = QString(reply->readAll());
 
         QRegularExpression re(R"lit(window.external.user\("login=auth,ok,(?<launchParams>.*)\);)lit");
@@ -175,7 +175,7 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
         report += QString("\nex%1\t%2").arg(QString::number(i), info.settings->gameVersions[i]);
 
     auto reply = window.mgr->post(request, report.toUtf8());
-    connect(reply, &QNetworkReply::finished, [=] {
+    connect(reply, &QNetworkReply::finished, [&] {
         if(reply->rawHeaderList().contains("X-Patch-Unique-Id")) {
             auth.SID = reply->rawHeader("X-Patch-Unique-Id");
 

@@ -5,7 +5,7 @@ DesktopInterface::DesktopInterface(LauncherCore& core) {
     window = new LauncherWindow(core);
     window->show();
 
-    auto defaultProfile = core.getProfile(core.defaultProfileIndex);
+    auto& defaultProfile = core.getProfile(core.defaultProfileIndex);
 
     if(!defaultProfile.isGameInstalled()) {
         auto messageBox = new QMessageBox(window);

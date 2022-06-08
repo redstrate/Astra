@@ -43,6 +43,7 @@ target_link_libraries(astra_core PUBLIC
         Qt5::Core
         Qt5::Network
         Qt5::Widgets  # widgets is required by watchdog, to be fixed/removed later
+        Qt5::Quick # required for some type registrations
         PRIVATE
         astra_desktop) # desktop is currently required by the core, to be fixed/removed later
 

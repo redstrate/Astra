@@ -134,10 +134,10 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
     if(profile.dalamud.enabled) {
         auto socket = new QTcpServer();
 
-        connect(socket, &QTcpServer::newConnection, [this, profile, socket] {
+        connect(socket, &QTcpServer::newConnection, [this, &profile, socket] {
             auto connection = socket->nextPendingConnection();
 
-            connect(connection, &QTcpSocket::readyRead, [this, connection, profile, socket] {
+            connect(connection, &QTcpSocket::readyRead, [this, connection, &profile, socket] {
                 QString output = connection->readAll();
                 bool success;
                 int exitCode = output.toInt(&success, 10);
@@ -381,69 +381,68 @@ void LauncherCore::readInitialInformation() {
     profileSettings.resize(profiles.size());
 
     for(const auto& uuid : profiles) {
-        ProfileSettings profile;
-        profile.uuid = QUuid(uuid);
+        ProfileSettings* profile = new ProfileSettings();
+        profile->uuid = QUuid(uuid);
 
         settings.beginGroup(uuid);
 
-        profile.name = settings.value("name", "Default").toString();
+        profile->name = settings.value("name", "Default").toString();
 
         if(settings.contains("gamePath") && settings.value("gamePath").canConvert<QString>() && !settings.value("gamePath").toString().isEmpty()) {
-            profile.gamePath = settings.value("gamePath").toString();
+            profile->gamePath = settings.value("gamePath").toString();
         } else {
-            profile.gamePath = getDefaultGamePath();
+            profile->gamePath = getDefaultGamePath();
         }
 
         if(settings.contains("winePrefixPath") && settings.value("winePrefixPath").canConvert<QString>() && !settings.value("winePrefixPath").toString().isEmpty()) {
-            profile.winePrefixPath = settings.value("winePrefixPath").toString();
+            profile->winePrefixPath = settings.value("winePrefixPath").toString();
         } else {
-            profile.winePrefixPath = getDefaultWinePrefixPath();
+            profile->winePrefixPath = getDefaultWinePrefixPath();
         }
 
         if(settings.contains("winePath") && settings.value("winePath").canConvert<QString>() && !settings.value("winePath").toString().isEmpty()) {
-            profile.winePath = settings.value("winePath").toString();
+            profile->winePath = settings.value("winePath").toString();
         }
 
         ProfileSettings defaultSettings;
 
         // login
-        profile.encryptArguments = settings.value("encryptArguments", defaultSettings.encryptArguments).toBool();
-        profile.isSapphire = settings.value("isSapphire", defaultSettings.isSapphire).toBool();
-        profile.lobbyURL = settings.value("lobbyURL", defaultSettings.lobbyURL).toString();
-        profile.rememberUsername = settings.value("rememberUsername", defaultSettings.rememberUsername).toBool();
-        profile.rememberPassword = settings.value("rememberPassword", defaultSettings.rememberPassword).toBool();
-        profile.useOneTimePassword = settings.value("useOneTimePassword", defaultSettings.useOneTimePassword).toBool();
-        profile.license = (GameLicense)settings.value("license", (int)defaultSettings.license).toInt();
-        profile.isFreeTrial = settings.value("isFreeTrial", defaultSettings.isFreeTrial).toBool();
+        profile->encryptArguments = settings.value("encryptArguments", defaultSettings.encryptArguments).toBool();
+        profile->isSapphire = settings.value("isSapphire", defaultSettings.isSapphire).toBool();
+        profile->lobbyURL = settings.value("lobbyURL", defaultSettings.lobbyURL).toString();
+        profile->rememberUsername = settings.value("rememberUsername", defaultSettings.rememberUsername).toBool();
+        profile->rememberPassword = settings.value("rememberPassword", defaultSettings.rememberPassword).toBool();
+        profile->useOneTimePassword = settings.value("useOneTimePassword", defaultSettings.useOneTimePassword).toBool();
+        profile->license = (GameLicense)settings.value("license", (int)defaultSettings.license).toInt();
+        profile->isFreeTrial = settings.value("isFreeTrial", defaultSettings.isFreeTrial).toBool();
 
-        profile.useDX9 = settings.value("useDX9", defaultSettings.useDX9).toBool();
+        profile->useDX9 = settings.value("useDX9", defaultSettings.useDX9).toBool();
 
         // wine
-        profile.wineType = (WineType)settings.value("wineType", (int)defaultSettings.wineType).toInt();
-        profile.useEsync = settings.value("useEsync", defaultSettings.useEsync).toBool();
+        profile->wineType = (WineType)settings.value("wineType", (int)defaultSettings.wineType).toInt();
+        profile->useEsync = settings.value("useEsync", defaultSettings.useEsync).toBool();
 
-        readWineInfo(profile);
+        readWineInfo(*profile);
 
         if(gamescopeAvailable)
-            profile.useGamescope = settings.value("useGamescope", defaultSettings.useGamescope).toBool();
+            profile->useGamescope = settings.value("useGamescope", defaultSettings.useGamescope).toBool();
 
         if(gamemodeAvailable)
-            profile.useGamemode = settings.value("useGamemode", defaultSettings.useGamemode).toBool();
+            profile->useGamemode = settings.value("useGamemode", defaultSettings.useGamemode).toBool();
 
-        profile.enableDXVKhud = settings.value("enableDXVKhud", defaultSettings.enableDXVKhud).toBool();
+        profile->enableDXVKhud = settings.value("enableDXVKhud", defaultSettings.enableDXVKhud).toBool();
 
-        profile.enableWatchdog = settings.value("enableWatchdog", defaultSettings.enableWatchdog).toBool();
+        profile->enableWatchdog = settings.value("enableWatchdog", defaultSettings.enableWatchdog).toBool();
 
         // gamescope
-        profile.gamescope.fullscreen = settings.value("gamescopeFullscreen", defaultSettings.gamescope.fullscreen).toBool();
-        profile.gamescope.borderless = settings.value("gamescopeBorderless", defaultSettings.gamescope.borderless).toBool();
-        profile.gamescope.width = settings.value("gamescopeWidth", defaultSettings.gamescope.width).toInt();
-        profile.gamescope.height = settings.value("gamescopeHeight", defaultSettings.gamescope.height).toInt();
-        profile.gamescope.refreshRate = settings.value("gamescopeRefreshRate", defaultSettings.gamescope.refreshRate).toInt();
+        profile->gamescope.borderless = settings.value("gamescopeBorderless", defaultSettings.gamescope.borderless).toBool();
+        profile->gamescope.width = settings.value("gamescopeWidth", defaultSettings.gamescope.width).toInt();
+        profile->gamescope.height = settings.value("gamescopeHeight", defaultSettings.gamescope.height).toInt();
+        profile->gamescope.refreshRate = settings.value("gamescopeRefreshRate", defaultSettings.gamescope.refreshRate).toInt();
 
-        profile.dalamud.enabled = settings.value("enableDalamud", defaultSettings.dalamud.enabled).toBool();
-        profile.dalamud.optOutOfMbCollection = settings.value("dalamudOptOut", defaultSettings.dalamud.optOutOfMbCollection).toBool();
-        profile.dalamud.channel = (DalamudChannel)settings.value("dalamudChannel", (int)defaultSettings.dalamud.channel).toInt();
+        profile->dalamud.enabled = settings.value("enableDalamud", defaultSettings.dalamud.enabled).toBool();
+        profile->dalamud.optOutOfMbCollection = settings.value("dalamudOptOut", defaultSettings.dalamud.optOutOfMbCollection).toBool();
+        profile->dalamud.channel = (DalamudChannel)settings.value("dalamudChannel", (int)defaultSettings.dalamud.channel).toInt();
 
         profileSettings[settings.value("index").toInt()] = profile;
 
@@ -498,11 +497,11 @@ void LauncherCore::readWineInfo(ProfileSettings& profile) {
 
 void LauncherCore::readGameVersion() {
     for(auto& profile : profileSettings) {
-        profile.bootVersion = readVersion(profile.gamePath + "/boot/ffxivboot.ver");
-        profile.installedMaxExpansion = 0;
+        profile->bootVersion = readVersion(profile->gamePath + "/boot/ffxivboot.ver");
+        profile->installedMaxExpansion = 0;
 
-        auto sqpackDirectories = QDir(profile.gamePath + "/game/sqpack/").entryList(QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot);
-        profile.gameVersions.resize(sqpackDirectories.size());
+        auto sqpackDirectories = QDir(profile->gamePath + "/game/sqpack/").entryList(QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot);
+        profile->gameVersions.resize(sqpackDirectories.size());
 
         for(auto dir : sqpackDirectories) {
             if(dir.contains("ex") || dir == "ffxiv") {
@@ -512,7 +511,7 @@ void LauncherCore::readGameVersion() {
                 if(dir == "ffxiv") {
                     expansion = 0;
 
-                    profile.gameVersions[0] = readVersion(profile.gamePath +  QString("/game/ffxivgame.ver"));
+                    profile->gameVersions[0] = readVersion(profile->gamePath +  QString("/game/ffxivgame.ver"));
                 } else {
                     QString originalName = dir.remove("ex");
                     bool ok = false;
@@ -520,17 +519,17 @@ void LauncherCore::readGameVersion() {
                     if(ok)
                         expansion = convertedInt;
 
-                    profile.gameVersions[convertedInt] = readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(profile.gamePath, QString::number(expansion)));
+                    profile->gameVersions[convertedInt] = readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(profile->gamePath, QString::number(expansion)));
                 }
 
                 if(expansion != -1) {
-                    profile.installedMaxExpansion = std::max(profile.installedMaxExpansion, expansion);
+                    profile->installedMaxExpansion = std::max(profile->installedMaxExpansion, expansion);
                 }
             }
         }
 
-        if(profile.installedMaxExpansion >= 0)
-            readGameData(profile);
+        if(profile->installedMaxExpansion >= 0)
+            readGameData(*profile);
     }
 }
 
@@ -554,17 +553,13 @@ LauncherCore::~LauncherCore() noexcept {
 #endif
 }
 
-ProfileSettings LauncherCore::getProfile(int index) const {
-    return profileSettings[index];
-}
-
 ProfileSettings& LauncherCore::getProfile(int index) {
-    return profileSettings[index];
+    return *profileSettings[index];
 }
 
 int LauncherCore::getProfileIndex(QString name) {
     for(int i = 0; i < profileSettings.size(); i++) {
-        if(profileSettings[i].name == name)
+        if(profileSettings[i]->name == name)
             return i;
     }
 
@@ -574,21 +569,21 @@ int LauncherCore::getProfileIndex(QString name) {
 QList<QString> LauncherCore::profileList() const {
     QList<QString> list;
     for(auto profile : profileSettings) {
-        list.append(profile.name);
+        list.append(profile->name);
     }
 
     return list;
 }
 
 int LauncherCore::addProfile() {
-    ProfileSettings newProfile;
-    newProfile.uuid = QUuid::createUuid();
-    newProfile.name = "New Profile";
+    ProfileSettings* newProfile = new ProfileSettings();
+    newProfile->uuid = QUuid::createUuid();
+    newProfile->name = "New Profile";
 
-    readWineInfo(newProfile);
+    readWineInfo(*newProfile);
 
-    newProfile.gamePath = getDefaultGamePath();
-    newProfile.winePrefixPath = getDefaultWinePrefixPath();
+    newProfile->gamePath = getDefaultGamePath();
+    newProfile->winePrefixPath = getDefaultWinePrefixPath();
 
     profileSettings.append(newProfile);
 
@@ -600,12 +595,12 @@ int LauncherCore::addProfile() {
 int LauncherCore::deleteProfile(QString name) {
     int index = 0;
     for(int i = 0; i < profileSettings.size(); i++) {
-        if(profileSettings[i].name == name)
+        if(profileSettings[i]->name == name)
             index = i;
     }
 
     // remove group so it doesnt stay
-    settings.beginGroup(profileSettings[index].uuid.toString(QUuid::StringFormat::WithoutBraces));
+    settings.beginGroup(profileSettings[index]->uuid.toString(QUuid::StringFormat::WithoutBraces));
     settings.remove("");
     settings.endGroup();
 
@@ -623,45 +618,45 @@ void LauncherCore::saveSettings() {
     for(int i = 0; i < profileSettings.size(); i++) {
         const auto& profile = profileSettings[i];
 
-        settings.beginGroup(profile.uuid.toString(QUuid::StringFormat::WithoutBraces));
+        settings.beginGroup(profile->uuid.toString(QUuid::StringFormat::WithoutBraces));
 
-        settings.setValue("name", profile.name);
+        settings.setValue("name", profile->name);
         settings.setValue("index", i);
 
         // game
-        settings.setValue("useDX9", profile.useDX9);
-        settings.setValue("gamePath", profile.gamePath);
+        settings.setValue("useDX9", profile->useDX9);
+        settings.setValue("gamePath", profile->gamePath);
 
         // wine
-        settings.setValue("wineType", (int)profile.wineType);
-        settings.setValue("winePath", profile.winePath);
-        settings.setValue("winePrefixPath", profile.winePrefixPath);
+        settings.setValue("wineType", (int)profile->wineType);
+        settings.setValue("winePath", profile->winePath);
+        settings.setValue("winePrefixPath", profile->winePrefixPath);
 
-        settings.setValue("useEsync", profile.useEsync);
-        settings.setValue("useGamescope", profile.useGamescope);
-        settings.setValue("useGamemode", profile.useGamemode);
+        settings.setValue("useEsync", profile->useEsync);
+        settings.setValue("useGamescope", profile->useGamescope);
+        settings.setValue("useGamemode", profile->useGamemode);
 
         // gamescope
-        settings.setValue("gamescopeFullscreen", profile.gamescope.fullscreen);
-        settings.setValue("gamescopeBorderless", profile.gamescope.borderless);
-        settings.setValue("gamescopeWidth", profile.gamescope.width);
-        settings.setValue("gamescopeHeight", profile.gamescope.height);
-        settings.setValue("gamescopeRefreshRate", profile.gamescope.refreshRate);
+        settings.setValue("gamescopeFullscreen", profile->gamescope.fullscreen);
+        settings.setValue("gamescopeBorderless", profile->gamescope.borderless);
+        settings.setValue("gamescopeWidth", profile->gamescope.width);
+        settings.setValue("gamescopeHeight", profile->gamescope.height);
+        settings.setValue("gamescopeRefreshRate", profile->gamescope.refreshRate);
 
         // login
-        settings.setValue("encryptArguments", profile.encryptArguments);
-        settings.setValue("isSapphire", profile.isSapphire);
-        settings.setValue("lobbyURL", profile.lobbyURL);
-        settings.setValue("rememberUsername", profile.rememberUsername);
-        settings.setValue("rememberPassword", profile.rememberPassword);
-        settings.setValue("useOneTimePassword", profile.useOneTimePassword);
-        settings.setValue("license", (int)profile.license);
-        settings.setValue("isFreeTrial", profile.isFreeTrial);
+        settings.setValue("encryptArguments", profile->encryptArguments);
+        settings.setValue("isSapphire", profile->isSapphire);
+        settings.setValue("lobbyURL", profile->lobbyURL);
+        settings.setValue("rememberUsername", profile->rememberUsername);
+        settings.setValue("rememberPassword", profile->rememberPassword);
+        settings.setValue("useOneTimePassword", profile->useOneTimePassword);
+        settings.setValue("license", (int)profile->license);
+        settings.setValue("isFreeTrial", profile->isFreeTrial);
 
-        settings.setValue("enableDalamud", profile.dalamud.enabled);
-        settings.setValue("dalamudOptOut", profile.dalamud.optOutOfMbCollection);
-        settings.setValue("dalamudChannel", (int)profile.dalamud.channel);
-        settings.setValue("enableWatchdog", profile.enableWatchdog);
+        settings.setValue("enableDalamud", profile->dalamud.enabled);
+        settings.setValue("dalamudOptOut", profile->dalamud.optOutOfMbCollection);
+        settings.setValue("dalamudChannel", (int)profile->dalamud.channel);
+        settings.setValue("enableWatchdog", profile->enableWatchdog);
 
         settings.endGroup();
     }
@@ -669,7 +664,7 @@ void LauncherCore::saveSettings() {
 
 void LauncherCore::addUpdateButtons(const ProfileSettings& settings, QMessageBox& messageBox) {
     auto launcherButton = messageBox.addButton("Launch Official Launcher", QMessageBox::NoRole);
-    connect(launcherButton, &QPushButton::clicked, [=] {
+    connect(launcherButton, &QPushButton::clicked, [&] {
         launchExecutable(settings, {settings.gamePath + "/boot/ffxivboot.exe"});
     });
 

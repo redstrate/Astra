@@ -73,7 +73,7 @@ void AssetUpdater::update(const ProfileSettings& profile) {
         QNetworkRequest request(dalamudAssetManifestURL);
 
         auto reply = launcher.mgr->get(request);
-        connect(reply, &QNetworkReply::finished, [reply, this, profile] {
+        connect(reply, &QNetworkReply::finished, [reply, this, &profile] {
             dialog->setLabelText("Checking for Dalamud asset updates...");
 
             // TODO: handle asset failure
@@ -97,7 +97,7 @@ void AssetUpdater::update(const ProfileSettings& profile) {
         remoteNativeLauncherVersion.clear();
 
         auto reply = launcher.mgr->get(request);
-        connect(reply, &QNetworkReply::finished, [this, profile, reply] {
+        connect(reply, &QNetworkReply::finished, [this, &profile, reply] {
             dialog->setLabelText("Checking for native launcher updates...");
 
             remoteNativeLauncherVersion = reply->readAll().trimmed();
@@ -119,7 +119,7 @@ void AssetUpdater::update(const ProfileSettings& profile) {
         remoteRuntimeVersion.clear();
 
         auto reply = launcher.mgr->get(request);
-        connect(reply, &QNetworkReply::finished, [this, profile, reply] {
+        connect(reply, &QNetworkReply::finished, [this, &profile, reply] {
             dialog->setLabelText("Checking for Dalamud updates...");
 
             QByteArray str = reply->readAll();

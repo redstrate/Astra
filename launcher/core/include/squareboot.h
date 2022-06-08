@@ -1,15 +1,17 @@
 #pragma once
 
 #include <QProgressDialog>
-#include "launchercore.h"
 
 class SquareLauncher;
+class LauncherCore;
+struct LoginInformation;
 
 class SquareBoot : public QObject {
+    Q_OBJECT
 public:
     SquareBoot(LauncherCore& window, SquareLauncher& launcher);
 
-    void checkGateStatus(const LoginInformation& info);
+    Q_INVOKABLE void checkGateStatus(LoginInformation* info);
 
     void bootCheck(const LoginInformation& info);
 

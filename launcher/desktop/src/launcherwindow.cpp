@@ -258,7 +258,13 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     setCentralWidget(emptyWidget);
 
     connect(core.assetUpdater, &AssetUpdater::finishedUpdating, [=] {
-        auto info = LoginInformation{&currentProfile(), usernameEdit->text(), passwordEdit->text(), otpEdit->text()};
+        auto& profile = currentProfile();
+
+        LoginInformation info;
+        info.settings = &profile;
+        info.username = usernameEdit->text();
+        info.password = passwordEdit->text();
+        info.oneTimePassword = otpEdit->text();
 
 #ifndef QT_DEBUG
         if(currentProfile().rememberUsername) {
@@ -281,7 +287,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
         if(currentProfile().isSapphire) {
             this->core.sapphireLauncher->login(currentProfile().lobbyURL, info);
         } else {
-            this->core.squareBoot->checkGateStatus(info);
+            this->core.squareBoot->checkGateStatus(&info);
         }
     });
 
@@ -292,7 +298,14 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
 
     connect(registerButton, &QPushButton::released, [=] {
         if(currentProfile().isSapphire) {
-            auto info = LoginInformation{&currentProfile(), usernameEdit->text(), passwordEdit->text(), otpEdit->text()};
+            auto& profile = currentProfile();
+
+            LoginInformation info;
+            info.settings = &profile;
+            info.username = usernameEdit->text();
+            info.password = passwordEdit->text();
+            info.oneTimePassword = otpEdit->text();
+
             this->core.sapphireLauncher->registerAccount(currentProfile().lobbyURL, info);
         }
     });
@@ -313,10 +326,6 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     });
 
     reloadControls();
-}
-
-ProfileSettings LauncherWindow::currentProfile() const {
-    return core.getProfile(profileSelect->currentIndex());
 }
 
 ProfileSettings& LauncherWindow::currentProfile() {

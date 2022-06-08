@@ -7,10 +7,12 @@
 #include <QUuid>
 #include <QProcess>
 #include <QMessageBox>
+#include <QtQml>
+
+#include "squareboot.h"
 
 class SapphireLauncher;
 class SquareLauncher;
-class SquareBoot;
 class AssetUpdater;
 class Watchdog;
 
@@ -33,7 +35,10 @@ enum class DalamudChannel {
     Net5
 };
 
-struct ProfileSettings {
+class ProfileSettings : public QObject {
+    Q_OBJECT
+    QML_ELEMENT
+public:
     QUuid uuid;
     QString name;
 
@@ -94,7 +99,14 @@ struct AppSettings {
     bool showNewsList = true;
 };
 
-struct LoginInformation {
+class LoginInformation : public QObject {
+    Q_OBJECT
+    Q_PROPERTY(QString username MEMBER username)
+    Q_PROPERTY(QString password MEMBER password)
+    Q_PROPERTY(QString oneTimePassword MEMBER oneTimePassword)
+    Q_PROPERTY(ProfileSettings* settings MEMBER settings)
+    QML_ELEMENT
+public:
     ProfileSettings* settings = nullptr;
 
     QString username, password, oneTimePassword;
@@ -110,18 +122,28 @@ struct LoginAuth {
 };
 
 class LauncherCore : public QObject {
-Q_OBJECT
+    Q_OBJECT
+    Q_PROPERTY(SquareBoot* squareBoot MEMBER squareBoot)
 public:
     LauncherCore();
     ~LauncherCore();
 
+    // used for qml only, TODO: move this to a dedicated factory
+    Q_INVOKABLE LoginInformation* createNewLoginInfo() {
+        return new LoginInformation();
+    }
+
     QNetworkAccessManager* mgr;
 
-    ProfileSettings getProfile(int index) const;
     ProfileSettings& getProfile(int index);
 
+    // used for qml only
+    Q_INVOKABLE ProfileSettings* getProfileQML(int index) {
+        return profileSettings[index];
+    }
+
     int getProfileIndex(QString name);
-    QList<QString> profileList() const;
+    Q_INVOKABLE QList<QString> profileList() const;
     int addProfile();
     int deleteProfile(QString name);
 
@@ -190,5 +212,5 @@ private:
     QString getDefaultGamePath();
     QString getDefaultWinePrefixPath();
 
-    QVector<ProfileSettings> profileSettings;
+    QVector<ProfileSettings*> profileSettings;
 };

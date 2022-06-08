@@ -24,7 +24,7 @@ void SapphireLauncher::login(QString lobbyUrl, const LoginInformation& info) {
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
 
     auto reply = window.mgr->post(request, QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Compact));
-    connect(reply, &QNetworkReply::finished, [=] {
+    connect(reply, &QNetworkReply::finished, [&] {
         QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
         if(!document.isEmpty()) {
             LoginAuth auth;
@@ -55,7 +55,7 @@ void SapphireLauncher::registerAccount(QString lobbyUrl, const LoginInformation&
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
 
     auto reply = window.mgr->post(request, QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Compact));
-    connect(reply, &QNetworkReply::finished, [=] {
+    connect(reply, &QNetworkReply::finished, [&] {
         QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
 
         LoginAuth auth;

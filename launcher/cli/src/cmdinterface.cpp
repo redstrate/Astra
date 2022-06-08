@@ -19,7 +19,7 @@ bool CMDInterface::parse(QCommandLineParser &parser, LauncherCore &core) {
     }
 
     if(parser.isSet(autologinOption)) {
-        auto profile = core.getProfile(core.defaultProfileIndex);
+        auto& profile = core.getProfile(core.defaultProfileIndex);
 
         if(!profile.rememberUsername || !profile.rememberPassword) {
             qInfo() << "Profile does not have a username and/or password saved, autologin disabled.";
@@ -52,12 +52,15 @@ bool CMDInterface::parse(QCommandLineParser &parser, LauncherCore &core) {
 
         loop->exec();
 
-        auto info = LoginInformation{&profile, username, password, ""};
+        auto info = new LoginInformation();
+        info->settings = &profile;
+        info->username = username;
+        info->password = password;
 
         if(profile.isSapphire) {
-            core.sapphireLauncher->login(profile.lobbyURL, info);
+            core.sapphireLauncher->login(profile.lobbyURL, *info);
         } else {
-            core.squareBoot->bootCheck(info);
+            core.squareBoot->bootCheck(*info);
         }
     }
 
