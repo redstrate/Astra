@@ -40,7 +40,11 @@ set(SRC
         src/aboutwindow.cpp
         include/aboutwindow.h
         src/bannerwidget.cpp
-        include/bannerwidget.h)
+        include/bannerwidget.h
+        include/desktopinterface.h
+        include/cmdinterface.h
+        src/cmdinterface.cpp
+        src/desktopinterface.cpp)
 
 include(FetchContent)
 
