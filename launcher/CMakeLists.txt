@@ -3,7 +3,9 @@ add_subdirectory(cli)
 add_subdirectory(desktop)
 add_subdirectory(tablet)
 
-add_executable(astra main.cpp)
+add_executable(astra
+        main.cpp
+        tablet/qml/qml.qrc)
 
 target_link_libraries(astra PUBLIC
         ${LIBRARIES}

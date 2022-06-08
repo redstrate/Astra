@@ -4,7 +4,7 @@ set(HEADERS
 set(SRC
         src/tabletinterface.cpp)
 
-add_library(astra_tablet STATIC ${HEADERS} ${SRC} qml/qml.qrc)
+add_library(astra_tablet STATIC ${HEADERS} ${SRC})
 target_include_directories(astra_tablet PUBLIC include)
 target_link_libraries(astra_tablet PUBLIC
         astra_core
