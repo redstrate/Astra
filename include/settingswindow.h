@@ -7,6 +7,7 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QPushButton>
+#include <QFormLayout>
 
 class LauncherCore;
 class LauncherWindow;
@@ -20,6 +21,11 @@ public slots:
     void reloadControls();
 
 private:
+    void setupGameTab(QFormLayout& layout);
+    void setupLoginTab(QFormLayout& layout);
+    void setupWineTab(QFormLayout& layout);
+    void setupDalamudTab(QFormLayout& layout);
+
     ProfileSettings& getCurrentProfile();
 
     QListWidget* profileWidget = nullptr;
