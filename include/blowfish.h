@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QByteArray>
+#include <tuple>
 
 constexpr int Rounds = 16;
 
