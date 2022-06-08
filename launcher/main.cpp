@@ -12,7 +12,7 @@
 #include "config.h"
 #include "desktopinterface.h"
 #include "cmdinterface.h"
-#include "tabletinterface.h"
+#include "../launcher/tablet/include/tabletinterface.h"
 
 int main(int argc, char* argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

@@ -1,4 +1,4 @@
-#include "tabletinterface.h"
+#include "../launcher/tablet/include/tabletinterface.h"
 
 TabletInterface::TabletInterface(LauncherCore &core) {
     applicationEngine = new QQmlApplicationEngine();
