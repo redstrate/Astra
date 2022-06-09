@@ -315,8 +315,8 @@ void SettingsWindow::setupGameTab(QFormLayout& layout) {
                 this->core.saveSettings();
             });
 
-    currentGameDirectory = new QLineEdit();
-    currentGameDirectory->setReadOnly(true);
+    currentGameDirectory = new QLabel();
+    currentGameDirectory->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
     layout.addRow("Game Directory", currentGameDirectory);
 
     auto gameDirButtonLayout = new QHBoxLayout();
@@ -448,8 +448,8 @@ void SettingsWindow::setupLoginTab(QFormLayout& layout) {
 
 void SettingsWindow::setupWineTab(QFormLayout& layout) {
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
-    winePathLabel = new QLineEdit();
-    winePathLabel->setReadOnly(true);
+    winePathLabel = new QLabel();
+    winePathLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
     layout.addRow("Wine Executable", winePathLabel);
 
     wineTypeCombo = new QComboBox();
@@ -500,8 +500,8 @@ void SettingsWindow::setupWineTab(QFormLayout& layout) {
     layout.addRow("Wine Version", wineVersionLabel);
 #endif
 
-    winePrefixDirectory = new QLineEdit();
-    winePrefixDirectory->setReadOnly(true);
+    winePrefixDirectory = new QLabel();
+    winePrefixDirectory->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
     layout.addRow("Wine Prefix", winePrefixDirectory);
 
     auto winePrefixButtonLayout = new QHBoxLayout();
