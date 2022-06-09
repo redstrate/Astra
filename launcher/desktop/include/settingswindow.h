@@ -21,6 +21,9 @@ public slots:
     void reloadControls();
 
 private:
+    void setupAccountsTab(QFormLayout& layout);
+
+    // profile specific tabs
     void setupGameTab(QFormLayout& layout);
     void setupLoginTab(QFormLayout& layout);
     void setupWineTab(QFormLayout& layout);

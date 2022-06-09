@@ -154,6 +154,14 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
         }
     }
 
+    {
+        auto accountsTabWidget = new QWidget();
+        tabWidget->addTab(accountsTabWidget, "Accounts");
+
+        auto accountsLayout = new QGridLayout();
+        accountsTabWidget->setLayout(accountsLayout);
+    }
+
     tabWidget->setCurrentIndex(defaultTab);
 
     reloadControls();
@@ -629,4 +637,8 @@ void SettingsWindow::setupDalamudTab(QFormLayout& layout) {
     nativeLauncherVersionLabel = new QLabel();
     nativeLauncherVersionLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
     layout.addRow("Native Launcher Version", nativeLauncherVersionLabel);
+}
+
+void SettingsWindow::setupAccountsTab(QFormLayout& layout) {
+
 }
