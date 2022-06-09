@@ -455,7 +455,7 @@ void SettingsWindow::setupWineTab(QFormLayout& layout) {
     wineTypeCombo = new QComboBox();
 
 #if defined(Q_OS_MAC)
-    wineTypeCombo->insertItem(2, "FFXIV for Mac");
+    wineTypeCombo->insertItem(2, "FFXIV for Mac (Official)");
     wineTypeCombo->insertItem(3, "XIV on Mac");
 #endif
 
