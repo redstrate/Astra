@@ -443,7 +443,7 @@ void SettingsWindow::setupLoginTab(QFormLayout& layout) {
         this->core.saveSettings();
         this->window.reloadControls();
     });
-    layout.addRow("Use One-time Password", useOneTimePassword);
+    layout.addRow("Use One-Time Password", useOneTimePassword);
 }
 
 void SettingsWindow::setupWineTab(QFormLayout& layout) {
