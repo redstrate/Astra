@@ -181,7 +181,7 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
     }
 
     auto reply = window.mgr->post(request, report.toUtf8());
-    connect(reply, &QNetworkReply::finished, [&] {
+    connect(reply, &QNetworkReply::finished, [=, &info] {
         if(reply->rawHeaderList().contains("X-Patch-Unique-Id")) {
             auth.SID = reply->rawHeader("X-Patch-Unique-Id");
 
