@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QString>
-#include "blowfish.h"
+#include <physis.hpp>
 
 // from xivdev
 static char ChecksumTable[] = {
@@ -24,8 +24,19 @@ inline QString encryptGameArg(QString arg) {
     char buffer[9] = {};
     sprintf(buffer, "%08x", key);
 
-    Blowfish session(QByteArray(buffer, 8));
-    QByteArray encryptedArg = session.Encrypt((QString(" /T =%1").arg(ticks) + arg).toUtf8());
+    Blowfish const* blowfish = physis_blowfish_initialize(reinterpret_cast<uint8_t*>(buffer), 9);
+
+    uint8_t* out_data = nullptr;
+    uint32_t out_size = 0;
+
+    QByteArray toEncrypt = (QString(" /T =%1").arg(ticks) + arg).toUtf8();
+
+    physis_blowfish_encrypt(blowfish,
+                            reinterpret_cast<uint8_t*>(toEncrypt.data()), toEncrypt.size(), &out_data, &out_size);
+
+    QByteArray encryptedArg = QByteArray::fromRawData(
+        reinterpret_cast<const char*>(out_data), out_size);
+
     QString base64 = encryptedArg.toBase64(QByteArray::Base64Option::Base64UrlEncoding | QByteArray::Base64Option::OmitTrailingEquals);
     char checksum = GetChecksum(key);
 

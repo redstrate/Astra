@@ -19,14 +19,12 @@
 #include <QRegularExpressionMatch>
 #include <algorithm>
 #include <QTcpServer>
-#include <physis.hpp>
 
 #include "launchercore.h"
 #include "sapphirelauncher.h"
 #include "squarelauncher.h"
 #include "squareboot.h"
 #include "settingswindow.h"
-#include "blowfish.h"
 #include "assetupdater.h"
 #include "encryptedarg.h"
 #include "gamedata.h"

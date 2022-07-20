@@ -1,5 +1,4 @@
 set(HEADERS
-        include/blowfish.h
         include/config.h
         include/dxvkinstaller.h
         include/encryptedarg.h
@@ -11,7 +10,6 @@ set(HEADERS
         include/squarelauncher.h)
 
 set(SRC
-        src/blowfish.cpp
         src/dxvkinstaller.cpp
         src/encryptedarg.cpp
         src/gameinstaller.cpp
