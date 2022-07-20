@@ -260,11 +260,11 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     connect(core.assetUpdater, &AssetUpdater::finishedUpdating, [=] {
         auto& profile = currentProfile();
 
-        LoginInformation info;
-        info.settings = &profile;
-        info.username = usernameEdit->text();
-        info.password = passwordEdit->text();
-        info.oneTimePassword = otpEdit->text();
+        LoginInformation* info = new LoginInformation();
+        info->settings = &profile;
+        info->username = usernameEdit->text();
+        info->password = passwordEdit->text();
+        info->oneTimePassword = otpEdit->text();
 
 #ifndef QT_DEBUG
         if(currentProfile().rememberUsername) {
@@ -285,9 +285,9 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
 #endif
 
         if(currentProfile().isSapphire) {
-            this->core.sapphireLauncher->login(currentProfile().lobbyURL, info);
+            this->core.sapphireLauncher->login(currentProfile().lobbyURL, *info);
         } else {
-            this->core.squareBoot->checkGateStatus(&info);
+            this->core.squareBoot->checkGateStatus(info);
         }
     });
 

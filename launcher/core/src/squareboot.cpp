@@ -77,7 +77,7 @@ void SquareBoot::bootCheck(const LoginInformation& info) {
                     dialog->setValue(recieved);
                 });
 
-                connect(patchReply, &QNetworkReply::finished, [&] {
+                connect(patchReply, &QNetworkReply::finished, [=, &info] {
                     const QString dataDir =
                         QStandardPaths::writableLocation(QStandardPaths::TempLocation);
 
