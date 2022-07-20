@@ -4,23 +4,13 @@ A custom FFXIV launcher that supports **multiple accounts/profiles**, **Dalamud 
 Windows, macOS and Linux!
 
 ### Beta Notice
-Astra is **beta software**. Despite this, the launcher is usable for most usecases, except for those noted below:
+Astra is **beta software**. Despite this, the launcher is usable for most use-cases, except for those noted below:
 
-* Astra **cannot update the game** on its own yet, however you'll be prompted to use the official launcher to update.
 * Logging into **Steam-linked accounts** is unsupported at the moment.
 
 If you have more questions, please look at the [FAQ](https://xiv.zone/astra/faq).
 
 ![Main Screenshot](misc/screenshot.png)
-
-### Beta Notice
-Astra is currently in **beta**. The launcher is usable right now, and I even use this as my sole way to play FFXIV.
-There are a few caveats that are good to know beforehand though:
-
-* Astra cannot update the game on its own yet, however you'll be prompted to use the official launcher to update.
-* Logging into Steam-linked accounts is unsupported at the moment.
-
-If you have more questions, please read at the [FAQ](https://xiv.zone/astra/faq) first.
 
 ## Features
 * Traditional desktop interface which looks native to your system, utilizing Qt - a proven application framework.
@@ -33,6 +23,7 @@ If you have more questions, please read at the [FAQ](https://xiv.zone/astra/faq)
 * Multiple accounts support!
   * Almost all settings (including different game installs) can also be set per-profile.
 * Easily install and use Dalamud plugins, just like with XIVQuickLauncher. 
+* Can patch the game natively, avoiding having to boot the official launcher to do so.
 * Securely login to the official Square Enix lobbies, as well as Sapphire servers.
   * Game arguments are encrypted by default, providing the same level of security as other launchers.
   * Saving account usernames and passwords are also supported, and is never stored plaintext.

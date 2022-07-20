@@ -7,7 +7,7 @@
     - [ ] Better Steam account support
 - [ ] External Tool support
 - [ ] Improve Watchdog stability and platform support
-- [ ] Game patching
+- [X] Game patching
 
 ### Completed
 - [x] News support
