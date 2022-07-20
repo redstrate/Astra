@@ -171,8 +171,14 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
 
     QString report = info.settings->bootVersion + "=" + getBootHash(info);
 
-    for(int i = 1; i < info.settings->installedMaxExpansion; i++)
-        report += QString("\nex%1\t%2").arg(QString::number(i), info.settings->gameVersions[i]);
+    for(int i = 1; i < auth.maxExpansion + 1; i++) {
+        if(i <= info.settings->installedMaxExpansion) {
+            report += QString("\nex%1\t%2")
+                          .arg(QString::number(i), info.settings->gameVersions[i]);
+        } else {
+            report += QString("\nex%1\t2012.01.01.0000.0000").arg(QString::number(i));
+        }
+    }
 
     auto reply = window.mgr->post(request, report.toUtf8());
     connect(reply, &QNetworkReply::finished, [&] {
