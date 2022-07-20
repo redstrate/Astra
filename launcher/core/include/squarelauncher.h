@@ -1,6 +1,7 @@
 #pragma once
 
 #include "launchercore.h"
+#include "patcher.h"
 
 class SquareLauncher : public QObject {
     Q_OBJECT
@@ -15,6 +16,8 @@ public:
 
 private:
     QString getBootHash(const LoginInformation& info);
+
+    Patcher* patcher = nullptr;
 
     QString stored, SID, username;
     LoginAuth auth;

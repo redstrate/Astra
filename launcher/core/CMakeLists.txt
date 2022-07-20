@@ -7,7 +7,8 @@ set(HEADERS
         include/launchercore.h
         include/sapphirelauncher.h
         include/squareboot.h
-        include/squarelauncher.h)
+        include/squarelauncher.h
+        include/patcher.h)
 
 set(SRC
         src/dxvkinstaller.cpp
@@ -17,7 +18,8 @@ set(SRC
         src/launchercore.cpp
         src/sapphirelauncher.cpp
         src/squareboot.cpp
-        src/squarelauncher.cpp)
+        src/squarelauncher.cpp
+        src/patcher.cpp)
 
 if(ENABLE_WATCHDOG)
     set(HEADERS ${HEADERS}

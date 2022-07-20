@@ -183,17 +183,26 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
     auto reply = window.mgr->post(request, report.toUtf8());
     connect(reply, &QNetworkReply::finished, [=, &info] {
         if(reply->rawHeaderList().contains("X-Patch-Unique-Id")) {
-            auth.SID = reply->rawHeader("X-Patch-Unique-Id");
+            QString body = reply->readAll();
+
+            patcher = new Patcher(false, info.settings->gamePath + "/game");
+            connect(patcher, &Patcher::done, [=, &info] {
+                window.readGameVersion();
+
+                auth.SID = reply->rawHeader("X-Patch-Unique-Id");
 
 #ifdef ENABLE_WATCHDOG
-            if(info.settings->enableWatchdog) {
-                window.watchdog->launchGame(*info.settings, auth);
-            } else {
-                window.launchGame(*info.settings, auth);
-            }
+                if(info.settings->enableWatchdog) {
+                    window.watchdog->launchGame(*info.settings, auth);
+                } else {
+                    window.launchGame(*info.settings, auth);
+                }
 #else
-            window.launchGame(*info.settings, auth);
+                    window.launchGame(*info.settings, auth);
 #endif
+            });
+
+            patcher->processPatchList(*window.mgr, body);
         } else {
             auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Failed the anti-tamper check. Please restore your game to the original state or update the game.");
             window.addUpdateButtons(*info.settings, *messageBox);
