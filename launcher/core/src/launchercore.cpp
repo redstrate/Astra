@@ -19,6 +19,7 @@
 #include <QRegularExpressionMatch>
 #include <algorithm>
 #include <QTcpServer>
+#include <physis.hpp>
 
 #include "launchercore.h"
 #include "sapphirelauncher.h"
@@ -500,7 +501,7 @@ void LauncherCore::readGameVersion() {
         profile->bootVersion = readVersion(profile->gamePath + "/boot/ffxivboot.ver");
 
         auto sqpackDirectories = QDir(profile->gamePath + "/game/sqpack/").entryList(QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot);
-        profile->gameVersions.resize(sqpackDirectories.size());
+        profile->gameVersions.resize(sqpackDirectories.size() + 1);
 
         for(auto dir : sqpackDirectories) {
             if(dir.contains("ex") || dir == "ffxiv") {

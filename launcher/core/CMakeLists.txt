@@ -39,6 +39,7 @@ target_include_directories(astra_core PUBLIC
         include)
 target_link_libraries(astra_core PUBLIC
         libxiv
+        physis
         ${LIBRARIES}
         Qt5::Core
         Qt5::Network
