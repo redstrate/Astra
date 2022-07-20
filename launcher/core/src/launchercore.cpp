@@ -498,27 +498,27 @@ void LauncherCore::readGameVersion() {
     for(auto& profile : profileSettings) {
         profile->bootVersion = readVersion(profile->gamePath + "/boot/ffxivboot.ver");
 
+        if(QFile::exists(profile->gamePath +  QString("/game/ffxivgame.ver"))) {
+            profile->gameVersions.push_back(readVersion(profile->gamePath + QString("/game/ffxivgame.ver")));
+            profile->installedMaxExpansion = 0;
+        }
+
         auto sqpackDirectories = QDir(profile->gamePath + "/game/sqpack/").entryList(QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot);
-        profile->gameVersions.resize(sqpackDirectories.size() + 1);
+
+        if(QDir().exists(profile->gamePath + "/game/sqpack/"))
+            profile->gameVersions.resize(sqpackDirectories.size());
 
         for(auto dir : sqpackDirectories) {
-            if(dir.contains("ex") || dir == "ffxiv") {
+            if(dir.contains("ex")) {
                 int expansion = -1;
 
-                // we're going to treat ffxiv as ex0
-                if(dir == "ffxiv") {
-                    expansion = 0;
+                QString originalName = dir.remove("ex");
+                bool ok = false;
+                int convertedInt = originalName.toInt(&ok);
+                if(ok)
+                    expansion = convertedInt;
 
-                    profile->gameVersions[0] = readVersion(profile->gamePath +  QString("/game/ffxivgame.ver"));
-                } else {
-                    QString originalName = dir.remove("ex");
-                    bool ok = false;
-                    int convertedInt = originalName.toInt(&ok);
-                    if(ok)
-                        expansion = convertedInt;
-
-                    profile->gameVersions[convertedInt] = readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(profile->gamePath, QString::number(expansion)));
-                }
+                profile->gameVersions[convertedInt] = readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(profile->gamePath, QString::number(expansion)));
 
                 if(expansion != -1) {
                     profile->installedMaxExpansion = std::max(profile->installedMaxExpansion, expansion);
@@ -526,7 +526,7 @@ void LauncherCore::readGameVersion() {
             }
         }
 
-        if(profile->installedMaxExpansion >= 0)
+        if(profile->installedMaxExpansion >= 0 && !sqpackDirectories.empty())
             readGameData(*profile);
     }
 }
