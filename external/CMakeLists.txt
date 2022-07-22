@@ -21,3 +21,4 @@ FetchContent_MakeAvailable(libphysis)
 corrosion_import_crate(MANIFEST_PATH ${libphysis_SOURCE_DIR}/Cargo.toml)
 
 target_include_directories(physis INTERFACE ${libphysis_SOURCE_DIR}/target/public)
+target_link_libraries(physis INTERFACE unshield)
