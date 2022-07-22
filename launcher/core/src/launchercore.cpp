@@ -479,7 +479,7 @@ void LauncherCore::readWineInfo(ProfileSettings& profile) {
 #endif
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-    auto wineProcess = new QProcess();
+    auto wineProcess = new QProcess(this);
     wineProcess->setProcessChannelMode(QProcess::MergedChannels);
 
     connect(wineProcess, &QProcess::readyRead, this, [wineProcess, &profile] {
@@ -541,12 +541,6 @@ LauncherCore::LauncherCore() : settings(QSettings::IniFormat, QSettings::UserSco
 #endif
 
     readInitialInformation();
-}
-
-LauncherCore::~LauncherCore() noexcept {
-#ifdef ENABLE_WATCHDOG
-    delete watchdog;
-#endif
 }
 
 ProfileSettings& LauncherCore::getProfile(int index) {

@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     QCommandLineOption cliOption("cli", "Don't open a main window, and use the cli interface.");
     parser.addOption(cliOption);
 
-    auto cmd = new CMDInterface(parser);
+    auto cmd = std::make_unique<CMDInterface>(parser);
 
     parser.process(app);
 
@@ -63,12 +63,12 @@ int main(int argc, char* argv[]) {
 
     LauncherCore c;
     if(parser.isSet(tabletOption)) {
-        new TabletInterface(c);
+        std::make_unique<TabletInterface>(c);
     } else if(parser.isSet(cliOption)) {
         if(!cmd->parse(parser, c))
             return -1;
     } else {
-        new DesktopInterface(c);
+        std::make_unique<DesktopInterface>(c);
     }
 
     return app.exec();

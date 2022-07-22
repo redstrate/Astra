@@ -12,7 +12,7 @@
 
 #include "squarelauncher.h"
 
-SquareBoot::SquareBoot(LauncherCore& window, SquareLauncher& launcher) : window(window), launcher(launcher) {
+SquareBoot::SquareBoot(LauncherCore& window, SquareLauncher& launcher) : window(window), launcher(launcher), QObject(&window) {
 
 }
 

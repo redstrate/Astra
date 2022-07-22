@@ -126,7 +126,6 @@ class LauncherCore : public QObject {
     Q_PROPERTY(SquareBoot* squareBoot MEMBER squareBoot)
 public:
     LauncherCore();
-    ~LauncherCore();
 
     // used for qml only, TODO: move this to a dedicated factory
     Q_INVOKABLE LoginInformation* createNewLoginInfo() {

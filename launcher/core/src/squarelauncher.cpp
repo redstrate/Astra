@@ -16,7 +16,7 @@
 #include "watchdog.h"
 #endif
 
-SquareLauncher::SquareLauncher(LauncherCore& window) : window(window) {
+SquareLauncher::SquareLauncher(LauncherCore& window) : window(window), QObject(&window) {
 
 }
 

@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include <QNetworkReply>
 
-SapphireLauncher::SapphireLauncher(LauncherCore& window) : window(window) {
+SapphireLauncher::SapphireLauncher(LauncherCore& window) : window(window), QObject(&window) {
 
 }
 

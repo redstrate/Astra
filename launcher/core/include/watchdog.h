@@ -13,7 +13,7 @@
 class Watchdog : public QObject {
     Q_OBJECT
 public:
-    Watchdog(LauncherCore& core) : core(core) {}
+    Watchdog(LauncherCore& core) : core(core), QObject(&core) {}
 
     void launchGame(const ProfileSettings& settings, LoginAuth auth);
 

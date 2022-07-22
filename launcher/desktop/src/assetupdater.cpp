@@ -37,7 +37,7 @@ QMap<DalamudChannel, QString> channelToDistribPrefix = {
     {DalamudChannel::Net5, "net5/"}
 };
 
-AssetUpdater::AssetUpdater(LauncherCore& launcher) : launcher(launcher) {
+AssetUpdater::AssetUpdater(LauncherCore& launcher) : launcher(launcher), QObject(&launcher) {
     launcher.mgr->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
 
     dataDir =
