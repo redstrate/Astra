@@ -720,6 +720,9 @@ void LauncherCore::readGameData(ProfileSettings& profile) {
         for(int i = 0; i < exd.row_count; i++) {
             expansionNames.push_back(exd.row_data[i].column_data[0].string._0);
         }
+
+        physis_gamedata_free_sheet(exd);
+        physis_gamedata_free_sheet_header(exh);
     }
 
     physis_gamedata_free(game_data);
