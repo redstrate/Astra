@@ -1,5 +1,3 @@
-add_subdirectory(libxiv)
-
 include(FetchContent)
 
 FetchContent_Declare(
