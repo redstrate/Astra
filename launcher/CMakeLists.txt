@@ -9,7 +9,6 @@ add_executable(astra
 
 target_link_libraries(astra PUBLIC
         ${LIBRARIES}
-        libxiv
         astra_core
         astra_desktop
         astra_cli

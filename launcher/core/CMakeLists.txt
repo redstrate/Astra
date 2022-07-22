@@ -38,8 +38,8 @@ target_include_directories(astra_core PUBLIC
         ${CMAKE_BINARY_DIR}
         include)
 target_link_libraries(astra_core PUBLIC
-        libxiv
         physis
+        z # FIXME: remove!
         ${LIBRARIES}
         Qt5::Core
         Qt5::Network

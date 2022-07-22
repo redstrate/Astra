@@ -5,14 +5,15 @@
 #include <QCommandLineParser>
 #include <keychain.h>
 #include <QDir>
+#include <physis.hpp>
 
-#include "sapphirelauncher.h"
-#include "squareboot.h"
-#include "gameinstaller.h"
+#include "../launcher/tablet/include/tabletinterface.h"
+#include "cmdinterface.h"
 #include "config.h"
 #include "desktopinterface.h"
-#include "cmdinterface.h"
-#include "../launcher/tablet/include/tabletinterface.h"
+#include "gameinstaller.h"
+#include "sapphirelauncher.h"
+#include "squareboot.h"
 
 int main(int argc, char* argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

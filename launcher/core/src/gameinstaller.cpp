@@ -1,9 +1,9 @@
 #include "gameinstaller.h"
 
-#include <installextract.h>
 #include <QNetworkReply>
 #include <QStandardPaths>
 #include <QFile>
+#include <physis.hpp>
 
 #include "launchercore.h"
 
@@ -25,7 +25,7 @@ void installGame(LauncherCore& launcher, ProfileSettings& profile, std::function
         file.write(reply->readAll());
         file.close();
 
-        extractBootstrapFiles((dataDir + "/ffxivsetup.exe").toStdString(), installDirectory.toStdString());
+        physis_install_game(installDirectory.toStdString().c_str(), (dataDir + "/ffxivsetup.exe").toStdString().c_str());
 
         qDebug() << "Done installing to " << installDirectory << "!";
 

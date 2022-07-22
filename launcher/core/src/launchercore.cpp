@@ -27,8 +27,6 @@
 #include "settingswindow.h"
 #include "assetupdater.h"
 #include "encryptedarg.h"
-#include "gamedata.h"
-#include "exdparser.h"
 
 #ifdef ENABLE_WATCHDOG
 #include "watchdog.h"
@@ -712,14 +710,17 @@ void LauncherCore::addRegistryKey(const ProfileSettings& settings,
 }
 
 void LauncherCore::readGameData(ProfileSettings& profile) {
-    GameData data(profile.gamePath.toStdString() + "/game/sqpack");
+    auto path = profile.gamePath.toStdString() + "/game";
+    GameData* game_data = physis_gamedata_initialize(path.c_str());
 
-    if(auto exh = data.readExcelSheet("ExVersion")) {
-        auto path = getEXDFilename(*exh, "exversion", "en", exh->pages[0]);
-        auto exd = readEXD(*exh, *data.extractFile("exd/" + path), exh->pages[0]);
+    EXH* exh = physis_gamedata_read_excel_sheet_header(game_data, "ExVersion");
+    if(exh != nullptr) {
+        physis_EXD exd = physis_gamedata_read_excel_sheet(game_data, "ExVersion", exh, Language::English, 0);
 
-        for(auto row : exd.rows) {
-            expansionNames.push_back(row.data[0].data.c_str());
+        for(int i = 0; i < exd.row_count; i++) {
+            expansionNames.push_back(exd.row_data[i].column_data[0].string._0);
         }
     }
+
+    physis_gamedata_free(game_data);
 }
