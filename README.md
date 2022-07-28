@@ -54,9 +54,9 @@ the `USE_OWN_LIBRARIES` CMake option.
 The best way you can help Astra is by [monetarily supporting me](https://ko-fi.com/redstrate) or by submitting patches to fix bugs or add functionality.
 I work on Astra and my other FFXIV projects in my free time, so any support helps to let me  continue what I do!
 
-* If you have a sourcehut account, you can use the [web contributing interface](https://git.sr.ht/~redstrate/astra/send-email).
-* If you do not want to use Github or sourcehut, you may always send the patch through [the mailing list](https://lists.sr.ht/~redstrate/astra-dev).
+If you have changes you wish to submit, you can use [git send-email](https://git-send-email.io/) or the [sourcehut web contributor interface](https://git.sr.ht/~redstrate/astra/send-email)! 
 
-If you just want to report a bug or discuss a feature, please send an email to [my mailing list](https://lists.sr.ht/~redstrate/public-inbox).
-I discourage contacting me privately unless necessary, because other people may have the same problem as you - and I can share the solution with everyone :-)
+If you wish to file a bug report, or feature request please see [the bug tracker](https://todo.sr.ht/~redstrate/astra).
 
+For general discussion about the launcher, potential features and so on, email me [on my mailing list](https://lists.sr.ht/~redstrate/public-inbox).
+I discourage contacting me privately unless necessary, so everyone can benefit from the discussion.
