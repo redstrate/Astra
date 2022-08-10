@@ -50,6 +50,9 @@ public:
     QVector<QString> gameVersions;
     bool enableWatchdog = false;
 
+    BootData* bootData;
+    GameData* gameData;
+
     bool isGameInstalled() const {
         return !gameVersions.isEmpty();
     }

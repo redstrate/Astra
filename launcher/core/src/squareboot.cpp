@@ -17,7 +17,7 @@ SquareBoot::SquareBoot(LauncherCore& window, SquareLauncher& launcher) : window(
 }
 
 void SquareBoot::bootCheck(const LoginInformation& info) {
-    patcher = new Patcher(true, info.settings->gamePath + "/boot");
+    patcher = new Patcher(info.settings->gamePath + "/boot", info.settings->bootData);
     connect(patcher, &Patcher::done, [=, &info] {
         window.readGameVersion();
 

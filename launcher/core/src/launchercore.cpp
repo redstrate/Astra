@@ -704,12 +704,12 @@ void LauncherCore::addRegistryKey(const ProfileSettings& settings,
 }
 
 void LauncherCore::readGameData(ProfileSettings& profile) {
-    auto path = profile.gamePath.toStdString() + "/game";
-    GameData* game_data = physis_gamedata_initialize(path.c_str());
+    profile.gameData = physis_gamedata_initialize((profile.gamePath + "/game").toStdString().c_str());
+    profile.bootData = physis_bootdata_initialize((profile.gamePath + "/boot").toStdString().c_str());
 
-    EXH* exh = physis_gamedata_read_excel_sheet_header(game_data, "ExVersion");
+    EXH* exh = physis_gamedata_read_excel_sheet_header(profile.gameData, "ExVersion");
     if(exh != nullptr) {
-        physis_EXD exd = physis_gamedata_read_excel_sheet(game_data, "ExVersion", exh, Language::English, 0);
+        physis_EXD exd = physis_gamedata_read_excel_sheet(profile.gameData, "ExVersion", exh, Language::English, 0);
 
         for(int i = 0; i < exd.row_count; i++) {
             expansionNames.push_back(exd.row_data[i].column_data[0].string._0);
@@ -718,6 +718,4 @@ void LauncherCore::readGameData(ProfileSettings& profile) {
         physis_gamedata_free_sheet(exd);
         physis_gamedata_free_sheet_header(exh);
     }
-
-    physis_gamedata_free(game_data);
 }

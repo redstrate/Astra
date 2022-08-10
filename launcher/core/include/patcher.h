@@ -3,14 +3,15 @@
 #include <QString>
 #include <QProgressDialog>
 #include <QNetworkAccessManager>
+#include <physis.hpp>
 
 // General-purpose patcher routine. It opens a nice dialog box, handles downloading
 // and processing patches.
 class Patcher : public QObject {
     Q_OBJECT
 public:
-    // isBoot is used for telling the patcher that you're reading boot patches, which for some reason has a different patchlist format.
-    Patcher(bool isBoot, QString baseDirectory);
+    Patcher(QString baseDirectory, GameData* game_data);
+    Patcher(QString baseDirectory, BootData* game_data);
 
     void processPatchList(QNetworkAccessManager& mgr, QString patchList);
 
@@ -20,6 +21,10 @@ signals:
 private:
     void checkIfDone();
 
+    bool isBoot() const {
+        return boot_data != nullptr;
+    }
+
     struct QueuedPatch {
         QString name, repository, version, path;
     };
@@ -28,8 +33,9 @@ private:
 
     QVector<QueuedPatch> patchQueue;
 
-    bool isBoot = false;
     QString baseDirectory;
+    BootData* boot_data = nullptr;
+    GameData* game_data = nullptr;
 
     QProgressDialog* dialog = nullptr;
 

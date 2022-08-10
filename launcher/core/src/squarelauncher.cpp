@@ -185,7 +185,7 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
         if(reply->rawHeaderList().contains("X-Patch-Unique-Id")) {
             QString body = reply->readAll();
 
-            patcher = new Patcher(false, info.settings->gamePath + "/game");
+            patcher = new Patcher(info.settings->gamePath + "/game", info.settings->gameData);
             connect(patcher, &Patcher::done, [=, &info] {
                 window.readGameVersion();
 
