@@ -85,7 +85,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
     gameArgs.push_back({"DEV.TestSID", auth.SID});
     gameArgs.push_back({"SYS.Region", QString::number(auth.region)});
     gameArgs.push_back({"language", QString::number(profile.language)});
-    gameArgs.push_back({"ver", profile.gameVersions[0]});
+    gameArgs.push_back({"ver", profile.repositories.repositories[0].version});
 
     if(!auth.lobbyhost.isEmpty()) {
         gameArgs.push_back({"DEV.GMServerHost", auth.frontierHost});
@@ -150,7 +150,7 @@ void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth au
                     startInfo["AssetDirectory"] = dataDir + "\\DalamudAssets";
                     startInfo["DefaultPluginDirectory"] = dataDir + "\\devPlugins";
                     startInfo["DelayInitializeMs"] = 0;
-                    startInfo["GameVersion"] = profile.gameVersions[0];
+                    startInfo["GameVersion"] = profile.repositories.repositories[0].version;
                     startInfo["Language"] = profile.language;
                     startInfo["OptOutMbCollection"] = profile.dalamud.optOutOfMbCollection;
 
@@ -494,38 +494,13 @@ void LauncherCore::readWineInfo(ProfileSettings& profile) {
 
 void LauncherCore::readGameVersion() {
     for(auto& profile : profileSettings) {
-        profile->bootVersion = readVersion(profile->gamePath + "/boot/ffxivboot.ver");
+        profile->gameData = physis_gamedata_initialize((profile->gamePath + "/game").toStdString().c_str());
+        profile->bootData = physis_bootdata_initialize((profile->gamePath + "/boot").toStdString().c_str());
 
-        if(QFile::exists(profile->gamePath +  QString("/game/ffxivgame.ver"))) {
-            profile->gameVersions.push_back(readVersion(profile->gamePath + QString("/game/ffxivgame.ver")));
-            profile->installedMaxExpansion = 0;
-        }
+        profile->repositories = physis_gamedata_get_repositories(profile->gameData);
+        profile->bootVersion = physis_bootdata_get_version(profile->bootData);
 
-        auto sqpackDirectories = QDir(profile->gamePath + "/game/sqpack/").entryList(QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot);
-
-        if(QDir().exists(profile->gamePath + "/game/sqpack/"))
-            profile->gameVersions.resize(sqpackDirectories.size());
-
-        for(auto dir : sqpackDirectories) {
-            if(dir.contains("ex")) {
-                int expansion = -1;
-
-                QString originalName = dir.remove("ex");
-                bool ok = false;
-                int convertedInt = originalName.toInt(&ok);
-                if(ok)
-                    expansion = convertedInt;
-
-                profile->gameVersions[convertedInt] = readVersion(QString("%1/game/sqpack/ex%2/ex%2.ver").arg(profile->gamePath, QString::number(expansion)));
-
-                if(expansion != -1) {
-                    profile->installedMaxExpansion = std::max(profile->installedMaxExpansion, expansion);
-                }
-            }
-        }
-
-        if(profile->installedMaxExpansion >= 0 && !sqpackDirectories.empty())
-            readGameData(*profile);
+        readGameData(*profile);
     }
 }
 
@@ -704,9 +679,6 @@ void LauncherCore::addRegistryKey(const ProfileSettings& settings,
 }
 
 void LauncherCore::readGameData(ProfileSettings& profile) {
-    profile.gameData = physis_gamedata_initialize((profile.gamePath + "/game").toStdString().c_str());
-    profile.bootData = physis_bootdata_initialize((profile.gamePath + "/boot").toStdString().c_str());
-
     EXH* exh = physis_gamedata_read_excel_sheet_header(profile.gameData, "ExVersion");
     if(exh != nullptr) {
         physis_EXD exd = physis_gamedata_read_excel_sheet(profile.gameData, "ExVersion", exh, Language::English, 0);

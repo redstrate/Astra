@@ -161,7 +161,7 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
     QUrl url;
     url.setScheme("https");
     url.setHost("patch-gamever.ffxiv.com");
-    url.setPath(QString("/http/win32/ffxivneo_release_game/%1/%2").arg(info.settings->gameVersions[0], SID));
+    url.setPath(QString("/http/win32/ffxivneo_release_game/%1/%2").arg(info.settings->repositories.repositories[0].version, SID));
 
     auto request = QNetworkRequest(url);
     window.setSSL(request);
@@ -169,12 +169,12 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
     request.setRawHeader("User-Agent", "FFXIV PATCH CLIENT");
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
 
-    QString report = info.settings->bootVersion + "=" + getBootHash(info);
+    QString report = QString("%1=%2").arg(info.settings->bootVersion, getBootHash(info));
 
     for(int i = 1; i < auth.maxExpansion + 1; i++) {
-        if(i <= info.settings->installedMaxExpansion) {
+        if(i <= info.settings->repositories.repositories_count) {
             report += QString("\nex%1\t%2")
-                          .arg(QString::number(i), info.settings->gameVersions[i]);
+                          .arg(QString::number(i), info.settings->repositories.repositories[i].version);
         } else {
             report += QString("\nex%1\t2012.01.01.0000.0000").arg(QString::number(i));
         }

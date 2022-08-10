@@ -204,14 +204,14 @@ void SettingsWindow::reloadControls() {
         expacString += "Boot";
         expacString += QString(" (%1)\n").arg(profile.bootVersion);
 
-        for(int i = 0; i < profile.gameVersions.size(); i++) {
+        for(int i = 0; i < profile.repositories.repositories_count; i++) {
             QString expansionName = "Unknown Expansion";
             if(i < core.expansionNames.size()) {
                 expansionName = core.expansionNames[i];
             }
 
             expacString += expansionName;
-            expacString += QString(" (%1)\n").arg(profile.gameVersions[i]);
+            expacString += QString(" (%1)\n").arg(profile.repositories.repositories[i].version);
         }
 
         expansionVersionLabel->setText(expacString);

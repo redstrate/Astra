@@ -45,16 +45,17 @@ public:
     // game
     int language = 1; // 1 is english, thats all i know
     QString gamePath, winePath, winePrefixPath;
-    QString bootVersion, wineVersion;
-    int installedMaxExpansion = -1;
-    QVector<QString> gameVersions;
+    QString wineVersion;
     bool enableWatchdog = false;
 
     BootData* bootData;
     GameData* gameData;
 
+    physis_Repositories repositories;
+    const char* bootVersion;
+
     bool isGameInstalled() const {
-        return !gameVersions.isEmpty();
+        return repositories.repositories_count > 0;
     }
 
     bool isWineInstalled() const {
