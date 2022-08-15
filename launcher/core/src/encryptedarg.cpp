@@ -1,12 +1,12 @@
 #include "encryptedarg.h"
 
 #if defined(Q_OS_MAC)
-#include <sys/sysctl.h>
-#include <mach/mach_time.h>
+    #include <mach/mach_time.h>
+    #include <sys/sysctl.h>
 #endif
 
 #if defined(Q_OS_WIN)
-#include <windows.h>
+    #include <windows.h>
 #endif
 
 #if defined(Q_OS_MAC)
@@ -16,7 +16,7 @@ uint32_t TickCount() {
     mach_timebase_info(&timebase);
 
     auto machtime = mach_continuous_time();
-    auto numer = uint64_t (timebase.numer);
+    auto numer = uint64_t(timebase.numer);
     auto denom = uint64_t(timebase.denom);
     auto monotonic_time = machtime * numer / denom / 100;
     return monotonic_time / 10000;

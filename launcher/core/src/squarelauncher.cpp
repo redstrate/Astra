@@ -1,24 +1,22 @@
 #include "squarelauncher.h"
 
+#include <QDesktopServices>
 #include <QFile>
-#include <QUrlQuery>
-#include <QNetworkReply>
-#include <QRegularExpressionMatch>
-#include <QMessageBox>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMessageBox>
+#include <QNetworkReply>
 #include <QPushButton>
-#include <QDesktopServices>
+#include <QRegularExpressionMatch>
+#include <QUrlQuery>
 
 #include "launchercore.h"
 
 #ifdef ENABLE_WATCHDOG
-#include "watchdog.h"
+    #include "watchdog.h"
 #endif
 
-SquareLauncher::SquareLauncher(LauncherCore& window) : window(window), QObject(&window) {
-
-}
+SquareLauncher::SquareLauncher(LauncherCore& window) : window(window), QObject(&window) {}
 
 QString getFileHash(QString file) {
     auto f = QFile(file);
@@ -42,7 +40,7 @@ void SquareLauncher::getStored(const LoginInformation& info) {
     query.addQueryItem("isnew", "1");
     query.addQueryItem("launchver", "3");
 
-    if(info.settings->license == GameLicense::WindowsSteam) {
+    if (info.settings->license == GameLicense::WindowsSteam) {
         query.addQueryItem("issteam", "1");
 
         // TODO: get steam ticket information from steam api
@@ -62,14 +60,17 @@ void SquareLauncher::getStored(const LoginInformation& info) {
         auto str = QString(reply->readAll());
 
         // fetches Steam username
-        if(info.settings->license == GameLicense::WindowsSteam) {
+        if (info.settings->license == GameLicense::WindowsSteam) {
             QRegularExpression re(R"lit(<input name=""sqexid"" type=""hidden"" value=""(?<sqexid>.*)""\/>)lit");
             QRegularExpressionMatch match = re.match(str);
 
-            if(match.hasMatch()) {
+            if (match.hasMatch()) {
                 username = match.captured(1);
             } else {
-                auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Could not get Steam username, have you attached your account?");
+                auto messageBox = new QMessageBox(
+                    QMessageBox::Icon::Critical,
+                    "Failed to Login",
+                    "Could not get Steam username, have you attached your account?");
                 messageBox->show();
             }
         } else {
@@ -82,7 +83,10 @@ void SquareLauncher::getStored(const LoginInformation& info) {
             stored = match.captured(1);
             login(info, url);
         } else {
-            auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Failed to contact SE servers. They may be in maintenance.");
+            auto messageBox = new QMessageBox(
+                QMessageBox::Icon::Critical,
+                "Failed to Login",
+                "Failed to contact SE servers. They may be in maintenance.");
             messageBox->show();
         }
     });
@@ -97,7 +101,7 @@ void SquareLauncher::login(const LoginInformation& info, const QUrl referer) {
 
     QNetworkRequest request(QUrl("https://ffxiv-login.square-enix.com/oauth/ffxivarr/login/login.send"));
     window.buildRequest(*info.settings, request);
-    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("Referer", referer.toEncoded());
     request.setRawHeader("Cache-Control", "no-cache");
 
@@ -107,14 +111,18 @@ void SquareLauncher::login(const LoginInformation& info, const QUrl referer) {
 
         QRegularExpression re(R"lit(window.external.user\("login=auth,ok,(?<launchParams>.*)\);)lit");
         QRegularExpressionMatch match = re.match(str);
-        if(match.hasMatch()) {
+        if (match.hasMatch()) {
             const auto parts = match.captured(1).split(',');
 
             const bool terms = parts[3] == "1";
             const bool playable = parts[9] == "1";
 
-            if(!playable) {
-                auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Your game is unplayable. Please check that you have the right license selected, and a subscription to play.");
+            if (!playable) {
+                auto messageBox = new QMessageBox(
+                    QMessageBox::Icon::Critical,
+                    "Failed to Login",
+                    "Your game is unplayable. Please check that you have the right license selected, and a "
+                    "subscription to play.");
 
                 auto launcherButton = messageBox->addButton("Open Mog Station", QMessageBox::HelpRole);
                 connect(launcherButton, &QPushButton::clicked, [=] {
@@ -128,8 +136,11 @@ void SquareLauncher::login(const LoginInformation& info, const QUrl referer) {
                 return;
             }
 
-            if(!terms) {
-                auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Your game is unplayable. You need to accept the terms of service from the official launcher.");
+            if (!terms) {
+                auto messageBox = new QMessageBox(
+                    QMessageBox::Icon::Critical,
+                    "Failed to Login",
+                    "Your game is unplayable. You need to accept the terms of service from the official launcher.");
                 window.addUpdateButtons(*info.settings, *messageBox);
 
                 messageBox->show();
@@ -161,20 +172,21 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
     QUrl url;
     url.setScheme("https");
     url.setHost("patch-gamever.ffxiv.com");
-    url.setPath(QString("/http/win32/ffxivneo_release_game/%1/%2").arg(info.settings->repositories.repositories[0].version, SID));
+    url.setPath(QString("/http/win32/ffxivneo_release_game/%1/%2")
+                    .arg(info.settings->repositories.repositories[0].version, SID));
 
     auto request = QNetworkRequest(url);
     window.setSSL(request);
     request.setRawHeader("X-Hash-Check", "enabled");
     request.setRawHeader("User-Agent", "FFXIV PATCH CLIENT");
-    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
     QString report = QString("%1=%2").arg(info.settings->bootVersion, getBootHash(info));
 
-    for(int i = 1; i < auth.maxExpansion + 1; i++) {
-        if(i <= info.settings->repositories.repositories_count) {
-            report += QString("\nex%1\t%2")
-                          .arg(QString::number(i), info.settings->repositories.repositories[i].version);
+    for (int i = 1; i < auth.maxExpansion + 1; i++) {
+        if (i <= info.settings->repositories.repositories_count) {
+            report +=
+                QString("\nex%1\t%2").arg(QString::number(i), info.settings->repositories.repositories[i].version);
         } else {
             report += QString("\nex%1\t2012.01.01.0000.0000").arg(QString::number(i));
         }
@@ -182,7 +194,7 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
 
     auto reply = window.mgr->post(request, report.toUtf8());
     connect(reply, &QNetworkReply::finished, [=, &info] {
-        if(reply->rawHeaderList().contains("X-Patch-Unique-Id")) {
+        if (reply->rawHeaderList().contains("X-Patch-Unique-Id")) {
             QString body = reply->readAll();
 
             patcher = new Patcher(info.settings->gamePath + "/game", info.settings->gameData);
@@ -192,7 +204,7 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
                 auth.SID = reply->rawHeader("X-Patch-Unique-Id");
 
 #ifdef ENABLE_WATCHDOG
-                if(info.settings->enableWatchdog) {
+                if (info.settings->enableWatchdog) {
                     window.watchdog->launchGame(*info.settings, auth);
                 } else {
                     window.launchGame(*info.settings, auth);
@@ -204,7 +216,10 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
 
             patcher->processPatchList(*window.mgr, body);
         } else {
-            auto messageBox = new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Failed the anti-tamper check. Please restore your game to the original state or update the game.");
+            auto messageBox = new QMessageBox(
+                QMessageBox::Icon::Critical,
+                "Failed to Login",
+                "Failed the anti-tamper check. Please restore your game to the original state or update the game.");
             window.addUpdateButtons(*info.settings, *messageBox);
 
             messageBox->show();
@@ -213,15 +228,13 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
 }
 
 QString SquareLauncher::getBootHash(const LoginInformation& info) {
-    const QList<QString> fileList =
-            {
-                    "ffxivboot.exe",
-                    "ffxivboot64.exe",
-                    "ffxivlauncher.exe",
-                    "ffxivlauncher64.exe",
-                    "ffxivupdater.exe",
-                    "ffxivupdater64.exe"
-            };
+    const QList<QString> fileList = {
+        "ffxivboot.exe",
+        "ffxivboot64.exe",
+        "ffxivlauncher.exe",
+        "ffxivlauncher64.exe",
+        "ffxivupdater.exe",
+        "ffxivupdater64.exe"};
 
     QString result;
     for (int i = 0; i < fileList.count(); i++) {

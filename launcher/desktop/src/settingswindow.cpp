@@ -1,22 +1,23 @@
 #include "settingswindow.h"
 
-#include <QFormLayout>
-#include <QPushButton>
-#include <QDesktopServices>
-#include <QLabel>
-#include <QFileDialog>
 #include <QCheckBox>
+#include <QDesktopServices>
+#include <QFileDialog>
+#include <QFormLayout>
+#include <QGridLayout>
 #include <QGroupBox>
+#include <QLabel>
 #include <QMessageBox>
 #include <QProcess>
-#include <QGridLayout>
+#include <QPushButton>
 #include <QToolTip>
 
+#include "gamescopesettingswindow.h"
 #include "launchercore.h"
 #include "launcherwindow.h"
-#include "gamescopesettingswindow.h"
 
-SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherCore& core, QWidget* parent) : core(core), window(window), QDialog(parent) {
+SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherCore& core, QWidget* parent)
+    : core(core), window(window), QDialog(parent) {
     setWindowTitle("Settings");
     setWindowModality(Qt::WindowModality::ApplicationModal);
 
@@ -76,8 +77,7 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
         profileWidget->addItem("INVALID *DEBUG*");
         profileWidget->setCurrentRow(0);
 
-        connect(profileWidget, &QListWidget::currentRowChanged, this,
-                &SettingsWindow::reloadControls);
+        connect(profileWidget, &QListWidget::currentRowChanged, this, &SettingsWindow::reloadControls);
 
         profileLayout->addWidget(profileWidget, 0, 0, 3, 1);
 
@@ -91,8 +91,7 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
 
         deleteProfileButton = new QPushButton("Delete Profile");
         connect(deleteProfileButton, &QPushButton::pressed, [=] {
-            profileWidget->setCurrentRow(
-                this->core.deleteProfile(getCurrentProfile().name));
+            profileWidget->setCurrentRow(this->core.deleteProfile(getCurrentProfile().name));
 
             this->core.saveSettings();
         });
@@ -168,7 +167,7 @@ SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherC
 }
 
 void SettingsWindow::reloadControls() {
-    if(currentlyReloadingControls)
+    if (currentlyReloadingControls)
         return;
 
     currentlyReloadingControls = true;
@@ -177,7 +176,7 @@ void SettingsWindow::reloadControls() {
 
     profileWidget->clear();
 
-    for(const auto& profile : core.profileList()) {
+    for (const auto& profile : core.profileList()) {
         profileWidget->addItem(profile);
     }
     profileWidget->setCurrentRow(oldRow);
@@ -196,7 +195,7 @@ void SettingsWindow::reloadControls() {
     directXCombo->setCurrentIndex(profile.useDX9 ? 1 : 0);
     currentGameDirectory->setText(profile.gamePath);
 
-    if(!profile.isGameInstalled()) {
+    if (!profile.isGameInstalled()) {
         expansionVersionLabel->setText("No game installed.");
     } else {
         QString expacString;
@@ -204,9 +203,9 @@ void SettingsWindow::reloadControls() {
         expacString += "Boot";
         expacString += QString(" (%1)\n").arg(profile.bootVersion);
 
-        for(int i = 0; i < profile.repositories.repositories_count; i++) {
+        for (int i = 0; i < profile.repositories.repositories_count; i++) {
             QString expansionName = "Unknown Expansion";
-            if(i < core.expansionNames.size()) {
+            if (i < core.expansionNames.size()) {
                 expansionName = core.expansionNames[i];
             }
 
@@ -219,7 +218,7 @@ void SettingsWindow::reloadControls() {
 
     // wine
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-    if(!profile.isWineInstalled()) {
+    if (!profile.isWineInstalled()) {
         wineVersionLabel->setText("Wine is not installed.");
     } else {
         wineVersionLabel->setText(profile.wineVersion);
@@ -250,7 +249,7 @@ void SettingsWindow::reloadControls() {
     encryptArgumentsBox->setChecked(profile.encryptArguments);
     serverType->setCurrentIndex(profile.isSapphire ? 1 : 0);
     lobbyServerURL->setEnabled(profile.isSapphire);
-    if(profile.isSapphire) {
+    if (profile.isSapphire) {
         lobbyServerURL->setText(profile.lobbyURL);
         lobbyServerURL->setPlaceholderText("Required...");
     } else {
@@ -260,7 +259,7 @@ void SettingsWindow::reloadControls() {
     rememberPasswordBox->setChecked(profile.rememberPassword);
     useOneTimePassword->setChecked(profile.useOneTimePassword);
     useOneTimePassword->setEnabled(!profile.isSapphire);
-    if(!useOneTimePassword->isEnabled()) {
+    if (!useOneTimePassword->isEnabled()) {
         useOneTimePassword->setToolTip("OTP is not supported by Sapphire servers.");
     } else {
         useOneTimePassword->setToolTip("");
@@ -268,7 +267,7 @@ void SettingsWindow::reloadControls() {
 
     gameLicenseBox->setCurrentIndex((int)profile.license);
     gameLicenseBox->setEnabled(!profile.isSapphire);
-    if(!gameLicenseBox->isEnabled()) {
+    if (!gameLicenseBox->isEnabled()) {
         gameLicenseBox->setToolTip("Game licenses only matter when logging into the official Square Enix servers.");
     } else {
         gameLicenseBox->setToolTip("");
@@ -278,19 +277,19 @@ void SettingsWindow::reloadControls() {
 
     // dalamud
     enableDalamudBox->setChecked(profile.dalamud.enabled);
-    if(core.dalamudVersion.isEmpty()) {
+    if (core.dalamudVersion.isEmpty()) {
         dalamudVersionLabel->setText("Dalamud is not installed.");
     } else {
         dalamudVersionLabel->setText(core.dalamudVersion);
     }
 
-    if(core.dalamudAssetVersion == -1) {
+    if (core.dalamudAssetVersion == -1) {
         dalamudAssetVersionLabel->setText("Dalamud assets are not installed.");
     } else {
         dalamudAssetVersionLabel->setText(QString::number(core.dalamudAssetVersion));
     }
 
-    if(core.nativeLauncherVersion.isEmpty()) {
+    if (core.nativeLauncherVersion.isEmpty()) {
         nativeLauncherVersionLabel->setText("Native launcher is not installed.");
     } else {
         nativeLauncherVersionLabel->setText(core.nativeLauncherVersion);
@@ -314,14 +313,10 @@ void SettingsWindow::setupGameTab(QFormLayout& layout) {
     directXCombo->addItem("DirectX 9");
     layout.addRow("DirectX Version", directXCombo);
 
-    connect(directXCombo,
-            static_cast<void (QComboBox::*)(int)>(
-                &QComboBox::currentIndexChanged),
-            [=](int index) {
-                getCurrentProfile().useDX9 =
-                    directXCombo->currentIndex() == 1;
-                this->core.saveSettings();
-            });
+    connect(directXCombo, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=](int index) {
+        getCurrentProfile().useDX9 = directXCombo->currentIndex() == 1;
+        this->core.saveSettings();
+    });
 
     currentGameDirectory = new QLabel();
     currentGameDirectory->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
@@ -334,8 +329,7 @@ void SettingsWindow::setupGameTab(QFormLayout& layout) {
 
     auto selectDirectoryButton = new QPushButton("Select Game Directory");
     connect(selectDirectoryButton, &QPushButton::pressed, [this] {
-        getCurrentProfile().gamePath =
-            QFileDialog::getExistingDirectory(this, "Open Game Directory");
+        getCurrentProfile().gamePath = QFileDialog::getExistingDirectory(this, "Open Game Directory");
 
         this->reloadControls();
         this->core.saveSettings();
@@ -345,8 +339,9 @@ void SettingsWindow::setupGameTab(QFormLayout& layout) {
     gameDirButtonLayout->addWidget(selectDirectoryButton);
 
     gameDirectoryButton = new QPushButton("Open Game Directory");
-    connect(gameDirectoryButton, &QPushButton::pressed,
-            [this] { window.openPath(getCurrentProfile().gamePath); });
+    connect(gameDirectoryButton, &QPushButton::pressed, [this] {
+        window.openPath(getCurrentProfile().gamePath);
+    });
     gameDirButtonLayout->addWidget(gameDirectoryButton);
 
 #ifdef ENABLE_WATCHDOG
@@ -370,8 +365,7 @@ void SettingsWindow::setupGameTab(QFormLayout& layout) {
 void SettingsWindow::setupLoginTab(QFormLayout& layout) {
     encryptArgumentsBox = new QCheckBox();
     connect(encryptArgumentsBox, &QCheckBox::stateChanged, [=](int) {
-        getCurrentProfile().encryptArguments =
-            encryptArgumentsBox->isChecked();
+        getCurrentProfile().encryptArguments = encryptArgumentsBox->isChecked();
 
         this->core.saveSettings();
     });
@@ -381,15 +375,12 @@ void SettingsWindow::setupLoginTab(QFormLayout& layout) {
     serverType->insertItem(0, "Square Enix");
     serverType->insertItem(1, "Sapphire");
 
-    connect(serverType,
-            static_cast<void (QComboBox::*)(int)>(
-                &QComboBox::currentIndexChanged),
-            [=](int index) {
-                getCurrentProfile().isSapphire = index == 1;
+    connect(serverType, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=](int index) {
+        getCurrentProfile().isSapphire = index == 1;
 
-                reloadControls();
-                this->core.saveSettings();
-            });
+        reloadControls();
+        this->core.saveSettings();
+    });
 
     layout.addRow("Server Lobby", serverType);
 
@@ -405,21 +396,17 @@ void SettingsWindow::setupLoginTab(QFormLayout& layout) {
     gameLicenseBox->insertItem(1, "Windows (Steam)");
     gameLicenseBox->insertItem(2, "macOS");
 
-    connect(gameLicenseBox,
-            static_cast<void (QComboBox::*)(int)>(
-                &QComboBox::currentIndexChanged),
-            [=](int index) {
-                getCurrentProfile().license = (GameLicense)index;
+    connect(gameLicenseBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=](int index) {
+        getCurrentProfile().license = (GameLicense)index;
 
-                this->core.saveSettings();
-            });
+        this->core.saveSettings();
+    });
 
     layout.addRow("Game License", gameLicenseBox);
 
     freeTrialBox = new QCheckBox();
     connect(freeTrialBox, &QCheckBox::stateChanged, [=](int) {
-        getCurrentProfile().isFreeTrial =
-            freeTrialBox->isChecked();
+        getCurrentProfile().isFreeTrial = freeTrialBox->isChecked();
 
         this->core.saveSettings();
     });
@@ -427,8 +414,7 @@ void SettingsWindow::setupLoginTab(QFormLayout& layout) {
 
     rememberUsernameBox = new QCheckBox();
     connect(rememberUsernameBox, &QCheckBox::stateChanged, [=](int) {
-        getCurrentProfile().rememberUsername =
-            rememberUsernameBox->isChecked();
+        getCurrentProfile().rememberUsername = rememberUsernameBox->isChecked();
 
         this->core.saveSettings();
     });
@@ -436,8 +422,7 @@ void SettingsWindow::setupLoginTab(QFormLayout& layout) {
 
     rememberPasswordBox = new QCheckBox();
     connect(rememberPasswordBox, &QCheckBox::stateChanged, [=](int) {
-        getCurrentProfile().rememberPassword =
-            rememberPasswordBox->isChecked();
+        getCurrentProfile().rememberPassword = rememberPasswordBox->isChecked();
 
         this->core.saveSettings();
     });
@@ -445,8 +430,7 @@ void SettingsWindow::setupLoginTab(QFormLayout& layout) {
 
     useOneTimePassword = new QCheckBox();
     connect(useOneTimePassword, &QCheckBox::stateChanged, [=](int) {
-        getCurrentProfile().useOneTimePassword =
-            useOneTimePassword->isChecked();
+        getCurrentProfile().useOneTimePassword = useOneTimePassword->isChecked();
 
         this->core.saveSettings();
         this->window.reloadControls();
@@ -462,40 +446,36 @@ void SettingsWindow::setupWineTab(QFormLayout& layout) {
 
     wineTypeCombo = new QComboBox();
 
-#if defined(Q_OS_MAC)
+    #if defined(Q_OS_MAC)
     wineTypeCombo->insertItem(2, "FFXIV for Mac (Official)");
     wineTypeCombo->insertItem(3, "XIV on Mac");
-#endif
+    #endif
 
     wineTypeCombo->insertItem(0, "System Wine");
 
     // custom wine selection is broken under flatpak
-#ifndef FLATPAK
+    #ifndef FLATPAK
     wineTypeCombo->insertItem(1, "Custom Wine");
-#endif
+    #endif
 
     layout.addWidget(wineTypeCombo);
 
     selectWineButton = new QPushButton("Select Wine Executable");
 
-#ifndef FLATPAK
+    #ifndef FLATPAK
     layout.addWidget(selectWineButton);
-#endif
+    #endif
 
-    connect(wineTypeCombo,
-            static_cast<void (QComboBox::*)(int)>(
-                &QComboBox::currentIndexChanged),
-            [this](int index) {
-                getCurrentProfile().wineType = (WineType)index;
+    connect(wineTypeCombo, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int index) {
+        getCurrentProfile().wineType = (WineType)index;
 
-                this->core.readWineInfo(getCurrentProfile());
-                this->core.saveSettings();
-                this->reloadControls();
-            });
+        this->core.readWineInfo(getCurrentProfile());
+        this->core.saveSettings();
+        this->reloadControls();
+    });
 
     connect(selectWineButton, &QPushButton::pressed, [this] {
-        getCurrentProfile().winePath =
-            QFileDialog::getOpenFileName(this, "Open Wine Executable");
+        getCurrentProfile().winePath = QFileDialog::getOpenFileName(this, "Open Wine Executable");
 
         this->core.saveSettings();
         this->reloadControls();
@@ -503,10 +483,10 @@ void SettingsWindow::setupWineTab(QFormLayout& layout) {
 
     // wine version is reported incorrectly under flatpak too
     wineVersionLabel = new QLabel();
-#ifndef FLATPAK
+    #ifndef FLATPAK
     wineVersionLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
     layout.addRow("Wine Version", wineVersionLabel);
-#endif
+    #endif
 
     winePrefixDirectory = new QLabel();
     winePrefixDirectory->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
@@ -519,8 +499,7 @@ void SettingsWindow::setupWineTab(QFormLayout& layout) {
 
     auto selectPrefixButton = new QPushButton("Select Wine Prefix");
     connect(selectPrefixButton, &QPushButton::pressed, [this] {
-        getCurrentProfile().winePrefixPath =
-            QFileDialog::getExistingDirectory(this, "Open Wine Prefix");
+        getCurrentProfile().winePrefixPath = QFileDialog::getExistingDirectory(this, "Open Wine Prefix");
 
         this->core.saveSettings();
         this->reloadControls();
@@ -528,8 +507,9 @@ void SettingsWindow::setupWineTab(QFormLayout& layout) {
     winePrefixButtonLayout->addWidget(selectPrefixButton);
 
     auto openPrefixButton = new QPushButton("Open Wine Prefix");
-    connect(openPrefixButton, &QPushButton::pressed,
-            [this] { window.openPath(getCurrentProfile().winePrefixPath); });
+    connect(openPrefixButton, &QPushButton::pressed, [this] {
+        window.openPath(getCurrentProfile().winePrefixPath);
+    });
     winePrefixButtonLayout->addWidget(openPrefixButton);
 
     auto enableDXVKhud = new QCheckBox("Enable DXVK HUD");
@@ -537,17 +517,16 @@ void SettingsWindow::setupWineTab(QFormLayout& layout) {
 
     connect(enableDXVKhud, &QCheckBox::stateChanged, [this](int state) {
         getCurrentProfile().enableDXVKhud = state;
-        this->core.settings.setValue("enableDXVKhud",
-                                     static_cast<bool>(state));
+        this->core.settings.setValue("enableDXVKhud", static_cast<bool>(state));
     });
 #endif
 
 #if defined(Q_OS_LINUX)
-    useEsync = new QCheckBox(
-        "Use Better Sync Primitives (Esync, Fsync, and Futex2)");
+    useEsync = new QCheckBox("Use Better Sync Primitives (Esync, Fsync, and Futex2)");
     layout.addWidget(useEsync);
 
-    useEsync->setToolTip("This may improve game performance, but requires a Wine and kernel with the patches included.");
+    useEsync->setToolTip(
+        "This may improve game performance, but requires a Wine and kernel with the patches included.");
 
     connect(useEsync, &QCheckBox::stateChanged, [this](int state) {
         getCurrentProfile().useEsync = state;
@@ -558,7 +537,9 @@ void SettingsWindow::setupWineTab(QFormLayout& layout) {
     useGamescope = new QCheckBox("Use Gamescope");
     layout.addWidget(useGamescope);
 
-    useGamescope->setToolTip("Use the micro-compositor compositor that uses Wayland and XWayland to create a nested session.\nIf you primarily use fullscreen mode, this may improve input handling especially on Wayland.");
+    useGamescope->setToolTip(
+        "Use the micro-compositor compositor that uses Wayland and XWayland to create a nested session.\nIf you "
+        "primarily use fullscreen mode, this may improve input handling especially on Wayland.");
 
     auto gamescopeButtonLayout = new QHBoxLayout();
     auto gamescopeButtonContainer = new QWidget();
@@ -567,8 +548,7 @@ void SettingsWindow::setupWineTab(QFormLayout& layout) {
 
     configureGamescopeButton = new QPushButton("Configure...");
     connect(configureGamescopeButton, &QPushButton::pressed, [&] {
-        auto gamescopeSettingsWindow = new GamescopeSettingsWindow(
-            getCurrentProfile(), this->core, this);
+        auto gamescopeSettingsWindow = new GamescopeSettingsWindow(getCurrentProfile(), this->core, this);
         gamescopeSettingsWindow->show();
     });
     gamescopeButtonLayout->addWidget(configureGamescopeButton);
@@ -583,7 +563,8 @@ void SettingsWindow::setupWineTab(QFormLayout& layout) {
     useGamemode = new QCheckBox("Use GameMode");
     layout.addWidget(useGamemode);
 
-    useGamemode->setToolTip("A special game performance enhancer, which automatically tunes your CPU scheduler among other things. This may improve game performance.");
+    useGamemode->setToolTip("A special game performance enhancer, which automatically tunes your CPU scheduler among "
+                            "other things. This may improve game performance.");
 
     connect(useGamemode, &QCheckBox::stateChanged, [this](int state) {
         getCurrentProfile().useGamemode = state;
@@ -615,14 +596,11 @@ void SettingsWindow::setupDalamudTab(QFormLayout& layout) {
     dalamudChannel->insertItem(1, "Staging");
     dalamudChannel->insertItem(2, ".NET 5");
 
-    connect(dalamudChannel,
-            static_cast<void (QComboBox::*)(int)>(
-                &QComboBox::currentIndexChanged),
-            [=](int index) {
-                getCurrentProfile().dalamud.channel = (DalamudChannel)index;
+    connect(dalamudChannel, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=](int index) {
+        getCurrentProfile().dalamud.channel = (DalamudChannel)index;
 
-                this->core.saveSettings();
-            });
+        this->core.saveSettings();
+    });
 
     layout.addRow("Dalamud Update Channel", dalamudChannel);
 
@@ -639,6 +617,4 @@ void SettingsWindow::setupDalamudTab(QFormLayout& layout) {
     layout.addRow("Native Launcher Version", nativeLauncherVersionLabel);
 }
 
-void SettingsWindow::setupAccountsTab(QFormLayout& layout) {
-
-}
+void SettingsWindow::setupAccountsTab(QFormLayout& layout) {}

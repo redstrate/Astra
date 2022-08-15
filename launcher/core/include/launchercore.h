@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QMainWindow>
-#include <QNetworkAccessManager>
 #include <QFuture>
+#include <QMainWindow>
+#include <QMessageBox>
+#include <QNetworkAccessManager>
+#include <QProcess>
 #include <QSettings>
 #include <QUuid>
-#include <QProcess>
-#include <QMessageBox>
 #include <QtQml>
 
 #include "squareboot.h"
@@ -162,7 +162,12 @@ public:
     /*
      * This just wraps it in wine if needed.
      */
-    void launchExecutable(const ProfileSettings& settings, QProcess* process, QStringList args, bool isGame, bool needsRegistrySetup);
+    void launchExecutable(
+        const ProfileSettings& settings,
+        QProcess* process,
+        QStringList args,
+        bool isGame,
+        bool needsRegistrySetup);
 
     /*
      * Launches an external tool. Gamescope for example is intentionally excluded.

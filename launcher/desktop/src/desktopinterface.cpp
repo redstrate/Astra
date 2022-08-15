@@ -7,14 +7,16 @@ DesktopInterface::DesktopInterface(LauncherCore& core) {
 
     auto& defaultProfile = core.getProfile(core.defaultProfileIndex);
 
-    if(!defaultProfile.isGameInstalled()) {
+    if (!defaultProfile.isGameInstalled()) {
         auto messageBox = new QMessageBox(window);
         messageBox->setIcon(QMessageBox::Icon::Question);
         messageBox->setText("No Game Found");
         messageBox->setInformativeText("FFXIV is not installed. Would you like to install it now?");
 
-        QString detailedText = QString("Astra will install FFXIV for you at '%1'").arg(core.getProfile(core.defaultProfileIndex).gamePath);
-        detailedText.append("\n\nIf you do not wish to install it to this location, please set it in your default profile first.");
+        QString detailedText =
+            QString("Astra will install FFXIV for you at '%1'").arg(core.getProfile(core.defaultProfileIndex).gamePath);
+        detailedText.append(
+            "\n\nIf you do not wish to install it to this location, please set it in your default profile first.");
 
         messageBox->setDetailedText(detailedText);
         messageBox->setWindowModality(Qt::WindowModal);
@@ -35,7 +37,7 @@ DesktopInterface::DesktopInterface(LauncherCore& core) {
     }
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-    if(!defaultProfile.isWineInstalled()) {
+    if (!defaultProfile.isWineInstalled()) {
         auto messageBox = new QMessageBox(window);
         messageBox->setIcon(QMessageBox::Icon::Critical);
         messageBox->setText("No Wine Found");

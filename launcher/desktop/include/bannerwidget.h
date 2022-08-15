@@ -10,8 +10,8 @@ public:
     void setUrl(QUrl url);
 
 protected:
-    void mousePressEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent* event) override;
 
-  private:
+private:
     QUrl url;
 };

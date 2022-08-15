@@ -1,16 +1,16 @@
 #pragma once
 
-#include <QMainWindow>
-#include <QComboBox>
 #include <QCheckBox>
-#include <QPushButton>
-#include <QTreeWidget>
-#include <QGridLayout>
+#include <QComboBox>
 #include <QFormLayout>
+#include <QGridLayout>
+#include <QMainWindow>
+#include <QPushButton>
 #include <QScrollArea>
+#include <QTreeWidget>
 
-#include "launchercore.h"
 #include "headline.h"
+#include "launchercore.h"
 
 class LauncherWindow : public QMainWindow {
     Q_OBJECT
@@ -51,10 +51,10 @@ private:
     QAction* openGameDir;
 
     QComboBox* profileSelect;
-    QLineEdit* usernameEdit, *passwordEdit;
+    QLineEdit *usernameEdit, *passwordEdit;
     QLineEdit* otpEdit;
-    QCheckBox* rememberUsernameBox, *rememberPasswordBox;
-    QPushButton* loginButton, *registerButton;
+    QCheckBox *rememberUsernameBox, *rememberPasswordBox;
+    QPushButton *loginButton, *registerButton;
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     QAction* wineCfg;

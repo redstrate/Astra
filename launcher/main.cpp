@@ -3,8 +3,8 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
-#include <keychain.h>
 #include <QDir>
+#include <keychain.h>
 #include <physis.hpp>
 
 #include "../launcher/tablet/include/tabletinterface.h"
@@ -53,19 +53,19 @@ int main(int argc, char* argv[]) {
 
     parser.process(app);
 
-    if(parser.isSet(versionOption)) {
+    if (parser.isSet(versionOption)) {
         parser.showVersion();
     }
 
-    if(parser.isSet(helpOption)) {
+    if (parser.isSet(helpOption)) {
         parser.showHelp();
     }
 
     LauncherCore c;
-    if(parser.isSet(tabletOption)) {
+    if (parser.isSet(tabletOption)) {
         std::make_unique<TabletInterface>(c);
-    } else if(parser.isSet(cliOption)) {
-        if(!cmd->parse(parser, c))
+    } else if (parser.isSet(cliOption)) {
+        if (!cmd->parse(parser, c))
             return -1;
     } else {
         std::make_unique<DesktopInterface>(c);

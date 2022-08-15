@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QString>
-#include <QProgressDialog>
 #include <QNetworkAccessManager>
+#include <QProgressDialog>
+#include <QString>
 #include <physis.hpp>
 
 // General-purpose patcher routine. It opens a nice dialog box, handles downloading

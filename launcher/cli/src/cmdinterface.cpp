@@ -1,27 +1,27 @@
-#include <keychain.h>
 #include "cmdinterface.h"
-#include "squareboot.h"
 #include "sapphirelauncher.h"
+#include "squareboot.h"
+#include <keychain.h>
 
-CMDInterface::CMDInterface(QCommandLineParser &parser) {
+CMDInterface::CMDInterface(QCommandLineParser& parser) {
     parser.addOption(autologinOption);
     parser.addOption(profileOption);
 }
 
-bool CMDInterface::parse(QCommandLineParser &parser, LauncherCore &core) {
-    if(parser.isSet(profileOption)) {
+bool CMDInterface::parse(QCommandLineParser& parser, LauncherCore& core) {
+    if (parser.isSet(profileOption)) {
         core.defaultProfileIndex = core.getProfileIndex(parser.value(profileOption));
 
-        if(core.defaultProfileIndex == -1) {
+        if (core.defaultProfileIndex == -1) {
             qInfo() << "The profile \"" << parser.value(profileOption) << "\" does not exist!";
             return false;
         }
     }
 
-    if(parser.isSet(autologinOption)) {
+    if (parser.isSet(autologinOption)) {
         auto& profile = core.getProfile(core.defaultProfileIndex);
 
-        if(!profile.rememberUsername || !profile.rememberPassword) {
+        if (!profile.rememberUsername || !profile.rememberPassword) {
             qInfo() << "Profile does not have a username and/or password saved, autologin disabled.";
 
             return false;
@@ -34,10 +34,11 @@ bool CMDInterface::parse(QCommandLineParser &parser, LauncherCore &core) {
         usernameJob->setKey(profile.name + "-username");
         usernameJob->start();
 
-        core.connect(usernameJob, &QKeychain::ReadPasswordJob::finished, [loop, usernameJob, &username](QKeychain::Job* j) {
-            username = usernameJob->textData();
-            loop->quit();
-        });
+        core.connect(
+            usernameJob, &QKeychain::ReadPasswordJob::finished, [loop, usernameJob, &username](QKeychain::Job* j) {
+                username = usernameJob->textData();
+                loop->quit();
+            });
 
         loop->exec();
 
@@ -45,10 +46,11 @@ bool CMDInterface::parse(QCommandLineParser &parser, LauncherCore &core) {
         passwordJob->setKey(profile.name + "-password");
         passwordJob->start();
 
-        core.connect(passwordJob, &QKeychain::ReadPasswordJob::finished, [loop, passwordJob, &password](QKeychain::Job* j) {
-            password = passwordJob->textData();
-            loop->quit();
-        });
+        core.connect(
+            passwordJob, &QKeychain::ReadPasswordJob::finished, [loop, passwordJob, &password](QKeychain::Job* j) {
+                password = passwordJob->textData();
+                loop->quit();
+            });
 
         loop->exec();
 
@@ -57,7 +59,7 @@ bool CMDInterface::parse(QCommandLineParser &parser, LauncherCore &core) {
         info->username = username;
         info->password = password;
 
-        if(profile.isSapphire) {
+        if (profile.isSapphire) {
             core.sapphireLauncher->login(profile.lobbyURL, *info);
         } else {
             core.squareBoot->bootCheck(*info);

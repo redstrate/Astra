@@ -1,28 +1,28 @@
 #include "launcherwindow.h"
 
-#include <QMenuBar>
-#include <keychain.h>
-#include <QFormLayout>
 #include <QApplication>
 #include <QDesktopServices>
-#include <QNetworkReply>
-#include <QTreeWidgetItem>
-#include <QHeaderView>
 #include <QDirIterator>
-#include <QTimer>
+#include <QFormLayout>
+#include <QHeaderView>
+#include <QMenuBar>
+#include <QNetworkReply>
 #include <QScrollBar>
+#include <QTimer>
+#include <QTreeWidgetItem>
+#include <keychain.h>
 
+#include "aboutwindow.h"
+#include "assetupdater.h"
+#include "bannerwidget.h"
+#include "config.h"
+#include "encryptedarg.h"
+#include "gameinstaller.h"
+#include "headline.h"
+#include "sapphirelauncher.h"
 #include "settingswindow.h"
 #include "squareboot.h"
 #include "squarelauncher.h"
-#include "sapphirelauncher.h"
-#include "assetupdater.h"
-#include "headline.h"
-#include "config.h"
-#include "aboutwindow.h"
-#include "gameinstaller.h"
-#include "bannerwidget.h"
-#include "encryptedarg.h"
 
 LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindow(parent), core(core) {
     setWindowTitle("Astra");
@@ -66,23 +66,26 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
             QString fileName = fi.fileName();
 
             // FIXME: is there no easier way to filter out these in Qt?
-            if(fi.fileName() != "Public" && fi.fileName() != "." && fi.fileName() != "..") {
+            if (fi.fileName() != "Public" && fi.fileName() != "." && fi.fileName() != "..") {
                 userPath = fileName;
             }
         }
 
-        arguments.push_back({"UserPath", QString(R"(C:\Users\%1\Documents\My Games\FINAL FANTASY XIV - A Realm Reborn)").arg(userPath)});
+        arguments.push_back(
+            {"UserPath",
+             QString(R"(C:\Users\%1\Documents\My Games\FINAL FANTASY XIV - A Realm Reborn)").arg(userPath)});
 
         const QString argFormat = " /%1 =%2";
 
         QString argJoined;
-        for(auto& arg : arguments) {
+        for (auto& arg : arguments) {
             argJoined += argFormat.arg(arg.key, arg.value.replace(" ", "  "));
         }
 
         QString finalArg = encryptGameArg(argJoined);
 
-        this->core.launchExecutable(currentProfile(), {currentProfile().gamePath + "/boot/ffxivlauncher64.exe", finalArg});
+        this->core.launchExecutable(
+            currentProfile(), {currentProfile().gamePath + "/boot/ffxivlauncher64.exe", finalArg});
     });
 
     launchSysInfo = toolsMenu->addAction("Open System Info...");
@@ -116,7 +119,8 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
         messageBox->setInformativeText("FFXIV will be installed to your selected game directory.");
 
         QString detailedText = QString("Astra will install FFXIV for you at '%1'").arg(this->currentProfile().gamePath);
-        detailedText.append("\n\nIf you do not wish to install it to this location, please change your profile settings.");
+        detailedText.append(
+            "\n\nIf you do not wish to install it to this location, please change your profile settings.");
 
         messageBox->setDetailedText(detailedText);
         messageBox->setWindowModality(Qt::WindowModal);
@@ -127,7 +131,6 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
                 this->core.readGameVersion();
 
                 messageBox->close();
-
             });
         });
 
@@ -212,7 +215,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     layout->addLayout(loginLayout, 0, 1, 1, 1);
 
     profileSelect = new QComboBox();
-    connect(profileSelect, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=](int index) {
+    connect(profileSelect, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=](int index) {
         reloadControls();
     });
 
@@ -244,12 +247,12 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     registerButton = new QPushButton("Register");
 
     connect(otpEdit, &QLineEdit::returnPressed, [this] {
-        if(loginButton->isEnabled())
+        if (loginButton->isEnabled())
             this->core.assetUpdater->update(currentProfile());
     });
 
     connect(passwordEdit, &QLineEdit::returnPressed, [this] {
-        if(loginButton->isEnabled())
+        if (loginButton->isEnabled())
             this->core.assetUpdater->update(currentProfile());
     });
 
@@ -267,7 +270,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
         info->oneTimePassword = otpEdit->text();
 
 #ifndef QT_DEBUG
-        if(currentProfile().rememberUsername) {
+        if (currentProfile().rememberUsername) {
             auto job = new QKeychain::WritePasswordJob("LauncherWindow");
             job->setTextData(usernameEdit->text());
             job->setKey(currentProfile().name + "-username");
@@ -276,7 +279,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
 #endif
 
 #ifndef QT_DEBUG
-        if(currentProfile().rememberPassword) {
+        if (currentProfile().rememberPassword) {
             auto job = new QKeychain::WritePasswordJob("LauncherWindow");
             job->setTextData(passwordEdit->text());
             job->setKey(currentProfile().name + "-password");
@@ -284,7 +287,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
         }
 #endif
 
-        if(currentProfile().isSapphire) {
+        if (currentProfile().isSapphire) {
             this->core.sapphireLauncher->login(currentProfile().lobbyURL, *info);
         } else {
             this->core.squareBoot->checkGateStatus(info);
@@ -297,7 +300,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     });
 
     connect(registerButton, &QPushButton::released, [=] {
-        if(currentProfile().isSapphire) {
+        if (currentProfile().isSapphire) {
             auto& profile = currentProfile();
 
             LoginInformation info;
@@ -311,16 +314,16 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     });
 
     connect(&core, &LauncherCore::successfulLaunch, [&] {
-        if(core.appSettings.closeWhenLaunched)
+        if (core.appSettings.closeWhenLaunched)
             hide();
     });
 
     connect(&core, &LauncherCore::gameClosed, [&] {
-        if(core.appSettings.closeWhenLaunched)
+        if (core.appSettings.closeWhenLaunched)
             QCoreApplication::quit();
     });
 
-    getHeadline(core,[&](Headline headline) {
+    getHeadline(core, [&](Headline headline) {
         this->headline = headline;
         reloadNews();
     });
@@ -333,7 +336,7 @@ ProfileSettings& LauncherWindow::currentProfile() {
 }
 
 void LauncherWindow::reloadControls() {
-    if(currentlyReloadingControls)
+    if (currentlyReloadingControls)
         return;
 
     currentlyReloadingControls = true;
@@ -342,19 +345,19 @@ void LauncherWindow::reloadControls() {
 
     profileSelect->clear();
 
-    for(const auto& profile : core.profileList()) {
+    for (const auto& profile : core.profileList()) {
         profileSelect->addItem(profile);
     }
 
     profileSelect->setCurrentIndex(oldIndex);
 
-    if(profileSelect->currentIndex() == -1) {
+    if (profileSelect->currentIndex() == -1) {
         profileSelect->setCurrentIndex(core.defaultProfileIndex);
     }
 
     rememberUsernameBox->setChecked(currentProfile().rememberUsername);
 #ifndef QT_DEBUG
-    if(currentProfile().rememberUsername) {
+    if (currentProfile().rememberUsername) {
         auto job = new QKeychain::ReadPasswordJob("LauncherWindow");
         job->setKey(currentProfile().name + "-username");
         job->start();
@@ -367,7 +370,7 @@ void LauncherWindow::reloadControls() {
 
     rememberPasswordBox->setChecked(currentProfile().rememberPassword);
 #ifndef QT_DEBUG
-    if(currentProfile().rememberPassword) {
+    if (currentProfile().rememberPassword) {
         auto job = new QKeychain::ReadPasswordJob("LauncherWindow");
         job->setKey(currentProfile().name + "-password");
         job->start();
@@ -379,25 +382,25 @@ void LauncherWindow::reloadControls() {
 #endif
 
     bool canLogin = true;
-    if(currentProfile().isSapphire) {
-        if(currentProfile().lobbyURL.isEmpty()) {
+    if (currentProfile().isSapphire) {
+        if (currentProfile().lobbyURL.isEmpty()) {
             loginButton->setText("Login (Lobby URL is invalid)");
             canLogin = false;
         }
     }
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-    if(!currentProfile().isWineInstalled()) {
+    if (!currentProfile().isWineInstalled()) {
         loginButton->setText("Login (Wine is not installed)");
         canLogin = false;
     }
 #endif
-    if(!currentProfile().isGameInstalled()) {
+    if (!currentProfile().isGameInstalled()) {
         loginButton->setText("Login (Game is not installed)");
         canLogin = false;
     }
 
-    if(canLogin)
+    if (canLogin)
         loginButton->setText("Login");
 
     launchOfficial->setEnabled(currentProfile().isGameInstalled());
@@ -415,13 +418,13 @@ void LauncherWindow::reloadControls() {
     newsListView->hide();
 
     auto field = loginLayout->labelForField(otpEdit);
-    if(field != nullptr)
+    if (field != nullptr)
         field->deleteLater();
 
     loginLayout->takeRow(otpEdit);
     otpEdit->hide();
 
-    if(currentProfile().useOneTimePassword && !currentProfile().isSapphire) {
+    if (currentProfile().useOneTimePassword && !currentProfile().isSapphire) {
         loginLayout->addRow("One-Time Password", otpEdit);
         otpEdit->show();
     }
@@ -434,7 +437,7 @@ void LauncherWindow::reloadControls() {
     loginLayout->takeRow(registerButton);
     registerButton->hide();
 
-    if(currentProfile().isSapphire) {
+    if (currentProfile().isSapphire) {
         loginLayout->addRow(registerButton);
         registerButton->show();
     }
@@ -445,20 +448,20 @@ void LauncherWindow::reloadControls() {
 }
 
 void LauncherWindow::reloadNews() {
-    if(core.appSettings.showBanners || core.appSettings.showNewsList) {
-        for(auto widget : bannerWidgets) {
+    if (core.appSettings.showBanners || core.appSettings.showNewsList) {
+        for (auto widget : bannerWidgets) {
             bannerLayout->removeWidget(widget);
         }
 
         bannerWidgets.clear();
 
         int totalRow = 0;
-        if(core.appSettings.showBanners) {
+        if (core.appSettings.showBanners) {
             bannerScrollArea->show();
             layout->addWidget(bannerScrollArea, totalRow++, 0);
         }
 
-        if(core.appSettings.showNewsList) {
+        if (core.appSettings.showNewsList) {
             newsListView->show();
             layout->addWidget(newsListView, totalRow++, 0);
         }
@@ -466,8 +469,8 @@ void LauncherWindow::reloadNews() {
         newsListView->clear();
 
         if (!headline.banner.empty()) {
-            if(core.appSettings.showBanners) {
-                for(auto banner : headline.banner) {
+            if (core.appSettings.showBanners) {
+                for (auto banner : headline.banner) {
                     auto request = QNetworkRequest(banner.bannerImage);
                     core.buildRequest(currentProfile(), request);
 
@@ -485,68 +488,58 @@ void LauncherWindow::reloadNews() {
                     });
                 }
 
-                if(bannerTimer == nullptr) {
+                if (bannerTimer == nullptr) {
                     bannerTimer = new QTimer();
                     connect(bannerTimer, &QTimer::timeout, this, [=] {
                         if (currentBanner >= headline.banner.size())
                             currentBanner = 0;
 
-                        bannerScrollArea->ensureVisible(
-                            640 * (currentBanner + 1), 0, 0, 0);
+                        bannerScrollArea->ensureVisible(640 * (currentBanner + 1), 0, 0, 0);
 
                         currentBanner++;
                     });
                     bannerTimer->start(5000);
                 }
             } else {
-                if(bannerTimer != nullptr) {
+                if (bannerTimer != nullptr) {
                     bannerTimer->stop();
                     bannerTimer->deleteLater();
                     bannerTimer = nullptr;
                 }
             }
 
-            if(core.appSettings.showNewsList) {
-                QTreeWidgetItem* newsItem = new QTreeWidgetItem(
-                    (QTreeWidgetItem*)nullptr, QStringList("News"));
+            if (core.appSettings.showNewsList) {
+                QTreeWidgetItem* newsItem = new QTreeWidgetItem((QTreeWidgetItem*)nullptr, QStringList("News"));
                 for (auto news : headline.news) {
                     QTreeWidgetItem* item = new QTreeWidgetItem();
                     item->setText(0, news.title);
-                    item->setText(1, QLocale().toString(
-                                         news.date, QLocale::ShortFormat));
+                    item->setText(1, QLocale().toString(news.date, QLocale::ShortFormat));
                     item->setData(0, Qt::UserRole, news.url);
 
                     newsItem->addChild(item);
                 }
 
-                QTreeWidgetItem* pinnedItem = new QTreeWidgetItem(
-                    (QTreeWidgetItem*)nullptr, QStringList("Pinned"));
+                QTreeWidgetItem* pinnedItem = new QTreeWidgetItem((QTreeWidgetItem*)nullptr, QStringList("Pinned"));
                 for (auto pinned : headline.pinned) {
                     QTreeWidgetItem* item = new QTreeWidgetItem();
                     item->setText(0, pinned.title);
-                    item->setText(1,
-                                  QLocale().toString(pinned.date,
-                                                     QLocale::ShortFormat));
+                    item->setText(1, QLocale().toString(pinned.date, QLocale::ShortFormat));
                     item->setData(0, Qt::UserRole, pinned.url);
 
                     pinnedItem->addChild(item);
                 }
 
-                QTreeWidgetItem* topicsItem = new QTreeWidgetItem(
-                    (QTreeWidgetItem*)nullptr, QStringList("Topics"));
+                QTreeWidgetItem* topicsItem = new QTreeWidgetItem((QTreeWidgetItem*)nullptr, QStringList("Topics"));
                 for (auto news : headline.topics) {
                     QTreeWidgetItem* item = new QTreeWidgetItem();
                     item->setText(0, news.title);
-                    item->setText(1, QLocale().toString(
-                                         news.date, QLocale::ShortFormat));
+                    item->setText(1, QLocale().toString(news.date, QLocale::ShortFormat));
                     item->setData(0, Qt::UserRole, news.url);
 
                     topicsItem->addChild(item);
                 }
 
-                newsListView->insertTopLevelItems(
-                    0, QList<QTreeWidgetItem*>(
-                           {newsItem, pinnedItem, topicsItem}));
+                newsListView->insertTopLevelItems(0, QList<QTreeWidgetItem*>({newsItem, pinnedItem, topicsItem}));
 
                 for (int i = 0; i < 3; i++) {
                     newsListView->expandItem(newsListView->topLevelItem(i));

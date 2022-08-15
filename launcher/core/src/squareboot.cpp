@@ -1,20 +1,19 @@
 #include "squareboot.h"
 
-#include <QUrlQuery>
-#include <QNetworkReply>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QStandardPaths>
 #include <QFile>
-#include <physis.hpp>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMessageBox>
+#include <QNetworkReply>
+#include <QPushButton>
+#include <QStandardPaths>
+#include <QUrlQuery>
+#include <physis.hpp>
 
 #include "squarelauncher.h"
 
-SquareBoot::SquareBoot(LauncherCore& window, SquareLauncher& launcher) : window(window), launcher(launcher), QObject(&window) {
-
-}
+SquareBoot::SquareBoot(LauncherCore& window, SquareLauncher& launcher)
+    : window(window), launcher(launcher), QObject(&window) {}
 
 void SquareBoot::bootCheck(const LoginInformation& info) {
     patcher = new Patcher(info.settings->gamePath + "/boot", info.settings->bootData);
@@ -34,7 +33,7 @@ void SquareBoot::bootCheck(const LoginInformation& info) {
     url.setQuery(query);
 
     auto request = QNetworkRequest(url);
-    if(info.settings->license == GameLicense::macOS) {
+    if (info.settings->license == GameLicense::macOS) {
         request.setRawHeader("User-Agent", "FFXIV-MAC PATCH CLIENT");
     } else {
         request.setRawHeader("User-Agent", "FFXIV PATCH CLIENT");
@@ -69,21 +68,23 @@ void SquareBoot::checkGateStatus(LoginInformation* info) {
         // I happen to run into this issue often, if I start the launcher really quickly after bootup
         // it's possible to actually check this quicker than the network is actually available,
         // causing the launcher to be stuck in "maintenace mode". so if that happens, we try to rerun this logic.
-        // TODO: this selection of errors is currently guesswork, i'm assuming one of these will fit the bill of "internet is unavailable" in
-        // some way.
-        if(reply->error() == QNetworkReply::HostNotFoundError || reply->error() == QNetworkReply::TimeoutError || reply->error() == QNetworkReply::UnknownServerError)
+        // TODO: this selection of errors is currently guesswork, i'm assuming one of these will fit the bill of
+        // "internet is unavailable" in some way.
+        if (reply->error() == QNetworkReply::HostNotFoundError || reply->error() == QNetworkReply::TimeoutError ||
+            reply->error() == QNetworkReply::UnknownServerError)
             checkGateStatus(info);
 
         QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
 
         const bool isGateOpen = !document.isEmpty() && document.object()["status"].toInt() != 0;
 
-        if(isGateOpen) {
+        if (isGateOpen) {
             bootCheck(*info);
         } else {
-            auto messageBox = new QMessageBox(QMessageBox::Icon::Critical,
-                                              "Failed to Login",
-                                              "The login gate is closed, the game may be under maintenance.");
+            auto messageBox = new QMessageBox(
+                QMessageBox::Icon::Critical,
+                "Failed to Login",
+                "The login gate is closed, the game may be under maintenance.");
 
             messageBox->show();
         }

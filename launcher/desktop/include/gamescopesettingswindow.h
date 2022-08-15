@@ -1,11 +1,11 @@
 #pragma once
 
-#include <QDialog>
-#include <QListWidget>
-#include <QComboBox>
-#include <QLineEdit>
 #include <QCheckBox>
+#include <QComboBox>
+#include <QDialog>
 #include <QLabel>
+#include <QLineEdit>
+#include <QListWidget>
 #include <QPushButton>
 
 class LauncherCore;

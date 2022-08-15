@@ -1,10 +1,10 @@
 #include "patcher.h"
+#include <QDir>
 #include <QFile>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QStandardPaths>
 #include <physis.hpp>
-#include <QDir>
 
 Patcher::Patcher(QString baseDirectory, BootData* boot_data) : boot_data(boot_data), baseDirectory(baseDirectory) {
     dialog = new QProgressDialog();
@@ -21,12 +21,12 @@ Patcher::Patcher(QString baseDirectory, GameData* game_data) : game_data(game_da
 }
 
 void Patcher::processPatchList(QNetworkAccessManager& mgr, QString patchList) {
-    if(patchList.isEmpty()) {
+    if (patchList.isEmpty()) {
         dialog->hide();
 
         emit done();
     } else {
-        if(isBoot()) {
+        if (isBoot()) {
             dialog->setLabelText("Updating the FINAL FANTASY XIV Updater/Launcher version.");
         } else {
             dialog->setLabelText("Updating the FINAL FANTASY XIV Game version.");
@@ -36,7 +36,7 @@ void Patcher::processPatchList(QNetworkAccessManager& mgr, QString patchList) {
 
         remainingPatches = parts.size() - 7;
 
-        for(int i = 5; i < parts.size() - 2; i++) {
+        for (int i = 5; i < parts.size() - 2; i++) {
             const QStringList patchParts = parts[i].split("\t");
 
             const int length = patchParts[0].toInt();
@@ -56,10 +56,12 @@ void Patcher::processPatchList(QNetworkAccessManager& mgr, QString patchList) {
             auto url_parts = url.split('/');
             repository = url_parts[url_parts.size() - 3];
 
-            if(isBoot()) {
-                dialog->setLabelText("Updating the FINAL FANTASY XIV Updater/Launcher version.\nDownloading ffxivboot - " + version);
+            if (isBoot()) {
+                dialog->setLabelText(
+                    "Updating the FINAL FANTASY XIV Updater/Launcher version.\nDownloading ffxivboot - " + version);
             } else {
-                dialog->setLabelText("Updating the FINAL FANTASY XIV Game version.\nDownloading " + repository + " - " + version);
+                dialog->setLabelText(
+                    "Updating the FINAL FANTASY XIV Game version.\nDownloading " + repository + " - " + version);
             }
 
             dialog->setMinimum(0);
@@ -68,10 +70,10 @@ void Patcher::processPatchList(QNetworkAccessManager& mgr, QString patchList) {
             const QString patchesDir =
                 QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/patches/" + repository;
 
-            if(!QDir().exists(patchesDir))
+            if (!QDir().exists(patchesDir))
                 QDir().mkdir(patchesDir);
 
-            if(!QFile::exists(patchesDir + "/" + name + ".patch")) {
+            if (!QFile::exists(patchesDir + "/" + name + ".patch")) {
                 QNetworkRequest patchRequest(url);
                 auto patchReply = mgr.get(patchRequest);
                 connect(patchReply, &QNetworkReply::downloadProgress, [=](int recieved, int total) {
@@ -86,7 +88,7 @@ void Patcher::processPatchList(QNetworkAccessManager& mgr, QString patchList) {
 
                     auto patch_path = patchesDir + "/" + name + ".patch";
 
-                    patchQueue.push_back({name,  repository, version, patch_path});
+                    patchQueue.push_back({name, repository, version, patch_path});
 
                     remainingPatches--;
                     checkIfDone();
@@ -102,7 +104,7 @@ void Patcher::processPatchList(QNetworkAccessManager& mgr, QString patchList) {
 }
 
 void Patcher::checkIfDone() {
-    if(remainingPatches <= 0) {
+    if (remainingPatches <= 0) {
         for (auto patch : patchQueue) {
             processPatch(patch);
         }
@@ -116,17 +118,17 @@ void Patcher::checkIfDone() {
 }
 
 void Patcher::processPatch(QueuedPatch patch) {
-    if(isBoot()) {
+    if (isBoot()) {
         physis_bootdata_apply_patch(boot_data, patch.path.toStdString().c_str());
     } else {
         physis_gamedata_apply_patch(game_data, patch.path.toStdString().c_str());
     }
 
     QString verFilePath;
-    if(isBoot()) {
+    if (isBoot()) {
         verFilePath = baseDirectory + "/ffxivboot.ver";
     } else {
-        if(patch.repository == "game") {
+        if (patch.repository == "game") {
             verFilePath = baseDirectory + "/ffxivgame.ver";
         } else {
             verFilePath = baseDirectory + "/sqpack/" + patch.repository + "/" + patch.repository + ".ver";

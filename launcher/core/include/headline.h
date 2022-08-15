@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QUrl>
 #include <QDateTime>
+#include <QUrl>
 
 struct News {
     QDateTime date;

@@ -1,11 +1,11 @@
 #include "assetupdater.h"
 
 #include <QFile>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkReply>
 #include <QStandardPaths>
-#include <QJsonArray>
 
 #include <JlCompress.h>
 
@@ -20,10 +20,8 @@ const QString dalamudVersionManifestURL = baseDalamudDistribution + "%1version";
 const QString baseDalamudAssetDistribution = baseGoatDomain + "/DalamudAssets";
 const QString dalamudAssetManifestURL = baseDalamudAssetDistribution + "/asset.json";
 
-const QString baseNativeLauncherDistribution =
-    "https://xiv.zone/astra-distrib/nativelauncher";
-const QString nativeLauncherLatestPackageURL =
-    baseNativeLauncherDistribution + "/NativeLauncher.exe";
+const QString baseNativeLauncherDistribution = "https://xiv.zone/astra-distrib/nativelauncher";
+const QString nativeLauncherLatestPackageURL = baseNativeLauncherDistribution + "/NativeLauncher.exe";
 const QString nativeLauncherVersionManifestURL = baseNativeLauncherDistribution + "/version";
 
 const QString dotnetRuntimePackageURL =
@@ -34,22 +32,20 @@ const QString dotnetDesktopPackageURL =
 QMap<DalamudChannel, QString> channelToDistribPrefix = {
     {DalamudChannel::Stable, "/"},
     {DalamudChannel::Staging, "stg/"},
-    {DalamudChannel::Net5, "net5/"}
-};
+    {DalamudChannel::Net5, "net5/"}};
 
 AssetUpdater::AssetUpdater(LauncherCore& launcher) : launcher(launcher), QObject(&launcher) {
     launcher.mgr->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
 
-    dataDir =
-        QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
-    if(!QDir().exists(dataDir))
+    if (!QDir().exists(dataDir))
         QDir().mkdir(dataDir);
 }
 
 void AssetUpdater::update(const ProfileSettings& profile) {
     // non-dalamud users can bypass this process since it's not needed
-    if(!profile.dalamud.enabled) {
+    if (!profile.dalamud.enabled) {
         finishedUpdating();
         return;
     }
@@ -146,12 +142,10 @@ void AssetUpdater::update(const ProfileSettings& profile) {
 }
 
 void AssetUpdater::beginInstall() {
-    if(needsDalamudInstall) {
-        bool success = !JlCompress::extractDir(tempDir.path() + "/latest.zip",
-                                               dataDir + "/Dalamud")
-                            .empty();
+    if (needsDalamudInstall) {
+        bool success = !JlCompress::extractDir(tempDir.path() + "/latest.zip", dataDir + "/Dalamud").empty();
 
-        if(!success) {
+        if (!success) {
             // TODO: handle failure here
             qInfo() << "Failed to install Dalamud!";
         } else {
@@ -159,16 +153,15 @@ void AssetUpdater::beginInstall() {
         }
     }
 
-    if(needsNativeInstall) {
+    if (needsNativeInstall) {
         qInfo() << "Installing native launcher...";
 
-        if(QFile::exists(dataDir + "/NativeLauncher.exe"))
+        if (QFile::exists(dataDir + "/NativeLauncher.exe"))
             QFile::remove(dataDir + "/NativeLauncher.exe");
 
-        bool success = QFile::copy(tempDir.path() + "/NativeLauncher.exe",
-                    dataDir + "/NativeLauncher.exe");
+        bool success = QFile::copy(tempDir.path() + "/NativeLauncher.exe", dataDir + "/NativeLauncher.exe");
 
-        if(!success) {
+        if (!success) {
             qInfo() << "Failed to install native launcher!";
         } else {
             QFile file(dataDir + "/nativelauncher.ver");
@@ -180,16 +173,13 @@ void AssetUpdater::beginInstall() {
         }
     }
 
-    if(needsRuntimeInstall) {
-        bool success = !JlCompress::extractDir(tempDir.path() + "/dotnet-core.zip",
-                                               dataDir + "/DalamudRuntime")
-                            .empty();
+    if (needsRuntimeInstall) {
+        bool success =
+            !JlCompress::extractDir(tempDir.path() + "/dotnet-core.zip", dataDir + "/DalamudRuntime").empty();
 
-        success |= !JlCompress::extractDir(tempDir.path() + "/dotnet-desktop.zip",
-                                           dataDir + "/DalamudRuntime")
-                        .empty();
+        success |= !JlCompress::extractDir(tempDir.path() + "/dotnet-desktop.zip", dataDir + "/DalamudRuntime").empty();
 
-        if(!success) {
+        if (!success) {
             qInfo() << "Failed to install dotnet!";
         } else {
             QFile file(dataDir + "/DalamudRuntime/runtime.ver");
@@ -205,10 +195,10 @@ void AssetUpdater::beginInstall() {
 }
 
 void AssetUpdater::checkIfDalamudAssetsDone() {
-    if(dialog->wasCanceled())
+    if (dialog->wasCanceled())
         return;
 
-    if(dalamudAssetNeededFilenames.empty()) {
+    if (dalamudAssetNeededFilenames.empty()) {
         qInfo() << "Finished downloading Dalamud assets.";
 
         launcher.dalamudAssetVersion = remoteDalamudAssetVersion;
@@ -223,14 +213,11 @@ void AssetUpdater::checkIfDalamudAssetsDone() {
 }
 
 void AssetUpdater::checkIfFinished() {
-    if(dialog->wasCanceled())
+    if (dialog->wasCanceled())
         return;
 
-    if (doneDownloadingDalamud &&
-        doneDownloadingNativelauncher &&
-        doneDownloadingRuntimeCore &&
-        doneDownloadingRuntimeDesktop &&
-        dalamudAssetNeededFilenames.empty()) {
+    if (doneDownloadingDalamud && doneDownloadingNativelauncher && doneDownloadingRuntimeCore &&
+        doneDownloadingRuntimeDesktop && dalamudAssetNeededFilenames.empty()) {
         if (needsRuntimeInstall || needsNativeInstall || needsDalamudInstall) {
             beginInstall();
         } else {
@@ -243,10 +230,11 @@ void AssetUpdater::checkIfFinished() {
 }
 
 void AssetUpdater::checkIfCheckingIsDone() {
-    if(dialog->wasCanceled())
+    if (dialog->wasCanceled())
         return;
 
-    if(remoteDalamudVersion.isEmpty() || remoteRuntimeVersion.isEmpty() || remoteDalamudAssetVersion == -1 || remoteNativeLauncherVersion.isEmpty()) {
+    if (remoteDalamudVersion.isEmpty() || remoteRuntimeVersion.isEmpty() || remoteDalamudAssetVersion == -1 ||
+        remoteNativeLauncherVersion.isEmpty()) {
         return;
     }
 
@@ -256,7 +244,7 @@ void AssetUpdater::checkIfCheckingIsDone() {
     dialog->setLabelText("Starting update...");
 
     // dalamud injector / net runtime
-    if(launcher.runtimeVersion != remoteRuntimeVersion) {
+    if (launcher.runtimeVersion != remoteRuntimeVersion) {
         needsRuntimeInstall = true;
 
         // core
@@ -308,7 +296,7 @@ void AssetUpdater::checkIfCheckingIsDone() {
         checkIfFinished();
     }
 
-    if(remoteDalamudVersion != launcher.dalamudVersion) {
+    if (remoteDalamudVersion != launcher.dalamudVersion) {
         qInfo() << "Downloading Dalamud...";
 
         needsDalamudInstall = true;
@@ -342,14 +330,14 @@ void AssetUpdater::checkIfCheckingIsDone() {
     }
 
     // dalamud assets
-    if(remoteDalamudAssetVersion != launcher.dalamudAssetVersion) {
+    if (remoteDalamudAssetVersion != launcher.dalamudAssetVersion) {
         qInfo() << "Dalamud assets out of date.";
 
         dialog->setLabelText("Updating Dalamud assets...");
 
         dalamudAssetNeededFilenames.clear();
 
-        for(auto assetObject : remoteDalamudAssetArray) {
+        for (auto assetObject : remoteDalamudAssetArray) {
             {
                 dalamudAssetNeededFilenames.append(assetObject.toObject()["FileName"].toString());
 
@@ -364,7 +352,7 @@ void AssetUpdater::checkIfCheckingIsDone() {
                     const QList<QString> dirPath = fileName.left(fileName.lastIndexOf("/")).split('/');
 
                     QString build = dataDir + "/DalamudAssets/";
-                    for(auto dir : dirPath) {
+                    for (auto dir : dirPath) {
                         if (!QDir().exists(build + dir))
                             QDir().mkdir(build + dir);
 
@@ -389,7 +377,7 @@ void AssetUpdater::checkIfCheckingIsDone() {
         checkIfFinished();
     }
 
-    if(remoteNativeLauncherVersion != launcher.nativeLauncherVersion) {
+    if (remoteNativeLauncherVersion != launcher.nativeLauncherVersion) {
         qInfo() << "Native launcher out of date.";
 
         dialog->setLabelText("Updating native launcher...");

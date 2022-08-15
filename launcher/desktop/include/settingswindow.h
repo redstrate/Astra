@@ -1,13 +1,13 @@
 #pragma once
 
-#include <QDialog>
-#include <QListWidget>
-#include <QComboBox>
-#include <QLineEdit>
 #include <QCheckBox>
-#include <QLabel>
-#include <QPushButton>
+#include <QComboBox>
+#include <QDialog>
 #include <QFormLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QListWidget>
+#include <QPushButton>
 
 class LauncherCore;
 class LauncherWindow;
@@ -54,14 +54,14 @@ private:
     QPushButton* configureGamescopeButton;
     QLabel* wineVersionLabel;
 
-    QCheckBox* useGamescope, *useEsync, *useGamemode;
+    QCheckBox *useGamescope, *useEsync, *useGamemode;
     QCheckBox* enableWatchdog;
 
     // login
     QCheckBox* encryptArgumentsBox = nullptr;
     QComboBox* serverType = nullptr;
     QLineEdit* lobbyServerURL = nullptr;
-    QCheckBox* rememberUsernameBox = nullptr, *rememberPasswordBox = nullptr;
+    QCheckBox *rememberUsernameBox = nullptr, *rememberPasswordBox = nullptr;
     QComboBox* gameLicenseBox = nullptr;
     QCheckBox* freeTrialBox = nullptr;
     QCheckBox* useOneTimePassword = nullptr;

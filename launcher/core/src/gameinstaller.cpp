@@ -1,8 +1,8 @@
 #include "gameinstaller.h"
 
+#include <QFile>
 #include <QNetworkReply>
 #include <QStandardPaths>
-#include <QFile>
 #include <physis.hpp>
 
 #include "launchercore.h"
@@ -17,15 +17,15 @@ void installGame(LauncherCore& launcher, ProfileSettings& profile, std::function
 
     auto reply = launcher.mgr->get(request);
     launcher.connect(reply, &QNetworkReply::finished, [reply, installDirectory, returnFunc] {
-        QString dataDir =
-            QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+        QString dataDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
 
         QFile file(dataDir + "/ffxivsetup.exe");
         file.open(QIODevice::WriteOnly);
         file.write(reply->readAll());
         file.close();
 
-        physis_install_game(installDirectory.toStdString().c_str(), (dataDir + "/ffxivsetup.exe").toStdString().c_str());
+        physis_install_game(
+            installDirectory.toStdString().c_str(), (dataDir + "/ffxivsetup.exe").toStdString().c_str());
 
         qDebug() << "Done installing to " << installDirectory << "!";
 

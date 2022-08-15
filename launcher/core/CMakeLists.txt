@@ -21,7 +21,7 @@ set(SRC
         src/squarelauncher.cpp
         src/patcher.cpp)
 
-if(ENABLE_WATCHDOG)
+if (ENABLE_WATCHDOG)
     set(HEADERS ${HEADERS}
             include/gameparser.h
             include/watchdog.h)
@@ -29,7 +29,7 @@ if(ENABLE_WATCHDOG)
     set(SRC ${SRC}
             src/gameparser.cpp
             src/watchdog.cpp)
-endif()
+endif ()
 
 add_library(astra_core STATIC ${HEADERS} ${SRC})
 target_include_directories(astra_core PUBLIC
@@ -48,8 +48,8 @@ target_link_libraries(astra_core PUBLIC
         PRIVATE
         astra_desktop) # desktop is currently required by the core, to be fixed/removed later
 
-if(ENABLE_WATCHDOG)
+if (ENABLE_WATCHDOG)
     target_include_directories(astra_core PUBLIC ${TESSERACT_INCLUDE_DIRS} ${LEPTONICA_INCLUDE_DIRS})
 
     target_compile_definitions(astra_core PUBLIC ENABLE_WATCHDOG)
-endif()
+endif ()

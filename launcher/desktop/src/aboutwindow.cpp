@@ -1,12 +1,12 @@
 #include "aboutwindow.h"
 
-#include <QVBoxLayout>
-#include <QTabWidget>
 #include <QLabel>
 #include <QPlainTextEdit>
+#include <QTabWidget>
+#include <QVBoxLayout>
 
-#include "license.h"
 #include "config.h"
+#include "license.h"
 
 AboutWindow::AboutWindow(QWidget* widget) : QDialog(widget) {
     setWindowTitle("About");

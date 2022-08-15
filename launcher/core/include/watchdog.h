@@ -5,7 +5,7 @@
 #include "launchercore.h"
 
 #if defined(Q_OS_LINUX)
-#include "gameparser.h"
+    #include "gameparser.h"
 #endif
 
 #include <QSystemTrayIcon>

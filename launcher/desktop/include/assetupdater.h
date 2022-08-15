@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QObject>
-#include <QTemporaryDir>
-#include <QProgressDialog>
 #include <QJsonArray>
+#include <QObject>
+#include <QProgressDialog>
+#include <QTemporaryDir>
 
 #include "launchercore.h"
 

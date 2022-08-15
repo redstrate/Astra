@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QImage>
-#include <tesseract/baseapi.h>
 #include <leptonica/allheaders.h>
+#include <tesseract/baseapi.h>
 
 enum class ScreenState {
     Splash,

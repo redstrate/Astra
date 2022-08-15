@@ -1,22 +1,23 @@
 #include "gamescopesettingswindow.h"
 
-#include <QFormLayout>
-#include <QPushButton>
-#include <QDesktopServices>
-#include <QLabel>
-#include <QFileDialog>
 #include <QCheckBox>
+#include <QDesktopServices>
+#include <QFileDialog>
+#include <QFormLayout>
+#include <QGridLayout>
 #include <QGroupBox>
+#include <QLabel>
 #include <QMessageBox>
 #include <QProcess>
-#include <QGridLayout>
-#include <QToolTip>
+#include <QPushButton>
 #include <QSpinBox>
+#include <QToolTip>
 
 #include "launchercore.h"
 #include "launcherwindow.h"
 
-GamescopeSettingsWindow::GamescopeSettingsWindow(ProfileSettings& settings, LauncherCore& core, QWidget* parent) :  QDialog(parent) {
+GamescopeSettingsWindow::GamescopeSettingsWindow(ProfileSettings& settings, LauncherCore& core, QWidget* parent)
+    : QDialog(parent) {
     setWindowTitle("Gamescope Settings");
     setWindowModality(Qt::WindowModality::ApplicationModal);
 

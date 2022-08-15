@@ -23,14 +23,14 @@ STRING(REPLACE "\"" "\"\"" LICENSE_TXT ${LICENSE_TXT})
 configure_file(${CMAKE_CURRENT_LIST_DIR}/../cmake/license.h.in
         ${CMAKE_BINARY_DIR}/license.h)
 
-if(BUILD_FLATPAK)
+if (BUILD_FLATPAK)
     target_compile_definitions(astra PRIVATE FLATPAK)
-endif()
+endif ()
 
 install(TARGETS astra
         DESTINATION "${INSTALL_BIN_PATH}")
 
-if(WIN32)
+if (WIN32)
     get_target_property(QMAKE_EXE Qt5::qmake IMPORTED_LOCATION)
     get_filename_component(QT_BIN_DIR "${QMAKE_EXE}" DIRECTORY)
 
@@ -42,4 +42,4 @@ if(WIN32)
             POST_BUILD
             COMMAND "${WINDEPLOYQT_ENV_SETUP}" && "${WINDEPLOYQT_EXECUTABLE}" \"$<TARGET_FILE:astra>\"
             )
-endif()
+endif ()

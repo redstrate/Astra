@@ -31,4 +31,3 @@ AllowShortFunctionsOnASingleLine: 'Empty'
 AllowShortLambdasOnASingleLine: 'Empty'
 AllowShortLoopsOnASingleLine: 'false'
 SeparateDefinitionBlocks : 'Always'
-...
