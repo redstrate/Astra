@@ -417,6 +417,7 @@ void LauncherCore::readInitialInformation() {
         profile->lobbyURL = settings.value("lobbyURL", defaultSettings.lobbyURL).toString();
         profile->rememberUsername = settings.value("rememberUsername", defaultSettings.rememberUsername).toBool();
         profile->rememberPassword = settings.value("rememberPassword", defaultSettings.rememberPassword).toBool();
+        profile->rememberOTPSecret = settings.value("rememberOTPSecret", defaultSettings.rememberOTPSecret).toBool();
         profile->useOneTimePassword = settings.value("useOneTimePassword", defaultSettings.useOneTimePassword).toBool();
         profile->license = (GameLicense)settings.value("license", (int)defaultSettings.license).toInt();
         profile->isFreeTrial = settings.value("isFreeTrial", defaultSettings.isFreeTrial).toBool();
@@ -629,6 +630,7 @@ void LauncherCore::saveSettings() {
         settings.setValue("lobbyURL", profile->lobbyURL);
         settings.setValue("rememberUsername", profile->rememberUsername);
         settings.setValue("rememberPassword", profile->rememberPassword);
+        settings.setValue("rememberOTPSecret", profile->rememberOTPSecret);
         settings.setValue("useOneTimePassword", profile->useOneTimePassword);
         settings.setValue("license", (int)profile->license);
         settings.setValue("isFreeTrial", profile->isFreeTrial);

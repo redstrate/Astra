@@ -61,7 +61,8 @@ private:
     QCheckBox* encryptArgumentsBox = nullptr;
     QComboBox* serverType = nullptr;
     QLineEdit* lobbyServerURL = nullptr;
-    QCheckBox *rememberUsernameBox = nullptr, *rememberPasswordBox = nullptr;
+    QCheckBox *rememberUsernameBox = nullptr, *rememberPasswordBox = nullptr, *rememberOTPSecretBox = nullptr;
+    QPushButton* otpSecretButton = nullptr;
     QComboBox* gameLicenseBox = nullptr;
     QCheckBox* freeTrialBox = nullptr;
     QCheckBox* useOneTimePassword = nullptr;

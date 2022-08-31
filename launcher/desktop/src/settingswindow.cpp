@@ -6,11 +6,13 @@
 #include <QFormLayout>
 #include <QGridLayout>
 #include <QGroupBox>
+#include <QInputDialog>
 #include <QLabel>
 #include <QMessageBox>
 #include <QProcess>
 #include <QPushButton>
 #include <QToolTip>
+#include <keychain.h>
 
 #include "gamescopesettingswindow.h"
 #include "launchercore.h"
@@ -257,6 +259,9 @@ void SettingsWindow::reloadControls() {
     }
     rememberUsernameBox->setChecked(profile.rememberUsername);
     rememberPasswordBox->setChecked(profile.rememberPassword);
+    rememberOTPSecretBox->setChecked(profile.rememberOTPSecret);
+    rememberOTPSecretBox->setEnabled(profile.useOneTimePassword);
+    otpSecretButton->setEnabled(profile.rememberOTPSecret);
     useOneTimePassword->setChecked(profile.useOneTimePassword);
     useOneTimePassword->setEnabled(!profile.isSapphire);
     if (!useOneTimePassword->isEnabled()) {
@@ -419,6 +424,7 @@ void SettingsWindow::setupLoginTab(QFormLayout& layout) {
 
         this->core.saveSettings();
     });
+    rememberUsernameBox->setToolTip("Relatively harmless option, can save your password for later for convince.");
     layout.addRow("Remember Username", rememberUsernameBox);
 
     rememberPasswordBox = new QCheckBox();
@@ -427,7 +433,30 @@ void SettingsWindow::setupLoginTab(QFormLayout& layout) {
 
         this->core.saveSettings();
     });
+    rememberPasswordBox->setToolTip("You should only save your password when using OTP and you're fairly confident your system can keep it's keychain secure.");
     layout.addRow("Remember Password", rememberPasswordBox);
+
+    rememberOTPSecretBox = new QCheckBox();
+    connect(rememberOTPSecretBox, &QCheckBox::stateChanged, [=](int) {
+        getCurrentProfile().rememberOTPSecret = rememberOTPSecretBox->isChecked();
+
+        this->core.saveSettings();
+        this->reloadControls();
+    });
+    rememberOTPSecretBox->setToolTip("DANGEROUS! This should only be set if you're confident that your system keychain can securely store this. This trades convenience over the security an OTP can guarantee, so please be aware of that.");
+    layout.addRow("Remember OTP Secret", rememberOTPSecretBox);
+
+    otpSecretButton = new QPushButton("Enter OTP Secret");
+    connect(otpSecretButton, &QPushButton::pressed, [=] {
+        auto otpSecret = QInputDialog::getText(this, "OTP Input", "Enter your OTP Secret:");
+
+        auto job = new QKeychain::WritePasswordJob("SettingsWindow");
+        job->setTextData(otpSecret);
+        job->setKey(this->getCurrentProfile().name + "-otpsecret");
+        job->start();
+    });
+    otpSecretButton->setToolTip("Enter your OTP secret from Square Enix here. You cannot easily retrieve this if you forget it.");
+    layout.addRow(otpSecretButton);
 
     useOneTimePassword = new QCheckBox();
     connect(useOneTimePassword, &QCheckBox::stateChanged, [=](int) {
@@ -435,6 +464,7 @@ void SettingsWindow::setupLoginTab(QFormLayout& layout) {
 
         this->core.saveSettings();
         this->window.reloadControls();
+        this->reloadControls();
     });
     layout.addRow("Use One-Time Password", useOneTimePassword);
 

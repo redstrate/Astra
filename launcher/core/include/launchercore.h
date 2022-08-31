@@ -91,6 +91,7 @@ public:
     bool isSapphire = false;
     QString lobbyURL;
     bool rememberUsername = false, rememberPassword = false;
+    bool rememberOTPSecret = false;
     bool useOneTimePassword = false;
     bool autoLogin = false;
 
