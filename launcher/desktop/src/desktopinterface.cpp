@@ -1,9 +1,9 @@
 #include "desktopinterface.h"
+#include "autologinwindow.h"
 #include "gameinstaller.h"
 
 DesktopInterface::DesktopInterface(LauncherCore& core) {
     window = new LauncherWindow(core);
-    window->show();
 
     auto& defaultProfile = core.getProfile(core.defaultProfileIndex);
 
@@ -22,7 +22,7 @@ DesktopInterface::DesktopInterface(LauncherCore& core) {
         messageBox->setWindowModality(Qt::WindowModal);
 
         auto installButton = messageBox->addButton("Install Game", QMessageBox::YesRole);
-        core.connect(installButton, &QPushButton::clicked, [&core, messageBox] {
+        QObject::connect(installButton, &QPushButton::clicked, [&core, messageBox] {
             installGame(core, core.getProfile(core.defaultProfileIndex), [messageBox, &core] {
                 core.readGameVersion();
 
@@ -50,4 +50,15 @@ DesktopInterface::DesktopInterface(LauncherCore& core) {
         messageBox->exec();
     }
 #endif
+
+    if(defaultProfile.autoLogin) {
+        autoLoginWindow = new AutoLoginWindow(defaultProfile, core);
+        QObject::connect(autoLoginWindow, &AutoLoginWindow::loginCanceled, [this] {
+            autoLoginWindow->hide();
+            window->show();
+        });
+        autoLoginWindow->show();
+    } else {
+        window->show();
+    }
 }

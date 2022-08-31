@@ -65,6 +65,7 @@ private:
     QComboBox* gameLicenseBox = nullptr;
     QCheckBox* freeTrialBox = nullptr;
     QCheckBox* useOneTimePassword = nullptr;
+    QCheckBox* autoLoginBox = nullptr;
 
     // dalamud
     QCheckBox* enableDalamudBox = nullptr;

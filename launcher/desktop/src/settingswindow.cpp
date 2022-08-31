@@ -264,6 +264,7 @@ void SettingsWindow::reloadControls() {
     } else {
         useOneTimePassword->setToolTip("");
     }
+    autoLoginBox->setChecked(profile.autoLogin);
 
     gameLicenseBox->setCurrentIndex((int)profile.license);
     gameLicenseBox->setEnabled(!profile.isSapphire);
@@ -436,6 +437,15 @@ void SettingsWindow::setupLoginTab(QFormLayout& layout) {
         this->window.reloadControls();
     });
     layout.addRow("Use One-Time Password", useOneTimePassword);
+
+    autoLoginBox = new QCheckBox();
+    connect(autoLoginBox, &QCheckBox::stateChanged, [=](int) {
+        getCurrentProfile().autoLogin = autoLoginBox->isChecked();
+
+        this->core.saveSettings();
+        this->window.reloadControls();
+    });
+    layout.addRow("Auto-Login", autoLoginBox);
 }
 
 void SettingsWindow::setupWineTab(QFormLayout& layout) {

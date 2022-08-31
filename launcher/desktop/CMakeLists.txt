@@ -5,7 +5,8 @@ set(HEADERS
         include/desktopinterface.h
         include/gamescopesettingswindow.h
         include/launcherwindow.h
-        include/settingswindow.h)
+        include/settingswindow.h
+        include/autologinwindow.h)
 
 set(SRC
         src/aboutwindow.cpp
@@ -14,7 +15,8 @@ set(SRC
         src/desktopinterface.cpp
         src/gamescopesettingswindow.cpp
         src/launcherwindow.cpp
-        src/settingswindow.cpp)
+        src/settingswindow.cpp
+        src/autologinwindow.cpp)
 
 add_library(astra_desktop STATIC ${HEADERS} ${SRC})
 target_include_directories(astra_desktop PUBLIC include)

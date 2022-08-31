@@ -1,6 +1,7 @@
 #pragma once
 
 #include "launcherwindow.h"
+#include "autologinwindow.h"
 
 /*
  * The desktop, mouse and keyboard-driven interface for Astra. Primarily meant
@@ -12,4 +13,5 @@ public:
 
 private:
     LauncherWindow* window = nullptr;
+    AutoLoginWindow* autoLoginWindow = nullptr;
 };

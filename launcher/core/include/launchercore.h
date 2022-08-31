@@ -92,6 +92,7 @@ public:
     QString lobbyURL;
     bool rememberUsername = false, rememberPassword = false;
     bool useOneTimePassword = false;
+    bool autoLogin = false;
 
     GameLicense license = GameLicense::WindowsStandalone;
     bool isFreeTrial = false;
