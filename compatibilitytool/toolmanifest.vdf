@@ -1,0 +1,5 @@
+"manifest"
+{
+  "commandline" "/astra run"
+  "commandline_waitforexitandrun" "/astra waitforexitandrun"
+}

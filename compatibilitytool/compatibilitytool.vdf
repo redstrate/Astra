@@ -1,0 +1,14 @@
+"compatibilitytools"
+{
+  "compat_tools"
+  {
+	"Proton-Astra" // Internal name of this tool
+	{
+	  "install_path" "."
+	  "display_name" "Astra"
+
+	  "from_oslist"  "windows"
+	  "to_oslist"    "linux"
+	}
+  }
+}
