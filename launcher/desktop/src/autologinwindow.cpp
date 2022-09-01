@@ -13,6 +13,7 @@
 #include <QSpinBox>
 #include <QToolTip>
 #include <keychain.h>
+#include <cotp.h>
 
 #include "launchercore.h"
 #include "launcherwindow.h"
@@ -34,18 +35,18 @@ AutoLoginWindow::AutoLoginWindow(ProfileSettings& profile, LauncherCore& core, Q
     mainLayout->addWidget(cancelButton);
 
     auto autologinTimer = new QTimer();
-    connect(autologinTimer, &QTimer::timeout, [&] {
-        qDebug() << "logging in!";
-
+    connect(autologinTimer, &QTimer::timeout, [&, this, autologinTimer] {
         // TODO: this is the second place where I have implemented this. this is a good idea to abstract, maybe? :-)
         auto loop = new QEventLoop();
+
         QString username, password;
+        QString otpSecret;
 
         auto usernameJob = new QKeychain::ReadPasswordJob("LauncherWindow");
         usernameJob->setKey(profile.name + "-username");
         usernameJob->start();
 
-        core.connect(
+        QObject::connect(
             usernameJob, &QKeychain::ReadPasswordJob::finished, [loop, usernameJob, &username](QKeychain::Job* j) {
                 username = usernameJob->textData();
                 loop->quit();
@@ -57,7 +58,7 @@ AutoLoginWindow::AutoLoginWindow(ProfileSettings& profile, LauncherCore& core, Q
         passwordJob->setKey(profile.name + "-password");
         passwordJob->start();
 
-        core.connect(
+        QObject::connect(
             passwordJob, &QKeychain::ReadPasswordJob::finished, [loop, passwordJob, &password](QKeychain::Job* j) {
                 password = passwordJob->textData();
                 loop->quit();
@@ -65,16 +66,41 @@ AutoLoginWindow::AutoLoginWindow(ProfileSettings& profile, LauncherCore& core, Q
 
         loop->exec();
 
+        // TODO: handle cases where the user doesn't want to store their OTP secret, so we have to manually prompt them
+        if(profile.useOneTimePassword && profile.rememberOTPSecret) {
+            auto otpJob = new QKeychain::ReadPasswordJob("LauncherWindow");
+            otpJob->setKey(profile.name + "-otpsecret");
+            otpJob->start();
+
+            QObject::connect(
+                otpJob, &QKeychain::ReadPasswordJob::finished, [loop, otpJob, &otpSecret](QKeychain::Job* j) {
+                    otpSecret = otpJob->textData();
+                    loop->quit();
+                });
+
+            loop->exec();
+        }
+
         auto info = new LoginInformation();
         info->settings = &profile;
         info->username = username;
         info->password = password;
+
+        if(profile.useOneTimePassword && profile.rememberOTPSecret) {
+            // generate otp
+            char *totp = get_totp (otpSecret.toStdString().c_str(), 6, 30, SHA1, nullptr);
+            info->oneTimePassword = totp;
+            free (totp);
+        }
 
         if (profile.isSapphire) {
             core.sapphireLauncher->login(profile.lobbyURL, *info);
         } else {
             core.squareBoot->bootCheck(*info);
         }
+
+        close();
+        autologinTimer->stop();
     });
     connect(this, &AutoLoginWindow::loginCanceled, [autologinTimer] {
         autologinTimer->stop();

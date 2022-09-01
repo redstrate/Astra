@@ -1,3 +1,6 @@
+add_subdirectory(libbaseencode)
+add_subdirectory(libcotp)
+
 include(FetchContent)
 
 FetchContent_Declare(

@@ -450,7 +450,7 @@ void SettingsWindow::setupLoginTab(QFormLayout& layout) {
     connect(otpSecretButton, &QPushButton::pressed, [=] {
         auto otpSecret = QInputDialog::getText(this, "OTP Input", "Enter your OTP Secret:");
 
-        auto job = new QKeychain::WritePasswordJob("SettingsWindow");
+        auto job = new QKeychain::WritePasswordJob("LauncherWindow");
         job->setTextData(otpSecret);
         job->setKey(this->getCurrentProfile().name + "-otpsecret");
         job->start();
