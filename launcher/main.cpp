@@ -62,13 +62,16 @@ int main(int argc, char* argv[]) {
     }
 
     LauncherCore c;
+    std::unique_ptr<DesktopInterface> desktopInterface;
+    std::unique_ptr<TabletInterface> tabletInterface;
+
     if (parser.isSet(tabletOption)) {
-        std::make_unique<TabletInterface>(c);
+        tabletInterface = std::make_unique<TabletInterface>(c);
     } else if (parser.isSet(cliOption)) {
         if (!cmd->parse(parser, c))
             return -1;
     } else {
-        std::make_unique<DesktopInterface>(c);
+        desktopInterface = std::make_unique<DesktopInterface>(c);
     }
 
     return app.exec();

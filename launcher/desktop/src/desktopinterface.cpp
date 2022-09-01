@@ -53,11 +53,12 @@ DesktopInterface::DesktopInterface(LauncherCore& core) {
 
     if(defaultProfile.autoLogin) {
         autoLoginWindow = new AutoLoginWindow(defaultProfile, core);
-        QObject::connect(autoLoginWindow, &AutoLoginWindow::loginCanceled, [this] {
+        autoLoginWindow->show();
+
+        QObject::connect(autoLoginWindow, &AutoLoginWindow::loginCanceled,[=] {
             autoLoginWindow->hide();
             window->show();
         });
-        autoLoginWindow->show();
     } else {
         window->show();
     }
