@@ -50,12 +50,10 @@ void SquareBoot::bootCheck(const LoginInformation& info) {
 }
 
 void SquareBoot::checkGateStatus(LoginInformation* info) {
-    QUrl url;
-    url.setUrl("https://frontier.ffxiv.com/worldStatus/gate_status.json");
+    QUrl url("https://frontier.ffxiv.com/worldStatus/gate_status.json");
     url.setQuery(QString::number(QDateTime::currentMSecsSinceEpoch()));
 
-    QNetworkRequest request;
-    request.setUrl(url);
+    QNetworkRequest request(url);
 
     // TODO: really?
     window.buildRequest(*info->settings, request);
