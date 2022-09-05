@@ -1,6 +1,5 @@
 #include "cmdinterface.h"
 #include "sapphirelauncher.h"
-#include "squareboot.h"
 #include <keychain.h>
 
 CMDInterface::CMDInterface(QCommandLineParser& parser) {

@@ -13,7 +13,7 @@ inline char GetChecksum(unsigned int key) {
 
 uint32_t TickCount();
 
-inline QString encryptGameArg(QString arg) {
+inline QString encryptGameArg(const QString& arg) {
     unsigned int rawTicks = TickCount();
     unsigned int ticks = rawTicks & 0xFFFFFFFFu;
     unsigned int key = ticks & 0xFFFF0000u;

@@ -7,7 +7,7 @@
 
 SapphireLauncher::SapphireLauncher(LauncherCore& window) : window(window), QObject(&window) {}
 
-void SapphireLauncher::login(QString lobbyUrl, const LoginInformation& info) {
+void SapphireLauncher::login(const QString& lobbyUrl, const LoginInformation& info) {
     QJsonObject data{{"username", info.username}, {"pass", info.password}};
 
     QUrl url;
@@ -37,7 +37,7 @@ void SapphireLauncher::login(QString lobbyUrl, const LoginInformation& info) {
     });
 }
 
-void SapphireLauncher::registerAccount(QString lobbyUrl, const LoginInformation& info) {
+void SapphireLauncher::registerAccount(const QString& lobbyUrl, const LoginInformation& info) {
     QJsonObject data{{"username", info.username}, {"pass", info.password}};
     QUrl url;
     url.setScheme("http");

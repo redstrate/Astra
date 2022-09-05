@@ -4,5 +4,5 @@
 
 class AboutWindow : public QDialog {
 public:
-    AboutWindow(QWidget* widget = nullptr);
+    explicit AboutWindow(QWidget* widget = nullptr);
 };

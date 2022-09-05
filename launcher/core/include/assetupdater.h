@@ -14,7 +14,7 @@ struct ProfileSettings;
 class AssetUpdater : public QObject {
     Q_OBJECT
 public:
-    AssetUpdater(LauncherCore& launcher);
+    explicit AssetUpdater(LauncherCore& launcher);
 
     void update(const ProfileSettings& profile);
     void beginInstall();

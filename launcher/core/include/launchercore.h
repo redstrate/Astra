@@ -148,10 +148,10 @@ public:
         return profileSettings[index];
     }
 
-    int getProfileIndex(QString name);
+    int getProfileIndex(const QString& name);
     Q_INVOKABLE QList<QString> profileList() const;
     int addProfile();
-    int deleteProfile(QString name);
+    int deleteProfile(const QString& name);
 
     /*
      * Begins the login process, and may call SquareBoot or SapphireLauncher depending on the profile type.
@@ -181,7 +181,7 @@ public:
     void launchExecutable(
         const ProfileSettings& settings,
         QProcess* process,
-        QStringList args,
+        const QStringList& args,
         bool isGame,
         bool needsRegistrySetup);
 
@@ -242,7 +242,7 @@ private:
      */
     QString getGameArgs(const ProfileSettings& profile, const LoginAuth& auth);
 
-    bool checkIfInPath(QString program);
+    bool checkIfInPath(const QString& program);
     void readGameData(ProfileSettings& profile);
 
     QString getDefaultGamePath();

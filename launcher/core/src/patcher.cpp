@@ -105,7 +105,7 @@ void Patcher::processPatchList(QNetworkAccessManager& mgr, QString patchList) {
 
 void Patcher::checkIfDone() {
     if (remainingPatches <= 0) {
-        for (auto patch : patchQueue) {
+        for (const auto& patch : patchQueue) {
             processPatch(patch);
         }
 
@@ -117,7 +117,7 @@ void Patcher::checkIfDone() {
     }
 }
 
-void Patcher::processPatch(QueuedPatch patch) {
+void Patcher::processPatch(const QueuedPatch& patch) {
     if (isBoot()) {
         physis_bootdata_apply_patch(boot_data, patch.path.toStdString().c_str());
     } else {

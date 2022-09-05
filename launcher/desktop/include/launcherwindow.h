@@ -19,7 +19,7 @@ public:
 
     ProfileSettings& currentProfile();
 
-    void openPath(const QString path);
+    void openPath(const QString& path);
 
 public slots:
     void reloadControls();

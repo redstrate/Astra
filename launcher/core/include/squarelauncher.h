@@ -6,7 +6,7 @@
 class SquareLauncher : public QObject {
     Q_OBJECT
 public:
-    SquareLauncher(LauncherCore& window);
+    explicit SquareLauncher(LauncherCore& window);
 
     void getStored(const LoginInformation& info);
 

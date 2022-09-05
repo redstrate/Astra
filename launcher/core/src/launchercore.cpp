@@ -1,4 +1,3 @@
-#include <QCheckBox>
 #include <QComboBox>
 #include <QCoreApplication>
 #include <QDir>
@@ -7,17 +6,12 @@
 #include <QJsonObject>
 #include <QLineEdit>
 #include <QMenuBar>
-#include <QMessageBox>
 #include <QNetworkAccessManager>
-#include <QNetworkReply>
 #include <QProcess>
 #include <QPushButton>
-#include <QRegularExpression>
-#include <QRegularExpressionMatch>
 #include <QStandardPaths>
-#include <QTcpServer>
-#include <QUrlQuery>
 #include <algorithm>
+#include <utility>
 #include <keychain.h>
 #include <cotp.h>
 
@@ -179,7 +173,7 @@ QString LauncherCore::getGameArgs(const ProfileSettings& profile, const LoginAut
 void LauncherCore::launchExecutable(
     const ProfileSettings& profile,
     QProcess* process,
-    const QStringList args,
+    const QStringList& args,
     bool isGame,
     bool needsRegistrySetup) {
     QList<QString> arguments;
@@ -482,7 +476,7 @@ ProfileSettings& LauncherCore::getProfile(int index) {
     return *profileSettings[index];
 }
 
-int LauncherCore::getProfileIndex(QString name) {
+int LauncherCore::getProfileIndex(const QString& name) {
     for (int i = 0; i < profileSettings.size(); i++) {
         if (profileSettings[i]->name == name)
             return i;
@@ -501,7 +495,7 @@ QList<QString> LauncherCore::profileList() const {
 }
 
 int LauncherCore::addProfile() {
-    ProfileSettings* newProfile = new ProfileSettings();
+    auto newProfile = new ProfileSettings();
     newProfile->uuid = QUuid::createUuid();
     newProfile->name = "New Profile";
 
@@ -517,7 +511,7 @@ int LauncherCore::addProfile() {
     return profileSettings.size() - 1;
 }
 
-int LauncherCore::deleteProfile(QString name) {
+int LauncherCore::deleteProfile(const QString& name) {
     int index = 0;
     for (int i = 0; i < profileSettings.size(); i++) {
         if (profileSettings[i]->name == name)
@@ -589,7 +583,7 @@ void LauncherCore::saveSettings() {
     }
 }
 
-bool LauncherCore::checkIfInPath(const QString program) {
+bool LauncherCore::checkIfInPath(const QString& program) {
     // TODO: also check /usr/local/bin, /bin32 etc (basically read $PATH)
     const QString directory = "/usr/bin";
 
@@ -629,7 +623,7 @@ QString LauncherCore::getDefaultGamePath() {
 void LauncherCore::addRegistryKey(const ProfileSettings& settings, QString key, QString value, QString data) {
     auto process = new QProcess(this);
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(settings, process, {"reg", "add", key, "/v", value, "/d", data, "/f"}, false, false);
+    launchExecutable(settings, process, {"reg", "add", std::move(key), "/v", value, "/d", data, "/f"}, false, false);
 }
 
 void LauncherCore::readGameData(ProfileSettings& profile) {

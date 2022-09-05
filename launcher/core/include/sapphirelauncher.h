@@ -6,10 +6,10 @@
 
 class SapphireLauncher : QObject {
 public:
-    SapphireLauncher(LauncherCore& window);
+    explicit SapphireLauncher(LauncherCore& window);
 
-    void login(QString lobbyUrl, const LoginInformation& info);
-    void registerAccount(QString lobbyUrl, const LoginInformation& info);
+    void login(const QString& lobbyUrl, const LoginInformation& info);
+    void registerAccount(const QString& lobbyUrl, const LoginInformation& info);
 
 private:
     LauncherCore& window;

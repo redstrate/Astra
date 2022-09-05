@@ -9,7 +9,7 @@
 
 #include "launchercore.h"
 
-void getHeadline(LauncherCore& core, std::function<void(Headline)> return_func) {
+void getHeadline(LauncherCore& core, const std::function<void(Headline)>& return_func) {
     QUrlQuery query;
     query.addQueryItem("lang", "en-us");
     query.addQueryItem("media", "pcapp");

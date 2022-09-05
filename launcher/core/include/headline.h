@@ -28,4 +28,4 @@ struct Headline {
 
 class LauncherCore;
 
-void getHeadline(LauncherCore& core, std::function<void(Headline)> return_func);
+void getHeadline(LauncherCore& core, const std::function<void(Headline)>& return_func);

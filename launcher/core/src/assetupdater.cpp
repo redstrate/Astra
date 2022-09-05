@@ -309,7 +309,7 @@ void AssetUpdater::checkIfCheckingIsDone() {
                     const QList<QString> dirPath = fileName.left(fileName.lastIndexOf("/")).split('/');
 
                     QString build = dataDir + "/DalamudAssets/";
-                    for (auto dir : dirPath) {
+                    for (const auto& dir : dirPath) {
                         if (!QDir().exists(build + dir))
                             QDir().mkdir(build + dir);
 

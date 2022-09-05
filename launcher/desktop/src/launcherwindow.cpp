@@ -10,18 +10,15 @@
 #include <QScrollBar>
 #include <QTimer>
 #include <QTreeWidgetItem>
-#include <keychain.h>
 
 #include "aboutwindow.h"
 #include "assetupdater.h"
 #include "bannerwidget.h"
-#include "config.h"
 #include "encryptedarg.h"
 #include "gameinstaller.h"
 #include "headline.h"
 #include "sapphirelauncher.h"
 #include "settingswindow.h"
-#include "squareboot.h"
 #include "squarelauncher.h"
 
 LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindow(parent), core(core) {
@@ -485,7 +482,7 @@ void LauncherWindow::reloadNews() {
 
         if (!headline.banner.empty()) {
             if (core.appSettings.showBanners) {
-                for (auto banner : headline.banner) {
+                for (const auto& banner : headline.banner) {
                     auto request = QNetworkRequest(banner.bannerImage);
                     core.buildRequest(currentProfile(), request);
 
@@ -524,9 +521,9 @@ void LauncherWindow::reloadNews() {
             }
 
             if (core.appSettings.showNewsList) {
-                QTreeWidgetItem* newsItem = new QTreeWidgetItem((QTreeWidgetItem*)nullptr, QStringList("News"));
-                for (auto news : headline.news) {
-                    QTreeWidgetItem* item = new QTreeWidgetItem();
+                auto newsItem = new QTreeWidgetItem((QTreeWidgetItem*)nullptr, QStringList("News"));
+                for (const auto& news : headline.news) {
+                    auto item = new QTreeWidgetItem();
                     item->setText(0, news.title);
                     item->setText(1, QLocale().toString(news.date, QLocale::ShortFormat));
                     item->setData(0, Qt::UserRole, news.url);
@@ -534,9 +531,9 @@ void LauncherWindow::reloadNews() {
                     newsItem->addChild(item);
                 }
 
-                QTreeWidgetItem* pinnedItem = new QTreeWidgetItem((QTreeWidgetItem*)nullptr, QStringList("Pinned"));
-                for (auto pinned : headline.pinned) {
-                    QTreeWidgetItem* item = new QTreeWidgetItem();
+                auto pinnedItem = new QTreeWidgetItem((QTreeWidgetItem*)nullptr, QStringList("Pinned"));
+                for (const auto& pinned : headline.pinned) {
+                    auto item = new QTreeWidgetItem();
                     item->setText(0, pinned.title);
                     item->setText(1, QLocale().toString(pinned.date, QLocale::ShortFormat));
                     item->setData(0, Qt::UserRole, pinned.url);
@@ -544,9 +541,9 @@ void LauncherWindow::reloadNews() {
                     pinnedItem->addChild(item);
                 }
 
-                QTreeWidgetItem* topicsItem = new QTreeWidgetItem((QTreeWidgetItem*)nullptr, QStringList("Topics"));
-                for (auto news : headline.topics) {
-                    QTreeWidgetItem* item = new QTreeWidgetItem();
+                auto topicsItem = new QTreeWidgetItem((QTreeWidgetItem*)nullptr, QStringList("Topics"));
+                for (const auto& news : headline.topics) {
+                    auto item = new QTreeWidgetItem();
                     item->setText(0, news.title);
                     item->setText(1, QLocale().toString(news.date, QLocale::ShortFormat));
                     item->setData(0, Qt::UserRole, news.url);
@@ -565,7 +562,7 @@ void LauncherWindow::reloadNews() {
     }
 }
 
-void LauncherWindow::openPath(const QString path) {
+void LauncherWindow::openPath(const QString& path) {
 #if defined(Q_OS_WIN)
     // for some reason, windows requires special treatment (what else is new?)
     const QFileInfo fileInfo(path);

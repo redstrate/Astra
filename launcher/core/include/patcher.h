@@ -29,7 +29,7 @@ private:
         QString name, repository, version, path;
     };
 
-    void processPatch(QueuedPatch patch);
+    void processPatch(const QueuedPatch& patch);
 
     QVector<QueuedPatch> patchQueue;
 

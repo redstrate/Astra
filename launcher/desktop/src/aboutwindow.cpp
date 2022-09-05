@@ -35,13 +35,13 @@ AboutWindow::AboutWindow(QWidget* widget) : QDialog(widget) {
     auto licenseLabel = new QLabel();
     licenseLabel->setText("<a href='a'>License: GNU General Public License Version 3</a>");
     connect(licenseLabel, &QLabel::linkActivated, [this] {
-        QDialog* licenseDialog = new QDialog(this);
+        auto licenseDialog = new QDialog(this);
         licenseDialog->setWindowTitle("License Agreement");
 
-        QVBoxLayout* layout = new QVBoxLayout();
+        auto layout = new QVBoxLayout();
         licenseDialog->setLayout(layout);
 
-        QPlainTextEdit* licenseEdit = new QPlainTextEdit();
+        auto licenseEdit = new QPlainTextEdit();
         licenseEdit->setPlainText(license);
         licenseEdit->setReadOnly(true);
         layout->addWidget(licenseEdit);

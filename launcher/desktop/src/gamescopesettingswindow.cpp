@@ -2,14 +2,8 @@
 
 #include <QCheckBox>
 #include <QDesktopServices>
-#include <QFileDialog>
 #include <QFormLayout>
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QLabel>
 #include <QMessageBox>
-#include <QProcess>
-#include <QPushButton>
 #include <QSpinBox>
 #include <QToolTip>
 

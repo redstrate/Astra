@@ -25,7 +25,7 @@ uint32_t TickCount() {
 
 #if defined(Q_OS_LINUX)
 uint32_t TickCount() {
-    struct timespec ts;
+    struct timespec ts{};
 
     clock_gettime(CLOCK_MONOTONIC, &ts);
 

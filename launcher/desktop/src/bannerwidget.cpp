@@ -12,6 +12,6 @@ void BannerWidget::mousePressEvent(QMouseEvent* event) {
     QDesktopServices::openUrl(url);
 }
 
-void BannerWidget::setUrl(QUrl url) {
-    this->url = url;
+void BannerWidget::setUrl(QUrl newUrl) {
+    this->url = newUrl;
 }

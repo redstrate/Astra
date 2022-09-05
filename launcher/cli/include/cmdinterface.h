@@ -8,7 +8,7 @@
  */
 class CMDInterface {
 public:
-    CMDInterface(QCommandLineParser& parser);
+    explicit CMDInterface(QCommandLineParser& parser);
 
     bool parse(QCommandLineParser& parser, LauncherCore& core);
 

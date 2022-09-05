@@ -7,7 +7,7 @@
 
 #include "launchercore.h"
 
-void installGame(LauncherCore& launcher, ProfileSettings& profile, std::function<void()> returnFunc) {
+void installGame(LauncherCore& launcher, ProfileSettings& profile, const std::function<void()>& returnFunc) {
     QString installDirectory = profile.gamePath;
     qDebug() << "Installing game to " << installDirectory << "!";
 
@@ -16,7 +16,7 @@ void installGame(LauncherCore& launcher, ProfileSettings& profile, std::function
     QNetworkRequest request(QUrl("https://gdl.square-enix.com/ffxiv/inst/ffxivsetup.exe"));
 
     auto reply = launcher.mgr->get(request);
-    launcher.connect(reply, &QNetworkReply::finished, [reply, installDirectory, returnFunc] {
+    QObject::connect(reply, &QNetworkReply::finished, [reply, installDirectory, returnFunc] {
         QString dataDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
 
         QFile file(dataDir + "/ffxivsetup.exe");

@@ -5,11 +5,9 @@
 #include <QFileDialog>
 #include <QFormLayout>
 #include <QGridLayout>
-#include <QGroupBox>
 #include <QInputDialog>
 #include <QLabel>
 #include <QMessageBox>
-#include <QProcess>
 #include <QPushButton>
 #include <QToolTip>
 #include <keychain.h>
