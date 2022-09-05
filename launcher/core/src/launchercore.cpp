@@ -15,7 +15,7 @@
 #include <qt5keychain/keychain.h>
 #include <cotp.h>
 
-#ifdef USE_GAMEMODE
+#ifdef ENABLE_GAMEMODE
 #include <gamemode_client.h>
 #endif
 
@@ -212,7 +212,7 @@ void LauncherCore::launchExecutable(
     }
 #endif
 
-#if USE_GAMEMODE
+#if ENABLE_GAMEMODE
     if(isGame && profile.useGamemode) {
         gamemode_request_start();
     }

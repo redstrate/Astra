@@ -77,9 +77,9 @@ if (ENABLE_WATCHDOG)
 endif ()
 
 if(ENABLE_GAMEMODE)
-    target_compile_definitions(astra_core PUBLIC USE_GAMEMODE)
+    target_compile_definitions(astra_core PUBLIC ENABLE_GAMEMODE)
 endif()
 
 if(ENABLE_STEAM)
-    target_compile_definitions(astra_core PUBLIC USE_STEAM)
+    target_compile_definitions(astra_core PUBLIC ENABLE_STEAM)
 endif()

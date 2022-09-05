@@ -27,7 +27,8 @@ enum class WineType {
     System,
     Custom,
     Builtin, // macos only
-    XIVOnMac // macos only
+    XIVOnMac, // macos only
+    Proton // steam proton, only available when launched via Steam
 };
 
 enum class DalamudChannel {
