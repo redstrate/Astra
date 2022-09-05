@@ -25,7 +25,6 @@
 #include "encryptedarg.h"
 #include "launchercore.h"
 #include "sapphirelauncher.h"
-#include "settingswindow.h"
 #include "squareboot.h"
 #include "squarelauncher.h"
 

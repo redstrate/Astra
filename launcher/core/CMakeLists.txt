@@ -8,7 +8,8 @@ set(HEADERS
         include/squareboot.h
         include/squarelauncher.h
         include/patcher.h
-        include/steamapi.h)
+        include/steamapi.h
+        include/assetupdater.h)
 
 set(SRC
         src/encryptedarg.cpp
@@ -19,7 +20,8 @@ set(SRC
         src/squareboot.cpp
         src/squarelauncher.cpp
         src/patcher.cpp
-        src/steamapi.cpp)
+        src/steamapi.cpp
+        src/assetupdater.cpp)
 
 if (ENABLE_WATCHDOG)
     set(HEADERS ${HEADERS}
@@ -51,7 +53,6 @@ target_link_libraries(astra_core PUBLIC
         Qt5::Widgets  # widgets is required by watchdog, to be fixed/removed later
         Qt5::Quick # required for some type registrations
         PRIVATE
-        astra_desktop
         cotp
         crypto) # desktop is currently required by the core, to be fixed/removed later
 

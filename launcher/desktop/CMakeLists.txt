@@ -1,6 +1,5 @@
 set(HEADERS
         include/aboutwindow.h
-        include/assetupdater.h
         include/bannerwidget.h
         include/desktopinterface.h
         include/gamescopesettingswindow.h
@@ -10,7 +9,6 @@ set(HEADERS
 
 set(SRC
         src/aboutwindow.cpp
-        src/assetupdater.cpp
         src/bannerwidget.cpp
         src/desktopinterface.cpp
         src/gamescopesettingswindow.cpp
