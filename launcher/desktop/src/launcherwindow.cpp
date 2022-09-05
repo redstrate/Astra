@@ -84,20 +84,34 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
 
         QString finalArg = encryptGameArg(argJoined);
 
-        this->core.launchExecutable(
-            currentProfile(), {currentProfile().gamePath + "/boot/ffxivlauncher64.exe", finalArg});
+        auto launcherProcess = new QProcess();
+        this->core.launchExecutable(currentProfile(),
+                                   launcherProcess,
+                                   {currentProfile().gamePath + "/boot/ffxivlauncher64.exe", finalArg},
+                                   false,
+                                   true);
     });
 
     launchSysInfo = toolsMenu->addAction("Open System Info...");
     launchSysInfo->setIcon(QIcon::fromTheme("application-x-executable"));
     connect(launchSysInfo, &QAction::triggered, [=] {
-        this->core.launchExecutable(currentProfile(), {currentProfile().gamePath + "/boot/ffxivsysinfo64.exe"});
+        auto sysinfoProcess = new QProcess();
+        this->core.launchExecutable(currentProfile(),
+                                    sysinfoProcess,
+                                    {currentProfile().gamePath + "/boot/ffxivsysinfo64.exe"},
+                                    false,
+                                    false);
     });
 
     launchCfgBackup = toolsMenu->addAction("Open Config Backup...");
     launchCfgBackup->setIcon(QIcon::fromTheme("application-x-executable"));
     connect(launchCfgBackup, &QAction::triggered, [=] {
-        this->core.launchExecutable(currentProfile(), {currentProfile().gamePath + "/boot/ffxivconfig64.exe"});
+        auto configProcess = new QProcess();
+        this->core.launchExecutable(currentProfile(),
+                                    configProcess,
+                                    {currentProfile().gamePath + "/boot/ffxivconfig64.exe"},
+                                    false,
+                                    false);
     });
 
     toolsMenu->addSeparator();
@@ -167,7 +181,12 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     wineCfg->setMenuRole(QAction::MenuRole::NoRole);
     wineCfg->setIcon(QIcon::fromTheme("configure"));
     connect(wineCfg, &QAction::triggered, [=] {
-        this->core.launchExternalTool(currentProfile(), {"winecfg.exe"});
+        auto configProcess = new QProcess();
+        this->core.launchExecutable(currentProfile(),
+                                    configProcess,
+                                    {"winecfg.exe"},
+                                    false,
+                                    false);
     });
 #endif
 

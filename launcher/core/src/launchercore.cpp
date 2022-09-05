@@ -172,26 +172,6 @@ QString LauncherCore::getGameArgs(const ProfileSettings& profile, const LoginAut
     return profile.encryptArguments ? encryptGameArg(argJoined) : argJoined;
 }
 
-void LauncherCore::launchExecutable(const ProfileSettings& profile, const QStringList args) {
-    auto process = new QProcess(this);
-    process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(profile, process, args, true, true);
-}
-
-void LauncherCore::launchExternalTool(const ProfileSettings& profile, const QStringList args) {
-    auto process = new QProcess(this);
-    process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(profile, process, args, false, true);
-}
-
-void LauncherCore::launchGameExecutable(const ProfileSettings& profile, QProcess* process, const QStringList args) {
-    QList<QString> arguments;
-
-    arguments.append(args);
-
-    launchExecutable(profile, process, arguments, true, true);
-}
-
 void LauncherCore::launchExecutable(
     const ProfileSettings& profile,
     QProcess* process,
@@ -600,15 +580,6 @@ void LauncherCore::saveSettings() {
 
         settings.endGroup();
     }
-}
-
-void LauncherCore::addUpdateButtons(const ProfileSettings& settings, QMessageBox& messageBox) {
-    auto launcherButton = messageBox.addButton("Launch Official Launcher", QMessageBox::NoRole);
-    connect(launcherButton, &QPushButton::clicked, [&] {
-        launchExecutable(settings, {settings.gamePath + "/boot/ffxivboot.exe"});
-    });
-
-    messageBox.addButton(QMessageBox::StandardButton::Ok);
 }
 
 bool LauncherCore::checkIfInPath(const QString program) {

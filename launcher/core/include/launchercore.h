@@ -175,13 +175,6 @@ public:
      */
     void launchGame(const ProfileSettings& settings, const LoginAuth& auth);
 
-    void launchExecutable(const ProfileSettings& settings, QStringList args);
-
-    /*
-     * Used for processes that should be wrapped in gamescope, etc.
-     */
-    void launchGameExecutable(const ProfileSettings& settings, QProcess* process, QStringList args);
-
     /*
      * This just wraps it in wine if needed.
      */
@@ -192,11 +185,6 @@ public:
         bool isGame,
         bool needsRegistrySetup);
 
-    /*
-     * Launches an external tool. Gamescope for example is intentionally excluded.
-     */
-    void launchExternalTool(const ProfileSettings& settings, QStringList args);
-
     void addRegistryKey(const ProfileSettings& settings, QString key, QString value, QString data);
 
     void buildRequest(const ProfileSettings& settings, QNetworkRequest& request);
@@ -205,8 +193,6 @@ public:
     void readGameVersion();
     void readWineInfo(ProfileSettings& settings);
     void saveSettings();
-
-    void addUpdateButtons(const ProfileSettings& settings, QMessageBox& messageBox);
 
     QSettings settings;
 

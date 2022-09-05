@@ -135,7 +135,6 @@ void SquareLauncher::login(const LoginInformation& info, const QUrl& referer) {
                     QMessageBox::Icon::Critical,
                     "Failed to Login",
                     "Your game is unplayable. You need to accept the terms of service from the official launcher.");
-                window.addUpdateButtons(*info.settings, *messageBox);
 
                 messageBox->show();
 
@@ -206,7 +205,6 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
                 QMessageBox::Icon::Critical,
                 "Failed to Login",
                 "Failed the anti-tamper check. Please restore your game to the original state or update the game.");
-            window.addUpdateButtons(*info.settings, *messageBox);
 
             messageBox->show();
         }
