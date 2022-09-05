@@ -1,11 +1,8 @@
 #include "launchercore.h"
-#include "launcherwindow.h"
 
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QDir>
-#include <keychain.h>
-#include <physis.hpp>
 
 #include "../launcher/tablet/include/tabletinterface.h"
 #include "cmdinterface.h"
@@ -59,6 +56,17 @@ int main(int argc, char* argv[]) {
 
     if (parser.isSet(helpOption)) {
         parser.showHelp();
+    }
+
+    for(auto& argument : QCoreApplication::arguments()) {
+        if(argument.contains("iscriptevaluator")) {
+            QFile testFile("/home/josh/testargs.txt");
+            testFile.open(QFile::Text | QFile::Append);
+
+            testFile.write(QCoreApplication::arguments().join(',').toStdString().c_str());
+
+            //return 0;
+        }
     }
 
     LauncherCore c;
