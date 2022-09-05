@@ -59,7 +59,7 @@ QImage qimageFromXImage(XImage* xi) {
     return image;
 }
 
-void Watchdog::launchGame(const ProfileSettings& settings, LoginAuth auth) {
+void Watchdog::launchGame(const ProfileSettings& settings, const LoginAuth& auth) {
     if (icon == nullptr) {
         icon = new QSystemTrayIcon();
     }

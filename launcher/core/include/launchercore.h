@@ -153,7 +153,10 @@ public:
     int addProfile();
     int deleteProfile(QString name);
 
-    void launchGame(const ProfileSettings& settings, LoginAuth auth);
+    /*
+     * Launches the game using the provided authentication.
+     */
+    void launchGame(const ProfileSettings& settings, const LoginAuth& auth);
 
     void launchExecutable(const ProfileSettings& settings, QStringList args);
 
@@ -217,6 +220,7 @@ signals:
     void gameClosed();
 
 private:
+    void beginGameExecutable(const ProfileSettings& settings, const LoginAuth& auth);
     bool checkIfInPath(QString program);
     void readGameData(ProfileSettings& profile);
 

@@ -10,10 +10,6 @@
 
 #include "launchercore.h"
 
-#ifdef ENABLE_WATCHDOG
-    #include "watchdog.h"
-#endif
-
 SquareLauncher::SquareLauncher(LauncherCore& window) : window(window), QObject(&window) {}
 
 QString getFileHash(const QString& file) {
@@ -201,15 +197,7 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
 
                 auth.SID = reply->rawHeader("X-Patch-Unique-Id");
 
-#ifdef ENABLE_WATCHDOG
-                if (info.settings->enableWatchdog) {
-                    window.watchdog->launchGame(*info.settings, auth);
-                } else {
-                    window.launchGame(*info.settings, auth);
-                }
-#else
-                    window.launchGame(*info.settings, auth);
-#endif
+                window.launchGame(*info.settings, auth);
             });
 
             patcher->processPatchList(*window.mgr, body);

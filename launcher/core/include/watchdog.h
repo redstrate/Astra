@@ -15,7 +15,7 @@ class Watchdog : public QObject {
 public:
     Watchdog(LauncherCore& core) : core(core), QObject(&core) {}
 
-    void launchGame(const ProfileSettings& settings, LoginAuth auth);
+    void launchGame(const ProfileSettings& settings, const LoginAuth& auth);
 
 private:
     LauncherCore& core;

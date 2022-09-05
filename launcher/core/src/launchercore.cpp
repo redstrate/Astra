@@ -59,7 +59,19 @@ void LauncherCore::buildRequest(const ProfileSettings& settings, QNetworkRequest
     request.setRawHeader("Accept-Language", "en-us");
 }
 
-void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth auth) {
+void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth& auth) {
+#ifdef ENABLE_WATCHDOG
+    if (info.settings->enableWatchdog) {
+        watchdog->launchGame(profile, auth);
+    } else {
+        beginGameExecutable(profile, auth);
+    }
+#else
+    beginGameExecutable(profile, auth);
+#endif
+}
+
+void LauncherCore::beginGameExecutable(const ProfileSettings& profile, const LoginAuth& auth) {
     QList<QString> arguments;
 
     QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
