@@ -649,49 +649,9 @@ void LauncherCore::login(LoginInformation* loginInformation) {
 }
 
 bool LauncherCore::autoLogin(ProfileSettings& profile) {
-    auto loop = new QEventLoop();
-
-    QString username, password;
-    QString otpSecret;
-
-    auto usernameJob = new QKeychain::ReadPasswordJob("LauncherWindow");
-    usernameJob->setKey(profile.name + "-username");
-    usernameJob->start();
-
-    QObject::connect(
-        usernameJob, &QKeychain::ReadPasswordJob::finished, [loop, usernameJob, &username](QKeychain::Job* j) {
-            username = usernameJob->textData();
-            loop->quit();
-        });
-
-    loop->exec();
-
-    auto passwordJob = new QKeychain::ReadPasswordJob("LauncherWindow");
-    passwordJob->setKey(profile.name + "-password");
-    passwordJob->start();
-
-    QObject::connect(
-        passwordJob, &QKeychain::ReadPasswordJob::finished, [loop, passwordJob, &password](QKeychain::Job* j) {
-            password = passwordJob->textData();
-            loop->quit();
-        });
-
-    loop->exec();
-
-    // TODO: handle cases where the user doesn't want to store their OTP secret, so we have to manually prompt them
-    if(profile.useOneTimePassword && profile.rememberOTPSecret) {
-        auto otpJob = new QKeychain::ReadPasswordJob("LauncherWindow");
-        otpJob->setKey(profile.name + "-otpsecret");
-        otpJob->start();
-
-        QObject::connect(
-            otpJob, &QKeychain::ReadPasswordJob::finished, [loop, otpJob, &otpSecret](QKeychain::Job* j) {
-                otpSecret = otpJob->textData();
-                loop->quit();
-            });
-
-        loop->exec();
-    }
+    QString username = profile.getKeychainValue("username");
+    QString password = profile.getKeychainValue("password");
+    QString otpSecret = profile.getKeychainValue("otpsecret");
 
     auto info = new LoginInformation();
     info->settings = &profile;
@@ -712,4 +672,31 @@ bool LauncherCore::autoLogin(ProfileSettings& profile) {
     login(info);
 
     return true;
+}
+
+void ProfileSettings::setKeychainValue(QString key, QString value) {
+    auto job = new QKeychain::WritePasswordJob("Astra");
+    job->setTextData(value);
+    job->setKey(name + "-" + key);
+    job->start();
+}
+
+QString ProfileSettings::getKeychainValue(QString key) {
+    auto loop = new QEventLoop();
+
+    auto job = new QKeychain::ReadPasswordJob("Astra");
+    job->setKey(name + "-" + key);
+    job->start();
+
+    QString value;
+
+    QObject::connect(
+        job, &QKeychain::ReadPasswordJob::finished, [loop, job, &value](QKeychain::Job* j) {
+            value = job->textData();
+            loop->quit();
+        });
+
+    loop->exec();
+
+    return value;
 }

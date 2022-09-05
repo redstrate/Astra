@@ -10,7 +10,6 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QToolTip>
-#include <qt5keychain/keychain.h>
 
 #include "gamescopesettingswindow.h"
 #include "launchercore.h"
@@ -446,10 +445,7 @@ void SettingsWindow::setupLoginTab(QFormLayout& layout) {
     connect(otpSecretButton, &QPushButton::pressed, [=] {
         auto otpSecret = QInputDialog::getText(this, "OTP Input", "Enter your OTP Secret:");
 
-        auto job = new QKeychain::WritePasswordJob("LauncherWindow");
-        job->setTextData(otpSecret);
-        job->setKey(this->getCurrentProfile().name + "-otpsecret");
-        job->start();
+        getCurrentProfile().setKeychainValue("otpsecret", otpSecret);
     });
     otpSecretButton->setToolTip("Enter your OTP secret from Square Enix here. You cannot easily retrieve this if you forget it.");
     layout.addRow(otpSecretButton);

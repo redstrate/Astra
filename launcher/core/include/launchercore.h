@@ -98,6 +98,16 @@ public:
 
     GameLicense license = GameLicense::WindowsStandalone;
     bool isFreeTrial = false;
+
+    /*
+     * Sets a value in the keychain. This function is asynchronous.
+     */
+    void setKeychainValue(QString key, QString value);
+
+    /*
+     * Retrieves a value from the keychain. This function is synchronous.
+     */
+    QString getKeychainValue(QString key);
 };
 
 struct AppSettings {

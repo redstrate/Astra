@@ -285,23 +285,13 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
         info->password = passwordEdit->text();
         info->oneTimePassword = otpEdit->text();
 
-#ifndef QT_DEBUG
         if (currentProfile().rememberUsername) {
-            auto job = new QKeychain::WritePasswordJob("LauncherWindow");
-            job->setTextData(usernameEdit->text());
-            job->setKey(currentProfile().name + "-username");
-            job->start();
+            profile.setKeychainValue("username", usernameEdit->text());
         }
-#endif
 
-#ifndef QT_DEBUG
         if (currentProfile().rememberPassword) {
-            auto job = new QKeychain::WritePasswordJob("LauncherWindow");
-            job->setTextData(passwordEdit->text());
-            job->setKey(currentProfile().name + "-password");
-            job->start();
+            profile.setKeychainValue("password", passwordEdit->text());
         }
-#endif
 
         this->core.login(info);
     });
@@ -368,30 +358,14 @@ void LauncherWindow::reloadControls() {
     }
 
     rememberUsernameBox->setChecked(currentProfile().rememberUsername);
-#ifndef QT_DEBUG
     if (currentProfile().rememberUsername) {
-        auto job = new QKeychain::ReadPasswordJob("LauncherWindow");
-        job->setKey(currentProfile().name + "-username");
-        job->start();
-
-        connect(job, &QKeychain::ReadPasswordJob::finished, [=](QKeychain::Job* j) {
-            usernameEdit->setText(job->textData());
-        });
+        usernameEdit->setText(currentProfile().getKeychainValue("username"));
     }
-#endif
 
     rememberPasswordBox->setChecked(currentProfile().rememberPassword);
-#ifndef QT_DEBUG
     if (currentProfile().rememberPassword) {
-        auto job = new QKeychain::ReadPasswordJob("LauncherWindow");
-        job->setKey(currentProfile().name + "-password");
-        job->start();
-
-        connect(job, &QKeychain::ReadPasswordJob::finished, [=](QKeychain::Job* j) {
-            passwordEdit->setText(job->textData());
-        });
+        passwordEdit->setText(currentProfile().getKeychainValue("password"));
     }
-#endif
 
     bool canLogin = true;
     if (currentProfile().isSapphire) {
