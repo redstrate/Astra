@@ -10,7 +10,7 @@ public:
 
     void getStored(const LoginInformation& info);
 
-    void login(const LoginInformation& info, QUrl referer);
+    void login(const LoginInformation& info, const QUrl& referer);
 
     void registerSession(const LoginInformation& info);
 

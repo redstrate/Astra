@@ -2,8 +2,6 @@
 
 #include <QDesktopServices>
 #include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QMessageBox>
 #include <QNetworkReply>
 #include <QPushButton>
@@ -18,7 +16,7 @@
 
 SquareLauncher::SquareLauncher(LauncherCore& window) : window(window), QObject(&window) {}
 
-QString getFileHash(QString file) {
+QString getFileHash(const QString& file) {
     auto f = QFile(file);
     if (!f.open(QIODevice::ReadOnly))
         return "";
@@ -92,7 +90,7 @@ void SquareLauncher::getStored(const LoginInformation& info) {
     });
 }
 
-void SquareLauncher::login(const LoginInformation& info, const QUrl referer) {
+void SquareLauncher::login(const LoginInformation& info, const QUrl& referer) {
     QUrlQuery postData;
     postData.addQueryItem("_STORED_", stored);
     postData.addQueryItem("sqexid", info.username);
