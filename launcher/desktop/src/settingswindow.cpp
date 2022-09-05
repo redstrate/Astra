@@ -237,6 +237,10 @@ void SettingsWindow::reloadControls() {
     useGamescope->setChecked(profile.useGamescope);
     useGamemode->setChecked(profile.useGamemode);
 
+#ifndef USE_GAMEMODE
+    useGameMode->setEnabled(false);
+#endif
+
     useGamemode->setEnabled(core.gamemodeAvailable);
     useGamescope->setEnabled(core.gamescopeAvailable);
 

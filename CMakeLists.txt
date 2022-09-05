@@ -10,12 +10,18 @@ option(ENABLE_WATCHDOG "Build with Tesseract support (needed for Watchdog)" OFF)
 option(USE_OWN_LIBRARIES "Build with own libraries" OFF)
 option(BUILD_FLATPAK "Build with Flatpak support in mind" OFF)
 option(USE_STEAM "Build with Steam support" OFF)
+option(USE_GAMEMODE "Build with GameMode support" ON)
 
 if (ENABLE_WATCHDOG)
     find_package(PkgConfig REQUIRED)
     pkg_search_module(TESSERACT REQUIRED tesseract)
     pkg_search_module(LEPTONICA REQUIRED lept)
 endif ()
+
+if (USE_GAMEMODE)
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(GAMEMODE REQUIRED gamemode)
+endif()
 
 include(FetchContent)
 

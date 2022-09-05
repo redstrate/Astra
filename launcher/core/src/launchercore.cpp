@@ -21,6 +21,10 @@
 #include <keychain.h>
 #include <cotp.h>
 
+#ifdef USE_GAMEMODE
+#include <gamemode_client.h>
+#endif
+
 #include "assetupdater.h"
 #include "encryptedarg.h"
 #include "launchercore.h"
@@ -211,9 +215,12 @@ void LauncherCore::launchExecutable(
             if (profile.gamescope.refreshRate > 0)
                 arguments.push_back("-r " + QString::number(profile.gamescope.refreshRate));
         }
+    }
+#endif
 
-        if (profile.useGamemode)
-            arguments.push_back("gamemoderun");
+#if USE_GAMEMODE
+    if(isGame && profile.useGamemode) {
+        gamemode_request_start();
     }
 #endif
 

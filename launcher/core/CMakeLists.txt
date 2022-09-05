@@ -38,6 +38,11 @@ if(USE_STEAM)
             Steamworks)
 endif()
 
+if(USE_GAMEMODE)
+    set(LIBRARIES ${LIBRARIES}
+            ${GAMEMODE_LIBRARIES})
+endif()
+
 add_library(astra_core STATIC ${HEADERS} ${SRC})
 target_include_directories(astra_core PUBLIC
         ${KEYCHAIN_INCLUDE_DIRS}
@@ -61,6 +66,10 @@ if (ENABLE_WATCHDOG)
 
     target_compile_definitions(astra_core PUBLIC ENABLE_WATCHDOG)
 endif ()
+
+if(USE_GAMEMODE)
+    target_compile_definitions(astra_core PUBLIC USE_GAMEMODE)
+endif()
 
 if(USE_STEAM)
     target_compile_definitions(astra_core PUBLIC USE_STEAM)
