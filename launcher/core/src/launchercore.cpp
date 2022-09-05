@@ -12,7 +12,7 @@
 #include <QStandardPaths>
 #include <algorithm>
 #include <utility>
-#include <keychain.h>
+#include <qt5keychain/keychain.h>
 #include <cotp.h>
 
 #ifdef USE_GAMEMODE

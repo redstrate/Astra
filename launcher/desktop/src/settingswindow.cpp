@@ -10,7 +10,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QToolTip>
-#include <keychain.h>
+#include <qt5keychain/keychain.h>
 
 #include "gamescopesettingswindow.h"
 #include "launchercore.h"

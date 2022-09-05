@@ -30,7 +30,14 @@ if (ENABLE_WATCHDOG)
 
     set(SRC ${SRC}
             src/gameparser.cpp
-            src/watchdog.cpp include/steamapi.h src/steamapi.cpp)
+            src/watchdog.cpp)
+
+    set(LIBRARIES ${LIBRARIES}
+            ${TESSERACT_LIBRARIES}
+            ${LEPTONICA_LIBRARIES}
+            X11
+            Xcomposite
+            Xrender)
 endif ()
 
 if(USE_STEAM)

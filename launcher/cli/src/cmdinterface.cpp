@@ -1,6 +1,4 @@
 #include "cmdinterface.h"
-#include "sapphirelauncher.h"
-#include <keychain.h>
 
 CMDInterface::CMDInterface(QCommandLineParser& parser) {
     parser.addOption(autologinOption);
