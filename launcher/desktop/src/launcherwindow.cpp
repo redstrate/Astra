@@ -263,7 +263,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     connect(core.assetUpdater, &AssetUpdater::finishedUpdating, [=] {
         auto& profile = currentProfile();
 
-        LoginInformation* info = new LoginInformation();
+        auto info = new LoginInformation();
         info->settings = &profile;
         info->username = usernameEdit->text();
         info->password = passwordEdit->text();
@@ -287,11 +287,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
         }
 #endif
 
-        if (currentProfile().isSapphire) {
-            this->core.sapphireLauncher->login(currentProfile().lobbyURL, *info);
-        } else {
-            this->core.squareBoot->checkGateStatus(info);
-        }
+        this->core.login(*info);
     });
 
     connect(loginButton, &QPushButton::released, [=] {

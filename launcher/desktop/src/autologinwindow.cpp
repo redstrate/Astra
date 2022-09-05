@@ -93,11 +93,7 @@ AutoLoginWindow::AutoLoginWindow(ProfileSettings& profile, LauncherCore& core, Q
             free (totp);
         }
 
-        if (profile.isSapphire) {
-            core.sapphireLauncher->login(profile.lobbyURL, *info);
-        } else {
-            core.squareBoot->bootCheck(*info);
-        }
+        core.login(*info);
 
         close();
         autologinTimer->stop();

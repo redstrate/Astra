@@ -723,3 +723,11 @@ void LauncherCore::readGameData(ProfileSettings& profile) {
         physis_gamedata_free_sheet_header(exh);
     }
 }
+
+void LauncherCore::login(LoginInformation& loginInformation) {
+    if (loginInformation.settings->isSapphire) {
+        sapphireLauncher->login(loginInformation.settings->lobbyURL, loginInformation);
+    } else {
+        squareBoot->checkGateStatus(&loginInformation);
+    }
+}

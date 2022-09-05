@@ -59,11 +59,7 @@ bool CMDInterface::parse(QCommandLineParser& parser, LauncherCore& core) {
         info->username = username;
         info->password = password;
 
-        if (profile.isSapphire) {
-            core.sapphireLauncher->login(profile.lobbyURL, *info);
-        } else {
-            core.squareBoot->bootCheck(*info);
-        }
+        core.login(*info);
     }
 
     return true;

@@ -154,6 +154,14 @@ public:
     int deleteProfile(QString name);
 
     /*
+     * Begins the login process, and may call SquareBoot or SapphireLauncher depending on the profile type.
+     * It's designed to be opaque as possible to the caller.
+     *
+     * The login process is asynchronous.
+     */
+    void login(LoginInformation& loginInformation);
+
+    /*
      * Launches the game using the provided authentication.
      */
     void launchGame(const ProfileSettings& settings, const LoginAuth& auth);
