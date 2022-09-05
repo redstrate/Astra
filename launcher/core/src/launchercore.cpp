@@ -283,13 +283,6 @@ void LauncherCore::launchExecutable(
     process->start(executable, arguments);
 }
 
-QString LauncherCore::readVersion(QString path) {
-    QFile file(path);
-    file.open(QFile::OpenModeFlag::ReadOnly);
-
-    return file.readAll();
-}
-
 void LauncherCore::readInitialInformation() {
     defaultProfileIndex = settings.value("defaultProfile", 0).toInt();
 

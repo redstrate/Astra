@@ -201,7 +201,6 @@ public:
 
     void buildRequest(const ProfileSettings& settings, QNetworkRequest& request);
     void setSSL(QNetworkRequest& request);
-    QString readVersion(QString path);
     void readInitialInformation();
     void readGameVersion();
     void readWineInfo(ProfileSettings& settings);
