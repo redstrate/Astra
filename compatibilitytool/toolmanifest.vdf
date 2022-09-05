@@ -1,5 +1,4 @@
 "manifest"
 {
-  "commandline" "/astra run"
-  "commandline_waitforexitandrun" "/astra waitforexitandrun"
+  "commandline" "/astra --steam %verb%"
 }
