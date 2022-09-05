@@ -350,7 +350,7 @@ void SettingsWindow::setupGameTab(QFormLayout& layout) {
 
 #ifdef ENABLE_WATCHDOG
     enableWatchdog = new QCheckBox("Enable Watchdog (X11 only)");
-    gameBoxLayout->addWidget(enableWatchdog);
+    layout.addWidget(enableWatchdog);
 
     connect(enableWatchdog, &QCheckBox::stateChanged, [this](int state) {
         getCurrentProfile().enableWatchdog = state;

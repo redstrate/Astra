@@ -65,7 +65,7 @@ void LauncherCore::buildRequest(const ProfileSettings& settings, QNetworkRequest
 
 void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth& auth) {
 #ifdef ENABLE_WATCHDOG
-    if (info.settings->enableWatchdog) {
+    if (profile.enableWatchdog) {
         watchdog->launchGame(profile, auth);
     } else {
         beginGameExecutable(profile, auth);
@@ -326,7 +326,7 @@ void LauncherCore::readInitialInformation() {
     profileSettings.resize(profiles.size());
 
     for (const auto& uuid : profiles) {
-        ProfileSettings* profile = new ProfileSettings();
+        auto profile = new ProfileSettings();
         profile->uuid = QUuid(uuid);
 
         settings.beginGroup(uuid);
