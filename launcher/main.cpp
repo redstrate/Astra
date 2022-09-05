@@ -18,12 +18,7 @@ int main(int argc, char* argv[]) {
 
     QApplication app(argc, argv);
 
-#ifdef NDEBUG
     QCoreApplication::setApplicationName("astra");
-#else
-    QCoreApplication::setApplicationName("astra-debug");
-#endif
-
     QCoreApplication::setApplicationVersion(version);
 
     // we want to decide which interface to use. this is decided by the
