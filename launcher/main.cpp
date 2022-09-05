@@ -47,6 +47,11 @@ int main(int argc, char* argv[]) {
     parser.addOption(cliOption);
 #endif
 
+    QCommandLineOption steamOption("steam", "Simulate booting the launcher via Steam.");
+#ifdef ENABLE_STEAM
+    parser.addOption(steamOption);
+#endif
+
     auto cmd = std::make_unique<CMDInterface>(parser);
 
     parser.process(app);
@@ -59,20 +64,19 @@ int main(int argc, char* argv[]) {
         parser.showHelp();
     }
 
-    for(auto& argument : QCoreApplication::arguments()) {
-        if(argument.contains("iscriptevaluator")) {
-            QFile testFile("/home/josh/testargs.txt");
-            testFile.open(QFile::Text | QFile::Append);
-
-            testFile.write(QCoreApplication::arguments().join(',').toStdString().c_str());
-
-            //return 0;
-        }
-    }
-
     LauncherCore c;
     std::unique_ptr<DesktopInterface> desktopInterface;
     std::unique_ptr<TabletInterface> tabletInterface;
+
+    if(parser.isSet(steamOption)) {
+        c.isSteam = true;
+
+        for(auto& argument : QCoreApplication::arguments()) {
+            if(argument.contains("iscriptevaluator")) {
+                return 0;
+            }
+        }
+    }
 
     if (parser.isSet(tabletOption)) {
 #ifdef ENABLE_TABLET

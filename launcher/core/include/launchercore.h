@@ -226,6 +226,8 @@ public:
 
     QVector<QString> expansionNames;
 
+    bool isSteam = false;
+
 signals:
     void settingsChanged();
     void successfulLaunch();

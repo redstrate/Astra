@@ -1,6 +1,8 @@
 #pragma once
 
+class LauncherCore;
+
 class SteamAPI {
 public:
-    SteamAPI();
+    SteamAPI(LauncherCore& core);
 };

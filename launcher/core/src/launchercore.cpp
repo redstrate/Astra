@@ -463,7 +463,7 @@ LauncherCore::LauncherCore()
     squareLauncher = new SquareLauncher(*this);
     squareBoot = new SquareBoot(*this, *squareLauncher);
     assetUpdater = new AssetUpdater(*this);
-    steamApi = new SteamAPI();
+    steamApi = new SteamAPI(*this);
 
 #ifdef ENABLE_WATCHDOG
     watchdog = new Watchdog(*this);
