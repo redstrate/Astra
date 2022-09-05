@@ -321,8 +321,6 @@ void LauncherCore::launchExecutable(
 
     process->setProcessEnvironment(env);
 
-    qDebug() << "launching " << executable << " with args" << arguments;
-
     process->start(executable, arguments);
 }
 
