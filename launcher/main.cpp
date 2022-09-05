@@ -38,13 +38,19 @@ int main(int argc, char* argv[]) {
     auto versionOption = parser.addVersionOption();
 
     QCommandLineOption desktopOption("desktop", "Open a desktop interface.");
+#ifdef ENABLE_DESKTOP
     parser.addOption(desktopOption);
+#endif
 
     QCommandLineOption tabletOption("tablet", "Open a tablet interface.");
+#ifdef ENABLE_TABLET
     parser.addOption(tabletOption);
+#endif
 
     QCommandLineOption cliOption("cli", "Don't open a main window, and use the cli interface.");
+#ifdef ENABLE_CLI
     parser.addOption(cliOption);
+#endif
 
     auto cmd = std::make_unique<CMDInterface>(parser);
 
@@ -74,12 +80,18 @@ int main(int argc, char* argv[]) {
     std::unique_ptr<TabletInterface> tabletInterface;
 
     if (parser.isSet(tabletOption)) {
+#ifdef ENABLE_TABLET
         tabletInterface = std::make_unique<TabletInterface>(c);
+#endif
     } else if (parser.isSet(cliOption)) {
+#ifdef ENABLE_CLI
         if (!cmd->parse(parser, c))
             return -1;
+#endif
     } else {
+#ifdef ENABLE_DESKTOP
         desktopInterface = std::make_unique<DesktopInterface>(c);
+#endif
     }
 
     return app.exec();

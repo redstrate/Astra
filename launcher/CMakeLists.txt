@@ -1,21 +1,43 @@
 add_subdirectory(core)
-add_subdirectory(cli)
-add_subdirectory(desktop)
-add_subdirectory(tablet)
+
+if(ENABLE_CLI)
+    add_subdirectory(cli)
+endif()
+
+if(ENABLE_DESKTOP)
+    add_subdirectory(desktop)
+endif()
+
+if(ENABLE_TABLET)
+    add_subdirectory(tablet)
+endif()
 
 add_executable(astra
         main.cpp
         tablet/qml/qml.qrc)
 
+if(ENABLE_DESKTOP)
+    set(INTERFACES ${INTERFACES} astra_desktop)
+    target_compile_definitions(astra PRIVATE ENABLE_DESKTOP)
+endif()
+
+if(ENABLE_TABLET)
+    set(INTERFACES ${INTERFACES} astra_tablet)
+    target_compile_definitions(astra PRIVATE ENABLE_TABLET)
+endif()
+
+if(ENABLE_CLI)
+    set(INTERFACES ${INTERFACES} astra_cli)
+    target_compile_definitions(astra PRIVATE ENABLE_CLI)
+endif()
+
 target_link_libraries(astra PUBLIC
-        ${LIBRARIES}
         astra_core
-        astra_desktop
-        astra_cli
-        astra_tablet)
+        ${INTERFACES})
 target_compile_features(astra PUBLIC cxx_std_17)
 set_target_properties(astra PROPERTIES CXX_EXTENSIONS OFF)
 
+# meant for including the license text
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE LICENSE_TXT)
 STRING(REPLACE "\n" " \\n" LICENSE_TXT ${LICENSE_TXT})
 STRING(REPLACE "\"" "\"\"" LICENSE_TXT ${LICENSE_TXT})

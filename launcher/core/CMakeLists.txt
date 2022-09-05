@@ -40,12 +40,12 @@ if (ENABLE_WATCHDOG)
             Xrender)
 endif ()
 
-if(USE_STEAM)
+if(ENABLE_STEAM)
     set(LIBRARIES ${LIBRARIES}
             Steamworks)
 endif()
 
-if(USE_GAMEMODE)
+if(ENABLE_GAMEMODE)
     set(LIBRARIES ${LIBRARIES}
             ${GAMEMODE_LIBRARIES})
 endif()
@@ -59,6 +59,8 @@ target_include_directories(astra_core PUBLIC
 target_link_libraries(astra_core PUBLIC
         physis
         z # FIXME: remove!
+        QuaZip::QuaZip
+        Qt5Keychain::Qt5Keychain
         ${LIBRARIES}
         Qt5::Core
         Qt5::Network
@@ -74,10 +76,10 @@ if (ENABLE_WATCHDOG)
     target_compile_definitions(astra_core PUBLIC ENABLE_WATCHDOG)
 endif ()
 
-if(USE_GAMEMODE)
+if(ENABLE_GAMEMODE)
     target_compile_definitions(astra_core PUBLIC USE_GAMEMODE)
 endif()
 
-if(USE_STEAM)
+if(ENABLE_STEAM)
     target_compile_definitions(astra_core PUBLIC USE_STEAM)
 endif()
