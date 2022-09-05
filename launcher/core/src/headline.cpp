@@ -1,7 +1,6 @@
 #include "headline.h"
 
 #include <QDateTime>
-#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkReply>
@@ -27,7 +26,6 @@ void getHeadline(LauncherCore& core, std::function<void(Headline)> return_func) 
     // TODO: really?
     core.buildRequest(core.getProfile(core.defaultProfileIndex), request);
 
-    qInfo() << request.url();
     request.setRawHeader("Accept", "application/json, text/plain, */*");
     request.setRawHeader("Origin", "https://launcher.finalfantasyxiv.com");
     request.setRawHeader(
@@ -37,7 +35,7 @@ void getHeadline(LauncherCore& core, std::function<void(Headline)> return_func) 
             .toUtf8());
 
     auto reply = core.mgr->get(request);
-    core.connect(reply, &QNetworkReply::finished, [=] {
+    QObject::connect(reply, &QNetworkReply::finished, [=] {
         auto document = QJsonDocument::fromJson(reply->readAll());
 
         Headline headline;
