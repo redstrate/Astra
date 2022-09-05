@@ -303,7 +303,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
         }
 #endif
 
-        this->core.login(*info);
+        this->core.login(info);
     });
 
     connect(loginButton, &QPushButton::released, [=] {

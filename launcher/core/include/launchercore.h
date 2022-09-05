@@ -159,7 +159,7 @@ public:
      *
      * The login process is asynchronous.
      */
-    void login(LoginInformation& loginInformation);
+    Q_INVOKABLE void login(LoginInformation* loginInformation);
 
     /*
      * Attempts to log into a profile without LoginInformation, which may or may not work depending on a combination of

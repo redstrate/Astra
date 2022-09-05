@@ -640,11 +640,11 @@ void LauncherCore::readGameData(ProfileSettings& profile) {
     }
 }
 
-void LauncherCore::login(LoginInformation& loginInformation) {
-    if (loginInformation.settings->isSapphire) {
-        sapphireLauncher->login(loginInformation.settings->lobbyURL, loginInformation);
+void LauncherCore::login(LoginInformation* loginInformation) {
+    if (loginInformation->settings->isSapphire) {
+        sapphireLauncher->login(loginInformation->settings->lobbyURL, *loginInformation);
     } else {
-        squareBoot->checkGateStatus(&loginInformation);
+        squareBoot->checkGateStatus(loginInformation);
     }
 }
 
@@ -709,7 +709,7 @@ bool LauncherCore::autoLogin(ProfileSettings& profile) {
     }
 
     // TODO: when login fails, we need some way to propagate this back? or not?
-    login(*info);
+    login(info);
 
     return true;
 }

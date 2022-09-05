@@ -67,8 +67,7 @@ ApplicationWindow {
             info.password = passwordField.text
             info.oneTimePassword = otpField.text
 
-            print(info);
-            core.squareBoot.checkGateStatus(info);
+            core.login(info);
         }
     }
 }
