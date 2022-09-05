@@ -72,7 +72,6 @@ private:
     QCheckBox* enableDalamudBox = nullptr;
     QLabel* dalamudVersionLabel = nullptr;
     QLabel* dalamudAssetVersionLabel = nullptr;
-    QLabel* nativeLauncherVersionLabel = nullptr;
     QCheckBox* dalamudOptOutBox = nullptr;
     QComboBox* dalamudChannel = nullptr;
 

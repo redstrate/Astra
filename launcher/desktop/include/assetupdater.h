@@ -35,17 +35,14 @@ private:
 
     QString remoteDalamudVersion;
     QString remoteRuntimeVersion;
-    QString remoteNativeLauncherVersion;
 
     QTemporaryDir tempDir;
 
     bool doneDownloadingDalamud = false;
-    bool doneDownloadingNativelauncher = false;
     bool doneDownloadingRuntimeCore = false;
     bool doneDownloadingRuntimeDesktop = false;
     bool needsRuntimeInstall = false;
     bool needsDalamudInstall = false;
-    bool needsNativeInstall = false;
 
     int remoteDalamudAssetVersion = -1;
     QList<QString> dalamudAssetNeededFilenames;

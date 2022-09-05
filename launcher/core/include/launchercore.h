@@ -225,7 +225,6 @@ public:
     QString dalamudVersion;
     int dalamudAssetVersion = -1;
     QString runtimeVersion;
-    QString nativeLauncherVersion;
 
     int defaultProfileIndex = 0;
 
@@ -237,7 +236,27 @@ signals:
     void gameClosed();
 
 private:
+    /*
+     * Begins the game executable, but calls to Dalamud if needed.
+     */
     void beginGameExecutable(const ProfileSettings& settings, const LoginAuth& auth);
+
+    /*
+     * Starts a vanilla game session with no Dalamud injection.
+     */
+    void beginVanillaGame(const QString& gameExecutablePath, const ProfileSettings& profile, const LoginAuth& auth);
+
+    /*
+     * Starts a game session with Dalamud injected.
+     */
+    void beginDalamudGame(const QString& gameExecutablePath, const ProfileSettings& profile, const LoginAuth& auth);
+
+    /*
+     * Returns the game arguments needed to properly launch the game. This encrypts it too if needed, and it's already
+     * joined!
+     */
+    QString getGameArgs(const ProfileSettings& profile, const LoginAuth& auth);
+
     bool checkIfInPath(QString program);
     void readGameData(ProfileSettings& profile);
 

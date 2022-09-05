@@ -295,12 +295,6 @@ void SettingsWindow::reloadControls() {
         dalamudAssetVersionLabel->setText(QString::number(core.dalamudAssetVersion));
     }
 
-    if (core.nativeLauncherVersion.isEmpty()) {
-        nativeLauncherVersionLabel->setText("Native launcher is not installed.");
-    } else {
-        nativeLauncherVersionLabel->setText(core.nativeLauncherVersion);
-    }
-
     dalamudOptOutBox->setChecked(profile.dalamud.optOutOfMbCollection);
     dalamudChannel->setCurrentIndex((int)profile.dalamud.channel);
 
@@ -651,10 +645,6 @@ void SettingsWindow::setupDalamudTab(QFormLayout& layout) {
     dalamudAssetVersionLabel = new QLabel();
     dalamudAssetVersionLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
     layout.addRow("Dalamud Asset Version", dalamudAssetVersionLabel);
-
-    nativeLauncherVersionLabel = new QLabel();
-    nativeLauncherVersionLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
-    layout.addRow("Native Launcher Version", nativeLauncherVersionLabel);
 }
 
 void SettingsWindow::setupAccountsTab(QFormLayout& layout) {}
