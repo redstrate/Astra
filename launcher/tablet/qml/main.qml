@@ -39,18 +39,33 @@ ApplicationWindow {
         anchors.top: passwordLabel.bottom
     }
 
+    Label {
+        id: otpLabel
+
+        text: "One-Time Password"
+
+        anchors.top: passwordField.bottom
+    }
+
+    TextField {
+        id: otpField
+
+        anchors.top: otpLabel.bottom
+    }
+
     Button {
         id: loginButton
 
         text: "Login"
 
-        anchors.top: passwordField.bottom
+        anchors.top: otpField.bottom
 
         onClicked: {
             var info = core.createNewLoginInfo();
             info.settings = core.getProfileQML(0);
             info.username = usernameField.text
             info.password = passwordField.text
+            info.oneTimePassword = otpField.text
 
             print(info);
             core.squareBoot.checkGateStatus(info);
