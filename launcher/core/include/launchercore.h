@@ -10,6 +10,7 @@
 #include <QtQml>
 
 #include "squareboot.h"
+#include "steamapi.h"
 
 class SapphireLauncher;
 class SquareLauncher;
@@ -223,4 +224,6 @@ private:
     QString getDefaultWinePrefixPath();
 
     QVector<ProfileSettings*> profileSettings;
+
+    SteamAPI* steamApi = nullptr;
 };

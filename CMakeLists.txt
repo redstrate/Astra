@@ -9,6 +9,7 @@ find_package(Qt5 COMPONENTS Core Widgets Network Quick CONFIG REQUIRED)
 option(ENABLE_WATCHDOG "Build with Tesseract support (needed for Watchdog)" OFF)
 option(USE_OWN_LIBRARIES "Build with own libraries" OFF)
 option(BUILD_FLATPAK "Build with Flatpak support in mind" OFF)
+option(USE_STEAM "Build with Steam support" OFF)
 
 if (ENABLE_WATCHDOG)
     find_package(PkgConfig REQUIRED)
@@ -21,6 +22,13 @@ include(FetchContent)
 if (NOT USE_OWN_LIBRARIES)
     find_package(Qt5Keychain QUIET)
 endif ()
+
+if(USE_STEAM)
+    add_library(Steamworks IMPORTED STATIC)
+    set_target_properties(Steamworks PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES ${STEAMWORKS_INCLUDE_DIR}
+            IMPORTED_LOCATION ${STEAMWORKS_LIBRARIES})
+endif()
 
 if (TARGET Qt5Keychain::Qt5Keychain)
     message("Using system library for Qt5 Keychain")

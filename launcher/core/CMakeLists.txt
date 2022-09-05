@@ -8,7 +8,8 @@ set(HEADERS
         include/sapphirelauncher.h
         include/squareboot.h
         include/squarelauncher.h
-        include/patcher.h)
+        include/patcher.h
+        include/steamapi.h)
 
 set(SRC
         src/dxvkinstaller.cpp
@@ -19,7 +20,8 @@ set(SRC
         src/sapphirelauncher.cpp
         src/squareboot.cpp
         src/squarelauncher.cpp
-        src/patcher.cpp)
+        src/patcher.cpp
+        src/steamapi.cpp)
 
 if (ENABLE_WATCHDOG)
     set(HEADERS ${HEADERS}
@@ -28,8 +30,13 @@ if (ENABLE_WATCHDOG)
 
     set(SRC ${SRC}
             src/gameparser.cpp
-            src/watchdog.cpp)
+            src/watchdog.cpp include/steamapi.h src/steamapi.cpp)
 endif ()
+
+if(USE_STEAM)
+    set(LIBRARIES ${LIBRARIES}
+            Steamworks)
+endif()
 
 add_library(astra_core STATIC ${HEADERS} ${SRC})
 target_include_directories(astra_core PUBLIC
@@ -53,3 +60,7 @@ if (ENABLE_WATCHDOG)
 
     target_compile_definitions(astra_core PUBLIC ENABLE_WATCHDOG)
 endif ()
+
+if(USE_STEAM)
+    target_compile_definitions(astra_core PUBLIC USE_STEAM)
+endif()
