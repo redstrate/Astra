@@ -19,6 +19,7 @@
 #include <QUrlQuery>
 #include <algorithm>
 #include <keychain.h>
+#include <cotp.h>
 
 #include "assetupdater.h"
 #include "encryptedarg.h"
@@ -730,4 +731,70 @@ void LauncherCore::login(LoginInformation& loginInformation) {
     } else {
         squareBoot->checkGateStatus(&loginInformation);
     }
+}
+
+bool LauncherCore::autoLogin(ProfileSettings& profile) {
+    auto loop = new QEventLoop();
+
+    QString username, password;
+    QString otpSecret;
+
+    auto usernameJob = new QKeychain::ReadPasswordJob("LauncherWindow");
+    usernameJob->setKey(profile.name + "-username");
+    usernameJob->start();
+
+    QObject::connect(
+        usernameJob, &QKeychain::ReadPasswordJob::finished, [loop, usernameJob, &username](QKeychain::Job* j) {
+            username = usernameJob->textData();
+            loop->quit();
+        });
+
+    loop->exec();
+
+    auto passwordJob = new QKeychain::ReadPasswordJob("LauncherWindow");
+    passwordJob->setKey(profile.name + "-password");
+    passwordJob->start();
+
+    QObject::connect(
+        passwordJob, &QKeychain::ReadPasswordJob::finished, [loop, passwordJob, &password](QKeychain::Job* j) {
+            password = passwordJob->textData();
+            loop->quit();
+        });
+
+    loop->exec();
+
+    // TODO: handle cases where the user doesn't want to store their OTP secret, so we have to manually prompt them
+    if(profile.useOneTimePassword && profile.rememberOTPSecret) {
+        auto otpJob = new QKeychain::ReadPasswordJob("LauncherWindow");
+        otpJob->setKey(profile.name + "-otpsecret");
+        otpJob->start();
+
+        QObject::connect(
+            otpJob, &QKeychain::ReadPasswordJob::finished, [loop, otpJob, &otpSecret](QKeychain::Job* j) {
+                otpSecret = otpJob->textData();
+                loop->quit();
+            });
+
+        loop->exec();
+    }
+
+    auto info = new LoginInformation();
+    info->settings = &profile;
+    info->username = username;
+    info->password = password;
+
+    if(profile.useOneTimePassword && !profile.rememberOTPSecret)
+        return false;
+
+    if(profile.useOneTimePassword && profile.rememberOTPSecret) {
+        // generate otp
+        char* totp = get_totp (otpSecret.toStdString().c_str(), 6, 30, SHA1, nullptr);
+        info->oneTimePassword = totp;
+        free (totp);
+    }
+
+    // TODO: when login fails, we need some way to propagate this back? or not?
+    login(*info);
+
+    return true;
 }

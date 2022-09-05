@@ -24,6 +24,4 @@ target_link_libraries(astra_desktop PUBLIC
         astra_core
         Qt5::Core
         Qt5::Widgets
-        Qt5::Network
-        cotp
-        crypto)
+        Qt5::Network)

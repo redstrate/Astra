@@ -53,7 +53,9 @@ target_link_libraries(astra_core PUBLIC
         Qt5::Widgets  # widgets is required by watchdog, to be fixed/removed later
         Qt5::Quick # required for some type registrations
         PRIVATE
-        astra_desktop) # desktop is currently required by the core, to be fixed/removed later
+        astra_desktop
+        cotp
+        crypto) # desktop is currently required by the core, to be fixed/removed later
 
 if (ENABLE_WATCHDOG)
     target_include_directories(astra_core PUBLIC ${TESSERACT_INCLUDE_DIRS} ${LEPTONICA_INCLUDE_DIRS})

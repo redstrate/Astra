@@ -21,45 +21,7 @@ bool CMDInterface::parse(QCommandLineParser& parser, LauncherCore& core) {
     if (parser.isSet(autologinOption)) {
         auto& profile = core.getProfile(core.defaultProfileIndex);
 
-        if (!profile.rememberUsername || !profile.rememberPassword) {
-            qInfo() << "Profile does not have a username and/or password saved, autologin disabled.";
-
-            return false;
-        }
-
-        auto loop = new QEventLoop();
-        QString username, password;
-
-        auto usernameJob = new QKeychain::ReadPasswordJob("LauncherWindow");
-        usernameJob->setKey(profile.name + "-username");
-        usernameJob->start();
-
-        core.connect(
-            usernameJob, &QKeychain::ReadPasswordJob::finished, [loop, usernameJob, &username](QKeychain::Job* j) {
-                username = usernameJob->textData();
-                loop->quit();
-            });
-
-        loop->exec();
-
-        auto passwordJob = new QKeychain::ReadPasswordJob("LauncherWindow");
-        passwordJob->setKey(profile.name + "-password");
-        passwordJob->start();
-
-        core.connect(
-            passwordJob, &QKeychain::ReadPasswordJob::finished, [loop, passwordJob, &password](QKeychain::Job* j) {
-                password = passwordJob->textData();
-                loop->quit();
-            });
-
-        loop->exec();
-
-        auto info = new LoginInformation();
-        info->settings = &profile;
-        info->username = username;
-        info->password = password;
-
-        core.login(*info);
+        return core.autoLogin(profile);
     }
 
     return true;

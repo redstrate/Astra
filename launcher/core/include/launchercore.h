@@ -162,6 +162,15 @@ public:
     void login(LoginInformation& loginInformation);
 
     /*
+     * Attempts to log into a profile without LoginInformation, which may or may not work depending on a combination of
+     * the password failing, OTP not being available to auto-generate, among other things.
+     *
+     * The launcher will still warn the user about any possible errors, however the call site will need to check the
+     * result to see whether they need to "reset" or show a failed state or not.
+     */
+    bool autoLogin(ProfileSettings& settings);
+
+    /*
      * Launches the game using the provided authentication.
      */
     void launchGame(const ProfileSettings& settings, const LoginAuth& auth);
