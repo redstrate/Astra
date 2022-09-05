@@ -1,6 +1,5 @@
 set(HEADERS
         include/config.h
-        include/dxvkinstaller.h
         include/encryptedarg.h
         include/gameinstaller.h
         include/headline.h
@@ -12,7 +11,6 @@ set(HEADERS
         include/steamapi.h)
 
 set(SRC
-        src/dxvkinstaller.cpp
         src/encryptedarg.cpp
         src/gameinstaller.cpp
         src/headline.cpp
