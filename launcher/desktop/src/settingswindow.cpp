@@ -217,16 +217,18 @@ void SettingsWindow::reloadControls() {
 
     // wine
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-    if (!profile.isWineInstalled()) {
-        wineVersionLabel->setText("Wine is not installed.");
-    } else {
-        wineVersionLabel->setText(profile.wineVersion);
-    }
+    if(!core.isSteam) {
+        if (!profile.isWineInstalled()) {
+            wineVersionLabel->setText("Wine is not installed.");
+        } else {
+            wineVersionLabel->setText(profile.wineVersion);
+        }
 
-    wineTypeCombo->setCurrentIndex((int)profile.wineType);
-    selectWineButton->setEnabled(profile.wineType == WineType::Custom);
-    winePathLabel->setText(profile.winePath);
-    winePrefixDirectory->setText(profile.winePrefixPath);
+        wineTypeCombo->setCurrentIndex((int)profile.wineType);
+        selectWineButton->setEnabled(profile.wineType == WineType::Custom);
+        winePathLabel->setText(profile.winePath);
+        winePrefixDirectory->setText(profile.winePrefixPath);
+    }
 #endif
 
 #if defined(Q_OS_LINUX)
@@ -472,82 +474,88 @@ void SettingsWindow::setupLoginTab(QFormLayout& layout) {
 
 void SettingsWindow::setupWineTab(QFormLayout& layout) {
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
-    winePathLabel = new QLabel();
-    winePathLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
-    layout.addRow("Wine Executable", winePathLabel);
+    if(!core.isSteam) {
+        winePathLabel = new QLabel();
+        winePathLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
+        layout.addRow("Wine Executable", winePathLabel);
 
-    wineTypeCombo = new QComboBox();
+        wineTypeCombo = new QComboBox();
 
     #if defined(Q_OS_MAC)
-    wineTypeCombo->insertItem(2, "FFXIV for Mac (Official)");
-    wineTypeCombo->insertItem(3, "XIV on Mac");
+        wineTypeCombo->insertItem(2, "FFXIV for Mac (Official)");
+        wineTypeCombo->insertItem(3, "XIV on Mac");
     #endif
 
-    if(core.isSteam) {
-        wineTypeCombo->insertItem(0, "Steam Proton");
-        wineTypeCombo->setEnabled(false);
-    } else {
-        wineTypeCombo->insertItem(0, "System Wine");
+        if (core.isSteam) {
+            wineTypeCombo->insertItem(0, "Steam Proton");
+            wineTypeCombo->setEnabled(false);
+        } else {
+            wineTypeCombo->insertItem(0, "System Wine");
 
     // custom wine selection is broken under flatpak
     #ifndef FLATPAK
-        wineTypeCombo->insertItem(1, "Custom Wine");
+            wineTypeCombo->insertItem(1, "Custom Wine");
     #endif
+        }
+
+        layout.addWidget(wineTypeCombo);
+
+        selectWineButton = new QPushButton("Select Wine Executable");
+
+    #ifndef FLATPAK
+        layout.addWidget(selectWineButton);
+    #endif
+
+        connect(
+            wineTypeCombo, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int index) {
+                getCurrentProfile().wineType = (WineType)index;
+
+                this->core.readWineInfo(getCurrentProfile());
+                this->core.saveSettings();
+                this->reloadControls();
+            });
+
+        connect(selectWineButton, &QPushButton::pressed, [this] {
+            getCurrentProfile().winePath = QFileDialog::getOpenFileName(this, "Open Wine Executable");
+
+            this->core.saveSettings();
+            this->reloadControls();
+        });
+
+        // wine version is reported incorrectly under flatpak too
+        wineVersionLabel = new QLabel();
+    #ifndef FLATPAK
+        wineVersionLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
+        layout.addRow("Wine Version", wineVersionLabel);
+    #endif
+
+        winePrefixDirectory = new QLabel();
+        winePrefixDirectory->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
+        layout.addRow("Wine Prefix", winePrefixDirectory);
+
+        auto winePrefixButtonLayout = new QHBoxLayout();
+        auto winePrefixButtonContainer = new QWidget();
+        winePrefixButtonContainer->setLayout(winePrefixButtonLayout);
+        layout.addWidget(winePrefixButtonContainer);
+
+        auto selectPrefixButton = new QPushButton("Select Wine Prefix");
+        connect(selectPrefixButton, &QPushButton::pressed, [this] {
+            getCurrentProfile().winePrefixPath = QFileDialog::getExistingDirectory(this, "Open Wine Prefix");
+
+            this->core.saveSettings();
+            this->reloadControls();
+        });
+        winePrefixButtonLayout->addWidget(selectPrefixButton);
+
+        auto openPrefixButton = new QPushButton("Open Wine Prefix");
+        connect(openPrefixButton, &QPushButton::pressed, [this] {
+            window.openPath(getCurrentProfile().winePrefixPath);
+        });
+        winePrefixButtonLayout->addWidget(openPrefixButton);
+    } else {
+        auto label = new QLabel("You are launching Astra via Steam. Proton is used automatically and can not be configured.");
+        layout.addWidget(label);
     }
-
-    layout.addWidget(wineTypeCombo);
-
-    selectWineButton = new QPushButton("Select Wine Executable");
-
-    #ifndef FLATPAK
-    layout.addWidget(selectWineButton);
-    #endif
-
-    connect(wineTypeCombo, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int index) {
-        getCurrentProfile().wineType = (WineType)index;
-
-        this->core.readWineInfo(getCurrentProfile());
-        this->core.saveSettings();
-        this->reloadControls();
-    });
-
-    connect(selectWineButton, &QPushButton::pressed, [this] {
-        getCurrentProfile().winePath = QFileDialog::getOpenFileName(this, "Open Wine Executable");
-
-        this->core.saveSettings();
-        this->reloadControls();
-    });
-
-    // wine version is reported incorrectly under flatpak too
-    wineVersionLabel = new QLabel();
-    #ifndef FLATPAK
-    wineVersionLabel->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
-    layout.addRow("Wine Version", wineVersionLabel);
-    #endif
-
-    winePrefixDirectory = new QLabel();
-    winePrefixDirectory->setTextInteractionFlags(Qt::TextInteractionFlag::TextSelectableByMouse);
-    layout.addRow("Wine Prefix", winePrefixDirectory);
-
-    auto winePrefixButtonLayout = new QHBoxLayout();
-    auto winePrefixButtonContainer = new QWidget();
-    winePrefixButtonContainer->setLayout(winePrefixButtonLayout);
-    layout.addWidget(winePrefixButtonContainer);
-
-    auto selectPrefixButton = new QPushButton("Select Wine Prefix");
-    connect(selectPrefixButton, &QPushButton::pressed, [this] {
-        getCurrentProfile().winePrefixPath = QFileDialog::getExistingDirectory(this, "Open Wine Prefix");
-
-        this->core.saveSettings();
-        this->reloadControls();
-    });
-    winePrefixButtonLayout->addWidget(selectPrefixButton);
-
-    auto openPrefixButton = new QPushButton("Open Wine Prefix");
-    connect(openPrefixButton, &QPushButton::pressed, [this] {
-        window.openPath(getCurrentProfile().winePrefixPath);
-    });
-    winePrefixButtonLayout->addWidget(openPrefixButton);
 
     auto enableDXVKhud = new QCheckBox("Enable DXVK HUD");
     layout.addRow("Wine Tweaks", enableDXVKhud);
