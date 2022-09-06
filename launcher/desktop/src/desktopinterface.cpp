@@ -37,7 +37,7 @@ DesktopInterface::DesktopInterface(LauncherCore& core) {
     }
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-    if (!defaultProfile.isWineInstalled()) {
+    if (!core.isSteam && !defaultProfile.isWineInstalled()) {
         auto messageBox = new QMessageBox(window);
         messageBox->setIcon(QMessageBox::Icon::Critical);
         messageBox->setText("No Wine Found");

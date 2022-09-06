@@ -376,7 +376,7 @@ void LauncherWindow::reloadControls() {
     }
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-    if (!currentProfile().isWineInstalled()) {
+    if (!currentProfile().isWineInstalled() && !core.isSteam) {
         loginButton->setText("Login (Wine is not installed)");
         canLogin = false;
     }
