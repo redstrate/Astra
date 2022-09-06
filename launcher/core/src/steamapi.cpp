@@ -18,3 +18,17 @@ SteamAPI::SteamAPI(LauncherCore& core) {
     }
 #endif
 }
+
+void SteamAPI::setLauncherMode(bool isLauncher) {
+#ifdef ENABLE_STEAM
+    SteamUtils()->SetGameLauncherMode(isLauncher);
+#endif
+}
+
+bool SteamAPI::isDeck() const {
+#ifdef ENABLE_STEAM
+    return SteamUtils()->IsSteamRunningOnSteamDeck();
+#else
+    return false;
+#endif
+}

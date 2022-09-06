@@ -58,6 +58,8 @@ void LauncherCore::buildRequest(const ProfileSettings& settings, QNetworkRequest
 }
 
 void LauncherCore::launchGame(const ProfileSettings& profile, const LoginAuth& auth) {
+    steamApi->setLauncherMode(false);
+
 #ifdef ENABLE_WATCHDOG
     if (profile.enableWatchdog) {
         watchdog->launchGame(profile, auth);
@@ -486,6 +488,8 @@ LauncherCore::LauncherCore(bool isSteam)
 #endif
 
     readInitialInformation();
+
+    steamApi->setLauncherMode(true);
 }
 
 ProfileSettings& LauncherCore::getProfile(int index) {

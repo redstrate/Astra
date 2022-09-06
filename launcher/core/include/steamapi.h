@@ -4,5 +4,9 @@ class LauncherCore;
 
 class SteamAPI {
 public:
-    SteamAPI(LauncherCore& core);
+    explicit SteamAPI(LauncherCore& core);
+
+    void setLauncherMode(bool isLauncher);
+
+    bool isDeck() const;
 };
