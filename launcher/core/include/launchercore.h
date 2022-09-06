@@ -142,7 +142,7 @@ class LauncherCore : public QObject {
     Q_OBJECT
     Q_PROPERTY(SquareBoot* squareBoot MEMBER squareBoot)
 public:
-    LauncherCore();
+    LauncherCore(bool isSteam);
 
     // used for qml only, TODO: move this to a dedicated factory
     Q_INVOKABLE LoginInformation* createNewLoginInfo() {

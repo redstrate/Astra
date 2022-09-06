@@ -64,19 +64,9 @@ int main(int argc, char* argv[]) {
         parser.showHelp();
     }
 
-    LauncherCore c;
+    LauncherCore c(parser.isSet(steamOption));
     std::unique_ptr<DesktopInterface> desktopInterface;
     std::unique_ptr<TabletInterface> tabletInterface;
-
-    if(parser.isSet(steamOption)) {
-        c.isSteam = true;
-
-        for(auto& argument : QCoreApplication::arguments()) {
-            if(argument.contains("iscriptevaluator")) {
-                //return 0;
-            }
-        }
-    }
 
     if (parser.isSet(tabletOption)) {
 #ifdef ENABLE_TABLET

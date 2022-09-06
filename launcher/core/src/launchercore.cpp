@@ -472,8 +472,8 @@ void LauncherCore::readGameVersion() {
     }
 }
 
-LauncherCore::LauncherCore()
-    : settings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::applicationName()) {
+LauncherCore::LauncherCore(bool isSteam)
+    : settings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::applicationName()), isSteam(isSteam) {
     mgr = new QNetworkAccessManager();
     sapphireLauncher = new SapphireLauncher(*this);
     squareLauncher = new SquareLauncher(*this);
