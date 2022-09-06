@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
 
         for(auto& argument : QCoreApplication::arguments()) {
             if(argument.contains("iscriptevaluator")) {
-                return 0;
+                //return 0;
             }
         }
     }

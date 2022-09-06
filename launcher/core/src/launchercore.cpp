@@ -128,7 +128,8 @@ void LauncherCore::beginDalamudGame(const QString& gameExecutablePath, const Pro
             "--dalamud-plugin-directory=" + dataDir + "\\installedPlugins",
             "--dalamud-asset-directory=" + dataDir + "\\DalamudAssets",
             "--dalamud-client-language=" + QString::number(profile.language),
-            "--", args},
+            "--",
+            args},
         true,
         true);
 }
@@ -227,28 +228,43 @@ void LauncherCore::launchExecutable(
 #endif
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
-    env.insert("WINEPREFIX", profile.winePrefixPath);
+    if(isSteam) {
+        const QString steamDirectory = QProcessEnvironment::systemEnvironment().value("STEAM_COMPAT_CLIENT_INSTALL_PATH");
+        const QString compatData = steamDirectory + "/steamapps/compatdata/39210"; // TODO: do these have to exist on the root steam folder?
+        const QString protonPath = steamDirectory + "/steamapps/common/Proton 7.0";
 
-    // XIV on Mac bundle their own Wine install directory, complete with libs etc
-    if (profile.wineType == WineType::XIVOnMac) {
-        // TODO: don't hardcode this
-        QString xivLibPath = "/Applications/XIV on Mac.app/Contents/Resources/wine/lib:/Applications/XIV on "
-                             "Mac.app/Contents/Resources/MoltenVK/modern";
+        env.insert("PATH", protonPath + "/dist/bin:" + QProcessEnvironment::systemEnvironment().value("PATH"));
+        env.insert("WINEDLLPATH", protonPath + "/dist/lib64/wine:" + protonPath + "/dist/lib/wine");
+        env.insert("LD_LIBRARY_PATH", protonPath + "/dist/lib64:" + protonPath + "/dist/lib");
+        env.insert("WINEPREFIX", compatData + "/pfx");
+        env.insert("STEAM_COMPAT_CLIENT_INSTALL_PATH", steamDirectory);
+        env.insert("STEAM_COMPAT_DATA_PATH", compatData);
 
-        env.insert("DYLD_FALLBACK_LIBRARY_PATH", xivLibPath);
-        env.insert("DYLD_VERSIONED_LIBRARY_PATH", xivLibPath);
-        env.insert("MVK_CONFIG_FULL_IMAGE_VIEW_SWIZZLE", "1");
-        env.insert("MVK_CONFIG_RESUME_LOST_DEVICE", "1");
-        env.insert("MVK_ALLOW_METAL_FENCES", "1");
-        env.insert("MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS", "1");
-    }
+        arguments.push_back(protonPath + "/proton");
+        arguments.push_back("run");
+    } else {
+        env.insert("WINEPREFIX", profile.winePrefixPath);
+
+        // XIV on Mac bundle their own Wine install directory, complete with libs etc
+        if (profile.wineType == WineType::XIVOnMac) {
+            // TODO: don't hardcode this
+            QString xivLibPath = "/Applications/XIV on Mac.app/Contents/Resources/wine/lib:/Applications/XIV on "
+                                 "Mac.app/Contents/Resources/MoltenVK/modern";
+
+            env.insert("DYLD_FALLBACK_LIBRARY_PATH", xivLibPath);
+            env.insert("DYLD_VERSIONED_LIBRARY_PATH", xivLibPath);
+            env.insert("MVK_CONFIG_FULL_IMAGE_VIEW_SWIZZLE", "1");
+            env.insert("MVK_CONFIG_RESUME_LOST_DEVICE", "1");
+            env.insert("MVK_ALLOW_METAL_FENCES", "1");
+            env.insert("MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS", "1");
+        }
 
     #if defined(FLATPAK)
-    arguments.push_back("flatpak-spawn");
-    arguments.push_back("--host");
+        arguments.push_back("flatpak-spawn");
+        arguments.push_back("--host");
     #endif
-
-    arguments.push_back(profile.winePath);
+        arguments.push_back(profile.winePath);
+    }
 #endif
 
     arguments.append(args);
