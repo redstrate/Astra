@@ -486,17 +486,12 @@ void SettingsWindow::setupWineTab(QFormLayout& layout) {
         wineTypeCombo->insertItem(3, "XIV on Mac");
     #endif
 
-        if (core.isSteam) {
-            wineTypeCombo->insertItem(0, "Steam Proton");
-            wineTypeCombo->setEnabled(false);
-        } else {
-            wineTypeCombo->insertItem(0, "System Wine");
+        wineTypeCombo->insertItem(0, "System Wine");
 
     // custom wine selection is broken under flatpak
     #ifndef FLATPAK
-            wineTypeCombo->insertItem(1, "Custom Wine");
+        wineTypeCombo->insertItem(1, "Custom Wine");
     #endif
-        }
 
         layout.addWidget(wineTypeCombo);
 
