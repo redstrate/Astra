@@ -467,10 +467,14 @@ void LauncherCore::readGameVersion() {
         profile->gameData = physis_gamedata_initialize((profile->gamePath + "/game").toStdString().c_str());
         profile->bootData = physis_bootdata_initialize((profile->gamePath + "/boot").toStdString().c_str());
 
-        profile->repositories = physis_gamedata_get_repositories(profile->gameData);
-        profile->bootVersion = physis_bootdata_get_version(profile->bootData);
+        if(profile->bootData != nullptr) {
+            profile->bootVersion = physis_bootdata_get_version(profile->bootData);
+        }
 
-        readGameData(*profile);
+        if(profile->gameData != nullptr) {
+            profile->repositories = physis_gamedata_get_repositories(profile->gameData);
+            readGameData(*profile);
+        }
     }
 }
 
