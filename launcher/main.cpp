@@ -64,7 +64,11 @@ int main(int argc, char* argv[]) {
         parser.showHelp();
     }
 
+#ifdef ENABLE_STEAM
     LauncherCore c(parser.isSet(steamOption));
+#else
+    LauncherCore c(false);
+#endif
     std::unique_ptr<DesktopInterface> desktopInterface;
     std::unique_ptr<TabletInterface> tabletInterface;
 
