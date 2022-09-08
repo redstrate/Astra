@@ -29,7 +29,7 @@ if (ENABLE_GAMEMODE)
 endif ()
 
 if (ENABLE_STEAM)
-    add_library(Steamworks IMPORTED STATIC)
+    add_library(Steamworks IMPORTED SHARED)
     set_target_properties(Steamworks PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES ${STEAMWORKS_INCLUDE_DIR}
             IMPORTED_LOCATION ${STEAMWORKS_LIBRARIES})
