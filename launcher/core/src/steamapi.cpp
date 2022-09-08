@@ -7,7 +7,7 @@
 #include <steam/steam_api.h>
 #endif
 
-SteamAPI::SteamAPI(LauncherCore& core) {
+SteamAPI::SteamAPI(LauncherCore& core) : core(core) {
 #ifdef ENABLE_STEAM
     if(core.isSteam) {
         qputenv("SteamAppId", "39210");
@@ -21,13 +21,19 @@ SteamAPI::SteamAPI(LauncherCore& core) {
 
 void SteamAPI::setLauncherMode(bool isLauncher) {
 #ifdef ENABLE_STEAM
-    SteamUtils()->SetGameLauncherMode(isLauncher);
+    if(core.isSteam) {
+        SteamUtils()->SetGameLauncherMode(isLauncher);
+    }
 #endif
 }
 
 bool SteamAPI::isDeck() const {
 #ifdef ENABLE_STEAM
-    return SteamUtils()->IsSteamRunningOnSteamDeck();
+    if(core.isSteam) {
+        return SteamUtils()->IsSteamRunningOnSteamDeck();
+    } else {
+        return false;
+    }
 #else
     return false;
 #endif

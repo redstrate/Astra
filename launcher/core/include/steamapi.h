@@ -9,4 +9,7 @@ public:
     void setLauncherMode(bool isLauncher);
 
     bool isDeck() const;
+
+private:
+    LauncherCore& core;
 };
