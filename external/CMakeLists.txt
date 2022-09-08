@@ -19,7 +19,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(libphysis)
 
-corrosion_import_crate(MANIFEST_PATH /home/josh/Development/libphysis/Cargo.toml)
+corrosion_import_crate(MANIFEST_PATH ${libphysis_SOURCE_DIR}/Cargo.toml)
 
-target_include_directories(physis INTERFACE /home/josh/Development/libphysis/target/public)
+target_include_directories(physis INTERFACE ${libphysis_SOURCE_DIR}/target/public)
 target_link_libraries(physis INTERFACE unshield)
