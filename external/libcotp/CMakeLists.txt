@@ -26,7 +26,7 @@ set(SOURCE_FILES src/otp.c)
 set(CMAKE_C_FLAGS "-Wall -Wextra -O3 -Wno-format-truncation -fstack-protector-strong -fPIC")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3")
 
-add_library(cotp SHARED ${SOURCE_FILES})
+add_library(cotp STATIC ${SOURCE_FILES})
 
 target_link_libraries(cotp ${GCRYPT_LIBRARIES} baseencode)
 target_include_directories(cotp PUBLIC src)
