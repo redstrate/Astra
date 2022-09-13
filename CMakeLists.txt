@@ -37,7 +37,6 @@ endif ()
 
 find_package(Qt5Keychain REQUIRED)
 find_package(QuaZip-Qt5 REQUIRED)
-find_package(fmt REQUIRED)
 
 add_subdirectory(external)
 add_subdirectory(launcher)
