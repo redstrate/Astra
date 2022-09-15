@@ -71,7 +71,7 @@ void Patcher::processPatchList(QNetworkAccessManager& mgr, QString patchList) {
                 QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/patches/" + repository;
 
             if (!QDir().exists(patchesDir))
-                QDir().mkdir(patchesDir);
+                QDir().mkpath(patchesDir);
 
             if (!QFile::exists(patchesDir + "/" + name + ".patch")) {
                 QNetworkRequest patchRequest(url);
