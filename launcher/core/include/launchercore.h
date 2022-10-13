@@ -55,11 +55,11 @@ public:
     physis_Repositories repositories;
     const char* bootVersion;
 
-    bool isGameInstalled() const {
+    [[nodiscard]] bool isGameInstalled() const {
         return repositories.repositories_count > 0;
     }
 
-    bool isWineInstalled() const {
+    [[nodiscard]] bool isWineInstalled() const {
         return !wineVersion.isEmpty();
     }
 
@@ -102,12 +102,12 @@ public:
     /*
      * Sets a value in the keychain. This function is asynchronous.
      */
-    void setKeychainValue(QString key, QString value);
+    void setKeychainValue(const QString& key, const QString& value) const;
 
     /*
      * Retrieves a value from the keychain. This function is synchronous.
      */
-    QString getKeychainValue(QString key);
+    QString getKeychainValue(const QString& key) const;
 };
 
 struct AppSettings {
@@ -142,7 +142,7 @@ class LauncherCore : public QObject {
     Q_OBJECT
     Q_PROPERTY(SquareBoot* squareBoot MEMBER squareBoot)
 public:
-    LauncherCore(bool isSteam);
+    explicit LauncherCore(bool isSteam);
 
     // used for qml only, TODO: move this to a dedicated factory
     Q_INVOKABLE LoginInformation* createNewLoginInfo() {
@@ -159,7 +159,7 @@ public:
     }
 
     int getProfileIndex(const QString& name);
-    Q_INVOKABLE QList<QString> profileList() const;
+    Q_INVOKABLE [[nodiscard]] QList<QString> profileList() const;
     int addProfile();
     int deleteProfile(const QString& name);
 

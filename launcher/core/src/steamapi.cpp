@@ -1,8 +1,6 @@
 #include "steamapi.h"
 #include "launchercore.h"
 
-#include <QtGlobal>
-
 #ifdef ENABLE_STEAM
 #include <steam/steam_api.h>
 #endif

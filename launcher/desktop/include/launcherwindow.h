@@ -15,7 +15,7 @@
 class LauncherWindow : public QMainWindow {
     Q_OBJECT
 public:
-    explicit LauncherWindow(LauncherCore& core, QWidget* parent = nullptr);
+    explicit LauncherWindow(LauncherCore& new_headline, QWidget* parent = nullptr);
 
     ProfileSettings& currentProfile();
 

@@ -8,7 +8,7 @@ public:
 
     void setLauncherMode(bool isLauncher);
 
-    bool isDeck() const;
+    [[nodiscard]] bool isDeck() const;
 
 private:
     LauncherCore& core;

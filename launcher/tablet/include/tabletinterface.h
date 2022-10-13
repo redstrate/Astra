@@ -10,7 +10,7 @@
  */
 class TabletInterface {
 public:
-    TabletInterface(LauncherCore& core);
+    explicit TabletInterface(LauncherCore& core);
 
 private:
     QQmlApplicationEngine* applicationEngine = nullptr;

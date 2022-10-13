@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QDesktopServices>
+#include <utility>
 
 BannerWidget::BannerWidget() : QLabel() {
     setCursor(Qt::CursorShape::PointingHandCursor);
@@ -13,5 +14,5 @@ void BannerWidget::mousePressEvent(QMouseEvent* event) {
 }
 
 void BannerWidget::setUrl(QUrl newUrl) {
-    this->url = newUrl;
+    this->url = std::move(newUrl);
 }

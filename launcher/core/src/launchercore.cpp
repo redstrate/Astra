@@ -3,7 +3,6 @@
 #include <QDir>
 #include <QFormLayout>
 #include <QJsonDocument>
-#include <QJsonObject>
 #include <QLineEdit>
 #include <QMenuBar>
 #include <QNetworkAccessManager>
@@ -647,7 +646,7 @@ QString LauncherCore::getDefaultGamePath() {
 void LauncherCore::addRegistryKey(const ProfileSettings& settings, QString key, QString value, QString data) {
     auto process = new QProcess(this);
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(settings, process, {"reg", "add", std::move(key), "/v", value, "/d", data, "/f"}, false, false);
+    launchExecutable(settings, process, {"reg", "add", std::move(key), "/v", std::move(value), "/d", std::move(data), "/f"}, false, false);
 }
 
 void LauncherCore::readGameData(ProfileSettings& profile) {
@@ -698,14 +697,14 @@ bool LauncherCore::autoLogin(ProfileSettings& profile) {
     return true;
 }
 
-void ProfileSettings::setKeychainValue(QString key, QString value) {
+void ProfileSettings::setKeychainValue(const QString& key, const QString& value) const {
     auto job = new QKeychain::WritePasswordJob("Astra");
     job->setTextData(value);
     job->setKey(name + "-" + key);
     job->start();
 }
 
-QString ProfileSettings::getKeychainValue(QString key) {
+QString ProfileSettings::getKeychainValue(const QString& key) const {
     auto loop = new QEventLoop();
 
     auto job = new QKeychain::ReadPasswordJob("Astra");

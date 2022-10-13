@@ -5,22 +5,23 @@
 #include <QNetworkRequest>
 #include <QStandardPaths>
 #include <physis.hpp>
+#include <utility>
 
-Patcher::Patcher(QString baseDirectory, BootData* boot_data) : boot_data(boot_data), baseDirectory(baseDirectory) {
+Patcher::Patcher(QString baseDirectory, BootData* boot_data) : boot_data(boot_data), baseDirectory(std::move(baseDirectory)) {
     dialog = new QProgressDialog();
     dialog->setLabelText("Checking the FINAL FANTASY XIV Updater/Launcher version.");
 
     dialog->show();
 }
 
-Patcher::Patcher(QString baseDirectory, GameData* game_data) : game_data(game_data), baseDirectory(baseDirectory) {
+Patcher::Patcher(QString baseDirectory, GameData* game_data) : game_data(game_data), baseDirectory(std::move(baseDirectory)) {
     dialog = new QProgressDialog();
     dialog->setLabelText("Checking the FINAL FANTASY XIV Game version.");
 
     dialog->show();
 }
 
-void Patcher::processPatchList(QNetworkAccessManager& mgr, QString patchList) {
+void Patcher::processPatchList(QNetworkAccessManager& mgr, const QString& patchList) {
     if (patchList.isEmpty()) {
         dialog->hide();
 

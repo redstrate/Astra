@@ -9,7 +9,7 @@
  */
 class DesktopInterface {
 public:
-    DesktopInterface(LauncherCore& core);
+    explicit DesktopInterface(LauncherCore& core);
 
 private:
     LauncherWindow* window = nullptr;

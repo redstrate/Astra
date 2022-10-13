@@ -2,7 +2,6 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
-#include <QDir>
 
 #include "../launcher/tablet/include/tabletinterface.h"
 #include "cmdinterface.h"
@@ -87,5 +86,5 @@ int main(int argc, char* argv[]) {
 #endif
     }
 
-    return app.exec();
+    return QApplication::exec();
 }

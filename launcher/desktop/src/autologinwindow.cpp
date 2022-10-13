@@ -3,7 +3,6 @@
 #include <QDesktopServices>
 #include <QFormLayout>
 #include <QLabel>
-#include <QMessageBox>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QToolTip>

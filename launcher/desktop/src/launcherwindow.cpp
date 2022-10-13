@@ -10,6 +10,7 @@
 #include <QScrollBar>
 #include <QTimer>
 #include <QTreeWidgetItem>
+#include <utility>
 
 #include "aboutwindow.h"
 #include "assetupdater.h"
@@ -325,8 +326,8 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
             QCoreApplication::quit();
     });
 
-    getHeadline(core, [&](Headline headline) {
-        this->headline = headline;
+    getHeadline(core, [&](Headline new_headline) {
+        this->headline = std::move(new_headline);
         reloadNews();
     });
 

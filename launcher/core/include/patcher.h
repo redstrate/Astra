@@ -13,7 +13,7 @@ public:
     Patcher(QString baseDirectory, GameData* game_data);
     Patcher(QString baseDirectory, BootData* game_data);
 
-    void processPatchList(QNetworkAccessManager& mgr, QString patchList);
+    void processPatchList(QNetworkAccessManager& mgr, const QString& patchList);
 
 signals:
     void done();
@@ -21,7 +21,7 @@ signals:
 private:
     void checkIfDone();
 
-    bool isBoot() const {
+    [[nodiscard]] bool isBoot() const {
         return boot_data != nullptr;
     }
 
