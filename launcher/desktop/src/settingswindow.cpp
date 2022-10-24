@@ -239,7 +239,7 @@ void SettingsWindow::reloadControls() {
     useGamemode->setChecked(profile.useGamemode);
 
 #ifndef ENABLE_GAMEMODE
-    useGameMode->setEnabled(false);
+    useGamemode->setEnabled(false);
 #endif
 
     useGamemode->setEnabled(core.gamemodeAvailable);
