@@ -8,11 +8,13 @@
 #include <QListWidget>
 #include <QPushButton>
 
+#include "virtualdialog.h"
+
 class LauncherCore;
 class LauncherWindow;
 struct ProfileSettings;
 
-class GamescopeSettingsWindow : public QDialog {
+class GamescopeSettingsWindow : public VirtualDialog {
 public:
-    GamescopeSettingsWindow(ProfileSettings& settings, LauncherCore& core, QWidget* parent = nullptr);
+    GamescopeSettingsWindow(DesktopInterface& interface, ProfileSettings& settings, LauncherCore& core, QWidget* parent = nullptr);
 };

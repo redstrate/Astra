@@ -14,7 +14,7 @@ set(SRC
         src/gamescopesettingswindow.cpp
         src/launcherwindow.cpp
         src/settingswindow.cpp
-        src/autologinwindow.cpp)
+        src/autologinwindow.cpp include/virtualwindow.h src/virtualwindow.cpp src/virtualdialog.cpp include/virtualdialog.h)
 
 add_library(astra_desktop STATIC ${HEADERS} ${SRC})
 target_include_directories(astra_desktop PUBLIC include)

@@ -9,12 +9,12 @@
 
 #include "launchercore.h"
 
-GamescopeSettingsWindow::GamescopeSettingsWindow(ProfileSettings& settings, LauncherCore& core, QWidget* parent)
-    : QDialog(parent) {
+GamescopeSettingsWindow::GamescopeSettingsWindow(DesktopInterface& interface, ProfileSettings& settings, LauncherCore& core, QWidget* parent)
+    : VirtualDialog(interface, parent) {
     setWindowTitle("Gamescope Settings");
     setWindowModality(Qt::WindowModality::ApplicationModal);
 
-    auto mainLayout = new QFormLayout(this);
+    auto mainLayout = new QFormLayout();
     setLayout(mainLayout);
 
     auto fullscreenBox = new QCheckBox("Fullscreen");

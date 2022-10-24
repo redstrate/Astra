@@ -9,13 +9,15 @@
 #include <QListWidget>
 #include <QPushButton>
 
+#include "virtualdialog.h"
+
 class LauncherCore;
 class LauncherWindow;
 struct ProfileSettings;
 
-class SettingsWindow : public QDialog {
+class SettingsWindow : public VirtualDialog {
 public:
-    SettingsWindow(int defaultTab, LauncherWindow& window, LauncherCore& core, QWidget* parent = nullptr);
+    SettingsWindow(DesktopInterface& interface, int defaultTab, LauncherWindow& window, LauncherCore& core, QWidget* parent = nullptr);
 
 public slots:
     void reloadControls();
@@ -79,4 +81,6 @@ private:
 
     LauncherWindow& window;
     LauncherCore& core;
+
+    DesktopInterface& interface;
 };

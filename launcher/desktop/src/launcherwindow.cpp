@@ -21,8 +21,9 @@
 #include "sapphirelauncher.h"
 #include "settingswindow.h"
 #include "squarelauncher.h"
+#include "desktopinterface.h"
 
-LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindow(parent), core(core) {
+LauncherWindow::LauncherWindow(DesktopInterface& interface, LauncherCore& core, QWidget* parent) : VirtualWindow(interface, parent), core(core), interface(interface) {
     setWindowTitle("Astra");
 
     connect(&core, &LauncherCore::settingsChanged, this, &LauncherWindow::reloadControls);
@@ -125,7 +126,7 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     auto installGameAction = gameMenu->addAction("Install game...");
     connect(installGameAction, &QAction::triggered, [this] {
         // TODO: lol duplication
-        auto messageBox = new QMessageBox(this);
+        auto messageBox = new QMessageBox();
         messageBox->setIcon(QMessageBox::Icon::Question);
         messageBox->setText("Warning");
         messageBox->setInformativeText("FFXIV will be installed to your selected game directory.");
@@ -157,8 +158,8 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     QAction* settingsAction = fileMenu->addAction("Configure Astra...");
     settingsAction->setIcon(QIcon::fromTheme("configure"));
     settingsAction->setMenuRole(QAction::MenuRole::PreferencesRole);
-    connect(settingsAction, &QAction::triggered, [=] {
-        auto window = new SettingsWindow(0, *this, this->core, this);
+    connect(settingsAction, &QAction::triggered, [=, &interface] {
+        auto window = new SettingsWindow(interface, 0, *this, this->core);
         connect(&this->core, &LauncherCore::settingsChanged, window, &SettingsWindow::reloadControls);
         window->show();
     });
@@ -166,8 +167,8 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     QAction* profilesAction = fileMenu->addAction("Configure Profiles...");
     profilesAction->setIcon(QIcon::fromTheme("configure"));
     profilesAction->setMenuRole(QAction::MenuRole::NoRole);
-    connect(profilesAction, &QAction::triggered, [=] {
-        auto window = new SettingsWindow(1, *this, this->core, this);
+    connect(profilesAction, &QAction::triggered, [=, &interface] {
+        auto window = new SettingsWindow(interface, 1, *this, this->core);
         connect(&this->core, &LauncherCore::settingsChanged, window, &SettingsWindow::reloadControls);
         window->show();
     });
@@ -191,15 +192,15 @@ LauncherWindow::LauncherWindow(LauncherCore& core, QWidget* parent) : QMainWindo
     QMenu* helpMenu = menuBar()->addMenu("Help");
     QAction* showAbout = helpMenu->addAction("About Astra");
     showAbout->setIcon(QIcon::fromTheme("help-about"));
-    connect(showAbout, &QAction::triggered, [=] {
-        auto window = new AboutWindow(this);
+    connect(showAbout, &QAction::triggered, [=, &interface] {
+        auto window = new AboutWindow(interface);
         window->show();
     });
 
     QAction* showAboutQt = helpMenu->addAction("About Qt");
     showAboutQt->setIcon(QIcon::fromTheme("help-about"));
     connect(showAboutQt, &QAction::triggered, [=] {
-        QMessageBox::aboutQt(this);
+        QMessageBox::aboutQt(nullptr);
     });
 
     layout = new QGridLayout();
@@ -393,7 +394,13 @@ void LauncherWindow::reloadControls() {
     launchOfficial->setEnabled(currentProfile().isGameInstalled());
     launchSysInfo->setEnabled(currentProfile().isGameInstalled());
     launchCfgBackup->setEnabled(currentProfile().isGameInstalled());
-    openGameDir->setEnabled(currentProfile().isGameInstalled());
+
+    // Steam Deck's Game session has no file manager, so no point in having it here...
+    if(interface.isSteamDeck) {
+        openGameDir->setDisabled(true);
+    } else {
+        openGameDir->setEnabled(currentProfile().isGameInstalled());
+    }
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     wineCfg->setEnabled(currentProfile().isWineInstalled());

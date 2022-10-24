@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QDialog>
+#include "virtualdialog.h"
 
-class AboutWindow : public QDialog {
+class AboutWindow : public VirtualDialog {
 public:
-    explicit AboutWindow(QWidget* widget = nullptr);
+    explicit AboutWindow(DesktopInterface& interface, QWidget* widget = nullptr);
 };

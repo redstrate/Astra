@@ -15,12 +15,12 @@
 #include "launchercore.h"
 #include "launcherwindow.h"
 
-SettingsWindow::SettingsWindow(int defaultTab, LauncherWindow& window, LauncherCore& core, QWidget* parent)
-    : core(core), window(window), QDialog(parent) {
+SettingsWindow::SettingsWindow(DesktopInterface& interface, int defaultTab, LauncherWindow& window, LauncherCore& core, QWidget* parent)
+    : core(core), window(window), interface(interface), VirtualDialog(interface, parent) {
     setWindowTitle("Settings");
     setWindowModality(Qt::WindowModality::ApplicationModal);
 
-    auto mainLayout = new QVBoxLayout(this);
+    auto mainLayout = new QVBoxLayout();
     setLayout(mainLayout);
 
     auto tabWidget = new QTabWidget();
@@ -332,7 +332,7 @@ void SettingsWindow::setupGameTab(QFormLayout& layout) {
 
     auto selectDirectoryButton = new QPushButton("Select Game Directory");
     connect(selectDirectoryButton, &QPushButton::pressed, [this] {
-        getCurrentProfile().gamePath = QFileDialog::getExistingDirectory(this, "Open Game Directory");
+        getCurrentProfile().gamePath = QFileDialog::getExistingDirectory(nullptr, "Open Game Directory");
 
         this->reloadControls();
         this->core.saveSettings();
@@ -445,7 +445,7 @@ void SettingsWindow::setupLoginTab(QFormLayout& layout) {
 
     otpSecretButton = new QPushButton("Enter OTP Secret");
     connect(otpSecretButton, &QPushButton::pressed, [=] {
-        auto otpSecret = QInputDialog::getText(this, "OTP Input", "Enter your OTP Secret:");
+        auto otpSecret = QInputDialog::getText(nullptr, "OTP Input", "Enter your OTP Secret:");
 
         getCurrentProfile().setKeychainValue("otpsecret", otpSecret);
     });
@@ -511,7 +511,7 @@ void SettingsWindow::setupWineTab(QFormLayout& layout) {
             });
 
         connect(selectWineButton, &QPushButton::pressed, [this] {
-            getCurrentProfile().winePath = QFileDialog::getOpenFileName(this, "Open Wine Executable");
+            getCurrentProfile().winePath = QFileDialog::getOpenFileName(nullptr, "Open Wine Executable");
 
             this->core.saveSettings();
             this->reloadControls();
@@ -535,7 +535,7 @@ void SettingsWindow::setupWineTab(QFormLayout& layout) {
 
         auto selectPrefixButton = new QPushButton("Select Wine Prefix");
         connect(selectPrefixButton, &QPushButton::pressed, [this] {
-            getCurrentProfile().winePrefixPath = QFileDialog::getExistingDirectory(this, "Open Wine Prefix");
+            getCurrentProfile().winePrefixPath = QFileDialog::getExistingDirectory(nullptr, "Open Wine Prefix");
 
             this->core.saveSettings();
             this->reloadControls();
@@ -588,7 +588,7 @@ void SettingsWindow::setupWineTab(QFormLayout& layout) {
 
     configureGamescopeButton = new QPushButton("Configure...");
     connect(configureGamescopeButton, &QPushButton::pressed, [&] {
-        auto gamescopeSettingsWindow = new GamescopeSettingsWindow(getCurrentProfile(), this->core, this);
+        auto gamescopeSettingsWindow = new GamescopeSettingsWindow(interface, getCurrentProfile(), this->core, this->getRootWidget());
         gamescopeSettingsWindow->show();
     });
     gamescopeButtonLayout->addWidget(configureGamescopeButton);

@@ -1,39 +1,12 @@
 add_subdirectory(core)
-
-if(ENABLE_CLI)
-    add_subdirectory(cli)
-endif()
-
-if(ENABLE_DESKTOP)
-    add_subdirectory(desktop)
-endif()
-
-if(ENABLE_TABLET)
-    add_subdirectory(tablet)
-endif()
+add_subdirectory(desktop)
 
 add_executable(astra
-        main.cpp
-        tablet/qml/qml.qrc)
-
-if(ENABLE_DESKTOP)
-    set(INTERFACES ${INTERFACES} astra_desktop)
-    target_compile_definitions(astra PRIVATE ENABLE_DESKTOP)
-endif()
-
-if(ENABLE_TABLET)
-    set(INTERFACES ${INTERFACES} astra_tablet)
-    target_compile_definitions(astra PRIVATE ENABLE_TABLET)
-endif()
-
-if(ENABLE_CLI)
-    set(INTERFACES ${INTERFACES} astra_cli)
-    target_compile_definitions(astra PRIVATE ENABLE_CLI)
-endif()
+        main.cpp)
 
 target_link_libraries(astra PUBLIC
         astra_core
-        ${INTERFACES})
+        astra_desktop)
 target_compile_features(astra PUBLIC cxx_std_17)
 set_target_properties(astra PROPERTIES CXX_EXTENSIONS OFF)
 

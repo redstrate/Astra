@@ -11,12 +11,12 @@
 #include "launcherwindow.h"
 #include "sapphirelauncher.h"
 
-AutoLoginWindow::AutoLoginWindow(ProfileSettings& profile, LauncherCore& core, QWidget* parent)
-    : QDialog(parent) {
+AutoLoginWindow::AutoLoginWindow(DesktopInterface& interface, ProfileSettings& profile, LauncherCore& core, QWidget* parent)
+    : VirtualDialog(interface, parent) {
     setWindowTitle("Auto Login");
     setWindowModality(Qt::WindowModality::ApplicationModal);
 
-    auto mainLayout = new QFormLayout(this);
+    auto mainLayout = new QFormLayout();
     setLayout(mainLayout);
 
     auto label = new QLabel("Currently logging in...");

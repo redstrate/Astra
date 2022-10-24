@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QRegExp>
 #include <QStandardPaths>
 #include <physis.hpp>
 #include <utility>
@@ -33,7 +34,7 @@ void Patcher::processPatchList(QNetworkAccessManager& mgr, const QString& patchL
             dialog->setLabelText("Updating the FINAL FANTASY XIV Game version.");
         }
 
-        const QStringList parts = patchList.split(QRegExp("\n|\r\n|\r"));
+        const QStringList parts = patchList.split("\n|\r\n|\r");
 
         remainingPatches = parts.size() - 7;
 

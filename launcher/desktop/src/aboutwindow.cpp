@@ -8,11 +8,11 @@
 #include "config.h"
 #include "license.h"
 
-AboutWindow::AboutWindow(QWidget* widget) : QDialog(widget) {
+AboutWindow::AboutWindow(DesktopInterface& interface, QWidget* widget) : VirtualDialog(interface, widget) {
     setWindowTitle("About");
     setWindowModality(Qt::WindowModality::ApplicationModal);
 
-    auto mainLayout = new QVBoxLayout(this);
+    auto mainLayout = new QVBoxLayout();
     setLayout(mainLayout);
 
     auto mainLabel = new QLabel();
@@ -34,8 +34,8 @@ AboutWindow::AboutWindow(QWidget* widget) : QDialog(widget) {
 
     auto licenseLabel = new QLabel();
     licenseLabel->setText("<a href='a'>License: GNU General Public License Version 3</a>");
-    connect(licenseLabel, &QLabel::linkActivated, [this] {
-        auto licenseDialog = new QDialog(this);
+    connect(licenseLabel, &QLabel::linkActivated, [&interface] {
+        auto licenseDialog = new VirtualDialog(interface);
         licenseDialog->setWindowTitle("License Agreement");
 
         auto layout = new QVBoxLayout();

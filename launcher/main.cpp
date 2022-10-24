@@ -3,8 +3,6 @@
 #include <QApplication>
 #include <QCommandLineParser>
 
-#include "../launcher/tablet/include/tabletinterface.h"
-#include "cmdinterface.h"
 #include "config.h"
 #include "desktopinterface.h"
 #include "gameinstaller.h"
@@ -14,6 +12,7 @@
 int main(int argc, char* argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+    QCoreApplication::setAttribute(Qt::AA_DontUseNativeMenuBar);
 
     QApplication app(argc, argv);
 
@@ -31,27 +30,10 @@ int main(int argc, char* argv[]) {
     auto helpOption = parser.addHelpOption();
     auto versionOption = parser.addVersionOption();
 
-    QCommandLineOption desktopOption("desktop", "Open a desktop interface.");
-#ifdef ENABLE_DESKTOP
-    parser.addOption(desktopOption);
-#endif
-
-    QCommandLineOption tabletOption("tablet", "Open a tablet interface.");
-#ifdef ENABLE_TABLET
-    parser.addOption(tabletOption);
-#endif
-
-    QCommandLineOption cliOption("cli", "Don't open a main window, and use the cli interface.");
-#ifdef ENABLE_CLI
-    parser.addOption(cliOption);
-#endif
-
     QCommandLineOption steamOption("steam", "Simulate booting the launcher via Steam.");
 #ifdef ENABLE_STEAM
     parser.addOption(steamOption);
 #endif
-
-    auto cmd = std::make_unique<CMDInterface>(parser);
 
     parser.process(app);
 
@@ -68,23 +50,7 @@ int main(int argc, char* argv[]) {
 #else
     LauncherCore c(false);
 #endif
-    std::unique_ptr<DesktopInterface> desktopInterface;
-    std::unique_ptr<TabletInterface> tabletInterface;
-
-    if (parser.isSet(tabletOption)) {
-#ifdef ENABLE_TABLET
-        tabletInterface = std::make_unique<TabletInterface>(c);
-#endif
-    } else if (parser.isSet(cliOption)) {
-#ifdef ENABLE_CLI
-        if (!cmd->parse(parser, c))
-            return -1;
-#endif
-    } else {
-#ifdef ENABLE_DESKTOP
-        desktopInterface = std::make_unique<DesktopInterface>(c);
-#endif
-    }
+    std::unique_ptr<DesktopInterface> desktopInterface = std::make_unique<DesktopInterface>(c);
 
     return QApplication::exec();
 }

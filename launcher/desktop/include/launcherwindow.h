@@ -11,11 +11,14 @@
 
 #include "headline.h"
 #include "launchercore.h"
+#include "virtualwindow.h"
 
-class LauncherWindow : public QMainWindow {
+class DesktopInterface;
+
+class LauncherWindow : public VirtualWindow {
     Q_OBJECT
 public:
-    explicit LauncherWindow(LauncherCore& new_headline, QWidget* parent = nullptr);
+    explicit LauncherWindow(DesktopInterface& interface, LauncherCore& new_headline, QWidget* parent = nullptr);
 
     ProfileSettings& currentProfile();
 
@@ -59,4 +62,6 @@ private:
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     QAction* wineCfg;
 #endif
+
+    DesktopInterface& interface;
 };

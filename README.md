@@ -17,8 +17,7 @@ If you still have questions, please read the [FAQ](https://xiv.zone/astra/faq) f
 ## Features
 
 * Traditional desktop interface which looks native to your system, utilizing Qt - a proven application framework.
-    * A Tablet/TV interface designed for touchscreens or handhelds such as the Steam Deck is also available.
-    * Can even run without a GUI, ideal for users comfortable with a CLI or for automation.
+    * Supports single-window scenarios such as the Steam Deck seamlessly.
 * Native support for Windows, macOS and Linux!
 * Handles running Wine for macOS and Linux users - creating a seamless and native-feeling launcher experience, compared
   to running other FFXIV launchers in Wine.
