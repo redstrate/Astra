@@ -1,0 +1,51 @@
+app-id: zone.xiv.astra
+runtime: org.kde.Platform
+runtime-version: '5.15-22.08'
+sdk: org.kde.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+command: astra
+build-options:
+  append-path: /usr/lib/sdk/rust-stable/bin
+  build-args:
+    - --share=network
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --filesystem=host
+  - --device=dri
+  - --share=network
+  - --socket=pulseaudio
+modules:
+  - name: unshield
+    buildsystem: cmake-ninja
+    sources:
+      - type: git
+        url: https://github.com/twogood/unshield.git
+        branch: main
+  - name: qtkeychain
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DLIBSECRET_SUPPORT=OFF
+    sources:
+      - type: git
+        url: https://github.com/frankosterfeld/qtkeychain.git
+  - name: quazip
+    buildsystem: cmake-ninja
+    sources:
+      - type: git
+        url: https://github.com/stachenov/quazip.git
+  - name: astra
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+      - -DRust_COMPILER=/usr/lib/sdk/rust-stable/bin/rustc
+      - -DENABLE_GAMEMODE=OFF
+      - -DENABLE_CLI=OFF
+    build-options:
+        build-args:
+            - --share=network # needed for cargo unfortunately, flatpak has no native support (yet)
+    sources:
+      - type: dir
+        path: .
