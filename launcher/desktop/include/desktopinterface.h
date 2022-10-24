@@ -18,8 +18,8 @@ public:
     void addWindow(VirtualWindow* window);
     void addDialog(VirtualDialog* dialog);
 
-    bool oneWindow = true;
-    bool isSteamDeck = true;
+    bool oneWindow = false;
+    bool isSteamDeck = false;
 
 private:
     QMdiArea* mdiArea = nullptr;

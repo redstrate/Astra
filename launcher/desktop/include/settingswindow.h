@@ -23,7 +23,7 @@ public slots:
     void reloadControls();
 
 private:
-    void setupAccountsTab(QFormLayout& layout);
+    void setupAccountsTab(QGridLayout& layout);
 
     // profile specific tabs
     void setupGameTab(QFormLayout& layout);
@@ -34,7 +34,10 @@ private:
     ProfileSettings& getCurrentProfile();
 
     QListWidget* profileWidget = nullptr;
-    QPushButton* deleteProfileButton = nullptr;
+    QPushButton* deleteAccountButton = nullptr;
+
+    QListWidget* accountWidget = nullptr;
+    QPushButton* removeAccountButton = nullptr;
 
     // general
     QCheckBox* closeWhenLaunched = nullptr;

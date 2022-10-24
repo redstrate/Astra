@@ -88,13 +88,13 @@ SettingsWindow::SettingsWindow(DesktopInterface& interface, int defaultTab, Laun
         });
         profileLayout->addWidget(addProfileButton, 3, 0);
 
-        deleteProfileButton = new QPushButton("Delete Profile");
-        connect(deleteProfileButton, &QPushButton::pressed, [=] {
+        deleteAccountButton = new QPushButton("Delete Profile");
+        connect(deleteAccountButton, &QPushButton::pressed, [=] {
             profileWidget->setCurrentRow(this->core.deleteProfile(getCurrentProfile().name));
 
             this->core.saveSettings();
         });
-        profileLayout->addWidget(deleteProfileButton, 0, 2);
+        profileLayout->addWidget(deleteAccountButton, 0, 2);
 
         nameEdit = new QLineEdit();
         connect(nameEdit, &QLineEdit::editingFinished, [=] {
@@ -158,6 +158,8 @@ SettingsWindow::SettingsWindow(DesktopInterface& interface, int defaultTab, Laun
 
         auto accountsLayout = new QGridLayout();
         accountsTabWidget->setLayout(accountsLayout);
+
+        setupAccountsTab(*accountsLayout);
     }
 
     tabWidget->setCurrentIndex(defaultTab);
@@ -185,7 +187,7 @@ void SettingsWindow::reloadControls() {
     showNewsList->setChecked(core.appSettings.showNewsList);
 
     // deleting the main profile is unsupported behavior
-    deleteProfileButton->setEnabled(profileWidget->currentRow() != 0);
+    deleteAccountButton->setEnabled(profileWidget->currentRow() != 0);
 
     ProfileSettings& profile = core.getProfile(profileWidget->currentRow());
     nameEdit->setText(profile.name);
@@ -653,4 +655,40 @@ void SettingsWindow::setupDalamudTab(QFormLayout& layout) {
     layout.addRow("Dalamud Asset Version", dalamudAssetVersionLabel);
 }
 
-void SettingsWindow::setupAccountsTab(QFormLayout& layout) {}
+void SettingsWindow::setupAccountsTab(QGridLayout& layout) {
+    auto profileTabs = new QTabWidget();
+    layout.addWidget(profileTabs, 1, 1, 3, 3);
+
+    accountWidget = new QListWidget();
+    accountWidget->addItem("INVALID *DEBUG*");
+    accountWidget->setCurrentRow(0);
+
+    connect(accountWidget, &QListWidget::currentRowChanged, this, &SettingsWindow::reloadControls);
+
+    layout.addWidget(accountWidget, 0, 0, 3, 1);
+
+    auto addAccountButton = new QPushButton("Add Account");
+    connect(addAccountButton, &QPushButton::pressed, [=] {
+        accountWidget->setCurrentRow(this->core.addProfile());
+
+        this->core.saveSettings();
+    });
+    layout.addWidget(addAccountButton, 3, 0);
+
+    deleteAccountButton = new QPushButton("Remove Account");
+    connect(deleteAccountButton, &QPushButton::pressed, [=] {
+        accountWidget->setCurrentRow(this->core.deleteProfile(getCurrentProfile().name));
+
+        this->core.saveSettings();
+    });
+    layout.addWidget(deleteAccountButton, 0, 2);
+
+    nameEdit = new QLineEdit();
+    connect(nameEdit, &QLineEdit::editingFinished, [=] {
+        //getCurrentProfile().name = nameEdit->text();
+
+        reloadControls();
+        this->core.saveSettings();
+    });
+    layout.addWidget(nameEdit, 0, 1);
+}
