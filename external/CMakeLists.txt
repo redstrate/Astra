@@ -21,5 +21,9 @@ FetchContent_MakeAvailable(libphysis)
 
 corrosion_import_crate(MANIFEST_PATH ${libphysis_SOURCE_DIR}/Cargo.toml)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(UNSHIELD REQUIRED IMPORTED_TARGET libunshield)
+
 target_include_directories(physis INTERFACE ${libphysis_SOURCE_DIR}/target/public)
-target_link_libraries(physis INTERFACE unshield)
+target_link_libraries(physis INTERFACE ${UNSHIELD_LIBRARIES})
+target_link_directories(physis INTERFACE ${UNSHIELD_LIBRARY_DIRS})
