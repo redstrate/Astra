@@ -6,6 +6,12 @@ DesktopInterface::DesktopInterface(LauncherCore& core) {
     if(oneWindow) {
         mdiArea = new QMdiArea();
         mdiWindow = new QMainWindow();
+
+        if(isSteamDeck) {
+            mdiWindow->setWindowFlag(Qt::FramelessWindowHint);
+            mdiWindow->setFixedSize(1280, 800);
+        }
+
         mdiWindow->setWindowTitle("Combined Interface");
         mdiWindow->setCentralWidget(mdiArea);
         mdiWindow->show();
