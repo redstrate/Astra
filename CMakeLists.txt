@@ -33,6 +33,10 @@ if (ENABLE_STEAM)
     set_target_properties(Steamworks PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES ${STEAMWORKS_INCLUDE_DIR}
             IMPORTED_LOCATION ${STEAMWORKS_LIBRARIES})
+
+    if(BUILD_FLATPAK)
+        install(IMPORTED_RUNTIME_ARTIFACTS Steamworks)
+    endif()
 endif ()
 
 find_package(Qt5Keychain REQUIRED)
