@@ -34,7 +34,7 @@ inline QString encryptGameArg(const QString& arg) {
     QByteArray encryptedArg = QByteArray::fromRawData(reinterpret_cast<const char*>(out_data), out_size);
 
     QString base64 = encryptedArg.toBase64(
-        QByteArray::Base64Option::Base64UrlEncoding | QByteArray::Base64Option::OmitTrailingEquals);
+        QByteArray::Base64Option::Base64UrlEncoding | QByteArray::Base64Option::KeepTrailingEquals);
     char checksum = GetChecksum(key);
 
     return QString("//**sqex0003%1%2**//").arg(base64, QString(checksum));
