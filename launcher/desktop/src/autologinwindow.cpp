@@ -27,14 +27,19 @@ AutoLoginWindow::AutoLoginWindow(DesktopInterface& interface, ProfileSettings& p
     mainLayout->addWidget(cancelButton);
 
     auto autologinTimer = new QTimer();
+
     connect(autologinTimer, &QTimer::timeout, [&, this, autologinTimer] {
         core.autoLogin(profile);
-
-        close();
-        autologinTimer->stop();
     });
+
     connect(this, &AutoLoginWindow::loginCanceled, [autologinTimer] {
         autologinTimer->stop();
     });
+
+    connect(&core, &LauncherCore::successfulLaunch, [this, autologinTimer] {
+        close();
+        autologinTimer->stop();
+    });
+
     autologinTimer->start(5000);
 }
