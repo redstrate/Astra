@@ -34,7 +34,7 @@ void Patcher::processPatchList(QNetworkAccessManager& mgr, const QString& patchL
             dialog->setLabelText("Updating the FINAL FANTASY XIV Game version.");
         }
 
-        const QStringList parts = patchList.split("\n|\r\n|\r");
+        const QStringList parts = patchList.split("\r\n");
 
         remainingPatches = parts.size() - 7;
 
@@ -54,6 +54,8 @@ void Patcher::processPatchList(QNetworkAccessManager& mgr, const QString& patchL
                 version = patchParts[4];
                 name = url.split('/').last().remove(".patch");
             }
+
+            qDebug() << "Parsed patch name: " << name;
 
             auto url_parts = url.split('/');
             repository = url_parts[url_parts.size() - 3];
@@ -76,6 +78,8 @@ void Patcher::processPatchList(QNetworkAccessManager& mgr, const QString& patchL
                 QDir().mkpath(patchesDir);
 
             if (!QFile::exists(patchesDir + "/" + name + ".patch")) {
+                qDebug() << "Need to download " + name;
+
                 QNetworkRequest patchRequest(url);
                 auto patchReply = mgr.get(patchRequest);
                 connect(patchReply, &QNetworkReply::downloadProgress, [=](int recieved, int total) {
@@ -96,6 +100,8 @@ void Patcher::processPatchList(QNetworkAccessManager& mgr, const QString& patchL
                     checkIfDone();
                 });
             } else {
+                qDebug() << "Found existing patch: " << name;
+
                 patchQueue.push_back({name, repository, version, patchesDir + "/" + name + ".patch"});
 
                 remainingPatches--;
