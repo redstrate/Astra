@@ -39,10 +39,7 @@ void SapphireLauncher::login(const QString& lobbyUrl, const LoginInformation& in
 
 void SapphireLauncher::registerAccount(const QString& lobbyUrl, const LoginInformation& info) {
     QJsonObject data{{"username", info.username}, {"pass", info.password}};
-    QUrl url;
-    url.setScheme("http");
-    url.setHost(lobbyUrl);
-    url.setPath("/sapphire-api/lobby/createAccount");
+    QUrl url(lobbyUrl + "/sapphire-api/lobby/login");
 
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
