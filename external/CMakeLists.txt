@@ -14,7 +14,7 @@ FetchContent_MakeAvailable(Corrosion)
 FetchContent_Declare(
         libphysis
         GIT_REPOSITORY https://git.sr.ht/~redstrate/libphysis
-        GIT_TAG        0.1.2
+        GIT_TAG        0.1.3
 )
 
 FetchContent_MakeAvailable(libphysis)
