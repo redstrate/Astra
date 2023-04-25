@@ -187,26 +187,48 @@ void SquareLauncher::registerSession(const LoginInformation& info) {
 
     auto reply = window.mgr->post(request, report.toUtf8());
     connect(reply, &QNetworkReply::finished, [=, &info] {
-        if (reply->rawHeaderList().contains("X-Patch-Unique-Id")) {
-            QString body = reply->readAll();
+        if (reply->error() == QNetworkReply::NoError) {
+            if (reply->rawHeaderList().contains("X-Patch-Unique-Id")) {
+                QString body = reply->readAll();
 
-            patcher = new Patcher(info.settings->gamePath + "/game", info.settings->gameData);
-            connect(patcher, &Patcher::done, [=, &info] {
-                window.readGameVersion();
+                patcher = new Patcher(info.settings->gamePath + "/game", info.settings->gameData);
+                connect(patcher, &Patcher::done, [=, &info] {
+                    window.readGameVersion();
 
-                auth.SID = reply->rawHeader("X-Patch-Unique-Id");
+                    auth.SID = reply->rawHeader("X-Patch-Unique-Id");
 
-                window.launchGame(*info.settings, auth);
-            });
+                    window.launchGame(*info.settings, auth);
+                });
 
-            patcher->processPatchList(*window.mgr, body);
+                patcher->processPatchList(*window.mgr, body);
+            } else {
+                auto messageBox = new QMessageBox(
+                    QMessageBox::Icon::Critical,
+                    "Failed to Login",
+                    "Fatal error, request was successful but X-Patch-Unique-Id was not received");
+                messageBox->show();
+            }
         } else {
-            auto messageBox = new QMessageBox(
-                QMessageBox::Icon::Critical,
-                "Failed to Login",
-                "Failed the anti-tamper check. Please restore your game to the original state or update the game.");
-
-            messageBox->show();
+            if (reply->error() == QNetworkReply::SslHandshakeFailedError) {
+                auto messageBox = new QMessageBox(
+                    QMessageBox::Icon::Critical,
+                    "Failed to Login",
+                    "SSL handshake error detected. If you are using OpenSUSE Tumbleweed or Fedora, this launcher will "
+                    "only work if you run the following command `update-crypto-policies --set LEGACY`");
+                messageBox->show();
+            } else if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 405) {
+                auto messageBox = new QMessageBox(
+                    QMessageBox::Icon::Critical,
+                    "Failed to Login",
+                    "Failed the anti-tamper check. Please restore your game to the original state or update the "
+                    "game.");
+                messageBox->show();
+            } else {
+                int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+                auto messageBox = new QMessageBox(
+                    QMessageBox::Icon::Critical, "Failed to Login", &"Unknown error! Status code was "[statusCode]);
+                messageBox->show();
+            }
         }
     });
 }
