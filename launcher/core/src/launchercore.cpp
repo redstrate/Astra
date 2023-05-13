@@ -650,7 +650,7 @@ void LauncherCore::addRegistryKey(const ProfileSettings& settings, QString key, 
 }
 
 void LauncherCore::readGameData(ProfileSettings& profile) {
-    EXH* exh = physis_gamedata_read_excel_sheet_header(profile.gameData, "ExVersion");
+    physis_EXH* exh = physis_gamedata_read_excel_sheet_header(profile.gameData, "ExVersion");
     if (exh != nullptr) {
         physis_EXD exd = physis_gamedata_read_excel_sheet(profile.gameData, "ExVersion", exh, Language::English, 0);
 

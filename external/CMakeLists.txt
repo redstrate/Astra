@@ -6,7 +6,7 @@ include(FetchContent)
 FetchContent_Declare(
         Corrosion
         GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
-        GIT_TAG v0.2.2
+        GIT_TAG v0.3.5
 )
 
 FetchContent_MakeAvailable(Corrosion)
@@ -14,12 +14,13 @@ FetchContent_MakeAvailable(Corrosion)
 FetchContent_Declare(
         libphysis
         GIT_REPOSITORY https://git.sr.ht/~redstrate/libphysis
-        GIT_TAG        0.1.3
+        GIT_TAG        main
 )
 
 FetchContent_MakeAvailable(libphysis)
 
-corrosion_import_crate(MANIFEST_PATH ${libphysis_SOURCE_DIR}/Cargo.toml)
+corrosion_import_crate(MANIFEST_PATH ${libphysis_SOURCE_DIR}/Cargo.toml
+        FEATURES game_install)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(UNSHIELD REQUIRED IMPORTED_TARGET libunshield)

@@ -24,8 +24,10 @@ void installGame(LauncherCore& launcher, ProfileSettings& profile, const std::fu
         file.write(reply->readAll());
         file.close();
 
-        physis_install_game(
-            installDirectory.toStdString().c_str(), (dataDir + "/ffxivsetup.exe").toStdString().c_str());
+        const std::string installDirectoryStd = installDirectory.toStdString();
+        const std::string fileNameStd = file.fileName().toStdString();
+
+        physis_install_game(fileNameStd.c_str(), installDirectoryStd.c_str());
 
         qDebug() << "Done installing to " << installDirectory << "!";
 
