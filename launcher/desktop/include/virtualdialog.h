@@ -9,7 +9,7 @@ class DesktopInterface;
 class VirtualDialog : public QObject {
     Q_OBJECT
 public:
-    VirtualDialog(DesktopInterface& interface, QWidget* parent = nullptr);
+    explicit VirtualDialog(DesktopInterface& interface, QWidget* parent = nullptr);
 
     void setWindowTitle(const QString& title);
     void show();
