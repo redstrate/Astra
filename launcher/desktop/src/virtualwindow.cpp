@@ -5,8 +5,8 @@
 
 #include "desktopinterface.h"
 
-VirtualWindow::VirtualWindow(DesktopInterface& interface, QWidget* widget) : interface(interface) {
-    if(interface.oneWindow) {
+VirtualWindow::VirtualWindow(DesktopInterface& interface, QWidget* widget) : interface(interface), QObject(widget) {
+    if (interface.oneWindow) {
         mdi_window = new QMdiSubWindow();
         mdi_window->setAttribute(Qt::WA_DeleteOnClose);
     } else {
@@ -16,8 +16,8 @@ VirtualWindow::VirtualWindow(DesktopInterface& interface, QWidget* widget) : int
     interface.addWindow(this);
 }
 
-void VirtualWindow::setWindowTitle(QString title) {
-    if(interface.oneWindow) {
+void VirtualWindow::setWindowTitle(const QString& title) {
+    if (interface.oneWindow) {
         mdi_window->setWindowTitle(title);
     } else {
         normal_window->setWindowTitle(title);
@@ -51,13 +51,8 @@ void VirtualWindow::hide() {
 QMenuBar* VirtualWindow::menuBar() {
     if(interface.oneWindow) {
         if(mdi_window->layout()->menuBar() == nullptr) {
-            auto bar = new QMenuBar();
-            bar->setObjectName("test");
-            qDebug() << "new obj name: " << bar->objectName();
-            mdi_window->layout()->setMenuBar(bar);
+            mdi_window->layout()->setMenuBar(new QMenuBar());
         }
-
-        qDebug() << mdi_window->layout()->menuBar()->objectName();
 
         return dynamic_cast<QMenuBar*>(mdi_window->layout()->menuBar());
     } else {

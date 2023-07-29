@@ -11,7 +11,7 @@ class VirtualWindow : public QObject {
 public:
     VirtualWindow(DesktopInterface& interface, QWidget* parent = nullptr);
 
-    void setWindowTitle(QString title);
+    void setWindowTitle(const QString& title);
     void setCentralWidget(QWidget* widget);
     void show();
     void showMaximized();

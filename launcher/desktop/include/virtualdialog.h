@@ -11,7 +11,7 @@ class VirtualDialog : public QObject {
 public:
     VirtualDialog(DesktopInterface& interface, QWidget* parent = nullptr);
 
-    void setWindowTitle(QString title);
+    void setWindowTitle(const QString& title);
     void show();
     void hide();
     void close();

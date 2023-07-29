@@ -4,8 +4,8 @@
 
 #include "desktopinterface.h"
 
-VirtualDialog::VirtualDialog(DesktopInterface& interface, QWidget* widget) : interface(interface) {
-    if(interface.oneWindow) {
+VirtualDialog::VirtualDialog(DesktopInterface& interface, QWidget* widget) : interface(interface), QObject(widget) {
+    if (interface.oneWindow) {
         mdi_window = new QMdiSubWindow();
         mdi_window->setAttribute(Qt::WA_DeleteOnClose);
     } else {
@@ -15,8 +15,8 @@ VirtualDialog::VirtualDialog(DesktopInterface& interface, QWidget* widget) : int
     interface.addDialog(this);
 }
 
-void VirtualDialog::setWindowTitle(QString title) {
-    if(interface.oneWindow) {
+void VirtualDialog::setWindowTitle(const QString& title) {
+    if (interface.oneWindow) {
         mdi_window->setWindowTitle(title);
     } else {
         normal_dialog->setWindowTitle(title);
@@ -57,7 +57,7 @@ void VirtualDialog::setWindowModality(Qt::WindowModality modality) {
 
 void VirtualDialog::setLayout(QLayout* layout) {
     if(interface.oneWindow) {
-        QWidget* emptyWidget = new QWidget();
+        auto emptyWidget = new QWidget();
         emptyWidget->setLayout(layout);
 
         mdi_window->layout()->addWidget(emptyWidget);
