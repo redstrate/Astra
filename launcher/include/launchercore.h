@@ -103,11 +103,10 @@ public:
     void setSSL(QNetworkRequest &request);
     void readInitialInformation();
 
-    SapphireLauncher *sapphireLauncher;
-    SquareBoot *squareBoot;
-    SquareLauncher *squareLauncher;
-    AssetUpdater *assetUpdater;
-    Watchdog *watchdog;
+    SapphireLauncher *sapphireLauncher = nullptr;
+    SquareBoot *squareBoot = nullptr;
+    SquareLauncher *squareLauncher = nullptr;
+    Watchdog *watchdog = nullptr;
 
     bool gamescopeAvailable = false;
     bool gamemodeAvailable = false;

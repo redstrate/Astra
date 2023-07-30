@@ -23,7 +23,6 @@ Controls.Control {
         function onNewsChanged() {
             page.currentBannerIndex = 0
             page.numBannerImages = LauncherCore.headline.banners.length
-            console.log(LauncherCore.headline.banners)
         }
     }
 
@@ -81,7 +80,7 @@ Controls.Control {
                 }
 
                 Repeater {
-                    model: LauncherCore.headline.news
+                    model: LauncherCore.headline !== null ? LauncherCore.headline.news : undefined
 
                     MobileForm.FormButtonDelegate {
                         text: modelData.title
@@ -104,7 +103,7 @@ Controls.Control {
                 }
 
                 Repeater {
-                    model: LauncherCore.headline.topics
+                    model: LauncherCore.headline !== null ? LauncherCore.headline.topics : undefined
 
                     MobileForm.FormButtonDelegate {
                         text: modelData.title
