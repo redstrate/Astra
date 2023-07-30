@@ -9,7 +9,7 @@ import QtQuick.Layouts 1.15
 import org.kde.kirigamiaddons.labs.mobileform 0.1 as MobileForm
 import com.redstrate.astra 1.0
 
-Kirigami.OverlayDrawer {
+Controls.Control {
     id: page
 
     property var profile: LauncherCore.profileManager.getProfile(0)
@@ -49,7 +49,7 @@ Kirigami.OverlayDrawer {
 
     onProfileChanged: updateFields()
 
-    ColumnLayout {
+    contentItem: ColumnLayout {
         width: parent.width
         MobileForm.FormCard {
             Layout.topMargin: Kirigami.Units.largeSpacing

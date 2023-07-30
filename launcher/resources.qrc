@@ -3,6 +3,7 @@
         <file>ui/Components/FormFileDelegate.qml</file>
         <file>ui/Components/FormFolderDelegate.qml</file>
         <file>ui/Pages/LoginPage.qml</file>
+        <file>ui/Pages/MainPage.qml</file>
         <file>ui/Pages/NewsPage.qml</file>
         <file>ui/Pages/StatusPage.qml</file>
         <file>ui/Settings/AccountSettings.qml</file>

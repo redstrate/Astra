@@ -20,8 +20,7 @@ Kirigami.ApplicationWindow {
 
     property var currentSetupProfile: LauncherCore.profileManager.getProfile(0)
 
-    pageStack.initialPage: Kirigami.Page
-        {
+    pageStack.initialPage: Kirigami.Page {
         Kirigami.LoadingPlaceholder {
             anchors.centerIn: parent
         }
@@ -45,7 +44,7 @@ Kirigami.ApplicationWindow {
                 profile: currentSetupProfile
             })
         } else {
-            pageStack.layers.replace('qrc:/ui/Pages/NewsPage.qml')
+            pageStack.layers.replace('qrc:/ui/Pages/MainPage.qml')
         }
     }
 
@@ -55,19 +54,6 @@ Kirigami.ApplicationWindow {
         function onLoadingFinished() {
             checkSetup()
         }
-    }
-
-    contextDrawer: LoginPage {
-        drawerOpen: true
-        modal: false
-
-        edge: Qt.RightEdge
-
-        topPadding: 0
-        leftPadding: 0
-        rightPadding: 0
-
-        width: 400
     }
 
     Component.onCompleted: checkSetup()
