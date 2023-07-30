@@ -336,21 +336,28 @@ void LauncherCore::addRegistryKey(const Profile &settings, QString key, QString 
 
 void LauncherCore::login(Profile *profile, const QString &username, const QString &password, const QString &oneTimePassword)
 {
-    auto loginInformation = new LoginInformation(this);
-    loginInformation->profile = profile;
-    loginInformation->username = username;
-    loginInformation->password = password;
-    loginInformation->oneTimePassword = oneTimePassword;
+    auto assetUpdater = new AssetUpdater(*profile, *this, this);
+    assetUpdater->update();
 
-    if (profile->account()->rememberPassword()) {
-        profile->account()->setPassword(password);
-    }
+    connect(assetUpdater, &AssetUpdater::finishedUpdating, this, [this, assetUpdater, profile, username, password, oneTimePassword] {
+        auto loginInformation = new LoginInformation(this);
+        loginInformation->profile = profile;
+        loginInformation->username = username;
+        loginInformation->password = password;
+        loginInformation->oneTimePassword = oneTimePassword;
 
-    if (loginInformation->profile->account()->isSapphire()) {
-        sapphireLauncher->login(loginInformation->profile->account()->lobbyUrl(), *loginInformation);
-    } else {
-        squareBoot->checkGateStatus(loginInformation);
-    }
+        if (profile->account()->rememberPassword()) {
+            profile->account()->setPassword(password);
+        }
+
+        if (loginInformation->profile->account()->isSapphire()) {
+            sapphireLauncher->login(loginInformation->profile->account()->lobbyUrl(), *loginInformation);
+        } else {
+            squareBoot->checkGateStatus(loginInformation);
+        }
+
+        assetUpdater->deleteLater();
+    });
 }
 
 bool LauncherCore::autoLogin(Profile &profile)

@@ -45,7 +45,7 @@ void AssetUpdater::update()
         return;
     }
 
-    // dialog = new QProgressDialog("Updating assets...", "Cancel", 0, 0);
+    Q_EMIT launcher.stageChanged("Updating assets...");
 
     // first, we want to collect all of the remote versions
 
@@ -65,7 +65,7 @@ void AssetUpdater::update()
 
         auto reply = launcher.mgr->get(request);
         connect(reply, &QNetworkReply::finished, [reply, this] {
-            // dialog->setLabelText("Checking for Dalamud asset updates...");
+            Q_EMIT launcher.stageChanged("Checking for Dalamud asset updates...");
 
             // TODO: handle asset failure
             QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
@@ -93,7 +93,7 @@ void AssetUpdater::update()
 
         auto reply = launcher.mgr->get(request);
         connect(reply, &QNetworkReply::finished, [this, reply] {
-            // dialog->setLabelText("Checking for Dalamud updates...");
+            Q_EMIT launcher.stageChanged("Checking for Dalamud updates...");
 
             QByteArray str = reply->readAll();
             // for some god forsaken reason, the version string comes back as raw
@@ -153,9 +153,6 @@ void AssetUpdater::beginInstall()
 
 void AssetUpdater::checkIfDalamudAssetsDone()
 {
-    // if (dialog->wasCanceled())
-    //     return;
-
     if (dalamudAssetNeededFilenames.empty()) {
         qInfo() << "Finished downloading Dalamud assets.";
 
@@ -172,16 +169,10 @@ void AssetUpdater::checkIfDalamudAssetsDone()
 
 void AssetUpdater::checkIfFinished()
 {
-    // if (dialog->wasCanceled())
-    //     return;
-
     if (doneDownloadingDalamud && doneDownloadingRuntimeCore && doneDownloadingRuntimeDesktop && dalamudAssetNeededFilenames.empty()) {
         if (needsRuntimeInstall || needsDalamudInstall) {
             beginInstall();
         } else {
-            // dialog->setLabelText("Finished!");
-            // dialog->close();
-
             finishedUpdating();
         }
     }
@@ -189,9 +180,6 @@ void AssetUpdater::checkIfFinished()
 
 void AssetUpdater::checkIfCheckingIsDone()
 {
-    // if (dialog->wasCanceled())
-    //     return;
-
     if (remoteDalamudVersion.isEmpty() || remoteRuntimeVersion.isEmpty() || remoteDalamudAssetVersion == -1) {
         return;
     }
@@ -199,7 +187,7 @@ void AssetUpdater::checkIfCheckingIsDone()
     // now that we got all the information we need, let's check if anything is
     // updateable
 
-    // dialog->setLabelText("Starting update...");
+    Q_EMIT launcher.stageChanged("Starting Dalamud update...");
 
     // dalamud injector / net runtime
     if (m_profile.runtimeVersion != remoteRuntimeVersion) {
@@ -213,7 +201,7 @@ void AssetUpdater::checkIfCheckingIsDone()
             connect(reply, &QNetworkReply::finished, [this, reply] {
                 qInfo() << "Dotnet-core finished downloading!";
 
-                // dialog->setLabelText("Updating Dotnet-core...");
+                Q_EMIT launcher.stageChanged("Updating Dotnet-core...");
 
                 QFile file(tempDir.path() + "/dotnet-core.zip");
                 file.open(QIODevice::WriteOnly);
@@ -234,7 +222,7 @@ void AssetUpdater::checkIfCheckingIsDone()
             connect(reply, &QNetworkReply::finished, [this, reply] {
                 qInfo() << "Dotnet-desktop finished downloading!";
 
-                // dialog->setLabelText("Updating Dotnet-desktop...");
+                Q_EMIT launcher.stageChanged("Updating Dotnet-desktop...");
 
                 QFile file(tempDir.path() + "/dotnet-desktop.zip");
                 file.open(QIODevice::WriteOnly);
@@ -265,7 +253,7 @@ void AssetUpdater::checkIfCheckingIsDone()
         connect(reply, &QNetworkReply::finished, [this, reply] {
             qInfo() << "Dalamud finished downloading!";
 
-            // dialog->setLabelText("Updating Dalamud...");
+            Q_EMIT launcher.stageChanged("Updating Dalamud...");
 
             QFile file(tempDir.path() + "/latest.zip");
             file.open(QIODevice::WriteOnly);
@@ -291,7 +279,7 @@ void AssetUpdater::checkIfCheckingIsDone()
     if (remoteDalamudAssetVersion != m_profile.dalamudAssetVersion) {
         qInfo() << "Dalamud assets out of date.";
 
-        // dialog->setLabelText("Updating Dalamud assets...");
+        Q_EMIT launcher.stageChanged("Updating Dalamud assets...");
 
         dalamudAssetNeededFilenames.clear();
 
