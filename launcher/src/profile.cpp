@@ -26,10 +26,10 @@ Profile::Profile(LauncherCore &launcher, const QString &key, QObject *parent)
             QJsonDocument doc = QJsonDocument::fromJson(depsJson.readAll());
 
             QString versionString;
-            if (doc["targets"].toObject().contains(".NETCoreApp,Version=v5.0")) {
-                versionString = doc["targets"].toObject()[".NETCoreApp,Version=v5.0"].toObject().keys().filter("Dalamud")[0];
-            } else {
-                versionString = doc["targets"].toObject()[".NETCoreApp,Version=v6.0"].toObject().keys().filter("Dalamud")[0];
+            for (auto target : doc["targets"].toObject().keys()) {
+                if (target.contains(".NETCoreApp")) {
+                    versionString = doc["targets"].toObject()[target].toObject().keys().filter("Dalamud/")[0];
+                }
             }
 
             dalamudVersion = versionString.remove("Dalamud/");
