@@ -149,6 +149,8 @@ signals:
     void showNewsListChanged();
     void loginError(QString message);
     void stageChanged(QString message);
+    void stageIndeterminate();
+    void stageDeterminate(int min, int max, int value);
     void newsChanged();
 
 private:

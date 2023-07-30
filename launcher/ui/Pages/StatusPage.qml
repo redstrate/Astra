@@ -37,6 +37,17 @@ Kirigami.Page {
             placeholder.text = message
         }
 
+        function onStageIndeterminate() {
+            placeholder.determinate = false
+        }
+
+        function onStageDeterminate(min, max, value) {
+            placeholder.determinate = true
+            placeholder.progressBar.value = value
+            placeholder.progressBar.from = min
+            placeholder.progressBar.to = max
+        }
+
         function onLoginError(message) {
             errorDialog.subtitle = message
             errorDialog.open()

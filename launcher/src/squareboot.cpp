@@ -22,7 +22,7 @@ void SquareBoot::bootCheck(const LoginInformation &info)
 {
     Q_EMIT window.stageChanged(i18n("Checking for launcher updates..."));
 
-    patcher = new Patcher(info.profile->gamePath() + "/boot", info.profile->bootData, this);
+    patcher = new Patcher(window, info.profile->gamePath() + "/boot", info.profile->bootData, this);
     connect(patcher, &Patcher::done, [this, &info] {
         info.profile->readGameVersion();
 
