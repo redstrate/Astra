@@ -21,7 +21,6 @@ int main(int argc, char *argv[])
     }
 
     KLocalizedString::setApplicationDomain("astra");
-    QCoreApplication::setOrganizationDomain("xiv.zone");
 
     KAboutData about(QStringLiteral("astra"), i18n("Astra"), "0.5.0", i18n("FFXIV Launcher"), KAboutLicense::GPL_V3, i18n("© 2023 Joshua Goins"));
     about.addAuthor(i18n("Joshua Goins"), i18n("Maintainer"), QStringLiteral("josh@redstrate.com"));
@@ -29,7 +28,8 @@ int main(int argc, char *argv[])
     about.addComponent("physis");
     about.setDesktopFileName("com.redstrate.astra");
     about.setBugAddress("https://lists.sr.ht/~redstrate/public-inbox");
-    about.setComponentName("com.redstrate.astra");
+    about.setComponentName("astra");
+    about.setProgramLogo("com.redstrate.astra");
 
     KAboutData::setApplicationData(about);
 
