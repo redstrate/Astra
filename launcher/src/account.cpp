@@ -154,7 +154,7 @@ void Account::setIsFreeTrial(const bool value)
     }
 }
 
-QString Account::getPassword() const
+QString Account::getPassword()
 {
     return getKeychainValue("password");
 }
@@ -164,7 +164,7 @@ void Account::setPassword(const QString &password)
     setKeychainValue("password", password);
 }
 
-QString Account::getOTP() const
+QString Account::getOTP()
 {
     auto otpSecret = getKeychainValue("otp-secret");
 
@@ -192,19 +192,19 @@ void Account::fetchAvatar()
     });
 }
 
-void Account::setKeychainValue(const QString &key, const QString &value) const
+void Account::setKeychainValue(const QString &key, const QString &value)
 {
-    auto job = new QKeychain::WritePasswordJob("Astra");
+    auto job = new QKeychain::WritePasswordJob("Astra", this);
     job->setTextData(value);
     job->setKey(m_key + "-" + key);
     job->start();
 }
 
-QString Account::getKeychainValue(const QString &key) const
+QString Account::getKeychainValue(const QString &key)
 {
-    auto loop = new QEventLoop();
+    auto loop = new QEventLoop(this);
 
-    auto job = new QKeychain::ReadPasswordJob("Astra");
+    auto job = new QKeychain::ReadPasswordJob("Astra", this);
     job->setKey(m_key + "-" + key);
     job->start();
 

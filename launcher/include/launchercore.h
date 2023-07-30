@@ -28,6 +28,11 @@ class LoginInformation : public QObject
     Q_PROPERTY(Profile *profile MEMBER profile)
 
 public:
+    LoginInformation(QObject *parent = nullptr)
+        : QObject(parent)
+    {
+    }
+
     Profile *profile = nullptr;
 
     QString username, password, oneTimePassword;

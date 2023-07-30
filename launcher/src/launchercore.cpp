@@ -84,7 +84,7 @@ void LauncherCore::beginGameExecutable(const Profile &profile, const LoginAuth &
 
 void LauncherCore::beginVanillaGame(const QString &gameExecutablePath, const Profile &profile, const LoginAuth &auth)
 {
-    auto gameProcess = new QProcess();
+    auto gameProcess = new QProcess(this);
     gameProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
 
     auto args = getGameArgs(profile, auth);
@@ -100,7 +100,7 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Pro
     QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     dataDir = "Z:" + dataDir.replace('/', '\\');
 
-    auto dalamudProcess = new QProcess();
+    auto dalamudProcess = new QProcess(this);
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     env.insert("DALAMUD_RUNTIME", dataDir + "\\DalamudRuntime");
@@ -300,14 +300,13 @@ void LauncherCore::readInitialInformation()
 LauncherCore::LauncherCore(bool isSteam)
     : m_isSteam(isSteam)
 {
-    mgr = new QNetworkAccessManager();
-    sapphireLauncher = new SapphireLauncher(*this);
-    squareLauncher = new SquareLauncher(*this);
-    squareBoot = new SquareBoot(*this, *squareLauncher);
-    // assetUpdater = new AssetUpdater(*this);
-    steamApi = new SteamAPI(*this);
-    m_profileManager = new ProfileManager(*this);
-    m_accountManager = new AccountManager(*this);
+    mgr = new QNetworkAccessManager(this);
+    sapphireLauncher = new SapphireLauncher(*this, this);
+    squareLauncher = new SquareLauncher(*this, this);
+    squareBoot = new SquareBoot(*this, *squareLauncher, this);
+    steamApi = new SteamAPI(*this, this);
+    m_profileManager = new ProfileManager(*this, this);
+    m_accountManager = new AccountManager(*this, this);
 
 #ifdef ENABLE_WATCHDOG
     watchdog = new Watchdog(*this);
@@ -320,12 +319,12 @@ LauncherCore::LauncherCore(bool isSteam)
 
 bool LauncherCore::checkIfInPath(const QString &program)
 {
-    // TODO: also check /usr/local/bin, /bin32 etc (basically read $PATH)
-    const QString directory = "/usr/bin";
+    const auto pathList = qgetenv("PATH").split(':');
 
-    QFileInfo fileInfo(directory + "/" + program);
-
-    return fileInfo.exists() && fileInfo.isFile();
+    return std::any_of(pathList.cbegin(), pathList.cend(), [program](const QByteArray &path) {
+        QFileInfo fileInfo(path + "/" + program);
+        return fileInfo.exists() && fileInfo.isFile();
+    });
 }
 
 void LauncherCore::addRegistryKey(const Profile &settings, QString key, QString value, QString data)
@@ -337,7 +336,7 @@ void LauncherCore::addRegistryKey(const Profile &settings, QString key, QString 
 
 void LauncherCore::login(Profile *profile, const QString &username, const QString &password, const QString &oneTimePassword)
 {
-    auto loginInformation = new LoginInformation();
+    auto loginInformation = new LoginInformation(this);
     loginInformation->profile = profile;
     loginInformation->username = username;
     loginInformation->password = password;
@@ -441,11 +440,7 @@ void LauncherCore::refreshNews()
     url.setPath("/news/headline.json");
     url.setQuery(query);
 
-    auto request = QNetworkRequest(QString("%1&%2").arg(url.toString(), QString::number(QDateTime::currentMSecsSinceEpoch())));
-
-    // TODO: really?
-    buildRequest(*profileManager()->getProfile(0), request);
-
+    QNetworkRequest request(QString("%1&%2").arg(url.toString(), QString::number(QDateTime::currentMSecsSinceEpoch())));
     request.setRawHeader("Accept", "application/json, text/plain, */*");
     request.setRawHeader("Origin", "https://launcher.finalfantasyxiv.com");
     request.setRawHeader("Referer",
@@ -457,7 +452,7 @@ void LauncherCore::refreshNews()
     QObject::connect(reply, &QNetworkReply::finished, [this, reply] {
         auto document = QJsonDocument::fromJson(reply->readAll());
 
-        auto headline = new Headline();
+        auto headline = new Headline(this);
 
         const auto parseNews = [](QJsonObject object) -> News {
             News news;
@@ -563,18 +558,18 @@ void LauncherCore::openOfficialLauncher(Profile *profile)
 
     QString finalArg = encryptGameArg(argJoined);
 
-    auto launcherProcess = new QProcess();
+    auto launcherProcess = new QProcess(this);
     launchExecutable(*profile, launcherProcess, {profile->gamePath() + "/boot/ffxivlauncher64.exe", finalArg}, false, true);
 }
 
 void LauncherCore::openSystemInfo(Profile *profile)
 {
-    auto sysinfoProcess = new QProcess();
+    auto sysinfoProcess = new QProcess(this);
     launchExecutable(*profile, sysinfoProcess, {profile->gamePath() + "/boot/ffxivsysinfo64.exe"}, false, false);
 }
 
 void LauncherCore::openConfigBackup(Profile *profile)
 {
-    auto configProcess = new QProcess();
+    auto configProcess = new QProcess(this);
     launchExecutable(*profile, configProcess, {profile->gamePath() + "/boot/ffxivconfig64.exe"}, false, false);
 }

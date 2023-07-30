@@ -13,8 +13,8 @@ void AccountManager::load()
     auto config = KSharedConfig::openStateConfig();
     for (const auto &id : config->groupList()) {
         if (id.contains("account-")) {
-            auto profile = new Account(m_launcher, QString(id).remove("account-"), this);
-            m_accounts.append(profile);
+            auto account = new Account(m_launcher, QString(id).remove("account-"), this);
+            m_accounts.append(account);
         }
     }
 }

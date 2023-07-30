@@ -22,8 +22,8 @@ void SquareBoot::bootCheck(const LoginInformation &info)
 {
     Q_EMIT window.stageChanged(i18n("Checking for launcher updates..."));
 
-    patcher = new Patcher(info.profile->gamePath() + "/boot", info.profile->bootData);
-    connect(patcher, &Patcher::done, [=, &info] {
+    patcher = new Patcher(info.profile->gamePath() + "/boot", info.profile->bootData, this);
+    connect(patcher, &Patcher::done, [this, &info] {
         info.profile->readGameVersion();
 
         launcher.getStored(info);
@@ -68,7 +68,7 @@ void SquareBoot::checkGateStatus(LoginInformation *info)
     window.buildRequest(*info->profile, request);
 
     auto reply = window.mgr->get(request);
-    connect(reply, &QNetworkReply::finished, [=] {
+    connect(reply, &QNetworkReply::finished, [this, reply, info] {
         // I happen to run into this issue often, if I start the launcher really quickly after bootup
         // it's possible to actually check this quicker than the network is actually available,
         // causing the launcher to be stuck in "maintenace mode". so if that happens, we try to rerun this logic.

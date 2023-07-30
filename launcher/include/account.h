@@ -58,10 +58,10 @@ public:
     bool isFreeTrial() const;
     void setIsFreeTrial(bool value);
 
-    Q_INVOKABLE QString getPassword() const;
+    Q_INVOKABLE QString getPassword();
     void setPassword(const QString &password);
 
-    Q_INVOKABLE QString getOTP() const;
+    Q_INVOKABLE QString getOTP();
 
 Q_SIGNALS:
     void nameChanged();
@@ -81,12 +81,12 @@ private:
     /*
      * Sets a value in the keychain. This function is asynchronous.
      */
-    void setKeychainValue(const QString &key, const QString &value) const;
+    void setKeychainValue(const QString &key, const QString &value);
 
     /*
      * Retrieves a value from the keychain. This function is synchronous.
      */
-    QString getKeychainValue(const QString &key) const;
+    QString getKeychainValue(const QString &key);
 
     AccountConfig m_config;
     QString m_key;
