@@ -17,6 +17,7 @@ SPDX-License-Identifier: CC0-1.0
       <entry key="Account" type="string">
       </entry>
       <entry key="Language" type="int">
+        <default>1</default>
       </entry>
       <entry key="GamePath" type="Path">
       </entry>
