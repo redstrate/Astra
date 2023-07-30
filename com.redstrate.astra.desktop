@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
+[Desktop Entry]
+Name=Astra
+GenericName=FFXIV Launcher
+Comment=Linux launcher for FFXIV
+Exec=astra %u
+Terminal=false
+Icon=com.redstrate.astra
+Type=Application
+Categories=Games;
+X-KDE-FormFactor=desktop;tablet;
+SingleMainWindow=true
