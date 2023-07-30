@@ -98,7 +98,7 @@ void Patcher::processPatchList(QNetworkAccessManager &mgr, const QString &patchL
                     // dialog->setValue(recieved);
                 });
 
-                connect(patchReply, &QNetworkReply::finished, [=] {
+                connect(patchReply, &QNetworkReply::finished, [this, patchesDir, name, patchReply, repository, version] {
                     QFile file(patchesDir + "/" + name + ".patch");
                     file.open(QIODevice::WriteOnly);
                     file.write(patchReply->readAll());

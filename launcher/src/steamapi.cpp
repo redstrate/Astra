@@ -27,6 +27,8 @@ void SteamAPI::setLauncherMode(bool isLauncher)
     if (core.isSteam()) {
         SteamUtils()->SetGameLauncherMode(isLauncher);
     }
+#else
+    Q_UNUSED(isLauncher)
 #endif
 }
 
