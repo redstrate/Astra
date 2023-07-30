@@ -1,29 +1,88 @@
-add_subdirectory(core)
-add_subdirectory(desktop)
+add_executable(astra)
+target_sources(astra PRIVATE
+        include/account.h
+        include/accountmanager.h
+        include/assetupdater.h
+        include/encryptedarg.h
+        include/gameinstaller.h
+        include/headline.h
+        include/launchercore.h
+        include/patcher.h
+        include/profile.h
+        include/profilemanager.h
+        include/sapphirelauncher.h
+        include/squareboot.h
+        include/squarelauncher.h
+        include/steamapi.h
 
-add_executable(astra
-        main.cpp)
+        src/account.cpp
+        src/accountmanager.cpp
+        src/assetupdater.cpp
+        src/encryptedarg.cpp
+        src/gameinstaller.cpp
+        src/launchercore.cpp
+        src/main.cpp
+        src/patcher.cpp
+        src/profile.cpp
+        src/profilemanager.cpp
+        src/sapphirelauncher.cpp
+        src/squareboot.cpp
+        src/squarelauncher.cpp
+        src/steamapi.cpp
 
-target_link_libraries(astra PUBLIC
-        astra_core
-        astra_desktop)
-target_compile_features(astra PUBLIC cxx_std_17)
-set_target_properties(astra PROPERTIES CXX_EXTENSIONS OFF)
+        resources.qrc)
+kconfig_add_kcfg_files(astra GENERATE_MOC config.kcfgc accountconfig.kcfgc profileconfig.kcfgc)
+target_include_directories(astra PRIVATE include)
+target_link_libraries(astra PRIVATE
+        physis
+        cotp
+        crypto
+        QuaZip::QuaZip
+        Qt5Keychain::Qt5Keychain
+        Qt5::Core
+        Qt5::Network
+        Qt5::Widgets
+        Qt5::Quick
+        Qt5::QuickControls2
+        KF5::Kirigami2
+        KF5::I18n
+        KF5::ConfigCore
+        KF5::ConfigGui
+        KF5::CoreAddons)
 
-# meant for including the license text
-file(READ ${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE LICENSE_TXT)
-STRING(REPLACE "\n" " \\n" LICENSE_TXT ${LICENSE_TXT})
-STRING(REPLACE "\"" "\"\"" LICENSE_TXT ${LICENSE_TXT})
+if (ENABLE_WATCHDOG)
+    target_sources(astra PRIVATE
+            include/gameparser.h
+            include/watchdog.h
 
-configure_file(${CMAKE_CURRENT_LIST_DIR}/../cmake/license.h.in
-        ${CMAKE_BINARY_DIR}/license.h)
+            src/gameparser.cpp
+            src/watchdog.cpp)
+    target_link_libraries(astra PRIVATE
+            ${TESSERACT_LIBRARIES}
+            ${LEPTONICA_LIBRARIES}
+            X11
+            Xcomposite
+            Xrender)
+
+    target_include_directories(astra_core PRIVATE ${TESSERACT_INCLUDE_DIRS} ${LEPTONICA_INCLUDE_DIRS})
+    target_compile_definitions(astra_core PRIVATE ENABLE_WATCHDOG)
+endif ()
 
 if (BUILD_FLATPAK)
     target_compile_definitions(astra PRIVATE FLATPAK)
 endif ()
 
-install(TARGETS astra
-        DESTINATION "${INSTALL_BIN_PATH}")
+if (ENABLE_STEAM)
+    target_link_libraries(astra PRIVATE Steamworks)
+    target_compile_definitions(astra PRIVATE ENABLE_STEAM)
+endif ()
+
+if (ENABLE_GAMEMODE)
+    target_link_libraries(astra PRIVATE ${GAMEMODE_LIBRARIES})
+    target_compile_definitions(astra PRIVATE ENABLE_GAMEMODE)
+endif ()
+
+install(TARGETS astra ${KF${QT_MAJOR_VERSION}_INSTALL_TARGETS_DEFAULT_ARGS})
 
 if (WIN32)
     get_target_property(QMAKE_EXE Qt5::qmake IMPORTED_LOCATION)

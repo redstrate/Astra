@@ -1,30 +1,51 @@
 cmake_minimum_required(VERSION 3.16)
-project(Astra)
+project(Astra VERSION 0.5.0 LANGUAGES CXX)
 
 # build options used for distributors
 option(BUILD_FLATPAK "Build for Flatpak." OFF)
 
 # options for features you may want or need
-option(ENABLE_WATCHDOG "Build support for Watchdog, requires an X11 system." OFF)
-option(ENABLE_STEAM "Build with Steam support, requires supplying the Steam SDK." OFF)
+option(ENABLE_WATCHDOG "Build support for Watchdog, requires X11." OFF)
+option(ENABLE_STEAM "Build with Steam support, requires supplying the Steam SDK yourself." OFF)
 option(ENABLE_GAMEMODE "Build with Feral GameMode support, requires the daemon to be installed." ON)
-option(ENABLE_TABLET "Build support for the tablet interface, meant for devices like the Steam Deck." ON)
-option(ENABLE_DESKTOP "Build support for the desktop interface, meant to be used on desktops and laptops." ON)
-option(ENABLE_CLI "Build support for the command-line interface, meant for scripting and automation." ON)
 
+set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt5 COMPONENTS Core Widgets Network Quick CONFIG REQUIRED)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(QT_MIN_VERSION 5.15)
+set(KF5_MIN_VERSION 5.83)
+
+find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)
+list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+
+include(KDEInstallDirs)
+include(ECMFindQmlModule)
+include(KDECMakeSettings)
+include(KDECompilerSettings NO_POLICY_SCOPE)
+include(ECMSetupVersion)
+include(ECMGenerateHeaders)
+include(ECMPoQmTools)
+include(KDEGitCommitHooks)
+include(KDEClangFormat)
+
+find_package(Qt5 ${QT_MIN_VERSION} NO_MODULE REQUIRED COMPONENTS
+        Core
+        Widgets
+        Network
+        QuickControls2)
+find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS Kirigami2 I18n Config CoreAddons)
+find_package(PkgConfig REQUIRED)
 
 if (ENABLE_WATCHDOG)
-    find_package(PkgConfig REQUIRED)
     pkg_search_module(TESSERACT REQUIRED tesseract)
     pkg_search_module(LEPTONICA REQUIRED lept)
 endif ()
 
 if (ENABLE_GAMEMODE)
-    find_package(PkgConfig REQUIRED)
     pkg_search_module(GAMEMODE REQUIRED gamemode)
 endif ()
 
@@ -34,9 +55,9 @@ if (ENABLE_STEAM)
             INTERFACE_INCLUDE_DIRECTORIES ${STEAMWORKS_INCLUDE_DIR}
             IMPORTED_LOCATION ${STEAMWORKS_LIBRARIES})
 
-    if(BUILD_FLATPAK)
+    if (BUILD_FLATPAK)
         install(IMPORTED_RUNTIME_ARTIFACTS Steamworks)
-    endif()
+    endif ()
 endif ()
 
 find_package(Qt5Keychain REQUIRED)
@@ -44,3 +65,10 @@ find_package(QuaZip-Qt5 REQUIRED)
 
 add_subdirectory(external)
 add_subdirectory(launcher)
+
+feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
+
+file(GLOB_RECURSE ALL_CLANG_FORMAT_SOURCE_FILES src/*.cpp src/*.h)
+kde_clang_format(${ALL_CLANG_FORMAT_SOURCE_FILES})
+
+kde_configure_git_pre_commit_hook(CHECKS CLANG_FORMAT)

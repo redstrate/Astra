@@ -5,3 +5,4 @@
 .directory
 *.flatpak
 export/
+.clang-format

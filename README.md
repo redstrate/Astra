@@ -1,7 +1,7 @@
 # Astra
 
 A custom FFXIV launcher that supports multiple accounts, [Dalamud](https://github.com/goatcorp/Dalamud) plugins and runs
-natively on  Windows, macOS and Linux!
+natively on Linux!
 
 ### Notice
 
@@ -16,26 +16,22 @@ If you still have questions, please read the [FAQ](https://xiv.zone/astra/faq) f
 
 ## Features
 
-* Traditional desktop interface which looks native to your system, utilizing Qt - a proven application framework.
-    * Supports single-window scenarios such as the Steam Deck seamlessly.
-* Native support for Windows, macOS and Linux!
-* Handles running Wine for macOS and Linux users - creating a seamless and native-feeling launcher experience, compared
-  to running other FFXIV launchers in Wine.
+* Handles running Wine for you, creating a seamless and native-feeling launcher experience!
     * Can also easily enable several Linux-specific enhancements such as Fsync or configuring Gamescope.
 * Multiple account support!
-    * Most settings can be set per-profile.
-* Easily install and use Dalamud plugins, just like XIVQuickLauncher.
-* Patches the game, just like the official launcher!
+    * Can associate a Lodestone character with an account to use as an avatar.
+* Easily install and use Dalamud plugins.
+* Game patching support.
 * Securely login to the official Square Enix lobbies, as well as Sapphire servers.
     * Game arguments are encrypted by default, providing the same level of security as other launchers.
     * Saving account usernames and passwords are also supported, and is never stored plaintext.
-* Can easily install FFXIV on new systems right from the launcher, bypassing the normal InstallShield installer.
+* Can install FFXIV on new systems for you, bypassing the normal InstallShield installer.
 
 ## Installation
 
-Precompiled binaries are available for Windows and macOS users, which you can [download from the website](https://xiv.zone/astra/install).
+Precompiled binaries are available [to download from the website](https://xiv.zone/astra/install).
 
-For Linux users, there is numerous options available to you:
+There are also numerous options available:
 
 * _Flatpak_ - Instructions can be found in the [Flatpak installation](https://xiv.zone/astra/install/#linux) section.
 * _AUR_ - You can find the [AUR package here](https://aur.archlinux.org/packages/astra-launcher).
@@ -52,11 +48,7 @@ This functionality will change in the future to ease distribution packaging. You
 the `USE_OWN_LIBRARIES` CMake option.
 
 [The wiki](https://man.sr.ht/~redstrate/astra/) has dedicated platform-specific pages for build instructions as well as
-important information:
-
-* [Windows](https://man.sr.ht/~redstrate/astra/windows-usage.md)
-* [macOS](https://man.sr.ht/~redstrate/astra/macos-usage.md)
-* [Linux](https://man.sr.ht/~redstrate/astra/linux-usage.md)
+[important usage information](https://man.sr.ht/~redstrate/astra/linux-usage.md).
 
 ## Contributing and Support
 

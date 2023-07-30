@@ -1,3 +1,5 @@
+set(BUILD_SHARED_LIBS OFF)
+
 add_subdirectory(libbaseencode)
 add_subdirectory(libcotp)
 
@@ -6,9 +8,8 @@ include(FetchContent)
 FetchContent_Declare(
         Corrosion
         GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
-        GIT_TAG v0.3.5
+        GIT_TAG v0.4.2
 )
-
 FetchContent_MakeAvailable(Corrosion)
 
 FetchContent_Declare(
@@ -16,7 +17,6 @@ FetchContent_Declare(
         GIT_REPOSITORY https://git.sr.ht/~redstrate/libphysis
         GIT_TAG        main
 )
-
 FetchContent_MakeAvailable(libphysis)
 
 corrosion_import_crate(MANIFEST_PATH ${libphysis_SOURCE_DIR}/Cargo.toml

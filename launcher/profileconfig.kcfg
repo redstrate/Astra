@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+                          http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
+<!--
+SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
+SPDX-License-Identifier: CC0-1.0
+-->
+  <kcfgfile/>
+    <kcfgfile name="astrastaterc" stateConfig="true">
+      <parameter name="uuid"/>
+    </kcfgfile>
+    <group name="profile-$(uuid)">
+      <entry key="Name" type="string">
+      </entry>
+      <entry key="Account" type="string">
+      </entry>
+      <entry key="Language" type="int">
+      </entry>
+      <entry key="GamePath" type="Path">
+      </entry>
+      <entry key="WinePath" type="Path">
+      </entry>
+      <entry key="WinePrefixPath" type="Path">
+      </entry>
+      <entry key="EnableWatchdog" type="bool">
+        <default>false</default>
+      </entry>
+      <entry key="WineType" type="Enum">
+        <choices>
+          <choice name="System">
+          </choice>
+          <choice name="Custom">
+          </choice>
+          <choice name="BuiltIn">
+          </choice>
+          <choice name="XIVOnMac">
+          </choice>
+        </choices>
+        <default>System</default>
+      </entry>
+      <entry key="UseESync" type="bool">
+        <default>false</default>
+      </entry>
+      <entry key="UseGamescope" type="bool">
+        <default>false</default>
+      </entry>
+      <entry key="UseGamemode" type="bool">
+        <default>false</default>
+      </entry>
+      <entry key="UseDX9" type="bool">
+        <default>false</default>
+      </entry>
+      <entry key="GamescopeFullscreen" type="bool">
+        <default>false</default>
+      </entry>
+      <entry key="GamescopeBorderless" type="bool">
+        <default>false</default>
+      </entry>
+      <entry key="GamescopeWidth" type="int">
+        <default>1280</default>
+      </entry>
+      <entry key="GamescopeHeight" type="int">
+        <default>720</default>
+      </entry>
+      <entry key="GamescopeRefreshRate" type="int">
+        <default>60</default>
+      </entry>
+      <entry key="DalamudEnabled" type="bool">
+        <default>false</default>
+      </entry>
+      <entry key="DalamudOptOut" type="bool">
+        <default>false</default>
+      </entry>
+      <entry key="DalamudChannel" type="Enum">
+        <choices>
+          <choice name="Stable">
+          </choice>
+          <choice name="Staging">
+          </choice>
+          <choice name="Net5">
+          </choice>
+        </choices>
+        <default>Stable</default>
+      </entry>
+      <entry key="EncryptArguments" type="bool">
+        <default>true</default>
+      </entry>
+    </group>
+</kcfg>

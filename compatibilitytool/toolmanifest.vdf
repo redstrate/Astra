@@ -1,4 +1,5 @@
 "manifest"
 {
+  "version" "2"
   "commandline" "/astra --steam %verb%"
 }
