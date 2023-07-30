@@ -206,7 +206,7 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
 #endif
 
 #ifdef ENABLE_GAMEMODE
-    if (isGame && profile.useGamemode) {
+    if (isGame && profile.gamemodeEnabled()) {
         gamemode_request_start();
     }
 #endif
