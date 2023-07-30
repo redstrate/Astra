@@ -27,7 +27,9 @@ int main(int argc, char *argv[])
     about.addAuthor(i18n("Joshua Goins"), i18n("Maintainer"), QStringLiteral("josh@redstrate.com"));
     about.setHomepage("https://xiv.zone/astra");
     about.addComponent("physis");
-    about.setDesktopFileName("com.redstrate.astra.desktop"); // TODO: temporary
+    about.setDesktopFileName("com.redstrate.astra");
+    about.setBugAddress("https://lists.sr.ht/~redstrate/public-inbox");
+    about.setComponentName("com.redstrate.astra");
 
     KAboutData::setApplicationData(about);
 
