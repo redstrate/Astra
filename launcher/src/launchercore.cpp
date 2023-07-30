@@ -131,6 +131,7 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Pro
                       "--dalamud-plugin-directory=" + dataDir + "\\installedPlugins",
                       "--dalamud-asset-directory=" + dataDir + "\\DalamudAssets",
                       "--dalamud-client-language=" + QString::number(profile.language()),
+                      "--logpath=" + dataDir,
                       "--",
                       args},
                      true,
@@ -178,7 +179,7 @@ QString LauncherCore::getGameArgs(const Profile &profile, const LoginAuth &auth)
 void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, const QStringList &args, bool isGame, bool needsRegistrySetup)
 {
     QList<QString> arguments;
-    auto env = QProcessEnvironment::systemEnvironment();
+    auto env = process->processEnvironment();
 
     if (needsRegistrySetup) {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
