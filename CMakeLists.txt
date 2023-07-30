@@ -32,6 +32,11 @@ include(ECMPoQmTools)
 include(KDEGitCommitHooks)
 include(KDEClangFormat)
 
+ecm_setup_version(${PROJECT_VERSION}
+        VARIABLE_PREFIX ASTRA
+        VERSION_HEADER ${CMAKE_CURRENT_BINARY_DIR}/astra-version.h
+)
+
 find_package(Qt5 ${QT_MIN_VERSION} NO_MODULE REQUIRED COMPONENTS
         Core
         Widgets

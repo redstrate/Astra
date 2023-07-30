@@ -5,6 +5,7 @@
 #include <QCommandLineParser>
 #include <QQuickStyle>
 
+#include "astra-version.h"
 #include "gameinstaller.h"
 #include "launchercore.h"
 #include "sapphirelauncher.h"
@@ -22,10 +23,16 @@ int main(int argc, char *argv[])
 
     KLocalizedString::setApplicationDomain("astra");
 
-    KAboutData about(QStringLiteral("astra"), i18n("Astra"), "0.5.0", i18n("FFXIV Launcher"), KAboutLicense::GPL_V3, i18n("© 2023 Joshua Goins"));
+    KAboutData about(QStringLiteral("astra"),
+                     i18n("Astra"),
+                     QStringLiteral(ASTRA_VERSION_STRING),
+                     i18n("FFXIV Launcher"),
+                     KAboutLicense::GPL_V3,
+                     i18n("© 2023 Joshua Goins"));
     about.addAuthor(i18n("Joshua Goins"), i18n("Maintainer"), QStringLiteral("josh@redstrate.com"));
     about.setHomepage("https://xiv.zone/astra");
-    about.addComponent("physis");
+    about.addComponent("physis", "Library to access FFXIV data", physis_get_physis_version(), "https://xiv.zone/physis", KAboutLicense::GPL_V3);
+    about.addComponent("libphysis", "C bindings for physis", physis_get_libphysis_version(), "", KAboutLicense::GPL_V3);
     about.setDesktopFileName("com.redstrate.astra");
     about.setBugAddress("https://lists.sr.ht/~redstrate/public-inbox");
     about.setComponentName("astra");

@@ -32,7 +32,7 @@ target_sources(astra PRIVATE
 
         resources.qrc)
 kconfig_add_kcfg_files(astra GENERATE_MOC config.kcfgc accountconfig.kcfgc profileconfig.kcfgc)
-target_include_directories(astra PRIVATE include)
+target_include_directories(astra PRIVATE include ${CMAKE_BINARY_DIR})
 target_link_libraries(astra PRIVATE
         physis
         cotp
