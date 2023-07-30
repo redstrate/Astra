@@ -29,8 +29,6 @@ Kirigami.ScrollablePage {
                     title: i18n("General")
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
 
                 MobileForm.FormTextFieldDelegate {
                     label: i18n("Username")
@@ -38,8 +36,7 @@ Kirigami.ScrollablePage {
                     onTextChanged: page.account.name = text
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormComboBoxDelegate {
                     text: i18n("Account type")
@@ -48,8 +45,7 @@ Kirigami.ScrollablePage {
                     onCurrentIndexChanged: page.account.isSapphire = (currentIndex === 1)
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormComboBoxDelegate {
                     id: licenseField
@@ -110,8 +106,7 @@ Kirigami.ScrollablePage {
                     onClicked: lodestoneDialog.open()
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormTextFieldDelegate {
                     label: i18n("Lobby URL")
@@ -133,17 +128,13 @@ Kirigami.ScrollablePage {
                     title: i18n("Login")
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
-
                 MobileForm.FormCheckDelegate {
                     text: i18n("Remember password")
                     checked: page.account.rememberPassword
                     onCheckedChanged: page.account.rememberPassword = checked
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormCheckDelegate {
                     text: i18n("Automatically generate one-time passwords")
@@ -152,8 +143,7 @@ Kirigami.ScrollablePage {
                     enabled: page.account.useOTP
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormButtonDelegate {
                     text: i18n("Enter OTP Secret")

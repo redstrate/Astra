@@ -19,17 +19,13 @@ MobileForm.FormCard {
             title: i18n("General")
         }
 
-        MobileForm.FormDelegateSeparator {
-        }
-
         MobileForm.FormCheckDelegate {
             text: i18n("Close Astra when game is launched")
             checked: LauncherCore.closeWhenLaunched
             onCheckedChanged: LauncherCore.closeWhenLaunched = checked
         }
 
-        MobileForm.FormDelegateSeparator {
-        }
+        MobileForm.FormDelegateSeparator {}
 
         MobileForm.FormCheckDelegate {
             text: i18n("Show news banners")
@@ -37,8 +33,7 @@ MobileForm.FormCard {
             onCheckedChanged: LauncherCore.showNewsBanners = checked
         }
 
-        MobileForm.FormDelegateSeparator {
-        }
+        MobileForm.FormDelegateSeparator {}
 
         MobileForm.FormCheckDelegate {
             text: i18n("Show news list")

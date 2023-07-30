@@ -17,8 +17,7 @@ Kirigami.ScrollablePage {
     ColumnLayout {
         width: parent.width
 
-        GeneralSettings {
-        }
+        GeneralSettings {}
 
         MobileForm.FormCard {
             Layout.topMargin: Kirigami.Units.largeSpacing
@@ -43,8 +42,7 @@ Kirigami.ScrollablePage {
                     }
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormButtonDelegate {
                     text: i18n("Add Profile")
@@ -88,8 +86,7 @@ Kirigami.ScrollablePage {
                     }
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormButtonDelegate {
                     text: i18n("Add Square Enix Account")
@@ -97,8 +94,7 @@ Kirigami.ScrollablePage {
                     onClicked: pageStack.layers.push('qrc:/ui/Setup/AddSquareEnix.qml')
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormButtonDelegate {
                     text: i18n("Add Sapphire Account")

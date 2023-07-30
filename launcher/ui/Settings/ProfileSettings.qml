@@ -37,16 +37,14 @@ Kirigami.ScrollablePage {
                     onTextChanged: page.profile.name = text
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 FormFolderDelegate {
                     text: i18n("Game Path")
                     folder: page.profile.gamePath
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormComboBoxDelegate {
                     text: i18n("DirectX Version")
@@ -55,8 +53,7 @@ Kirigami.ScrollablePage {
                     onCurrentIndexChanged: page.profile.directx9Enabled = (currentIndex === 1)
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormCheckDelegate {
                     text: i18n("Encrypt Game Arguments")
@@ -65,8 +62,7 @@ Kirigami.ScrollablePage {
                     enabled: false
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormCheckDelegate {
                     text: i18n("Enable Watchdog")
@@ -76,8 +72,7 @@ Kirigami.ScrollablePage {
                     enabled: false
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormTextDelegate {
                     description: page.profile.expansionVersionText
@@ -103,8 +98,7 @@ Kirigami.ScrollablePage {
                     enabled: !LauncherCore.isSteam
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 FormFileDelegate {
                     text: i18n("Wine Path")
@@ -112,8 +106,7 @@ Kirigami.ScrollablePage {
                     enabled: !LauncherCore.isSteam
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 FormFolderDelegate {
                     text: i18n("Wine Prefix Path")
@@ -121,8 +114,7 @@ Kirigami.ScrollablePage {
                     enabled: !LauncherCore.isSteam
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormTextDelegate {
                     description: page.profile.wineVersionText
@@ -147,8 +139,7 @@ Kirigami.ScrollablePage {
                     onCheckedChanged: page.profile.esyncEnabled = checked
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormCheckDelegate {
                     text: i18n("Enable Gamescope")
@@ -157,8 +148,7 @@ Kirigami.ScrollablePage {
                     onCheckedChanged: page.profile.gamescopeEnabled = checked
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormButtonDelegate {
                     text: i18n("Configure Gamescope...")
@@ -203,8 +193,7 @@ Kirigami.ScrollablePage {
                     onClicked: gamescopeSettingsDialog.open()
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormCheckDelegate {
                     text: i18n("Enable Gamemode")
@@ -231,8 +220,7 @@ Kirigami.ScrollablePage {
                     onCheckedChanged: page.profile.dalamudEnabled = checked
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormComboBoxDelegate {
                     text: i18n("Update Channel")
@@ -241,8 +229,7 @@ Kirigami.ScrollablePage {
                     onCurrentIndexChanged: page.profile.dalamudChannel = currentIndex
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormCheckDelegate {
                     text: i18n("Opt Out of Automatic Marketboard Collection")
@@ -250,8 +237,7 @@ Kirigami.ScrollablePage {
                     onCheckedChanged: page.profile.dalamudOptOut = checked
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormTextDelegate {
                     description: page.profile.dalamudVersionText
