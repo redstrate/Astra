@@ -86,6 +86,10 @@ void LauncherCore::beginVanillaGame(const QString &gameExecutablePath, const Pro
 {
     auto gameProcess = new QProcess(this);
     gameProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    connect(gameProcess, qOverload<int>(&QProcess::finished), this, [this](int exitCode) {
+        Q_UNUSED(exitCode)
+        Q_EMIT gameClosed();
+    });
 
     auto args = getGameArgs(profile, auth);
 
@@ -101,6 +105,10 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Pro
     dataDir = "Z:" + dataDir.replace('/', '\\');
 
     auto dalamudProcess = new QProcess(this);
+    connect(dalamudProcess, qOverload<int>(&QProcess::finished), this, [this](int exitCode) {
+        Q_UNUSED(exitCode)
+        Q_EMIT gameClosed();
+    });
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     env.insert("DALAMUD_RUNTIME", dataDir + "\\DalamudRuntime");

@@ -54,6 +54,14 @@ Kirigami.ApplicationWindow {
         function onLoadingFinished() {
             checkSetup()
         }
+
+        function onSuccessfulLaunch() {
+            hide()
+        }
+
+        function onGameClosed() {
+            Qt.callLater(Qt.quit)
+        }
     }
 
     Component.onCompleted: checkSetup()
