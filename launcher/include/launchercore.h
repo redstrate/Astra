@@ -54,6 +54,7 @@ class LauncherCore : public QObject
     Q_PROPERTY(bool loadingFinished READ isLoadingFinished NOTIFY loadingFinished)
     Q_PROPERTY(bool hasAccount READ hasAccount NOTIFY accountChanged)
     Q_PROPERTY(bool isSteam READ isSteam CONSTANT)
+    Q_PROPERTY(bool isSteamDeck READ isSteamDeck CONSTANT)
     Q_PROPERTY(SquareBoot *squareBoot MEMBER squareBoot)
     Q_PROPERTY(ProfileManager *profileManager READ profileManager CONSTANT)
     Q_PROPERTY(AccountManager *accountManager READ accountManager CONSTANT)
@@ -129,6 +130,7 @@ public:
     bool isLoadingFinished() const;
     bool hasAccount() const;
     bool isSteam() const;
+    bool isSteamDeck() const;
 
     Q_INVOKABLE void refreshNews();
     Headline *headline();

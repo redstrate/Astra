@@ -589,3 +589,8 @@ void LauncherCore::openConfigBackup(Profile *profile)
     auto configProcess = new QProcess(this);
     launchExecutable(*profile, configProcess, {profile->gamePath() + "/boot/ffxivconfig64.exe"}, false, false);
 }
+
+bool LauncherCore::isSteamDeck() const
+{
+    return steamApi->isDeck();
+}
