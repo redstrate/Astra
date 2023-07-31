@@ -59,8 +59,7 @@ class LauncherCore : public QObject
     Q_PROPERTY(ProfileManager *profileManager READ profileManager CONSTANT)
     Q_PROPERTY(AccountManager *accountManager READ accountManager CONSTANT)
     Q_PROPERTY(bool closeWhenLaunched READ closeWhenLaunched WRITE setCloseWhenLaunched NOTIFY closeWhenLaunchedChanged)
-    Q_PROPERTY(bool showNewsBanners READ showNewsBanners WRITE setShowNewsBanners NOTIFY showNewsBannersChanged)
-    Q_PROPERTY(bool showNewsList READ showNewsList WRITE setShowNewsList NOTIFY showNewsListChanged)
+    Q_PROPERTY(bool showNews READ showNews WRITE setShowNews NOTIFY showNewsChanged)
     Q_PROPERTY(Headline *headline READ headline NOTIFY newsChanged)
 
 public:
@@ -115,11 +114,8 @@ public:
     bool closeWhenLaunched() const;
     void setCloseWhenLaunched(bool value);
 
-    bool showNewsBanners() const;
-    void setShowNewsBanners(bool value);
-
-    bool showNewsList() const;
-    void setShowNewsList(bool value);
+    bool showNews() const;
+    void setShowNews(bool value);
 
     int defaultProfileIndex = 0;
 
@@ -147,8 +143,7 @@ signals:
     void successfulLaunch();
     void gameClosed();
     void closeWhenLaunchedChanged();
-    void showNewsBannersChanged();
-    void showNewsListChanged();
+    void showNewsChanged();
     void loginError(QString message);
     void stageChanged(QString message);
     void stageIndeterminate();

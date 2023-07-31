@@ -416,31 +416,17 @@ void LauncherCore::setCloseWhenLaunched(const bool value)
     }
 }
 
-bool LauncherCore::showNewsBanners() const
+bool LauncherCore::showNews() const
 {
-    return Config::showNewsBanners();
+    return Config::showNews();
 }
 
-void LauncherCore::setShowNewsBanners(const bool value)
+void LauncherCore::setShowNews(const bool value)
 {
-    if (value != Config::showNewsBanners()) {
-        Config::setShowNewsBanners(value);
+    if (value != Config::showNews()) {
+        Config::setShowNews(value);
         Config::self()->save();
-        Q_EMIT showNewsBannersChanged();
-    }
-}
-
-bool LauncherCore::showNewsList() const
-{
-    return Config::showNewsList();
-}
-
-void LauncherCore::setShowNewsList(const bool value)
-{
-    if (value != Config::showNewsList()) {
-        Config::setShowNewsList(value);
-        Config::self()->save();
-        Q_EMIT showNewsListChanged();
+        Q_EMIT showNewsChanged();
     }
 }
 
