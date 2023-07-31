@@ -15,6 +15,7 @@ Profile::Profile(LauncherCore &launcher, const QString &key, QObject *parent)
     , m_launcher(launcher)
 {
     readGameVersion();
+    readWineInfo();
 
     const QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
@@ -93,7 +94,6 @@ void Profile::readWineInfo()
         setWinePath("wine");
         break;
     case WineType::Custom: // custom pth
-        break;
     default:
         break;
     }
@@ -209,6 +209,7 @@ void Profile::setWineType(const WineType type)
         m_config.setWineType(static_cast<int>(type));
         m_config.save();
         Q_EMIT wineTypeChanged();
+        readWineInfo();
     }
 }
 
