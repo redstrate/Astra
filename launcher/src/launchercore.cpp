@@ -558,18 +558,21 @@ void LauncherCore::openOfficialLauncher(Profile *profile)
     QString finalArg = encryptGameArg(argJoined);
 
     auto launcherProcess = new QProcess(this);
+    launcherProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     launchExecutable(*profile, launcherProcess, {profile->gamePath() + "/boot/ffxivlauncher64.exe", finalArg}, false, true);
 }
 
 void LauncherCore::openSystemInfo(Profile *profile)
 {
     auto sysinfoProcess = new QProcess(this);
+    sysinfoProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     launchExecutable(*profile, sysinfoProcess, {profile->gamePath() + "/boot/ffxivsysinfo64.exe"}, false, false);
 }
 
 void LauncherCore::openConfigBackup(Profile *profile)
 {
     auto configProcess = new QProcess(this);
+    configProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     launchExecutable(*profile, configProcess, {profile->gamePath() + "/boot/ffxivconfig64.exe"}, false, false);
 }
 
