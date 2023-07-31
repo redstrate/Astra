@@ -15,6 +15,10 @@ Kirigami.ApplicationWindow {
 
     width: 1280
     height: 720
+
+    minimumWidth: 800
+    minimumHeight: 500
+
     visible: true
     title: LauncherCore.isSteam ? "Astra (Steam)" : "Astra"
 
