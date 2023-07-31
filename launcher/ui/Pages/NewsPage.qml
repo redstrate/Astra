@@ -7,6 +7,7 @@ import org.kde.kirigami 2.20 as Kirigami
 import QtQuick.Controls 2.15 as Controls
 import QtQuick.Layouts 1.15
 import org.kde.kirigamiaddons.labs.mobileform 0.1 as MobileForm
+import QtGraphicalEffects 1.0
 import com.redstrate.astra 1.0
 
 Controls.Control {
@@ -40,30 +41,40 @@ Controls.Control {
     }
 
     contentItem: ColumnLayout {
-        width: parent.width
-        MobileForm.FormCard {
-            Layout.topMargin: Kirigami.Units.largeSpacing
+        id: layout
+
+        readonly property real maximumWidth: Kirigami.Units.gridUnit * 50
+
+        Image {
+            id: bannerImage
+
+            readonly property real aspectRatio: sourceSize.height / sourceSize.width
+
+            Layout.maximumWidth: layout.maximumWidth
             Layout.fillWidth: true
-            contentItem: ColumnLayout {
-                spacing: 0
+            Layout.preferredHeight: aspectRatio * width
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
-                MobileForm.FormCardHeader {
-                    title: i18n("Banner")
-                }
+            source: LauncherCore.headline !== null ? LauncherCore.headline.banners[page.currentBannerIndex].bannerImage : ""
 
-                Image {
-                    Layout.fillWidth: true
+            MouseArea {
+                anchors.fill: parent
 
-                    source: LauncherCore.headline !== null ? LauncherCore.headline.banners[page.currentBannerIndex].bannerImage : ""
+                cursorShape: Qt.PointingHandCursor
 
-                    fillMode: Image.PreserveAspectFit
+                onClicked: applicationWindow().openUrl(LauncherCore.headline.banners[page.currentBannerIndex].link)
+            }
 
-                    MouseArea {
-                        anchors.fill: parent
-
-                        cursorShape: Qt.PointingHandCursor
-
-                        onClicked: Qt.openUrlExternally(LauncherCore.headline.banners[page.currentBannerIndex].link)
+            layer.enabled: true
+            layer.effect: OpacityMask {
+                maskSource: Item {
+                    width: bannerImage.width
+                    height: bannerImage.height
+                    Rectangle {
+                        anchors.centerIn: parent
+                        width: bannerImage.width
+                        height: bannerImage.height
+                        radius: Kirigami.Units.smallSpacing
                     }
                 }
             }
@@ -72,6 +83,10 @@ Controls.Control {
         MobileForm.FormCard {
             Layout.topMargin: Kirigami.Units.largeSpacing
             Layout.fillWidth: true
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+
+            maximumWidth: layout.maximumWidth
+
             contentItem: ColumnLayout {
                 spacing: 0
 
@@ -86,7 +101,7 @@ Controls.Control {
                         text: modelData.title
                         description: Qt.formatDate(modelData.date)
 
-                        onClicked: Qt.openUrlExternally(modelData.url)
+                        onClicked: applicationWindow().openUrl(modelData.url)
                     }
                 }
             }
@@ -95,6 +110,10 @@ Controls.Control {
         MobileForm.FormCard {
             Layout.topMargin: Kirigami.Units.largeSpacing
             Layout.fillWidth: true
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+
+            maximumWidth: layout.maximumWidth
+
             contentItem: ColumnLayout {
                 spacing: 0
 
@@ -109,10 +128,14 @@ Controls.Control {
                         text: modelData.title
                         description: Qt.formatDate(modelData.date)
 
-                        onClicked: Qt.openUrlExternally(modelData.url)
+                        onClicked: applicationWindow().openUrl(modelData.url)
                     }
                 }
             }
+        }
+
+        Item {
+            Layout.fillHeight: true
         }
     }
 }

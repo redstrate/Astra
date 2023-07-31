@@ -57,6 +57,10 @@ Controls.Control {
             contentItem: ColumnLayout {
                 spacing: 0
 
+                MobileForm.FormCardHeader {
+                    title: i18n("Current Profile")
+                }
+
                 MobileForm.FormButtonDelegate {
                     text: page.profile.name
 
@@ -92,11 +96,15 @@ Controls.Control {
             contentItem: ColumnLayout {
                 spacing: 0
 
+                MobileForm.FormCardHeader {
+                    title: i18n("Login")
+                }
+
                 MobileForm.FormButtonDelegate {
                     text: page.profile.account.name
 
                     leading: Kirigami.Avatar
-                        {
+                    {
                         source: page.profile.account.avatarUrl
                     }
 
@@ -133,7 +141,7 @@ Controls.Control {
 
                 MobileForm.FormTextFieldDelegate {
                     id: usernameField
-                    label: i18n("Username")
+                    label: page.profile.account.isSapphire ? i18n("Username") : i18n("Square Enix ID")
                     text: page.profile.account.name
                     enabled: false
                 }
@@ -143,7 +151,7 @@ Controls.Control {
 
                 MobileForm.FormTextFieldDelegate {
                     id: passwordField
-                    label: i18n("Password")
+                    label: page.profile.account.isSapphire ? i18n("Password") : i18n("Square Enix Password")
                     echoMode: TextInput.Password
                     focus: true
                     onAccepted: otpField.clicked()
@@ -155,13 +163,12 @@ Controls.Control {
 
                 MobileForm.FormTextFieldDelegate {
                     id: otpField
-                    label: i18n("One-time password")
+                    label: i18n("One-time Password")
                     visible: page.profile.account.useOTP
                     onAccepted: loginButton.clicked()
                 }
 
-                MobileForm.FormDelegateSeparator {
-                }
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormButtonDelegate {
                     id: loginButton
@@ -176,39 +183,16 @@ Controls.Control {
                 }
 
                 MobileForm.FormDelegateSeparator {
+                    visible: forgotPasswordButton.visible
                 }
 
                 MobileForm.FormButtonDelegate {
-                    text: i18n("Settings")
-                    icon.name: "configure"
-                    onClicked: pageStack.pushDialogLayer('qrc:/ui/Settings/SettingsPage.qml')
-                }
+                    id: forgotPasswordButton
 
-                MobileForm.FormDelegateSeparator {
-                }
-
-                MobileForm.FormButtonDelegate {
-                    text: i18n("Open Official Launcher")
-                    icon.name: "application-x-executable"
-                    onClicked: LauncherCore.openOfficialLauncher(page.profile)
-                }
-
-                MobileForm.FormDelegateSeparator {
-                }
-
-                MobileForm.FormButtonDelegate {
-                    text: i18n("Open System Info")
-                    icon.name: "application-x-executable"
-                    onClicked: LauncherCore.openSystemInfo(page.profile)
-                }
-
-                MobileForm.FormDelegateSeparator {
-                }
-
-                MobileForm.FormButtonDelegate {
-                    text: i18n("Open Config Backup")
-                    icon.name: "application-x-executable"
-                    onClicked: LauncherCore.openConfigBackup(page.profile)
+                    text: i18n("Forgot ID or Password")
+                    icon.name: "dialog-password"
+                    visible: !page.profile.account.isSapphire
+                    onClicked: applicationWindow().openUrl('https://secure.square-enix.com/account/app/svc/reminder')
                 }
             }
         }
