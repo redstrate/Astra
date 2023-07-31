@@ -41,7 +41,7 @@ void AssetUpdater::update()
 {
     // non-dalamud users can bypass this process since it's not needed
     if (!m_profile.dalamudEnabled()) {
-        finishedUpdating();
+        Q_EMIT finishedUpdating();
         return;
     }
 
@@ -173,7 +173,7 @@ void AssetUpdater::checkIfFinished()
         if (needsRuntimeInstall || needsDalamudInstall) {
             beginInstall();
         } else {
-            finishedUpdating();
+            Q_EMIT finishedUpdating();
         }
     }
 }
