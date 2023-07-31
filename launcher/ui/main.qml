@@ -52,6 +52,24 @@ Kirigami.ApplicationWindow {
         }
     }
 
+    function pushDialogLayer(url) {
+        if (LauncherCore.isSteamDeck) {
+            pageStack.layers.push(url)
+        } else {
+            pageStack.pushDialogLayer(url)
+        }
+    }
+
+    function openUrl(url) {
+        if (LauncherCore.isSteamDeck) {
+            pageStack.layers.push('qrc:/ui/Pages/BrowserPage.qml', {
+                url: url
+            })
+        } else {
+            Qt.openUrlExternally(url)
+        }
+    }
+
     Connections {
         target: LauncherCore
 
