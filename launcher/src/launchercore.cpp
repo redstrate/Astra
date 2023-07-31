@@ -342,8 +342,6 @@ void LauncherCore::login(Profile *profile, const QString &username, const QStrin
     qDebug() << "Logging in, performing asset update check.";
 
     auto assetUpdater = new AssetUpdater(*profile, *this, this);
-    assetUpdater->update();
-
     connect(assetUpdater, &AssetUpdater::finishedUpdating, this, [this, assetUpdater, profile, username, password, oneTimePassword] {
         qDebug() << "Assets done updating!";
 
@@ -365,6 +363,7 @@ void LauncherCore::login(Profile *profile, const QString &username, const QStrin
 
         assetUpdater->deleteLater();
     });
+    assetUpdater->update();
 }
 
 bool LauncherCore::autoLogin(Profile &profile)
