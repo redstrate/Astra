@@ -105,7 +105,7 @@ Kirigami.ScrollablePage {
                 FormFileDelegate {
                     text: i18n("Wine Path")
                     file: page.profile.winePath
-                    enabled: !LauncherCore.isSteam
+                    enabled: !LauncherCore.isSteam && page.profile.wineType !== Profile.System
                 }
 
                 MobileForm.FormDelegateSeparator {}
