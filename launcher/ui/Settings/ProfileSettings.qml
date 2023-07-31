@@ -224,7 +224,8 @@ Kirigami.ScrollablePage {
                 }
 
                 MobileForm.FormCheckDelegate {
-                    text: i18n("Enable Dalamud Plugins")
+                    text: i18n("Enable Dalamud")
+                    description: i18n("Dalamud extends the game with useful plugins, but use at your own risk.")
                     checked: page.profile.dalamudEnabled
                     onCheckedChanged: page.profile.dalamudEnabled = checked
                 }
@@ -236,6 +237,23 @@ Kirigami.ScrollablePage {
                     model: ["Stable", "Staging", ".NET 5"]
                     currentIndex: page.profile.dalamudChannel
                     onCurrentIndexChanged: page.profile.dalamudChannel = currentIndex
+                    enabled: page.profile.dalamudEnabled
+                }
+
+                MobileForm.FormDelegateSeparator {}
+
+                MobileForm.FormComboBoxDelegate {
+                    text: i18n("Injection Method")
+                    description: "It shouldn't be nessecary to change this setting, unless you're running into issues injecting Dalamud."
+                    model: ["Entrypoint", "DLL Injection"]
+                    enabled: page.profile.dalamudEnabled
+                }
+
+                MobileForm.FormDelegateSeparator {}
+
+                MobileForm.FormSpinBoxDelegate {
+                    label: i18n("Injection Delay")
+                    enabled: page.profile.dalamudEnabled
                 }
 
                 MobileForm.FormDelegateSeparator {}
@@ -244,6 +262,7 @@ Kirigami.ScrollablePage {
                     text: i18n("Opt Out of Automatic Marketboard Collection")
                     checked: page.profile.dalamudOptOut
                     onCheckedChanged: page.profile.dalamudOptOut = checked
+                    enabled: page.profile.dalamudEnabled
                 }
 
                 MobileForm.FormDelegateSeparator {}
