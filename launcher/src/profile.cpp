@@ -90,7 +90,7 @@ void Profile::readWineInfo()
 #if defined(Q_OS_LINUX)
     switch (wineType()) {
     case WineType::System: // system wine (should be in $PATH)
-        setWinePath("/usr/bin/wine");
+        setWinePath("wine");
         break;
     case WineType::Custom: // custom pth
         break;
