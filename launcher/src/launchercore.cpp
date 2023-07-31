@@ -66,6 +66,8 @@ void LauncherCore::launchGame(const Profile &profile, const LoginAuth &auth)
 
 void LauncherCore::beginGameExecutable(const Profile &profile, const LoginAuth &auth)
 {
+    Q_EMIT stageChanged("Launching game...");
+
     QString gameExectuable;
     if (profile.directx9Enabled()) {
         gameExectuable = profile.gamePath() + "/game/ffxiv.exe";
