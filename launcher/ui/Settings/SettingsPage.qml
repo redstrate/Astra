@@ -117,6 +117,14 @@ Kirigami.ScrollablePage {
                 }
 
                 MobileForm.FormButtonDelegate {
+                    text: i18n("Developer Settings")
+                    icon.name: "configure"
+                    onClicked: applicationWindow().pageStack.layers.push('qrc:/ui/Settings/DeveloperSettings.qml')
+                }
+
+                MobileForm.FormDelegateSeparator {}
+
+                MobileForm.FormButtonDelegate {
                     text: i18n("About Astra")
                     icon.name: "help-about-symbolic"
                     onClicked: applicationWindow().pageStack.layers.push(aboutPage)
