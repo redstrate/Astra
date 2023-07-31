@@ -84,6 +84,12 @@ Kirigami.ApplicationWindow {
         function onGameClosed() {
             Qt.callLater(Qt.quit)
         }
+
+        function onShowNewsChanged() {
+            // workaround annoying Qt layouting bug
+            // TODO: see if this changed in Qt6
+            pageStack.layers.replace('qrc:/ui/Pages/MainPage.qml')
+        }
     }
 
     Component.onCompleted: checkSetup()
