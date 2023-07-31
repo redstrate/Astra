@@ -28,17 +28,9 @@ MobileForm.FormCard {
         MobileForm.FormDelegateSeparator {}
 
         MobileForm.FormCheckDelegate {
-            text: i18n("Show news banners")
-            checked: LauncherCore.showNewsBanners
-            onCheckedChanged: LauncherCore.showNewsBanners = checked
-        }
-
-        MobileForm.FormDelegateSeparator {}
-
-        MobileForm.FormCheckDelegate {
-            text: i18n("Show news list")
-            checked: LauncherCore.showNewsList
-            onCheckedChanged: LauncherCore.showNewsList = checked
+            text: i18n("Enable and show news")
+            checked: LauncherCore.showNews
+            onCheckedChanged: LauncherCore.showNews = checked
         }
     }
 }
