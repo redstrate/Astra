@@ -466,11 +466,11 @@ QString Profile::dalamudVersionText() const
     if (dalamudVersion.isEmpty()) {
         text += "Dalamud is not installed.";
     } else {
-        text += dalamudVersion;
+        text += QStringLiteral("Dalamud (%1)").arg(dalamudVersion);
     }
 
     if (dalamudAssetVersion != -1) {
-        text += "\n" + QString::number(dalamudAssetVersion);
+        text += QStringLiteral("\nAssets (%1)").arg(QString::number(dalamudAssetVersion));
     }
 
     return text;
