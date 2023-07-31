@@ -22,9 +22,7 @@ MobileForm.FormButtonDelegate {
 
     FileDialog {
         id: dialog
-
-        selectFolder: true
-
+        
         folder: shortcuts.home
     }
 }
