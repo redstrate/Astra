@@ -235,14 +235,8 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
             QProcessEnvironment::systemEnvironment().value("STEAM_COMPAT_DATA_PATH"); // TODO: do these have to exist on the root steam folder?
         const QString protonPath = steamDirectory + "/steamapps/common/Proton 7.0";
 
-        // env.insert("PATH", protonPath + "/dist/bin:" + QProcessEnvironment::systemEnvironment().value("PATH"));
-        // env.insert("WINEDLLPATH", protonPath + "/dist/lib64/wine:" + protonPath + "/dist/lib/wine");
-        // env.insert("LD_LIBRARY_PATH", protonPath + "/dist/lib64:" + protonPath + "/dist/lib");
-        // env.insert("WINEPREFIX", compatData + "/pfx");
         env.insert("STEAM_COMPAT_CLIENT_INSTALL_PATH", steamDirectory);
         env.insert("STEAM_COMPAT_DATA_PATH", compatData);
-
-        qInfo() << env.toStringList();
 
         arguments.push_back(protonPath + "/proton");
         arguments.push_back("run");
@@ -273,8 +267,6 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
 #endif
 
     arguments.append(args);
-
-    qInfo() << arguments;
 
     auto executable = arguments[0];
     arguments.removeFirst();
