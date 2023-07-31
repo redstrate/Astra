@@ -339,10 +339,14 @@ void LauncherCore::addRegistryKey(const Profile &settings, QString key, QString 
 
 void LauncherCore::login(Profile *profile, const QString &username, const QString &password, const QString &oneTimePassword)
 {
+    qDebug() << "Logging in, performing asset update check.";
+
     auto assetUpdater = new AssetUpdater(*profile, *this, this);
     assetUpdater->update();
 
     connect(assetUpdater, &AssetUpdater::finishedUpdating, this, [this, assetUpdater, profile, username, password, oneTimePassword] {
+        qDebug() << "Assets done updating!";
+
         auto loginInformation = new LoginInformation(this);
         loginInformation->profile = profile;
         loginInformation->username = username;

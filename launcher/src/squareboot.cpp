@@ -21,6 +21,7 @@ SquareBoot::SquareBoot(LauncherCore &window, SquareLauncher &launcher, QObject *
 void SquareBoot::bootCheck(const LoginInformation &info)
 {
     Q_EMIT window.stageChanged(i18n("Checking for launcher updates..."));
+    qDebug() << "Performing boot check...";
 
     patcher = new Patcher(window, info.profile->gamePath() + "/boot", info.profile->bootData, this);
     connect(patcher, &Patcher::done, [this, &info] {
@@ -58,6 +59,7 @@ void SquareBoot::bootCheck(const LoginInformation &info)
 void SquareBoot::checkGateStatus(LoginInformation *info)
 {
     Q_EMIT window.stageChanged(i18n("Checking gate..."));
+    qDebug() << "Checking gate...";
 
     QUrl url("https://frontier.ffxiv.com/worldStatus/gate_status.json");
     url.setQuery(QString::number(QDateTime::currentMSecsSinceEpoch()));
