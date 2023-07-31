@@ -74,6 +74,8 @@ Kirigami.ScrollablePage {
                 }
 
                 MobileForm.FormCheckDelegate {
+                    id: needOTPField
+
                     text: i18n("Needs a one-time password")
                     checked: page.account.useOTP
                     onCheckedChanged: page.account.useOTP = checked
@@ -81,13 +83,23 @@ Kirigami.ScrollablePage {
                 }
 
                 MobileForm.FormDelegateSeparator {
+                    visible: needOTPField.visible
                 }
+
+                MobileForm.FormTextFieldDelegate {
+                    label: i18n("Lobby URL")
+                    text: page.account.lobbyUrl
+                    onTextChanged: page.account.lobbyUrl = text
+                    visible: page.account.isSapphire
+                    placeholderText: "neolobby0X.ffxiv.com"
+                }
+
+                MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormButtonDelegate {
                     text: i18n("Set Lodestone Character")
                     description: i18n("Associate a character's avatar with this account.")
                     icon.name: "actor"
-                    visible: !page.account.isSapphire
                     Kirigami.PromptDialog {
                         id: lodestoneDialog
                         title: i18n("Enter Lodestone Id")
@@ -104,16 +116,6 @@ Kirigami.ScrollablePage {
                     }
 
                     onClicked: lodestoneDialog.open()
-                }
-
-                MobileForm.FormDelegateSeparator {}
-
-                MobileForm.FormTextFieldDelegate {
-                    label: i18n("Lobby URL")
-                    text: page.account.lobbyUrl
-                    onTextChanged: page.account.lobbyUrl = text
-                    visible: page.account.isSapphire
-                    placeholderText: "neolobby0X.ffxiv.com"
                 }
             }
         }
@@ -137,18 +139,24 @@ Kirigami.ScrollablePage {
                 MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormCheckDelegate {
+                    id: generateOTPField
+
                     text: i18n("Automatically generate one-time passwords")
                     checked: page.account.rememberOTP
                     onCheckedChanged: page.account.rememberOTP = checked
                     enabled: page.account.useOTP
+                    visible: !page.account.isSapphire
                 }
 
-                MobileForm.FormDelegateSeparator {}
+                MobileForm.FormDelegateSeparator {
+                    visible: generateOTPField.visible
+                }
 
                 MobileForm.FormButtonDelegate {
                     text: i18n("Enter OTP Secret")
                     icon.name: "list-add-symbolic"
                     enabled: page.account.rememberOTP
+                    visible: generateOTPField.visible
                     Kirigami.PromptDialog {
                         id: otpDialog
                         title: i18n("Enter OTP Secret")
@@ -176,7 +184,7 @@ Kirigami.ScrollablePage {
 
                 MobileForm.FormButtonDelegate {
                     text: i18n("Delete Account")
-                    description: !enabled ? i18n("Cannot delete the only account") : ""
+                    description: !enabled ? i18n("Cannot delete the only account.") : ""
                     icon.name: "delete"
                     enabled: LauncherCore.accountManager.canDelete(page.account)
                     onClicked: {

@@ -59,7 +59,6 @@ Kirigami.ScrollablePage {
                     text: i18n("Encrypt Game Arguments")
                     checked: page.profile.argumentsEncrypted
                     onCheckedChanged: page.profile.argumentsEncrypted = checked
-                    enabled: false
                 }
 
                 MobileForm.FormDelegateSeparator {}
@@ -70,9 +69,12 @@ Kirigami.ScrollablePage {
                     checked: page.profile.watchdogEnabled
                     onCheckedChanged: page.profile.watchdogEnabled = checked
                     enabled: false
+                    visible: false
                 }
 
-                MobileForm.FormDelegateSeparator {}
+                MobileForm.FormDelegateSeparator {
+                    visible: false
+                }
 
                 MobileForm.FormTextDelegate {
                     description: page.profile.expansionVersionText
@@ -146,14 +148,19 @@ Kirigami.ScrollablePage {
                     description: i18n("A micro-compositor that uses Wayland to create a nested session.\nIf you use fullscreen mode, it may improve input handling.")
                     checked: page.profile.gamescopeEnabled
                     onCheckedChanged: page.profile.gamescopeEnabled = checked
+                    visible: false
+                    enabled: false
                 }
 
-                MobileForm.FormDelegateSeparator {}
+                MobileForm.FormDelegateSeparator {
+                    visible: false
+                }
 
                 MobileForm.FormButtonDelegate {
                     text: i18n("Configure Gamescope...")
                     icon.name: "configure"
-                    enabled: page.profile.gamescopeEnabled
+                    enabled: false
+                    visible: false
                     Kirigami.PromptDialog {
                         id: gamescopeSettingsDialog
                         title: i18n("Configure Gamescope")
@@ -193,7 +200,9 @@ Kirigami.ScrollablePage {
                     onClicked: gamescopeSettingsDialog.open()
                 }
 
-                MobileForm.FormDelegateSeparator {}
+                MobileForm.FormDelegateSeparator {
+                    visible: false
+                }
 
                 MobileForm.FormCheckDelegate {
                     text: i18n("Enable Gamemode")
@@ -253,7 +262,7 @@ Kirigami.ScrollablePage {
 
                 MobileForm.FormButtonDelegate {
                     text: i18n("Delete Profile")
-                    description: !enabled ? i18n("Cannot delete the only profile") : ""
+                    description: !enabled ? i18n("Cannot delete the only profile.") : ""
                     icon.name: "delete"
                     enabled: LauncherCore.profileManager.canDelete(page.profile)
                     onClicked: {
