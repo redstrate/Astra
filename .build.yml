@@ -1,0 +1,25 @@
+image: archlinux
+packages:
+  - cmake
+  - extra-cmake-modules
+  - qt5-quickcontrols2
+  - kirigami2
+  - kcoreaddons
+  - ki18n
+  - kconfig
+  - qtkeychain-qt5
+  - quazip-qt5
+  - rust
+  - unshield
+  - gamemode
+sources:
+  - https://git.sr.ht/~redstrate/astra
+tasks:
+  - configure: |
+      cd astra
+      cmake -S . -B build
+  - build: |
+      cd astra
+      cmake --build build
+artifacts:
+  - astra/build/bin/astra
