@@ -181,15 +181,36 @@ void Account::fetchAvatar()
         return;
     }
 
-    QNetworkRequest request(QStringLiteral("https://xivapi.com/character/%1").arg(lodestoneId()));
-    auto reply = m_launcher.mgr->get(request);
-    connect(reply, &QNetworkReply::finished, [this, reply] {
-        auto document = QJsonDocument::fromJson(reply->readAll());
-        if (document.isObject()) {
-            m_url = document.object()["Character"].toObject()["Avatar"].toString();
-            Q_EMIT avatarUrlChanged();
-        }
-    });
+    const auto cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + "/avatars";
+    if (!QDir().exists(cacheLocation)) {
+        QDir().mkpath(cacheLocation);
+    }
+
+    const QString filename(QStringLiteral("%1/%2.jpg").arg(cacheLocation, lodestoneId()));
+    if (!QFile(filename).exists()) {
+        qDebug() << "Did not find lodestone character " << lodestoneId() << " in cache, fetching from xivapi.";
+        QNetworkRequest request(QStringLiteral("https://xivapi.com/character/%1").arg(lodestoneId()));
+        auto reply = m_launcher.mgr->get(request);
+        connect(reply, &QNetworkReply::finished, [this, filename, reply] {
+            auto document = QJsonDocument::fromJson(reply->readAll());
+            if (document.isObject()) {
+                QNetworkRequest avatarRequest(document.object()["Character"].toObject()["Avatar"].toString());
+                auto avatarReply = m_launcher.mgr->get(avatarRequest);
+                QObject::connect(avatarReply, &QNetworkReply::finished, [this, filename, avatarReply] {
+                    QFile file(filename);
+                    file.open(QIODevice::ReadWrite);
+                    file.write(avatarReply->readAll());
+                    file.close();
+
+                    m_url = QStringLiteral("file:///%1").arg(filename);
+                    Q_EMIT avatarUrlChanged();
+                });
+            }
+        });
+    } else {
+        m_url = QStringLiteral("file:///%1").arg(filename);
+        Q_EMIT avatarUrlChanged();
+    }
 }
 
 void Account::setKeychainValue(const QString &key, const QString &value)
