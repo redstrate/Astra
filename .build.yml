@@ -22,10 +22,10 @@ tasks:
       reuse lint
   - configure: |
       cd astra
-      cmake -S . -B build
+      cmake -S . -B build-cmake
   - build: |
       cd astra
-      cmake --build build
+      cmake --build build-cmake
   - flatpak: |
       cd astra
       flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
@@ -34,4 +34,5 @@ tasks:
       flatpak build-export export build
       flatpak build-bundle export astra.flatpak zone.xiv.astra --runtime-repo=https://flathub.org/repo/flathub.flatpakrep
 artifacts:
-  - astra/build/bin/astra
+  - astra/build-cmake/bin/astra
+  - astra/astra.flatpak
