@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
+# SPDX-License-Identifier: CC0-1.0
+
 add_executable(astra)
 target_sources(astra PRIVATE
         include/account.h

@@ -1,4 +1,8 @@
 <RCC>
+<!--
+SPDX-FileCopyrightText: Joshua Goins <josh@redstrate.com>
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
     <qresource prefix="/">
         <file>ui/Components/FormFileDelegate.qml</file>
         <file>ui/Components/FormFolderDelegate.qml</file>

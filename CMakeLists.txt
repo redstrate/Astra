@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
+# SPDX-License-Identifier: CC0-1.0
+
 cmake_minimum_required(VERSION 3.16)
 project(Astra VERSION 0.5.0 LANGUAGES CXX)
 

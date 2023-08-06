@@ -1,3 +1,0 @@
-#pragma once
-
-const QString license = QStringLiteral("@LICENSE_TXT@");
