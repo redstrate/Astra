@@ -12,9 +12,13 @@ packages:
   - rust
   - unshield
   - gamemode
+  - reuse
 sources:
   - https://git.sr.ht/~redstrate/astra
 tasks:
+  - reuse: |
+      cd astra
+      reuse lint
   - configure: |
       cd astra
       cmake -S . -B build
