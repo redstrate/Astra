@@ -36,10 +36,10 @@ int main(int argc, char *argv[])
     about.setHomepage("https://xiv.zone/astra");
     about.addComponent("physis", "Library to access FFXIV data", physis_get_physis_version(), "https://xiv.zone/physis", KAboutLicense::GPL_V3);
     about.addComponent("libphysis", "C bindings for physis", physis_get_libphysis_version(), "", KAboutLicense::GPL_V3);
-    about.setDesktopFileName("com.redstrate.astra");
+    about.setDesktopFileName("zone.xiv.astra");
     about.setBugAddress("https://lists.sr.ht/~redstrate/public-inbox");
     about.setComponentName("astra");
-    about.setProgramLogo("com.redstrate.astra");
+    about.setProgramLogo("zone.xiv.astra");
 
     KAboutData::setApplicationData(about);
 
@@ -70,16 +70,16 @@ int main(int argc, char *argv[])
     LauncherCore c(false);
 #endif
 
-    qmlRegisterSingletonInstance("com.redstrate.astra", 1, 0, "LauncherCore", &c);
-    qmlRegisterUncreatableType<GameInstaller>("com.redstrate.astra", 1, 0, "GameInstaller", QStringLiteral("Use LauncherCore::createInstaller"));
-    qmlRegisterUncreatableType<AccountManager>("com.redstrate.astra", 1, 0, "AccountManager", QStringLiteral("Use LauncherCore::accountManager"));
-    qmlRegisterUncreatableType<ProfileManager>("com.redstrate.astra", 1, 0, "ProfileManager", QStringLiteral("Use LauncherCore::profileManager"));
-    qmlRegisterUncreatableType<Profile>("com.redstrate.astra", 1, 0, "Profile", QStringLiteral("Use from ProfileManager"));
-    qmlRegisterUncreatableType<Account>("com.redstrate.astra", 1, 0, "Account", QStringLiteral("Use from AccountManager"));
-    qmlRegisterSingletonType("com.redstrate.astra", 1, 0, "About", [](QQmlEngine *engine, QJSEngine *) -> QJSValue {
+    qmlRegisterSingletonInstance("zone.xiv.astra", 1, 0, "LauncherCore", &c);
+    qmlRegisterUncreatableType<GameInstaller>("zone.xiv.astra", 1, 0, "GameInstaller", QStringLiteral("Use LauncherCore::createInstaller"));
+    qmlRegisterUncreatableType<AccountManager>("zone.xiv.astra", 1, 0, "AccountManager", QStringLiteral("Use LauncherCore::accountManager"));
+    qmlRegisterUncreatableType<ProfileManager>("zone.xiv.astra", 1, 0, "ProfileManager", QStringLiteral("Use LauncherCore::profileManager"));
+    qmlRegisterUncreatableType<Profile>("zone.xiv.astra", 1, 0, "Profile", QStringLiteral("Use from ProfileManager"));
+    qmlRegisterUncreatableType<Account>("zone.xiv.astra", 1, 0, "Account", QStringLiteral("Use from AccountManager"));
+    qmlRegisterSingletonType("zone.xiv.astra", 1, 0, "About", [](QQmlEngine *engine, QJSEngine *) -> QJSValue {
         return engine->toScriptValue(KAboutData::applicationData());
     });
-    qmlRegisterUncreatableType<Headline>("com.redstrate.astra", 1, 0, "Headline", QStringLiteral("Use from AccountManager"));
+    qmlRegisterUncreatableType<Headline>("zone.xiv.astra", 1, 0, "Headline", QStringLiteral("Use from AccountManager"));
     qRegisterMetaType<Banner>("Banner");
     qRegisterMetaType<QList<Banner>>("QList<Banner>");
     qRegisterMetaType<QList<News>>("QList<News>");

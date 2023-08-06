@@ -74,8 +74,9 @@ find_package(QuaZip-Qt5 REQUIRED)
 add_subdirectory(external)
 add_subdirectory(launcher)
 
-install(FILES com.redstrate.astra.desktop DESTINATION ${KDE_INSTALL_APPDIR})
-install(FILES com.redstrate.astra.svg DESTINATION ${KDE_INSTALL_FULL_ICONDIR}/hicolor/scalable/apps)
+install(FILES zone.xiv.astra.desktop DESTINATION ${KDE_INSTALL_APPDIR})
+install(FILES zone.xiv.astra.appdata.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
+install(FILES zone.xiv.astra.svg DESTINATION ${KDE_INSTALL_FULL_ICONDIR}/hicolor/scalable/apps)
 
 feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
 

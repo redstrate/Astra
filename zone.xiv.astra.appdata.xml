@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  - SPDX-License-Identifier: CC0-1.0
+  - SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
+ -->
+<component type="desktop-application">
+    <id>zone.xiv.astra</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <name>Astra</name>
+    <summary>Linux FFXIV Launcher</summary>
+    <description>
+        <p>A custom FFXIV launcher that supports multiple accounts, Dalamud plugins and runs natively on Linux!</p>
+    </description>
+    <categories>
+        <category>Game</category>
+    </categories>
+    <keywords>
+        <keyword>launcher</keyword>
+        <keyword translate="no">ffxiv</keyword>
+        <keyword translate="no">ff14</keyword>
+    </keywords>
+    <url type="homepage">https://xiv.zone/astra</url>
+    <url type="bugtracker">https://todo.sr.ht/~redstrate/astra</url>
+    <url type="faq">https://xiv.zone/astra/faq</url>
+    <url type="donation">https://redstrate.com/fund</url>
+    <url type="contact">https://redstrate.com/contact</url>
+    <url type="vcs-browser">https://sr.ht/~redstrate/astra</url>
+    <launchable type="desktop-id">zone.xiv.astra.desktop</launchable>
+    <releases>
+        <release version="0.5.0"/>
+    </releases>
+    <provides>
+        <binary>astra</binary>
+    </provides>
+    <requires>
+        <internet>always</internet>
+    </requires>
+    <recommends>
+        <display_length compare="ge">600</display_length>
+    </recommends>
+    <supports>
+        <control>pointing</control>
+        <control>keyboard</control>
+        <control>touch</control>
+    </supports>
+    <project_license>GPL-3.0</project_license>
+    <developer_name>redstrate</developer_name>
+    <screenshots>
+        <screenshot type="default">
+            <image width="1033" height="667">https://xiv.zone/astra/main-screenshot.png</image>
+        </screenshot>
+    </screenshots>
+</component>

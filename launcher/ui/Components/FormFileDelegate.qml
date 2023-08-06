@@ -8,7 +8,7 @@ import QtQuick.Controls 2.15 as Controls
 import QtQuick.Layouts 1.15
 import org.kde.kirigamiaddons.labs.mobileform 0.1 as MobileForm
 import QtQuick.Dialogs 1.0
-import com.redstrate.astra 1.0
+import zone.xiv.astra 1.0
 
 MobileForm.FormButtonDelegate {
     id: control

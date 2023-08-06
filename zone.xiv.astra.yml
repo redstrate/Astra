@@ -37,6 +37,20 @@ modules:
     sources:
       - type: git
         url: https://github.com/stachenov/quazip.git
+  - name: kirigami-addons
+    config-opts:
+      - -DBUILD_TESTING=OFF
+      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+    buildsystem: cmake-ninja
+    sources:
+      - type: archive
+        url: https://download.kde.org/stable/kirigami-addons/kirigami-addons-0.10.0.tar.xz
+        sha256: 9897e70bf167f579cec06d09d49a9a27aba184cbd1b2fce2c3ae757a87b01216
+  - name: icon
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/share/icons/hicolor/32x32/apps/
+      - install -D /usr/share/icons/breeze/mimetypes/64/none.svg /app/share/icons/hicolor/32x32/apps/zone.xiv.astra.svg
   - name: astra
     buildsystem: cmake-ninja
     config-opts:
@@ -44,8 +58,9 @@ modules:
       - -DRust_COMPILER=/usr/lib/sdk/rust-stable/bin/rustc
       - -DENABLE_GAMEMODE=OFF
       - -DENABLE_CLI=OFF
+      - -DBUILD_FLATPAK=ON
     build-options:
-        build-args:
+      build-args:
             - --share=network # needed for cargo unfortunately, flatpak has no native support (yet)
     sources:
       - type: dir

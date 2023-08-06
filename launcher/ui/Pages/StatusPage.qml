@@ -6,7 +6,7 @@ import QtQuick.Window 2.15
 import org.kde.kirigami 2.20 as Kirigami
 import QtQuick.Controls 2.15 as Controls
 import QtQuick.Layouts 1.15
-import com.redstrate.astra 1.0
+import zone.xiv.astra 1.0
 
 Kirigami.Page {
     property var gameInstaller
