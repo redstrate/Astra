@@ -1,7 +1,6 @@
 # Astra
 
-A custom FFXIV launcher that supports multiple accounts, [Dalamud](https://github.com/goatcorp/Dalamud) plugins and runs
-natively on Linux!
+A FFXIV launcher for Linux that supports profiles, multiple accounts and [Dalamud](https://github.com/goatcorp/Dalamud) plugins!
 
 ### Notice
 
@@ -27,39 +26,26 @@ If you still have questions, please read the [FAQ](https://xiv.zone/astra/faq) f
     * Saving account usernames and passwords are also supported, and is never stored plaintext.
 * Can install FFXIV on new systems for you, bypassing the normal InstallShield installer.
 
-## Installation
+## Get It
 
-Precompiled binaries are available [to download from the website](https://xiv.zone/astra/install).
+Details on where to find stable releases of Astra can be found on its [homepage](https://xiv.zone/astra).
 
-There are also numerous options available:
+Distribution packaging is encouraged, so please send an [email through the mailing list](https://lists.sr.ht/~redstrate/public-inbox) for any concerns.
 
-* _Flatpak_ - Instructions can be found in the [Flatpak installation](https://xiv.zone/astra/install/#linux) section.
-* _AUR_ - You can find the [AUR package here](https://aur.archlinux.org/packages/astra-launcher).
-* _Gentoo Overlay_ - You can find a Gentoo ebuild in my [personal overlay](https://git.sr.ht/~redstrate/ebuilds/tree/master/item/games-misc/astra).
-* _Tarball_ - You can download the latest release's tarball from [the website](https://xiv.zone/astra/install).
+## Support
 
-Distribution packaging is encouraged, so please send
-an [email through the mailing list](https://lists.sr.ht/~redstrate/public-inbox) for any concerns.
+If you have an issue with Astra, please [send an email to the mailing list](https://lists.sr.ht/~redstrate/public-inbox).
 
 ## Building
 
-**Note:** Some dependencies will automatically be downloaded from the Internet if not found on your system.
-This functionality will change in the future to ease distribution packaging. You can control this functionality using
-the `USE_OWN_LIBRARIES` CMake option.
+Please refer to the [building document](BUILDING.md) for instructions on how to build Astra.
 
-[The wiki](https://man.sr.ht/~redstrate/astra/) has dedicated platform-specific pages for build instructions as well as
-[important usage information](https://man.sr.ht/~redstrate/astra/linux-usage.md).
+## Contributing
 
-## Contributing and Support
+Please refer to the [contributing document](CONTRIBUTING.md) for everything you need to know to get started contributing to Novus.
 
-The best way you can help Astra is by [monetarily supporting me](https://ko-fi.com/redstrate) or by submitting patches
-to fix bugs or add functionality.
-I work on Astra and my other FFXIV projects in my free time, so any support helps to let me continue what I do!
+## License
 
-If you have changes you wish to submit, you can use [git send-email](https://git-send-email.io/) or
-the [sourcehut web contributor interface](https://git.sr.ht/~redstrate/astra/send-email)!
+![GPLv3](https://www.gnu.org/graphics/gplv3-127x51.png)
 
-If you wish to file a bug report, or feature request please see [the bug tracker](https://todo.sr.ht/~redstrate/astra).
-
-For general discussion about the launcher, potential features and so on, send an [email through the mailing list](https://lists.sr.ht/~redstrate/public-inbox).
-I discourage contacting me privately unless necessary, so that everyone can benefit from the discussion.
+This project is licensed under the [GNU General Public License 3](LICENSE). Some code or assets may be licensed differently, please refer to the [REUSE](https://reuse.software/spec/) metadata.
