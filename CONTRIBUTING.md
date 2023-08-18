@@ -10,7 +10,7 @@ The current TODO list can be located [here](https://todo.sr.ht/~redstrate/astra)
 
 ## Where Stuff Is
 
-Everything code-wise for Astra in the [/launcher](/launcher) directory. Astra follows modern Kirigami and Qt practices, meaning the frontend is written in QML and the backend is C++.
+Everything code-wise for Astra in the [/launcher](launcher) directory. Astra follows modern Kirigami and Qt practices, meaning the frontend is written in QML and the backend is C++.
 
 ### Backend
 
@@ -18,7 +18,7 @@ The backend code is written in C++, and we're currently requiring C++20 to build
 
 ### Frontend
 
-The user interface is written in QML, using technologies such as Kirigami. Please see the [KDE API Documentation](https://api.kde.org/) for more information. The frontend files are located in [/launcher/ui](/launcher/ui).
+The user interface is written in QML, using technologies such as Kirigami. Please see the [KDE API Documentation](https://api.kde.org/) for more information. The frontend files are located in [launcher/ui](/launcher/ui).
 
 ## Conventions
 
