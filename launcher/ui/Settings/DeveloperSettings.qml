@@ -28,6 +28,8 @@ Kirigami.ScrollablePage {
                 MobileForm.FormCheckDelegate {
                     text: i18n("Keep Patches")
                     description: i18n("Do not delete patches after they're used. Astra will not redownload patch data, if found.")
+                    checked: LauncherCore.keepPatches
+                    onCheckedChanged: LauncherCore.keepPatches = checked
                 }
             }
         }

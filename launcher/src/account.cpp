@@ -178,6 +178,13 @@ QString Account::getOTP()
     return totpStr;
 }
 
+QDir Account::getConfigDir() const
+{
+    const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    const QDir userDir = dataDir.absoluteFilePath("user");
+    return userDir.absoluteFilePath(m_key);
+}
+
 void Account::fetchAvatar()
 {
     if (lodestoneId().isEmpty()) {

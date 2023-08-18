@@ -20,7 +20,7 @@ SPDX-License-Identifier: CC0-1.0
         <default>1</default>
       </entry>
       <entry key="GamePath" type="Path">
-        <default code="true">ProfileManager::getDefaultGamePath()</default>
+        <default code="true">ProfileManager::getDefaultGamePath(mParamuuid)</default>
       </entry>
       <entry key="WinePath" type="Path">
       </entry>

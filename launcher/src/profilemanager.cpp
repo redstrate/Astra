@@ -35,7 +35,6 @@ Profile *ProfileManager::addProfile()
 
     newProfile->readWineInfo();
 
-    newProfile->setGamePath(getDefaultGamePath());
     newProfile->setWinePrefixPath(getDefaultWinePrefixPath());
 
     insertProfile(newProfile);
@@ -68,7 +67,7 @@ QString ProfileManager::getDefaultWinePrefixPath()
     return "";
 }
 
-QString ProfileManager::getDefaultGamePath()
+QString ProfileManager::getDefaultGamePath(const QString &uuid)
 {
 #if defined(Q_OS_WIN)
     return "C:\\Program Files (x86)\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn";
@@ -81,8 +80,9 @@ QString ProfileManager::getDefaultGamePath()
 #endif
 
 #if defined(Q_OS_LINUX)
-    const QString appData = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::AppDataLocation)[0];
-    return QStringLiteral("%1/game").arg(appData);
+    const QDir appData = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::AppDataLocation)[0];
+    const QDir gameDir = appData.absoluteFilePath("game");
+    return gameDir.absoluteFilePath(uuid);
 #endif
 }
 

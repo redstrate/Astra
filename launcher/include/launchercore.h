@@ -63,6 +63,7 @@ class LauncherCore : public QObject
     Q_PROPERTY(AccountManager *accountManager READ accountManager CONSTANT)
     Q_PROPERTY(bool closeWhenLaunched READ closeWhenLaunched WRITE setCloseWhenLaunched NOTIFY closeWhenLaunchedChanged)
     Q_PROPERTY(bool showNews READ showNews WRITE setShowNews NOTIFY showNewsChanged)
+    Q_PROPERTY(bool keepPatches READ keepPatches WRITE setKeepPatches NOTIFY keepPatchesChanged)
     Q_PROPERTY(Headline *headline READ headline NOTIFY newsChanged)
 
 public:
@@ -120,6 +121,9 @@ public:
     bool showNews() const;
     void setShowNews(bool value);
 
+    bool keepPatches() const;
+    void setKeepPatches(bool value);
+
     int defaultProfileIndex = 0;
 
     bool m_isSteam = false;
@@ -147,6 +151,7 @@ signals:
     void gameClosed();
     void closeWhenLaunchedChanged();
     void showNewsChanged();
+    void keepPatchesChanged();
     void loginError(QString message);
     void stageChanged(QString message);
     void stageIndeterminate();

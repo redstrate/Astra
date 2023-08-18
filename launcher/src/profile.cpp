@@ -498,3 +498,17 @@ QString Profile::wineVersionText() const
         return m_wineVersion;
     }
 }
+
+QString Profile::dalamudChannelName() const
+{
+    switch (dalamudChannel()) {
+    case DalamudChannel::Stable:
+        return QStringLiteral("stable");
+    case DalamudChannel::Staging:
+        return QStringLiteral("staging");
+    case DalamudChannel::Net5:
+        return QStringLiteral("net5");
+    }
+
+    Q_UNREACHABLE();
+}

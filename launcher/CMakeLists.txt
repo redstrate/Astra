@@ -17,6 +17,7 @@ target_sources(astra PRIVATE
         include/squareboot.h
         include/squarelauncher.h
         include/steamapi.h
+        include/utility.h
 
         src/account.cpp
         src/accountmanager.cpp
@@ -32,6 +33,7 @@ target_sources(astra PRIVATE
         src/squareboot.cpp
         src/squarelauncher.cpp
         src/steamapi.cpp
+        src/utility.cpp
 
         resources.qrc)
 kconfig_add_kcfg_files(astra GENERATE_MOC config.kcfgc accountconfig.kcfgc profileconfig.kcfgc)

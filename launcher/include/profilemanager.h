@@ -36,7 +36,7 @@ public:
 
     Q_INVOKABLE bool canDelete(Profile *account) const;
 
-    static QString getDefaultGamePath();
+    static QString getDefaultGamePath(const QString &uuid);
 
 private:
     void insertProfile(Profile *profile);

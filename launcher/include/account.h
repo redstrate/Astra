@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <QDir>
 #include <QObject>
 
 #include "accountconfig.h"
@@ -65,6 +66,8 @@ public:
     void setPassword(const QString &password);
 
     Q_INVOKABLE QString getOTP();
+
+    QDir getConfigDir() const;
 
 Q_SIGNALS:
     void nameChanged();

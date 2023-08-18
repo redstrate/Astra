@@ -37,6 +37,11 @@ private:
     QString remoteRuntimeVersion;
 
     QTemporaryDir tempDir;
+    QDir dataDir;
+    QDir appDataDir;
+    QDir dalamudDir;
+    QDir dalamudAssetDir;
+    QDir dalamudRuntimeDir;
 
     bool doneDownloadingDalamud = false;
     bool doneDownloadingRuntimeCore = false;
@@ -48,6 +53,5 @@ private:
     QList<QString> dalamudAssetNeededFilenames;
     QJsonArray remoteDalamudAssetArray;
 
-    QString dataDir;
     Profile &m_profile;
 };

@@ -21,6 +21,7 @@
 #include "launchercore.h"
 #include "sapphirelauncher.h"
 #include "squarelauncher.h"
+#include "utility.h"
 
 #ifdef ENABLE_WATCHDOG
 #include "watchdog.h"
@@ -103,11 +104,23 @@ void LauncherCore::beginVanillaGame(const QString &gameExecutablePath, const Pro
 
 void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Profile &profile, const LoginAuth &auth)
 {
-    QString gamePath = gameExecutablePath;
-    gamePath = "Z:" + gamePath.replace('/', '\\');
+    const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    const QDir configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    const QDir stateDir = Utility::stateDirectory();
 
-    QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    dataDir = "Z:" + dataDir.replace('/', '\\');
+    const QString logDir = stateDir.absoluteFilePath("logs");
+
+    if (!QDir().exists(logDir))
+        QDir().mkpath(logDir);
+
+    const QDir dalamudDir = dataDir.absoluteFilePath("dalamud");
+    const QDir dalamudRuntimeDir = dalamudDir.absoluteFilePath("runtime");
+    const QDir dalamudAssetDir = dalamudDir.absoluteFilePath("assets");
+    const QDir dalamudConfigPath = configDir.absoluteFilePath("dalamud-config.json");
+    const QDir dalamudPluginDir = dalamudDir.absoluteFilePath("plugins");
+
+    const QDir dalamudInstallDir = dalamudDir.absoluteFilePath(profile.dalamudChannelName());
+    const QString dalamudInjector = dalamudInstallDir.absoluteFilePath("Dalamud.Injector.exe");
 
     auto dalamudProcess = new QProcess(this);
     connect(dalamudProcess, qOverload<int>(&QProcess::finished), this, [this](int exitCode) {
@@ -116,7 +129,7 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Pro
     });
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    env.insert("DALAMUD_RUNTIME", dataDir + "\\DalamudRuntime");
+    env.insert("DALAMUD_RUNTIME", Utility::toWindowsPath(dalamudRuntimeDir));
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
     env.insert("XL_WINEONLINUX", "true");
@@ -127,16 +140,17 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Pro
 
     launchExecutable(profile,
                      dalamudProcess,
-                     {dataDir + "/Dalamud/" + "Dalamud.Injector.exe",
+                     {Utility::toWindowsPath(dalamudInjector),
                       "launch",
                       "-m",
                       "inject",
-                      "--game=" + gamePath,
-                      "--dalamud-configuration-path=" + dataDir + "\\dalamudConfig.json",
-                      "--dalamud-plugin-directory=" + dataDir + "\\installedPlugins",
-                      "--dalamud-asset-directory=" + dataDir + "\\DalamudAssets",
+                      "--game=" + Utility::toWindowsPath(gameExecutablePath),
+                      "--dalamud-working-directory=" + Utility::toWindowsPath(dalamudDir),
+                      "--dalamud-configuration-path=" + Utility::toWindowsPath(dalamudConfigPath),
+                      "--dalamud-plugin-directory=" + Utility::toWindowsPath(dalamudPluginDir),
+                      "--dalamud-asset-directory=" + Utility::toWindowsPath(dalamudAssetDir),
                       "--dalamud-client-language=" + QString::number(profile.language()),
-                      "--logpath=" + dataDir,
+                      "--logpath=" + Utility::toWindowsPath(logDir),
                       "--",
                       args},
                      true,
@@ -158,6 +172,12 @@ QString LauncherCore::getGameArgs(const Profile &profile, const LoginAuth &auth)
     gameArgs.push_back({"SYS.Region", QString::number(auth.region)});
     gameArgs.push_back({"language", QString::number(profile.language())});
     gameArgs.push_back({"ver", profile.repositories.repositories[0].version});
+    gameArgs.push_back({"UserPath", Utility::toWindowsPath(profile.account()->getConfigDir().absolutePath())});
+
+    // FIXME: this should belong somewhere else...
+    if (!QDir().exists(profile.account()->getConfigDir().absolutePath())) {
+        QDir().mkpath(profile.account()->getConfigDir().absolutePath());
+    }
 
     if (!auth.lobbyhost.isEmpty()) {
         gameArgs.push_back({"DEV.GMServerHost", auth.frontierHost});
@@ -431,6 +451,20 @@ void LauncherCore::setShowNews(const bool value)
     }
 }
 
+bool LauncherCore::keepPatches() const
+{
+    return Config::keepPatches();
+}
+
+void LauncherCore::setKeepPatches(const bool value)
+{
+    if (value != Config::keepPatches()) {
+        Config::setKeepPatches(value);
+        Config::self()->save();
+        Q_EMIT keepPatchesChanged();
+    }
+}
+
 void LauncherCore::refreshNews()
 {
     QUrlQuery query;
@@ -524,33 +558,7 @@ void LauncherCore::openOfficialLauncher(Profile *profile)
     executeArg = executeArg.arg(dateTime.time().hour(), 2, 10, QLatin1Char('0'));
     executeArg = executeArg.arg(dateTime.time().minute(), 2, 10, QLatin1Char('0'));
 
-    QList<Argument> arguments;
-    arguments.push_back({"ExecuteArg", executeArg});
-
-    // find user path
-    QString userPath;
-
-    // TODO: don't put this here
-    QString searchDir;
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-    searchDir = profile->winePrefixPath() + "/drive_c/users";
-#else
-    searchDir = "C:/Users";
-#endif
-
-    QDirIterator it(searchDir);
-    while (it.hasNext()) {
-        QString dir = it.next();
-        QFileInfo fi(dir);
-        QString fileName = fi.fileName();
-
-        // FIXME: is there no easier way to filter out these in Qt?
-        if (fi.fileName() != "Public" && fi.fileName() != "." && fi.fileName() != "..") {
-            userPath = fileName;
-        }
-    }
-
-    arguments.push_back({"UserPath", QString(R"(C:\Users\%1\Documents\My Games\FINAL FANTASY XIV - A Realm Reborn)").arg(userPath)});
+    QList<Argument> arguments{{"ExecuteArg", executeArg}, {"UserPath", Utility::toWindowsPath(profile->account()->getConfigDir().absolutePath())}};
 
     const QString argFormat = " /%1 =%2";
 

@@ -35,9 +35,19 @@ AssetUpdater::AssetUpdater(Profile &profile, LauncherCore &launcher, QObject *pa
     launcher.mgr->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
 
     dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    dalamudDir = dataDir.absoluteFilePath("dalamud");
+    dalamudAssetDir = dalamudDir.absoluteFilePath("assets");
+    dalamudRuntimeDir = dalamudDir.absoluteFilePath("runtime");
 
-    if (!QDir().exists(dataDir))
-        QDir().mkdir(dataDir);
+    const auto createIfNeeded = [](const QDir &dir) {
+        if (!QDir().exists(dir.absolutePath()))
+            QDir().mkdir(dir.absolutePath());
+    };
+
+    createIfNeeded(dataDir);
+    createIfNeeded(dalamudDir);
+    createIfNeeded(dalamudAssetDir);
+    createIfNeeded(dalamudRuntimeDir);
 }
 
 void AssetUpdater::update()
@@ -124,7 +134,7 @@ void AssetUpdater::update()
 void AssetUpdater::beginInstall()
 {
     if (needsDalamudInstall) {
-        bool success = !JlCompress::extractDir(tempDir.path() + "/latest.zip", dataDir + "/Dalamud").empty();
+        bool success = !JlCompress::extractDir(tempDir.path() + "/latest.zip", dalamudDir.absoluteFilePath(m_profile.dalamudChannelName())).empty();
 
         if (!success) {
             // TODO: handle failure here
@@ -135,14 +145,14 @@ void AssetUpdater::beginInstall()
     }
 
     if (needsRuntimeInstall) {
-        bool success = !JlCompress::extractDir(tempDir.path() + "/dotnet-core.zip", dataDir + "/DalamudRuntime").empty();
+        bool success = !JlCompress::extractDir(tempDir.path() + "/dotnet-core.zip", dalamudRuntimeDir.absolutePath()).empty();
 
-        success |= !JlCompress::extractDir(tempDir.path() + "/dotnet-desktop.zip", dataDir + "/DalamudRuntime").empty();
+        success |= !JlCompress::extractDir(tempDir.path() + "/dotnet-desktop.zip", dalamudRuntimeDir.absolutePath()).empty();
 
         if (!success) {
             qInfo() << "Failed to install dotnet!";
         } else {
-            QFile file(dataDir + "/DalamudRuntime/runtime.ver");
+            QFile file(dalamudRuntimeDir.absoluteFilePath("runtime.ver"));
             file.open(QIODevice::WriteOnly | QIODevice::Text);
             file.write(remoteRuntimeVersion.toUtf8());
             file.close();
@@ -161,7 +171,7 @@ void AssetUpdater::checkIfDalamudAssetsDone()
 
         m_profile.dalamudAssetVersion = remoteDalamudAssetVersion;
 
-        QFile file(dataDir + "/DalamudAssets/" + "asset.ver");
+        QFile file(dalamudAssetDir.absoluteFilePath("asset.ver"));
         file.open(QIODevice::WriteOnly | QIODevice::Text);
         file.write(QString::number(remoteDalamudAssetVersion).toUtf8());
         file.close();
@@ -294,21 +304,15 @@ void AssetUpdater::checkIfCheckingIsDone()
                 auto assetReply = launcher.mgr->get(assetRequest);
 
                 connect(assetReply, &QNetworkReply::finished, [this, assetReply, assetObject = assetObject.toObject()] {
-                    if (!QDir().exists(dataDir + "/DalamudAssets"))
-                        QDir().mkdir(dataDir + "/DalamudAssets");
-
                     const QString fileName = assetObject["FileName"].toString();
-                    const QList<QString> dirPath = fileName.left(fileName.lastIndexOf("/")).split('/');
+                    const QString dirPath = fileName.left(fileName.lastIndexOf("/"));
 
-                    QString build = dataDir + "/DalamudAssets/";
-                    for (const auto &dir : dirPath) {
-                        if (!QDir().exists(build + dir))
-                            QDir().mkdir(build + dir);
+                    const QString path = dalamudAssetDir.absoluteFilePath(dirPath);
 
-                        build += dir + "/";
-                    }
+                    if (!QDir().exists(path))
+                        QDir().mkpath(path);
 
-                    QFile file(dataDir + "/DalamudAssets/" + assetObject["FileName"].toString());
+                    QFile file(dalamudAssetDir.absoluteFilePath(assetObject["FileName"].toString()));
                     file.open(QIODevice::WriteOnly);
                     file.write(assetReply->readAll());
                     file.close();

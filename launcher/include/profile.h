@@ -150,6 +150,8 @@ public:
         return !m_wineVersion.isEmpty();
     }
 
+    QString dalamudChannelName() const;
+
 Q_SIGNALS:
     void gameInstallChanged();
     void nameChanged();

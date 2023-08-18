@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <QDir>
 #include <QNetworkAccessManager>
 #include <QString>
 #include <physis.hpp>
@@ -25,6 +26,7 @@ signals:
 
 private:
     void checkIfDone();
+    void setupDirectories();
 
     [[nodiscard]] bool isBoot() const
     {
@@ -42,6 +44,7 @@ private:
 
     QVector<QueuedPatch> patchQueue;
 
+    QDir patchesDir;
     QString baseDirectory;
     BootData *boot_data = nullptr;
     GameData *game_data = nullptr;

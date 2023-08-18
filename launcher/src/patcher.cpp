@@ -21,6 +21,8 @@ Patcher::Patcher(LauncherCore &launcher, QString baseDirectory, BootData *boot_d
     , boot_data(boot_data)
     , m_launcher(launcher)
 {
+    setupDirectories();
+
     Q_EMIT m_launcher.stageChanged(i18n("Checking the FINAL FANTASY XIV Updater/Launcher version."));
 }
 
@@ -30,6 +32,8 @@ Patcher::Patcher(LauncherCore &launcher, QString baseDirectory, GameData *game_d
     , game_data(game_data)
     , m_launcher(launcher)
 {
+    setupDirectories();
+
     Q_EMIT m_launcher.stageChanged(i18n("Checking the FINAL FANTASY XIV Game version."));
 }
 
@@ -65,18 +69,18 @@ void Patcher::processPatchList(QNetworkAccessManager &mgr, const QString &patchL
             const QString name = version;
             const QStringList hashes = patchParts.size() == 9 ? (patchParts[7].split(',')) : QStringList();
             const QString url = patchParts[patchParts.size() == 9 ? 8 : 5];
-
-            qDebug() << "Parsed patch name: " << name;
+            const QString filename = QStringLiteral("%1.patch").arg(name);
 
             auto url_parts = url.split('/');
             const QString repository = url_parts[url_parts.size() - 3];
 
-            const QString patchesDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/patches/" + repository;
+            const QDir repositoryDir = patchesDir.absoluteFilePath(repository);
 
-            if (!QDir().exists(patchesDir))
-                QDir().mkpath(patchesDir);
+            if (!QDir().exists(repositoryDir.absolutePath()))
+                QDir().mkpath(repositoryDir.absolutePath());
 
-            if (!QFile::exists(patchesDir + "/" + name + ".patch")) {
+            const QString patchPath = repositoryDir.absoluteFilePath(filename);
+            if (!QFile::exists(patchPath)) {
                 qDebug() << "Need to download " + name;
 
                 QNetworkRequest patchRequest(url);
@@ -95,15 +99,13 @@ void Patcher::processPatchList(QNetworkAccessManager &mgr, const QString &patchL
 
                 connect(patchReply,
                         &QNetworkReply::finished,
-                        [this, ourIndex, patchesDir, name, patchReply, repository, version, hashes, hashBlockSize, length] {
-                            QFile file(patchesDir + "/" + name + ".patch");
+                        [this, ourIndex, patchPath, name, patchReply, repository, version, hashes, hashBlockSize, length] {
+                            QFile file(patchPath);
                             file.open(QIODevice::WriteOnly);
                             file.write(patchReply->readAll());
                             file.close();
 
-                            auto patch_path = patchesDir + "/" + name + ".patch";
-
-                            patchQueue[ourIndex] = {name, repository, version, patch_path, hashes, hashBlockSize, length};
+                            patchQueue[ourIndex] = {name, repository, version, patchPath, hashes, hashBlockSize, length};
 
                             remainingPatches--;
                             checkIfDone();
@@ -111,7 +113,7 @@ void Patcher::processPatchList(QNetworkAccessManager &mgr, const QString &patchL
             } else {
                 qDebug() << "Found existing patch: " << name;
 
-                patchQueue[ourIndex] = {name, repository, version, patchesDir + "/" + name + ".patch", hashes, hashBlockSize, length};
+                patchQueue[ourIndex] = {name, repository, version, patchPath, hashes, hashBlockSize, length};
 
                 remainingPatches--;
                 checkIfDone();
@@ -189,4 +191,16 @@ void Patcher::processPatch(const QueuedPatch &patch)
     verFile.open(QIODevice::WriteOnly | QIODevice::Text);
     verFile.write(patch.version.toUtf8());
     verFile.close();
+}
+
+void Patcher::setupDirectories()
+{
+    QDir dataDir;
+    if (m_launcher.keepPatches()) {
+        dataDir.setPath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+    } else {
+        dataDir.setPath(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
+    }
+
+    patchesDir.setPath(dataDir.absoluteFilePath("patches"));
 }
