@@ -10,11 +10,12 @@
 
 #include "account.h"
 #include "launchercore.h"
+#include "profileconfig.h"
 
 Profile::Profile(LauncherCore &launcher, const QString &key, QObject *parent)
     : QObject(parent)
     , m_uuid(key)
-    , m_config(key)
+    , m_config(new ProfileConfig(key))
     , m_launcher(launcher)
 {
     readGameVersion();
@@ -119,98 +120,98 @@ void Profile::readWineInfo()
 
 QString Profile::name() const
 {
-    return m_config.name();
+    return m_config->name();
 }
 
 void Profile::setName(const QString &name)
 {
-    if (m_config.name() != name) {
-        m_config.setName(name);
-        m_config.save();
+    if (m_config->name() != name) {
+        m_config->setName(name);
+        m_config->save();
         Q_EMIT nameChanged();
     }
 }
 
 int Profile::language() const
 {
-    return m_config.language();
+    return m_config->language();
 }
 
 void Profile::setLanguage(const int value)
 {
-    if (m_config.language() != value) {
-        m_config.setLanguage(value);
-        m_config.save();
+    if (m_config->language() != value) {
+        m_config->setLanguage(value);
+        m_config->save();
         Q_EMIT languageChanged();
     }
 }
 
 QString Profile::gamePath() const
 {
-    return m_config.gamePath();
+    return m_config->gamePath();
 }
 
 void Profile::setGamePath(const QString &path)
 {
-    if (m_config.gamePath() != path) {
-        m_config.setGamePath(path);
-        m_config.save();
+    if (m_config->gamePath() != path) {
+        m_config->setGamePath(path);
+        m_config->save();
         Q_EMIT gamePathChanged();
     }
 }
 
 QString Profile::winePath() const
 {
-    return m_config.winePath();
+    return m_config->winePath();
 }
 
 void Profile::setWinePath(const QString &path)
 {
-    if (m_config.winePath() != path) {
-        m_config.setWinePath(path);
-        m_config.save();
+    if (m_config->winePath() != path) {
+        m_config->setWinePath(path);
+        m_config->save();
         Q_EMIT winePathChanged();
     }
 }
 
 QString Profile::winePrefixPath() const
 {
-    return m_config.winePrefixPath();
+    return m_config->winePrefixPath();
 }
 
 void Profile::setWinePrefixPath(const QString &path)
 {
-    if (m_config.winePrefixPath() != path) {
-        m_config.setWinePrefixPath(path);
-        m_config.save();
+    if (m_config->winePrefixPath() != path) {
+        m_config->setWinePrefixPath(path);
+        m_config->save();
         Q_EMIT winePrefixPathChanged();
     }
 }
 
 bool Profile::watchdogEnabled() const
 {
-    return m_config.enableWatchdog();
+    return m_config->enableWatchdog();
 }
 
 void Profile::setWatchdogEnabled(const bool value)
 {
-    if (m_config.enableWatchdog() != value) {
-        m_config.setEnableWatchdog(value);
-        m_config.save();
+    if (m_config->enableWatchdog() != value) {
+        m_config->setEnableWatchdog(value);
+        m_config->save();
         Q_EMIT enableWatchdogChanged();
     }
 }
 
 Profile::WineType Profile::wineType() const
 {
-    return static_cast<WineType>(m_config.wineType());
+    return static_cast<WineType>(m_config->wineType());
 }
 
 void Profile::setWineType(const WineType type)
 {
-    if (static_cast<WineType>(m_config.wineType()) != type) {
-        m_config.setWineType(static_cast<int>(type));
-        m_config.save();
+    if (static_cast<WineType>(m_config->wineType()) != type) {
+        m_config->setWineType(static_cast<int>(type));
+        m_config->save();
         Q_EMIT wineTypeChanged();
         readWineInfo();
     }
@@ -218,182 +219,182 @@ void Profile::setWineType(const WineType type)
 
 bool Profile::esyncEnabled() const
 {
-    return m_config.useESync();
+    return m_config->useESync();
 }
 
 void Profile::setESyncEnabled(const bool value)
 {
-    if (m_config.useESync() != value) {
-        m_config.setUseESync(value);
-        m_config.save();
+    if (m_config->useESync() != value) {
+        m_config->setUseESync(value);
+        m_config->save();
         Q_EMIT useESyncChanged();
     }
 }
 
 bool Profile::gamescopeEnabled() const
 {
-    return m_config.useGamescope();
+    return m_config->useGamescope();
 }
 
 void Profile::setGamescopeEnabled(const bool value)
 {
-    if (m_config.useGamescope() != value) {
-        m_config.setUseGamescope(value);
-        m_config.save();
+    if (m_config->useGamescope() != value) {
+        m_config->setUseGamescope(value);
+        m_config->save();
         Q_EMIT useGamescopeChanged();
     }
 }
 
 bool Profile::gamemodeEnabled() const
 {
-    return m_config.useGamemode();
+    return m_config->useGamemode();
 }
 
 void Profile::setGamemodeEnabled(const bool value)
 {
-    if (m_config.useGamemode() != value) {
-        m_config.setUseGamemode(value);
-        m_config.save();
+    if (m_config->useGamemode() != value) {
+        m_config->setUseGamemode(value);
+        m_config->save();
         Q_EMIT useGamemodeChanged();
     }
 }
 
 bool Profile::directx9Enabled() const
 {
-    return m_config.useDX9();
+    return m_config->useDX9();
 }
 
 void Profile::setDirectX9Enabled(const bool value)
 {
-    if (m_config.useDX9() != value) {
-        m_config.setUseDX9(value);
-        m_config.save();
+    if (m_config->useDX9() != value) {
+        m_config->setUseDX9(value);
+        m_config->save();
         Q_EMIT useDX9Changed();
     }
 }
 
 bool Profile::gamescopeFullscreen() const
 {
-    return m_config.gamescopeFullscreen();
+    return m_config->gamescopeFullscreen();
 }
 
 void Profile::setGamescopeFullscreen(const bool value)
 {
-    if (m_config.gamescopeFullscreen() != value) {
-        m_config.setGamescopeFullscreen(value);
-        m_config.save();
+    if (m_config->gamescopeFullscreen() != value) {
+        m_config->setGamescopeFullscreen(value);
+        m_config->save();
         Q_EMIT gamescopeFullscreenChanged();
     }
 }
 
 bool Profile::gamescopeBorderless() const
 {
-    return m_config.gamescopeBorderless();
+    return m_config->gamescopeBorderless();
 }
 
 void Profile::setGamescopeBorderless(const bool value)
 {
-    if (m_config.gamescopeBorderless() != value) {
-        m_config.setGamescopeBorderless(value);
-        m_config.save();
+    if (m_config->gamescopeBorderless() != value) {
+        m_config->setGamescopeBorderless(value);
+        m_config->save();
         Q_EMIT gamescopeBorderlessChanged();
     }
 }
 
 int Profile::gamescopeWidth() const
 {
-    return m_config.gamescopeWidth();
+    return m_config->gamescopeWidth();
 }
 
 void Profile::setGamescopeWidth(const int value)
 {
-    if (m_config.gamescopeWidth() != value) {
-        m_config.setGamescopeWidth(value);
-        m_config.save();
+    if (m_config->gamescopeWidth() != value) {
+        m_config->setGamescopeWidth(value);
+        m_config->save();
         Q_EMIT gamescopeWidthChanged();
     }
 }
 
 int Profile::gamescopeHeight() const
 {
-    return m_config.gamescopeHeight();
+    return m_config->gamescopeHeight();
 }
 
 void Profile::setGamescopeHeight(const int value)
 {
-    if (m_config.gamescopeHeight() != value) {
-        m_config.setGamescopeHeight(value);
-        m_config.save();
+    if (m_config->gamescopeHeight() != value) {
+        m_config->setGamescopeHeight(value);
+        m_config->save();
         Q_EMIT gamescopeHeightChanged();
     }
 }
 
 int Profile::gamescopeRefreshRate() const
 {
-    return m_config.gamescopeRefreshRate();
+    return m_config->gamescopeRefreshRate();
 }
 
 void Profile::setGamescopeRefreshRate(const int value)
 {
-    if (m_config.gamescopeRefreshRate() != value) {
-        m_config.setGamescopeRefreshRate(value);
-        m_config.save();
+    if (m_config->gamescopeRefreshRate() != value) {
+        m_config->setGamescopeRefreshRate(value);
+        m_config->save();
         Q_EMIT gamescopeRefreshRateChanged();
     }
 }
 
 bool Profile::dalamudEnabled() const
 {
-    return m_config.dalamudEnabled();
+    return m_config->dalamudEnabled();
 }
 
 void Profile::setDalamudEnabled(const bool value)
 {
-    if (m_config.dalamudEnabled() != value) {
-        m_config.setDalamudEnabled(value);
-        m_config.save();
+    if (m_config->dalamudEnabled() != value) {
+        m_config->setDalamudEnabled(value);
+        m_config->save();
         Q_EMIT dalamudEnabledChanged();
     }
 }
 
 bool Profile::dalamudOptOut() const
 {
-    return m_config.dalamudOptOut();
+    return m_config->dalamudOptOut();
 }
 
 void Profile::setDalamudOptOut(const bool value)
 {
-    if (m_config.dalamudOptOut() != value) {
-        m_config.setDalamudOptOut(value);
-        m_config.save();
+    if (m_config->dalamudOptOut() != value) {
+        m_config->setDalamudOptOut(value);
+        m_config->save();
         Q_EMIT dalamudOptOutChanged();
     }
 }
 
 Profile::DalamudChannel Profile::dalamudChannel() const
 {
-    return static_cast<DalamudChannel>(m_config.dalamudChannel());
+    return static_cast<DalamudChannel>(m_config->dalamudChannel());
 }
 
 void Profile::setDalamudChannel(const DalamudChannel value)
 {
-    if (static_cast<DalamudChannel>(m_config.dalamudChannel()) != value) {
-        m_config.setDalamudChannel(static_cast<int>(value));
-        m_config.save();
+    if (static_cast<DalamudChannel>(m_config->dalamudChannel()) != value) {
+        m_config->setDalamudChannel(static_cast<int>(value));
+        m_config->save();
         Q_EMIT dalamudChannelChanged();
     }
 }
 
 bool Profile::argumentsEncrypted() const
 {
-    return m_config.encryptArguments();
+    return m_config->encryptArguments();
 }
 
 void Profile::setArgumentsEncrypted(const bool value)
 {
-    if (m_config.encryptArguments() != value) {
-        m_config.setEncryptArguments(value);
-        m_config.save();
+    if (m_config->encryptArguments() != value) {
+        m_config->setEncryptArguments(value);
+        m_config->save();
         Q_EMIT encryptedArgumentsChanged();
     }
 }
@@ -407,9 +408,9 @@ void Profile::setAccount(Account *account)
 {
     if (account != m_account) {
         m_account = account;
-        if (account->uuid() != m_config.account()) {
-            m_config.setAccount(account->uuid());
-            m_config.save();
+        if (account->uuid() != m_config->account()) {
+            m_config->setAccount(account->uuid());
+            m_config->save();
         }
         Q_EMIT accountChanged();
     }
@@ -438,7 +439,7 @@ void Profile::readGameVersion()
 
 QString Profile::accountUuid() const
 {
-    return m_config.account();
+    return m_config->account();
 }
 
 QString Profile::expansionVersionText() const

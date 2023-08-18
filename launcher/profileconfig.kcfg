@@ -7,7 +7,7 @@
 SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 SPDX-License-Identifier: CC0-1.0
 -->
-  <kcfgfile/>
+    <include>profilemanager.h</include>
     <kcfgfile name="astrastaterc" stateConfig="true">
       <parameter name="uuid"/>
     </kcfgfile>
@@ -20,6 +20,7 @@ SPDX-License-Identifier: CC0-1.0
         <default>1</default>
       </entry>
       <entry key="GamePath" type="Path">
+        <default code="true">ProfileManager::getDefaultGamePath()</default>
       </entry>
       <entry key="WinePath" type="Path">
       </entry>

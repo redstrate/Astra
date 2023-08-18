@@ -3,7 +3,9 @@
 
 #include "profilemanager.h"
 
+#include <KSharedConfig>
 #include <QDir>
+#include <QUuid>
 
 ProfileManager::ProfileManager(LauncherCore &launcher, QObject *parent)
     : QAbstractListModel(parent)
@@ -79,7 +81,8 @@ QString ProfileManager::getDefaultGamePath()
 #endif
 
 #if defined(Q_OS_LINUX)
-    return QDir::homePath() + "/.wine/drive_c/Program Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
+    const QString appData = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::AppDataLocation)[0];
+    return QStringLiteral("%1/game").arg(appData);
 #endif
 }
 

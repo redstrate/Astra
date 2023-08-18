@@ -5,10 +5,10 @@
 
 #include <QObject>
 
-#include "profileconfig.h"
 #include "squareboot.h"
 
 class Account;
+class ProfileConfig;
 
 class Profile : public QObject
 {
@@ -129,8 +129,8 @@ public:
     BootData *bootData;
     GameData *gameData;
 
-    physis_Repositories repositories;
-    const char *bootVersion;
+    physis_Repositories repositories = {};
+    const char *bootVersion = nullptr;
 
     QString dalamudVersion;
     int dalamudAssetVersion = -1;
@@ -178,7 +178,7 @@ Q_SIGNALS:
 private:
     QString m_uuid;
     QString m_wineVersion;
-    ProfileConfig m_config;
+    ProfileConfig *m_config = nullptr;
     Account *m_account = nullptr;
     LauncherCore &m_launcher;
 };

@@ -36,10 +36,11 @@ public:
 
     Q_INVOKABLE bool canDelete(Profile *account) const;
 
+    static QString getDefaultGamePath();
+
 private:
     void insertProfile(Profile *profile);
 
-    QString getDefaultGamePath();
     QString getDefaultWinePrefixPath();
 
     QVector<Profile *> m_profiles;

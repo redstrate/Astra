@@ -124,7 +124,7 @@ public:
 
     bool m_isSteam = false;
 
-    Q_INVOKABLE GameInstaller *createInstaller(Profile &profile);
+    Q_INVOKABLE GameInstaller *createInstaller(Profile *profile);
 
     bool isLoadingFinished() const;
     bool hasAccount() const;

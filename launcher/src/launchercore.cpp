@@ -377,9 +377,10 @@ bool LauncherCore::autoLogin(Profile &profile)
     return true;
 }
 
-GameInstaller *LauncherCore::createInstaller(Profile &profile)
+GameInstaller *LauncherCore::createInstaller(Profile *profile)
 {
-    return new GameInstaller(*this, profile, this);
+    Q_ASSERT(profile != nullptr);
+    return new GameInstaller(*this, *profile, this);
 }
 
 bool LauncherCore::isLoadingFinished() const
