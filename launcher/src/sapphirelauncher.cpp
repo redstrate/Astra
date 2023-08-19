@@ -23,7 +23,12 @@ void SapphireLauncher::login(const QString &lobbyUrl, const LoginInformation &in
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
     auto reply = window.mgr->post(request, QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Compact));
-    connect(reply, &QNetworkReply::finished, [&] {
+    connect(reply, &QNetworkReply::finished, [this, reply, &info] {
+        if (reply->error() != QNetworkReply::NetworkError::NoError) {
+            Q_EMIT window.loginError(QStringLiteral("Could not contact lobby server.\n\n%1").arg(reply->errorString()));
+            return;
+        }
+
         QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
         if (!document.isEmpty()) {
             LoginAuth auth;
@@ -34,9 +39,7 @@ void SapphireLauncher::login(const QString &lobbyUrl, const LoginInformation &in
 
             window.launchGame(*info.profile, auth);
         } else {
-            /*auto messageBox =
-                new QMessageBox(QMessageBox::Icon::Critical, "Failed to Login", "Invalid username/password.");
-            messageBox->show();*/
+            Q_EMIT window.loginError("Invalid username or password.");
         }
     });
 }
