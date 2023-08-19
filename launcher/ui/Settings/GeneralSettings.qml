@@ -9,25 +9,33 @@ import QtQuick.Layouts 1.15
 import org.kde.kirigamiaddons.formcard 1.0 as FormCard
 import zone.xiv.astra 1.0
 
-FormCard.FormCard {
-    FormCard.FormCheckDelegate {
-        id: closeAstraDelegate
+FormCard.FormCardPage {
+    title: i18n("General")
 
-        text: i18n("Close Astra when game is launched")
-        checked: LauncherCore.closeWhenLaunched
-        onCheckedChanged: LauncherCore.closeWhenLaunched = checked
+    FormCard.FormHeader {
+        title: i18n("General settings")
     }
 
-    FormCard.FormDelegateSeparator {
-        above: closeAstraDelegate
-        below: showNewsDelegate
-    }
+    FormCard.FormCard {
+        FormCard.FormCheckDelegate {
+            id: closeAstraDelegate
 
-    FormCard.FormCheckDelegate {
-        id: showNewsDelegate
+            text: i18n("Close Astra when game is launched")
+            checked: LauncherCore.closeWhenLaunched
+            onCheckedChanged: LauncherCore.closeWhenLaunched = checked
+        }
 
-        text: i18n("Enable and show news")
-        checked: LauncherCore.showNews
-        onCheckedChanged: LauncherCore.showNews = checked
+        FormCard.FormDelegateSeparator {
+            above: closeAstraDelegate
+            below: showNewsDelegate
+        }
+
+        FormCard.FormCheckDelegate {
+            id: showNewsDelegate
+
+            text: i18n("Enable and show news")
+            checked: LauncherCore.showNews
+            onCheckedChanged: LauncherCore.showNews = checked
+        }
     }
 }

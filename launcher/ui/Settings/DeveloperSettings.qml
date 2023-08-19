@@ -11,10 +11,14 @@ import zone.xiv.astra 1.0
 
 import "../Components"
 
-Kirigami.ScrollablePage {
+FormCard.FormCardPage {
     id: page
 
     title: i18n("Developer Settings")
+
+    FormCard.FormHeader {
+        title: i18n("Patching")
+    }
 
     FormCard.FormCard {
         Layout.fillWidth: true
@@ -27,11 +31,14 @@ Kirigami.ScrollablePage {
             checked: LauncherCore.keepPatches
             onCheckedChanged: LauncherCore.keepPatches = checked
         }
+    }
 
-        FormCard.FormDelegateSeparator {
-            above: keepPatchesDelegate
-            below: dalamudServerDelegate
-        }
+    FormCard.FormHeader {
+        title: i18n("Servers")
+    }
+
+    FormCard.FormCard {
+        Layout.fillWidth: true
 
         FormCard.FormTextFieldDelegate {
             id: dalamudServerDelegate

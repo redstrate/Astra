@@ -11,11 +11,14 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <file>ui/Pages/MainPage.qml</file>
         <file>ui/Pages/NewsPage.qml</file>
         <file>ui/Pages/StatusPage.qml</file>
+        <file>ui/Settings/AboutPage.qml</file>
         <file>ui/Settings/AccountSettings.qml</file>
+        <file>ui/Settings/AccountsPage.qml</file>
         <file>ui/Settings/CompatibilityToolSetup.qml</file>
         <file>ui/Settings/DeveloperSettings.qml</file>
         <file>ui/Settings/GeneralSettings.qml</file>
         <file>ui/Settings/ProfileSettings.qml</file>
+        <file>ui/Settings/ProfilesPage.qml</file>
         <file>ui/Settings/SettingsPage.qml</file>
         <file>ui/Setup/AccountSetup.qml</file>
         <file>ui/Setup/AddSapphire.qml</file>
