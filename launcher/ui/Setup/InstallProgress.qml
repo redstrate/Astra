@@ -19,6 +19,17 @@ Kirigami.Page {
         text: i18n("Installing...")
     }
 
+    Kirigami.PromptDialog {
+        id: errorDialog
+        title: i18n("Install error")
+
+        showCloseButton: false
+        standardButtons: Kirigami.Dialog.Ok
+
+        onAccepted: applicationWindow().pageStack.layers.pop()
+        onRejected: applicationWindow().pageStack.layers.pop()
+    }
+
     Component.onCompleted: gameInstaller.installGame()
 
     Connections {
@@ -26,6 +37,11 @@ Kirigami.Page {
 
         function onInstallFinished() {
             applicationWindow().checkSetup()
+        }
+
+        function onError(message) {
+            errorDialog.subtitle = message
+            errorDialog.open()
         }
     }
 }

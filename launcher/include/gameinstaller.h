@@ -19,6 +19,7 @@ public:
 
 Q_SIGNALS:
     void installFinished();
+    void error(QString message);
 
 private:
     LauncherCore &m_launcher;
