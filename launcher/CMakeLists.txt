@@ -49,6 +49,7 @@ target_link_libraries(astra PRIVATE
         Qt5::Widgets
         Qt5::Quick
         Qt5::QuickControls2
+        Qt5::WebEngine
         KF5::Kirigami2
         KF5::I18n
         KF5::ConfigCore

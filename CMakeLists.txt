@@ -44,7 +44,8 @@ find_package(Qt5 ${QT_MIN_VERSION} NO_MODULE REQUIRED COMPONENTS
         Core
         Widgets
         Network
-        QuickControls2)
+        QuickControls2
+        WebEngine)
 find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS Kirigami2 I18n Config CoreAddons)
 find_package(PkgConfig REQUIRED)
 
