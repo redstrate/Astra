@@ -37,5 +37,18 @@ FormCard.FormCardPage {
             checked: LauncherCore.showNews
             onCheckedChanged: LauncherCore.showNews = checked
         }
+
+        FormCard.FormDelegateSeparator {
+            above: showNewsDelegate
+            below: showDevToolsDelegate
+        }
+
+        FormCard.FormCheckDelegate {
+            id: showDevToolsDelegate
+
+            text: i18n("Show Developer Settings")
+            checked: LauncherCore.showDevTools
+            onCheckedChanged: LauncherCore.showDevTools = checked
+        }
     }
 }

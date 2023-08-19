@@ -504,6 +504,20 @@ void LauncherCore::setShowNews(const bool value)
     }
 }
 
+bool LauncherCore::showDevTools() const
+{
+    return Config::showDevTools();
+}
+
+void LauncherCore::setShowDevTools(const bool value)
+{
+    if (value != Config::showDevTools()) {
+        Config::setShowDevTools(value);
+        Config::self()->save();
+        Q_EMIT showDevToolsChanged();
+    }
+}
+
 bool LauncherCore::keepPatches() const
 {
     return Config::keepPatches();

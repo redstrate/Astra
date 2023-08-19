@@ -64,6 +64,7 @@ class LauncherCore : public QObject
     Q_PROPERTY(AccountManager *accountManager READ accountManager CONSTANT)
     Q_PROPERTY(bool closeWhenLaunched READ closeWhenLaunched WRITE setCloseWhenLaunched NOTIFY closeWhenLaunchedChanged)
     Q_PROPERTY(bool showNews READ showNews WRITE setShowNews NOTIFY showNewsChanged)
+    Q_PROPERTY(bool showDevTools READ showDevTools WRITE setShowDevTools NOTIFY showDevToolsChanged)
     Q_PROPERTY(bool keepPatches READ keepPatches WRITE setKeepPatches NOTIFY keepPatchesChanged)
     Q_PROPERTY(QString dalamudDistribServer READ dalamudDistribServer WRITE setDalamudDistribServer NOTIFY dalamudDistribServerChanged)
     Q_PROPERTY(QString squareEnixServer READ squareEnixServer WRITE setSquareEnixServer NOTIFY squareEnixServerChanged)
@@ -125,6 +126,9 @@ public:
     bool showNews() const;
     void setShowNews(bool value);
 
+    bool showDevTools() const;
+    void setShowDevTools(bool value);
+
     bool keepPatches() const;
     void setKeepPatches(bool value);
 
@@ -165,6 +169,7 @@ signals:
     void gameClosed();
     void closeWhenLaunchedChanged();
     void showNewsChanged();
+    void showDevToolsChanged();
     void keepPatchesChanged();
     void dalamudDistribServerChanged();
     void squareEnixServerChanged();
