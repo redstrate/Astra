@@ -540,6 +540,9 @@ void LauncherCore::refreshNews()
         auto document = QJsonDocument::fromJson(reply->readAll());
 
         auto headline = new Headline(this);
+        if (document.isEmpty()) {
+            headline->failedToLoad = true;
+        }
 
         const auto parseNews = [](QJsonObject object) -> News {
             News news;

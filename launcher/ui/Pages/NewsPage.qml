@@ -86,6 +86,7 @@ Controls.Control {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
             maximumWidth: layout.maximumWidth
+            visible: LauncherCore.headline !== null
 
             contentItem: ColumnLayout {
                 spacing: 0
@@ -104,6 +105,11 @@ Controls.Control {
                         onClicked: applicationWindow().openUrl(modelData.url)
                     }
                 }
+
+                MobileForm.FormTextDelegate {
+                    description: i18n("No news.")
+                    visible: LauncherCore.headline !== null ? LauncherCore.headline.failedToLoad : false
+                }
             }
         }
 
@@ -113,6 +119,7 @@ Controls.Control {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
             maximumWidth: layout.maximumWidth
+            visible: LauncherCore.headline !== null
 
             contentItem: ColumnLayout {
                 spacing: 0
@@ -131,11 +138,21 @@ Controls.Control {
                         onClicked: applicationWindow().openUrl(modelData.url)
                     }
                 }
+
+                MobileForm.FormTextDelegate {
+                    description: i18n("No topics.")
+                    visible: LauncherCore.headline !== null ? LauncherCore.headline.failedToLoad : false
+                }
             }
         }
 
         Item {
             Layout.fillHeight: true
         }
+    }
+
+    Kirigami.LoadingPlaceholder {
+        anchors.centerIn: parent
+        visible: LauncherCore.headline === null
     }
 }

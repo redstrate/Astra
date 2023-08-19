@@ -45,6 +45,7 @@ class Headline : public QObject
     Q_PROPERTY(QList<News> news MEMBER news CONSTANT)
     Q_PROPERTY(QList<News> pinned MEMBER pinned CONSTANT)
     Q_PROPERTY(QList<News> topics MEMBER topics CONSTANT)
+    Q_PROPERTY(bool failedToLoad MEMBER failedToLoad CONSTANT)
 
 public:
     explicit Headline(QObject *parent = nullptr)
@@ -56,4 +57,7 @@ public:
     QList<News> news;
     QList<News> pinned;
     QList<News> topics;
+
+    // FIXME: wtf is this?
+    bool failedToLoad = false;
 };
