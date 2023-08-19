@@ -242,6 +242,7 @@ void Account::setKeychainValue(const QString &key, const QString &value)
     auto job = new QKeychain::WritePasswordJob("Astra", this);
     job->setTextData(value);
     job->setKey(m_key + "-" + key);
+    job->setInsecureFallback(m_launcher.isSteamDeck()); // The Steam Deck does not have secrets provider in Game Mode
     job->start();
 }
 
@@ -251,6 +252,7 @@ QString Account::getKeychainValue(const QString &key)
 
     auto job = new QKeychain::ReadPasswordJob("Astra", this);
     job->setKey(m_key + "-" + key);
+    job->setInsecureFallback(m_launcher.isSteamDeck());
     job->start();
 
     QString value;
