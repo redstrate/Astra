@@ -77,23 +77,14 @@ void SquareBoot::checkGateStatus(LoginInformation *info)
 
     auto reply = window.mgr->get(request);
     connect(reply, &QNetworkReply::finished, [this, reply, info] {
-        // I happen to run into this issue often, if I start the launcher really quickly after bootup
-        // it's possible to actually check this quicker than the network is actually available,
-        // causing the launcher to be stuck in "maintenace mode". so if that happens, we try to rerun this logic.
-        // TODO: this selection of errors is currently guesswork, i'm assuming one of these will fit the bill of
-        // "internet is unavailable" in some way.
-        if (reply->error() == QNetworkReply::HostNotFoundError || reply->error() == QNetworkReply::TimeoutError
-            || reply->error() == QNetworkReply::UnknownServerError)
-            checkGateStatus(info);
-
-        QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
+        const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
 
         const bool isGateOpen = !document.isEmpty() && document.object()["status"].toInt() != 0;
 
         if (isGateOpen) {
             bootCheck(*info);
         } else {
-            Q_EMIT window.loginError(i18n("The login gate is closed, the game may be under maintenance."));
+            Q_EMIT window.loginError(i18n("The login gate is closed, the game may be under maintenance.\n\n%1", reply->errorString()));
         }
     });
 }

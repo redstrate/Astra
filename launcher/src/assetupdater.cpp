@@ -95,11 +95,12 @@ void AssetUpdater::update()
         connect(reply, &QNetworkReply::finished, [this, reply] {
             Q_EMIT launcher.stageChanged("Checking for Dalamud updates...");
 
-            QByteArray str = reply->readAll();
-            if (str.isEmpty()) {
-                Q_EMIT launcher.loginError("Could not check for Dalamud updates.");
+            if (reply->error() != QNetworkReply::NetworkError::NoError) {
+                Q_EMIT launcher.loginError(QStringLiteral("Could not check for Dalamud updates.\n\n%1").arg(reply->errorString()));
                 return;
             }
+
+            QByteArray str = reply->readAll();
 
             // for some god forsaken reason, the version string comes back as raw
             // bytes, ex: \xFF\xFE{\x00\"\x00""A\x00s\x00s\x00""e\x00m\x00 so we
