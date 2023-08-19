@@ -39,6 +39,20 @@ void Account::setName(const QString &name)
     }
 }
 
+int Account::language() const
+{
+    return m_config.language();
+}
+
+void Account::setLanguage(const int value)
+{
+    if (m_config.language() != value) {
+        m_config.setLanguage(value);
+        m_config.save();
+        Q_EMIT languageChanged();
+    }
+}
+
 QString Account::lodestoneId() const
 {
     return m_config.lodestoneId();

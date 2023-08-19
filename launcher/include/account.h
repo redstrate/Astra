@@ -15,6 +15,7 @@ class Account : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(int language READ language WRITE setLanguage NOTIFY languageChanged)
     Q_PROPERTY(QString lodestoneId READ lodestoneId WRITE setLodestoneId NOTIFY lodestoneIdChanged)
     Q_PROPERTY(QString avatarUrl READ avatarUrl NOTIFY avatarUrlChanged)
     Q_PROPERTY(bool isSapphire READ isSapphire WRITE setIsSapphire NOTIFY isSapphireChanged)
@@ -35,6 +36,9 @@ public:
 
     QString name() const;
     void setName(const QString &name);
+
+    int language() const;
+    void setLanguage(int value);
 
     QString lodestoneId() const;
     void setLodestoneId(const QString &id);
@@ -71,6 +75,7 @@ public:
 
 Q_SIGNALS:
     void nameChanged();
+    void languageChanged();
     void lodestoneIdChanged();
     void avatarUrlChanged();
     void isSapphireChanged();

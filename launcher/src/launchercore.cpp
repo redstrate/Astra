@@ -157,7 +157,7 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Pro
                       "--dalamud-configuration-path=" + Utility::toWindowsPath(dalamudConfigPath),
                       "--dalamud-plugin-directory=" + Utility::toWindowsPath(dalamudPluginDir),
                       "--dalamud-asset-directory=" + Utility::toWindowsPath(dalamudAssetDir),
-                      "--dalamud-client-language=" + QString::number(profile.language()),
+                      "--dalamud-client-language=" + QString::number(profile.account()->language()),
                       "--logpath=" + Utility::toWindowsPath(logDir),
                       "--",
                       args},
@@ -178,7 +178,7 @@ QString LauncherCore::getGameArgs(const Profile &profile, const LoginAuth &auth)
     gameArgs.push_back({"DEV.MaxEntitledExpansionID", QString::number(auth.maxExpansion)});
     gameArgs.push_back({"DEV.TestSID", auth.SID});
     gameArgs.push_back({"SYS.Region", QString::number(auth.region)});
-    gameArgs.push_back({"language", QString::number(profile.language())});
+    gameArgs.push_back({"language", QString::number(profile.account()->language())});
     gameArgs.push_back({"ver", profile.repositories.repositories[0].version});
     gameArgs.push_back({"UserPath", Utility::toWindowsPath(profile.account()->getConfigDir().absolutePath())});
 

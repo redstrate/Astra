@@ -140,20 +140,6 @@ void Profile::setName(const QString &name)
     }
 }
 
-int Profile::language() const
-{
-    return m_config->language();
-}
-
-void Profile::setLanguage(const int value)
-{
-    if (m_config->language() != value) {
-        m_config->setLanguage(value);
-        m_config->save();
-        Q_EMIT languageChanged();
-    }
-}
-
 QString Profile::gamePath() const
 {
     return m_config->gamePath();

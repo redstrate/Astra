@@ -39,6 +39,15 @@ Kirigami.ScrollablePage {
                 MobileForm.FormDelegateSeparator {}
 
                 MobileForm.FormComboBoxDelegate {
+                    text: i18n("Language")
+                    model: ["Japanese", "English", "German", "French"]
+                    currentIndex: page.account.language
+                    onCurrentIndexChanged: page.account.language = currentIndex
+                }
+
+                MobileForm.FormDelegateSeparator {}
+
+                MobileForm.FormComboBoxDelegate {
                     text: i18n("Account type")
                     model: ["Square Enix", "Sapphire"]
                     currentIndex: page.account.isSapphire ? 1 : 0

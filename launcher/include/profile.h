@@ -15,7 +15,6 @@ class Profile : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(int language READ language WRITE setLanguage NOTIFY languageChanged)
     Q_PROPERTY(QString gamePath READ gamePath WRITE setGamePath NOTIFY gamePathChanged)
     Q_PROPERTY(QString winePath READ winePath WRITE setWinePath NOTIFY winePathChanged)
     Q_PROPERTY(QString winePrefixPath READ winePrefixPath WRITE setWinePrefixPath NOTIFY winePrefixPathChanged)
@@ -58,9 +57,6 @@ public:
 
     QString name() const;
     void setName(const QString &name);
-
-    int language() const;
-    void setLanguage(int value);
 
     QString gamePath() const;
     void setGamePath(const QString &path);
@@ -155,7 +151,6 @@ public:
 Q_SIGNALS:
     void gameInstallChanged();
     void nameChanged();
-    void languageChanged();
     void gamePathChanged();
     void winePathChanged();
     void winePrefixPathChanged();
