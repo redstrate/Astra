@@ -154,7 +154,13 @@ Controls.Control {
                     label: page.profile.account.isSapphire ? i18n("Password") : i18n("Square Enix Password")
                     echoMode: TextInput.Password
                     focus: true
-                    onAccepted: otpField.clicked()
+                    onAccepted: {
+                        if (otpField.visible) {
+                            otpField.clicked();
+                        } else {
+                            loginButton.clicked();
+                        }
+                    }
                     text: page.profile.account.rememberPassword ? "abcdefg" : ""
                 }
 
@@ -197,4 +203,6 @@ Controls.Control {
             }
         }
     }
+
+    Component.onCompleted: passwordField.forceActiveFocus()
 }
