@@ -263,16 +263,54 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     if (m_isSteam) {
-        const QString steamDirectory = QProcessEnvironment::systemEnvironment().value("STEAM_COMPAT_CLIENT_INSTALL_PATH");
-        const QString compatData =
+        const QDir steamDirectory = QProcessEnvironment::systemEnvironment().value("STEAM_COMPAT_CLIENT_INSTALL_PATH");
+        const QDir compatData =
             QProcessEnvironment::systemEnvironment().value("STEAM_COMPAT_DATA_PATH"); // TODO: do these have to exist on the root steam folder?
-        const QString protonPath = steamDirectory + "/steamapps/common/Proton 7.0";
 
-        env.insert("STEAM_COMPAT_CLIENT_INSTALL_PATH", steamDirectory);
-        env.insert("STEAM_COMPAT_DATA_PATH", compatData);
+        const QString steamAppsPath = steamDirectory.absoluteFilePath("steamapps/common");
 
-        arguments.push_back(protonPath + "/proton");
+        // Find the highest Proton version
+        QDirIterator it(steamAppsPath);
+        QDir highestVersion;
+        int highestVersionNum = 1;
+        while (it.hasNext()) {
+            QString dir = it.next();
+
+            QFileInfo fileInfo(dir);
+            if (!fileInfo.isDir()) {
+                continue;
+            }
+
+            QString dirName = fileInfo.fileName();
+            if (dirName.contains("Proton")) {
+                if (dirName == "Proton - Experimental") {
+                    highestVersion.setPath(dir);
+                    break;
+                } else {
+                    QString version = dirName.remove("Proton ");
+                    // Exclude "BattlEye Runtime" and other unrelated things
+                    if (version.contains('.')) {
+                        // TODO: better error handling (they might never be invalid, but better safe than sorry)
+                        QStringList parts = version.split('.');
+                        int versionNum = parts[0].toInt();
+
+                        // TODO: doesn't handle minor versions, not like they really exist anymore anyway
+                        if (versionNum > highestVersionNum) {
+                            highestVersionNum = versionNum;
+                            highestVersion.setPath(dir);
+                        }
+                    }
+                }
+            }
+        }
+
+        env.insert("STEAM_COMPAT_CLIENT_INSTALL_PATH", steamDirectory.absolutePath());
+        env.insert("STEAM_COMPAT_DATA_PATH", compatData.absolutePath());
+
+        arguments.push_back(highestVersion.absoluteFilePath("proton"));
         arguments.push_back("run");
+
+        qInfo() << arguments << env.toStringList();
     } else {
         env.insert("WINEPREFIX", profile.winePrefixPath());
 
@@ -308,6 +346,7 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
         process->setWorkingDirectory(profile.gamePath() + "/game/");
 
     process->setProcessEnvironment(env);
+    process->setProcessChannelMode(QProcess::ProcessChannelMode::ForwardedChannels);
 
     process->start(executable, arguments);
 }
