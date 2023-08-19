@@ -74,15 +74,23 @@ Kirigami.ApplicationWindow {
         target: LauncherCore
 
         function onLoadingFinished() {
-            checkSetup()
+            checkSetup();
         }
 
         function onSuccessfulLaunch() {
-            hide()
+            if (LauncherCore.closeWhenLaunched) {
+                hide();
+            } else {
+                checkSetup();
+            }
         }
 
         function onGameClosed() {
-            Qt.callLater(Qt.quit)
+            if (LauncherCore.closeWhenLaunched) {
+                Qt.callLater(Qt.quit);
+            } else {
+                checkSetup();
+            }
         }
 
         function onShowNewsChanged() {
