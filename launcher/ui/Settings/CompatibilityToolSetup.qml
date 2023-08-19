@@ -6,59 +6,60 @@ import QtQuick.Window 2.15
 import org.kde.kirigami 2.20 as Kirigami
 import QtQuick.Controls 2.15 as Controls
 import QtQuick.Layouts 1.15
-import org.kde.kirigamiaddons.labs.mobileform 0.1 as MobileForm
+import org.kde.kirigamiaddons.formcard 1.0 as FormCard
 import zone.xiv.astra 1.0
 
-Kirigami.Page {
+FormCard.FormCardPage {
     id: page
 
     property var installer: null
 
     title: i18n("Install Compatibility Tool")
 
-    ColumnLayout {
-        width: parent.width
-        MobileForm.FormCard {
-            Layout.topMargin: Kirigami.Units.largeSpacing
-            Layout.fillWidth: true
-            contentItem: ColumnLayout {
-                spacing: 0
+    FormCard.FormHeader {
+        title: i18n("Compatibility Tool")
+    }
 
-                MobileForm.FormCardHeader {
-                    title: i18n("Compatibility Tool")
-                }
+    FormCard.FormCard {
+        Layout.fillWidth: true
 
-                MobileForm.FormTextDelegate {
-                    text: i18n("Press the button below to install the compatibility tool for Steam.")
-                }
+        FormCard.FormTextDelegate {
+            text: i18n("Press the button below to install the compatibility tool for Steam.")
+        }
 
-                MobileForm.FormDelegateSeparator {}
+        FormCard.FormDelegateSeparator {
+            below: installToolButton
+        }
 
-                MobileForm.FormButtonDelegate {
-                    text: i18n("Install Tool")
-                    icon.name: "install"
-                    onClicked: {
-                        page.installer = LauncherCore.createCompatInstaller();
-                        page.installer.installCompatibilityTool();
-                    }
-                }
+        FormCard.FormButtonDelegate {
+            id: installToolButton
 
-                MobileForm.FormDelegateSeparator {}
+            text: i18n("Install Tool")
+            icon.name: "install"
+            onClicked: {
+                page.installer = LauncherCore.createCompatInstaller();
+                page.installer.installCompatibilityTool();
+            }
+        }
 
-                MobileForm.FormButtonDelegate {
-                    text: i18n("Remove Tool")
-                    icon.name: "delete"
-                    onClicked: {
-                        page.installer = LauncherCore.createCompatInstaller();
-                        page.installer.removeCompatibilityTool();
-                    }
-                }
+        FormCard.FormDelegateSeparator {
+            above: installToolButton
+            below: removeToolButton
+        }
+
+        FormCard.FormButtonDelegate {
+            id: removeToolButton
+
+            text: i18n("Remove Tool")
+            icon.name: "delete"
+            onClicked: {
+                page.installer = LauncherCore.createCompatInstaller();
+                page.installer.removeCompatibilityTool();
             }
         }
     }
 
-    Kirigami.PromptDialog {
-        id: errorDialog
+    property Kirigami.PromptDialog errorDialog: Kirigami.PromptDialog {
         title: i18n("Install error")
 
         showCloseButton: false
@@ -68,7 +69,7 @@ Kirigami.Page {
         onRejected: applicationWindow().pageStack.layers.pop()
     }
 
-    Connections {
+    data: Connections {
         enabled: page.installer !== null
         target: page.installer
 

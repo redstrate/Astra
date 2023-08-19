@@ -6,7 +6,7 @@ import QtQuick.Window 2.15
 import org.kde.kirigami 2.20 as Kirigami
 import QtQuick.Controls 2.15 as Controls
 import QtQuick.Layouts 1.15
-import org.kde.kirigamiaddons.labs.mobileform 0.1 as MobileForm
+import org.kde.kirigamiaddons.formcard 1.0 as FormCard
 import QtGraphicalEffects 1.0
 import zone.xiv.astra 1.0
 
@@ -83,84 +83,80 @@ Controls.Control {
             }
         }
 
-        MobileForm.FormCard {
-            Layout.topMargin: Kirigami.Units.largeSpacing
+        FormCard.FormHeader {
+            title: i18n("News")
+
+            Layout.fillWidth: true
+            maximumWidth: layout.maximumWidth
+        }
+
+        FormCard.FormCard {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
             maximumWidth: layout.maximumWidth
             visible: LauncherCore.headline !== null
 
-            contentItem: ColumnLayout {
-                spacing: 0
+            Repeater {
+                model: LauncherCore.headline !== null ? LauncherCore.headline.news : undefined
 
-                MobileForm.FormCardHeader {
-                    title: i18n("News")
-                }
+                FormCard.FormButtonDelegate {
+                    text: modelData.title
+                    description: Qt.formatDate(modelData.date)
 
-                Repeater {
-                    model: LauncherCore.headline !== null ? LauncherCore.headline.news : undefined
-
-                    MobileForm.FormButtonDelegate {
-                        text: modelData.title
-                        description: Qt.formatDate(modelData.date)
-
-                        onClicked: applicationWindow().openUrl(modelData.url)
-                        onHoveredChanged: {
-                            if (hovered) {
-                                applicationWindow().hoverLinkIndicator.text = modelData.url;
-                            } else {
-                                applicationWindow().hoverLinkIndicator.text = "";
-                            }
+                    onClicked: applicationWindow().openUrl(modelData.url)
+                    onHoveredChanged: {
+                        if (hovered) {
+                            applicationWindow().hoverLinkIndicator.text = modelData.url;
+                        } else {
+                            applicationWindow().hoverLinkIndicator.text = "";
                         }
                     }
                 }
+            }
 
-                MobileForm.FormTextDelegate {
-                    description: i18n("No news.")
-                    visible: LauncherCore.headline !== null ? LauncherCore.headline.failedToLoad : false
-                }
+            FormCard.FormTextDelegate {
+                description: i18n("No news.")
+                visible: LauncherCore.headline !== null ? LauncherCore.headline.failedToLoad : false
             }
         }
 
-        MobileForm.FormCard {
-            Layout.topMargin: Kirigami.Units.largeSpacing
+        FormCard.FormHeader {
+            title: i18n("Topics")
+
+            Layout.fillWidth: true
+            maximumWidth: layout.maximumWidth
+        }
+
+        FormCard.FormCard {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
             maximumWidth: layout.maximumWidth
             visible: LauncherCore.headline !== null
 
-            contentItem: ColumnLayout {
-                spacing: 0
+            Repeater {
+                model: LauncherCore.headline !== null ? LauncherCore.headline.topics : undefined
 
-                MobileForm.FormCardHeader {
-                    title: i18n("Topics")
-                }
+                FormCard.FormButtonDelegate {
+                    text: modelData.title
+                    description: Qt.formatDate(modelData.date)
 
-                Repeater {
-                    model: LauncherCore.headline !== null ? LauncherCore.headline.topics : undefined
-
-                    MobileForm.FormButtonDelegate {
-                        text: modelData.title
-                        description: Qt.formatDate(modelData.date)
-
-                        hoverEnabled: true
-                        onClicked: applicationWindow().openUrl(modelData.url)
-                        onHoveredChanged: {
-                            if (hovered) {
-                                applicationWindow().hoverLinkIndicator.text = modelData.url;
-                            } else {
-                                applicationWindow().hoverLinkIndicator.text = "";
-                            }
+                    hoverEnabled: true
+                    onClicked: applicationWindow().openUrl(modelData.url)
+                    onHoveredChanged: {
+                        if (hovered) {
+                            applicationWindow().hoverLinkIndicator.text = modelData.url;
+                        } else {
+                            applicationWindow().hoverLinkIndicator.text = "";
                         }
                     }
                 }
+            }
 
-                MobileForm.FormTextDelegate {
-                    description: i18n("No topics.")
-                    visible: LauncherCore.headline !== null ? LauncherCore.headline.failedToLoad : false
-                }
+            FormCard.FormTextDelegate {
+                description: i18n("No topics.")
+                visible: LauncherCore.headline !== null ? LauncherCore.headline.failedToLoad : false
             }
         }
 

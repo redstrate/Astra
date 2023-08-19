@@ -6,7 +6,7 @@ import QtQuick.Window 2.15
 import org.kde.kirigami 2.20 as Kirigami
 import QtQuick.Controls 2.15 as Controls
 import QtQuick.Layouts 1.15
-import org.kde.kirigamiaddons.labs.mobileform 0.1 as MobileForm
+import org.kde.kirigamiaddons.formcard 1.0 as FormCard
 import zone.xiv.astra 1.0
 
 import "../Components"
@@ -16,40 +16,55 @@ Kirigami.ScrollablePage {
 
     title: i18n("Developer Settings")
 
-    ColumnLayout {
-        width: parent.width
+    FormCard.FormCard {
+        Layout.fillWidth: true
 
-        MobileForm.FormCard {
-            Layout.topMargin: Kirigami.Units.largeSpacing
-            Layout.fillWidth: true
-            contentItem: ColumnLayout {
-                spacing: 0
+        FormCard.FormCheckDelegate {
+            id: keepPatchesDelegate
 
-                MobileForm.FormCheckDelegate {
-                    text: i18n("Keep Patches")
-                    description: i18n("Do not delete patches after they're used. Astra will not redownload patch data, if found.")
-                    checked: LauncherCore.keepPatches
-                    onCheckedChanged: LauncherCore.keepPatches = checked
-                }
+            text: i18n("Keep Patches")
+            description: i18n("Do not delete patches after they're used. Astra will not redownload patch data, if found.")
+            checked: LauncherCore.keepPatches
+            onCheckedChanged: LauncherCore.keepPatches = checked
+        }
 
-                MobileForm.FormTextFieldDelegate {
-                    label: i18n("Dalamud Distribution Server")
-                    text: LauncherCore.dalamudDistribServer
-                    onTextChanged: LauncherCore.dalamudDistribServer = text
-                }
+        FormCard.FormDelegateSeparator {
+            above: keepPatchesDelegate
+            below: dalamudServerDelegate
+        }
 
-                MobileForm.FormTextFieldDelegate {
-                    label: i18n("SE Main Server")
-                    text: LauncherCore.squareEnixServer
-                    onTextChanged: LauncherCore.squareEnixServer = text
-                }
+        FormCard.FormTextFieldDelegate {
+            id: dalamudServerDelegate
 
-                MobileForm.FormTextFieldDelegate {
-                    label: i18n("SE Login Server")
-                    text: LauncherCore.squareEnixLoginServer
-                    onTextChanged: LauncherCore.squareEnixLoginServer = text
-                }
-            }
+            label: i18n("Dalamud Distribution Server")
+            text: LauncherCore.dalamudDistribServer
+            onTextChanged: LauncherCore.dalamudDistribServer = text
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: dalamudServerDelegate
+            below: mainServerDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: mainServerDelegate
+
+            label: i18n("SE Main Server")
+            text: LauncherCore.squareEnixServer
+            onTextChanged: LauncherCore.squareEnixServer = text
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: mainServerDelegate
+            below: loginServerDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: loginServerDelegate
+
+            label: i18n("SE Login Server")
+            text: LauncherCore.squareEnixLoginServer
+            onTextChanged: LauncherCore.squareEnixLoginServer = text
         }
     }
 }
