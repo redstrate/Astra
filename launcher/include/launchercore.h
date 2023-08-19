@@ -20,6 +20,7 @@ class SquareLauncher;
 class AssetUpdater;
 class Watchdog;
 class GameInstaller;
+class CompatibilityToolInstaller;
 
 class LoginInformation : public QObject
 {
@@ -141,6 +142,7 @@ public:
     bool m_isSteam = false;
 
     Q_INVOKABLE GameInstaller *createInstaller(Profile *profile);
+    Q_INVOKABLE CompatibilityToolInstaller *createCompatInstaller();
 
     bool isLoadingFinished() const;
     bool hasAccount() const;

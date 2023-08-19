@@ -10,6 +10,7 @@
 #include <QtWebEngine>
 
 #include "astra-version.h"
+#include "compatibilitytoolinstaller.h"
 #include "gameinstaller.h"
 #include "launchercore.h"
 #include "sapphirelauncher.h"
@@ -75,6 +76,11 @@ int main(int argc, char *argv[])
 
     qmlRegisterSingletonInstance("zone.xiv.astra", 1, 0, "LauncherCore", &c);
     qmlRegisterUncreatableType<GameInstaller>("zone.xiv.astra", 1, 0, "GameInstaller", QStringLiteral("Use LauncherCore::createInstaller"));
+    qmlRegisterUncreatableType<CompatibilityToolInstaller>("zone.xiv.astra",
+                                                           1,
+                                                           0,
+                                                           "CompatibilityToolInstaller",
+                                                           QStringLiteral("Use LauncherCore::createCompatInstaller"));
     qmlRegisterUncreatableType<AccountManager>("zone.xiv.astra", 1, 0, "AccountManager", QStringLiteral("Use LauncherCore::accountManager"));
     qmlRegisterUncreatableType<ProfileManager>("zone.xiv.astra", 1, 0, "ProfileManager", QStringLiteral("Use LauncherCore::profileManager"));
     qmlRegisterUncreatableType<Profile>("zone.xiv.astra", 1, 0, "Profile", QStringLiteral("Use from ProfileManager"));

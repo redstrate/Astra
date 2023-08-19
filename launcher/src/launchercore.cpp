@@ -16,6 +16,7 @@
 
 #include "account.h"
 #include "assetupdater.h"
+#include "compatibilitytoolinstaller.h"
 #include "config.h"
 #include "encryptedarg.h"
 #include "launchercore.h"
@@ -448,6 +449,11 @@ GameInstaller *LauncherCore::createInstaller(Profile *profile)
 {
     Q_ASSERT(profile != nullptr);
     return new GameInstaller(*this, *profile, this);
+}
+
+CompatibilityToolInstaller *LauncherCore::createCompatInstaller()
+{
+    return new CompatibilityToolInstaller(*this, this);
 }
 
 bool LauncherCore::isLoadingFinished() const

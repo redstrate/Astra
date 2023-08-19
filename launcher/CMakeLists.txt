@@ -6,6 +6,7 @@ target_sources(astra PRIVATE
         include/account.h
         include/accountmanager.h
         include/assetupdater.h
+        include/compatibilitytoolinstaller.h
         include/encryptedarg.h
         include/gameinstaller.h
         include/headline.h
@@ -22,6 +23,7 @@ target_sources(astra PRIVATE
         src/account.cpp
         src/accountmanager.cpp
         src/assetupdater.cpp
+        src/compatibilitytoolinstaller.cpp
         src/encryptedarg.cpp
         src/gameinstaller.cpp
         src/launchercore.cpp

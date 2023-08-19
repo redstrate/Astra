@@ -117,6 +117,14 @@ Kirigami.ScrollablePage {
                 }
 
                 MobileForm.FormButtonDelegate {
+                    text: i18n("Setup Compatibility Tool")
+                    icon.name: "install"
+                    onClicked: applicationWindow().pageStack.layers.push('qrc:/ui/Settings/CompatibilityToolSetup.qml')
+                }
+
+                MobileForm.FormDelegateSeparator {}
+
+                MobileForm.FormButtonDelegate {
                     text: i18n("Developer Settings")
                     icon.name: "configure"
                     onClicked: applicationWindow().pageStack.layers.push('qrc:/ui/Settings/DeveloperSettings.qml')
