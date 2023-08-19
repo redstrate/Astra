@@ -3,6 +3,7 @@ packages:
   - cmake
   - extra-cmake-modules
   - qt5-quickcontrols2
+  - qt5-webengine
   - kirigami2
   - kcoreaddons
   - ki18n
