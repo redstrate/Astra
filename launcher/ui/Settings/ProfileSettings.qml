@@ -330,10 +330,22 @@ FormCard.FormCardPage {
             description: !enabled ? i18n("Cannot delete the only profile.") : ""
             icon.name: "delete"
             enabled: LauncherCore.profileManager.canDelete(page.profile)
-            onClicked: {
-                LauncherCore.profileManager.deleteProfile(page.profile)
-                applicationWindow().pageStack.layers.pop()
+
+            Kirigami.PromptDialog {
+                id: deletePrompt
+
+                title: i18nc("@title", "Delete Profile")
+                subtitle: i18nc("@label", "Are you sure you want to delete this profile?")
+                standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
+                showCloseButton: false
+
+                onAccepted: {
+                    LauncherCore.profileManager.deleteProfile(page.profile);
+                    applicationWindow().pageStack.layers.pop();
+                }
             }
+
+            onClicked: deletePrompt.open()
         }
     }
 }

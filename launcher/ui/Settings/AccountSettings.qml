@@ -224,10 +224,22 @@ FormCard.FormCardPage {
             description: !enabled ? i18n("Cannot delete the only account.") : ""
             icon.name: "delete"
             enabled: LauncherCore.accountManager.canDelete(page.account)
-            onClicked: {
-                LauncherCore.accountManager.deleteAccount(page.account)
-                applicationWindow().pageStack.layers.pop()
+
+            Kirigami.PromptDialog {
+                id: deletePrompt
+
+                title: i18nc("@title", "Delete Account")
+                subtitle: i18nc("@label", "Are you sure you want to delete this account?")
+                standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
+                showCloseButton: false
+
+                onAccepted: {
+                    LauncherCore.accountManager.deleteAccount(page.account);
+                    applicationWindow().pageStack.layers.pop();
+                }
             }
+
+            onClicked: deletePrompt.open()
         }
     }
 }

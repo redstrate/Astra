@@ -9,7 +9,6 @@ import QtQuick.Layouts 1.15
 KirigamiSettings.CategorizedSettings {
     id: settingsPage
 
-    objectName: "settingsPage"
     actions: [
         KirigamiSettings.SettingAction {
             actionName: "general"
