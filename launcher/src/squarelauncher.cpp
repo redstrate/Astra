@@ -53,7 +53,10 @@ void SquareLauncher::getStored(const LoginInformation &info)
         query.addQueryItem("ticket_size", "1");
     }
 
-    QUrl url("https://ffxiv-login.square-enix.com/oauth/ffxivarr/login/top");
+    QUrl url;
+    url.setScheme("https");
+    url.setHost(QStringLiteral("ffxiv-login.%1").arg(window.squareEnixLoginServer()));
+    url.setPath("/oauth/ffxivarr/login/top");
     url.setQuery(query);
 
     auto request = QNetworkRequest(url);
@@ -98,7 +101,12 @@ void SquareLauncher::login(const LoginInformation &info, const QUrl &referer)
     postData.addQueryItem("password", info.password);
     postData.addQueryItem("otppw", info.oneTimePassword);
 
-    QNetworkRequest request(QUrl("https://ffxiv-login.square-enix.com/oauth/ffxivarr/login/login.send"));
+    QUrl url;
+    url.setScheme("https");
+    url.setHost(QStringLiteral("ffxiv-login.%1").arg(window.squareEnixLoginServer()));
+    url.setPath("/oauth/ffxivarr/login/login.send");
+
+    QNetworkRequest request(url);
     window.buildRequest(*info.profile, request);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("Referer", referer.toEncoded());
@@ -149,7 +157,7 @@ void SquareLauncher::registerSession(const LoginInformation &info)
 {
     QUrl url;
     url.setScheme("https");
-    url.setHost("patch-gamever.ffxiv.com");
+    url.setHost(QStringLiteral("patch-gamever.%1").arg(window.squareEnixServer()));
     url.setPath(QString("/http/win32/ffxivneo_release_game/%1/%2").arg(info.profile->repositories.repositories[0].version, SID));
 
     auto request = QNetworkRequest(url);

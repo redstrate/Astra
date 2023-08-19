@@ -38,7 +38,7 @@ void SquareBoot::bootCheck(const LoginInformation &info)
 
     QUrl url;
     url.setScheme("http");
-    url.setHost("patch-bootver.ffxiv.com");
+    url.setHost(QStringLiteral("patch-bootver.%1").arg(window.squareEnixServer()));
     url.setPath(QString("/http/win32/ffxivneo_release_boot/%1").arg(info.profile->bootVersion));
     url.setQuery(query);
 
@@ -49,7 +49,7 @@ void SquareBoot::bootCheck(const LoginInformation &info)
         request.setRawHeader("User-Agent", "FFXIV PATCH CLIENT");
     }
 
-    request.setRawHeader("Host", "patch-bootver.ffxiv.com");
+    request.setRawHeader("Host", QStringLiteral("patch-bootver.%1").arg(window.squareEnixServer()).toUtf8());
 
     auto reply = window.mgr->get(request);
     connect(reply, &QNetworkReply::finished, [this, reply] {
@@ -64,7 +64,10 @@ void SquareBoot::checkGateStatus(LoginInformation *info)
     Q_EMIT window.stageChanged(i18n("Checking gate..."));
     qDebug() << "Checking gate...";
 
-    QUrl url("https://frontier.ffxiv.com/worldStatus/gate_status.json");
+    QUrl url;
+    url.setScheme("https");
+    url.setHost(QStringLiteral("frontier.%1").arg(window.squareEnixServer()));
+    url.setPath("/worldStatus/gate_status.json");
     url.setQuery(QString::number(QDateTime::currentMSecsSinceEpoch()));
 
     QNetworkRequest request(url);

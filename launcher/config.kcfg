@@ -20,5 +20,14 @@ SPDX-License-Identifier: CC0-1.0
     <entry name="KeepPatches" type="bool">
       <default>false</default>
     </entry>
+    <entry name="DalamudDistribServer" type="String">
+      <default>goatcorp.github.io</default>
+    </entry>
+    <entry name="SquareEnixServer" type="String">
+      <default>ffxiv.com</default>
+    </entry>
+    <entry name="SquareEnixLoginServer" type="String">
+      <default>square-enix.com</default>
+    </entry>
   </group>
 </kcfg>

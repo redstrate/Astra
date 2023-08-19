@@ -64,6 +64,9 @@ class LauncherCore : public QObject
     Q_PROPERTY(bool closeWhenLaunched READ closeWhenLaunched WRITE setCloseWhenLaunched NOTIFY closeWhenLaunchedChanged)
     Q_PROPERTY(bool showNews READ showNews WRITE setShowNews NOTIFY showNewsChanged)
     Q_PROPERTY(bool keepPatches READ keepPatches WRITE setKeepPatches NOTIFY keepPatchesChanged)
+    Q_PROPERTY(QString dalamudDistribServer READ dalamudDistribServer WRITE setDalamudDistribServer NOTIFY dalamudDistribServerChanged)
+    Q_PROPERTY(QString squareEnixServer READ squareEnixServer WRITE setSquareEnixServer NOTIFY squareEnixServerChanged)
+    Q_PROPERTY(QString squareEnixLoginServer READ squareEnixLoginServer WRITE setSquareEnixLoginServer NOTIFY squareEnixLoginServerChanged)
     Q_PROPERTY(Headline *headline READ headline NOTIFY newsChanged)
 
 public:
@@ -124,6 +127,15 @@ public:
     bool keepPatches() const;
     void setKeepPatches(bool value);
 
+    QString dalamudDistribServer() const;
+    void setDalamudDistribServer(const QString &value);
+
+    QString squareEnixServer() const;
+    void setSquareEnixServer(const QString &value);
+
+    QString squareEnixLoginServer() const;
+    void setSquareEnixLoginServer(const QString &value);
+
     int defaultProfileIndex = 0;
 
     bool m_isSteam = false;
@@ -152,6 +164,9 @@ signals:
     void closeWhenLaunchedChanged();
     void showNewsChanged();
     void keepPatchesChanged();
+    void dalamudDistribServerChanged();
+    void squareEnixServerChanged();
+    void squareEnixLoginServerChanged();
     void loginError(QString message);
     void stageChanged(QString message);
     void stageIndeterminate();

@@ -29,6 +29,10 @@ signals:
     void finishedUpdating();
 
 private:
+    QUrl dalamudVersionManifestUrl(Profile::DalamudChannel channel) const;
+    QUrl dalamudLatestPackageUrl(Profile::DalamudChannel channel) const;
+    QUrl dalamudAssetManifestUrl() const;
+
     LauncherCore &launcher;
 
     Profile::DalamudChannel chosenChannel;

@@ -31,6 +31,24 @@ Kirigami.ScrollablePage {
                     checked: LauncherCore.keepPatches
                     onCheckedChanged: LauncherCore.keepPatches = checked
                 }
+
+                MobileForm.FormTextFieldDelegate {
+                    label: i18n("Dalamud Distribution Server")
+                    text: LauncherCore.dalamudDistribServer
+                    onTextChanged: LauncherCore.dalamudDistribServer = text
+                }
+
+                MobileForm.FormTextFieldDelegate {
+                    label: i18n("SE Main Server")
+                    text: LauncherCore.squareEnixServer
+                    onTextChanged: LauncherCore.squareEnixServer = text
+                }
+
+                MobileForm.FormTextFieldDelegate {
+                    label: i18n("SE Login Server")
+                    text: LauncherCore.squareEnixLoginServer
+                    onTextChanged: LauncherCore.squareEnixLoginServer = text
+                }
             }
         }
     }

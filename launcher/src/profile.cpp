@@ -21,12 +21,18 @@ Profile::Profile(LauncherCore &launcher, const QString &key, QObject *parent)
     readGameVersion();
     readWineInfo();
 
-    const QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
-    const bool hasDalamud = QFile::exists(dataDir + "/Dalamud");
-    if (hasDalamud) {
-        if (QFile::exists(dataDir + "/Dalamud/Dalamud.deps.json")) {
-            QFile depsJson(dataDir + "/Dalamud/Dalamud.deps.json");
+    const QDir dalamudDir = dataDir.absoluteFilePath("dalamud");
+
+    if (dalamudDir.exists()) {
+        const QDir dalamudInstallDir = dalamudDir.absoluteFilePath(dalamudChannelName());
+        const QDir dalamudAssetsDir = dalamudDir.absoluteFilePath("assets");
+        const QDir dalamudRuntimeDir = dalamudDir.absoluteFilePath("runtime");
+
+        const QString dalamudDepsJson = dalamudInstallDir.absoluteFilePath("Dalamud.deps.json");
+        if (QFile::exists(dalamudDepsJson)) {
+            QFile depsJson(dalamudDepsJson);
             depsJson.open(QFile::ReadOnly);
             QJsonDocument doc = QJsonDocument::fromJson(depsJson.readAll());
 
@@ -40,15 +46,17 @@ Profile::Profile(LauncherCore &launcher, const QString &key, QObject *parent)
             dalamudVersion = versionString.remove("Dalamud/");
         }
 
-        if (QFile::exists(dataDir + "/DalamudAssets/asset.ver")) {
-            QFile assetJson(dataDir + "/DalamudAssets/asset.ver");
+        const QString dalamudAssetsVer = dalamudAssetsDir.absoluteFilePath("asset.ver");
+        if (QFile::exists(dalamudAssetsVer)) {
+            QFile assetJson(dalamudAssetsVer);
             assetJson.open(QFile::ReadOnly | QFile::Text);
 
             dalamudAssetVersion = QString(assetJson.readAll()).toInt();
         }
 
-        if (QFile::exists(dataDir + "/DalamudRuntime/runtime.ver")) {
-            QFile runtimeVer(dataDir + "/DalamudRuntime/runtime.ver");
+        const QString dalamudRuntimeVer = dalamudRuntimeDir.absoluteFilePath("runtime.ver");
+        if (QFile::exists(dalamudRuntimeVer)) {
+            QFile runtimeVer(dalamudRuntimeVer);
             runtimeVer.open(QFile::ReadOnly | QFile::Text);
 
             runtimeVersion = QString(runtimeVer.readAll());

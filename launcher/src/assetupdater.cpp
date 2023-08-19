@@ -11,21 +11,8 @@
 
 #include <JlCompress.h>
 
-const QString baseGoatDomain = "https://goatcorp.github.io";
-
-const QString baseDalamudDistribution = baseGoatDomain + "/dalamud-distrib/";
-const QString dalamudLatestPackageURL = baseDalamudDistribution + "%1latest.zip";
-const QString dalamudVersionManifestURL = baseDalamudDistribution + "%1version";
-
-const QString baseDalamudAssetDistribution = baseGoatDomain + "/DalamudAssets";
-const QString dalamudAssetManifestURL = baseDalamudAssetDistribution + "/asset.json";
-
 const QString dotnetRuntimePackageURL = "https://dotnetcli.azureedge.net/dotnet/Runtime/%1/dotnet-runtime-%1-win-x64.zip";
 const QString dotnetDesktopPackageURL = "https://dotnetcli.azureedge.net/dotnet/WindowsDesktop/%1/windowsdesktop-runtime-%1-win-x64.zip";
-
-QMap<Profile::DalamudChannel, QString> channelToDistribPrefix = {{Profile::DalamudChannel::Stable, "/"},
-                                                                 {Profile::DalamudChannel::Staging, "stg/"},
-                                                                 {Profile::DalamudChannel::Net5, "net5/"}};
 
 AssetUpdater::AssetUpdater(Profile &profile, LauncherCore &launcher, QObject *parent)
     : QObject(parent)
@@ -74,7 +61,7 @@ void AssetUpdater::update()
         dalamudAssetNeededFilenames.append("dummy");
 
         // first we want to fetch the list of assets required
-        QNetworkRequest request(dalamudAssetManifestURL);
+        QNetworkRequest request(dalamudAssetManifestUrl());
 
         auto reply = launcher.mgr->get(request);
         connect(reply, &QNetworkReply::finished, [reply, this] {
@@ -97,7 +84,7 @@ void AssetUpdater::update()
     // dalamud injector / net runtime
     // they're all updated in unison, so there's no reason to have multiple checks
     {
-        QNetworkRequest request(dalamudVersionManifestURL.arg(channelToDistribPrefix[m_profile.dalamudChannel()]));
+        QNetworkRequest request(dalamudVersionManifestUrl(m_profile.dalamudChannel()));
 
         chosenChannel = m_profile.dalamudChannel();
 
@@ -260,7 +247,7 @@ void AssetUpdater::checkIfCheckingIsDone()
 
         needsDalamudInstall = true;
 
-        QNetworkRequest request(dalamudLatestPackageURL.arg(channelToDistribPrefix[chosenChannel]));
+        QNetworkRequest request(dalamudLatestPackageUrl(chosenChannel));
 
         auto reply = launcher.mgr->get(request);
         connect(reply, &QNetworkReply::finished, [this, reply] {
@@ -329,4 +316,38 @@ void AssetUpdater::checkIfCheckingIsDone()
 
         checkIfFinished();
     }
+}
+
+static const QMap<Profile::DalamudChannel, QString> channelToDistribPrefix = {{Profile::DalamudChannel::Stable, "/"},
+                                                                              {Profile::DalamudChannel::Staging, "stg/"},
+                                                                              {Profile::DalamudChannel::Net5, "net5/"}};
+
+QUrl AssetUpdater::dalamudVersionManifestUrl(const Profile::DalamudChannel channel) const
+{
+    QUrl url;
+    url.setScheme("https");
+    url.setHost(launcher.dalamudDistribServer());
+    url.setPath(QStringLiteral("/dalamud-distrib/%1version").arg(channelToDistribPrefix[channel]));
+
+    return url;
+}
+
+QUrl AssetUpdater::dalamudLatestPackageUrl(Profile::DalamudChannel channel) const
+{
+    QUrl url;
+    url.setScheme("https");
+    url.setHost(launcher.dalamudDistribServer());
+    url.setPath(QStringLiteral("/dalamud-distrib/%1latest.zip").arg(channelToDistribPrefix[channel]));
+
+    return url;
+}
+
+QUrl AssetUpdater::dalamudAssetManifestUrl() const
+{
+    QUrl url;
+    url.setScheme("https");
+    url.setHost(launcher.dalamudDistribServer());
+    url.setPath(QStringLiteral("/DalamudAssets/asset.json"));
+
+    return url;
 }

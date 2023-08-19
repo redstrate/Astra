@@ -107,17 +107,26 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Pro
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     const QDir configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     const QDir stateDir = Utility::stateDirectory();
+    const QDir dalamudDir = dataDir.absoluteFilePath("dalamud");
+
+    const QDir dalamudConfigDir = configDir.absoluteFilePath("dalamud");
+    const QDir userDalamudConfigDir = dalamudConfigDir.absoluteFilePath(profile.account()->uuid());
+
+    const QDir dalamudBasePluginDir = dalamudDir.absoluteFilePath("plugins");
+    const QDir dalamudUserPluginDir = dalamudBasePluginDir.absoluteFilePath(profile.account()->uuid());
+
+    // Some really dumb plugins check for "installedPlugins" in their assembly directory FOR SOME REASON
+    // so we need to match typical XIVQuickLauncher behavior here. Why? I have no clue.
+    const QDir dalamudPluginDir = dalamudUserPluginDir.absoluteFilePath("installedPlugins");
 
     const QString logDir = stateDir.absoluteFilePath("logs");
 
     if (!QDir().exists(logDir))
         QDir().mkpath(logDir);
 
-    const QDir dalamudDir = dataDir.absoluteFilePath("dalamud");
     const QDir dalamudRuntimeDir = dalamudDir.absoluteFilePath("runtime");
     const QDir dalamudAssetDir = dalamudDir.absoluteFilePath("assets");
-    const QDir dalamudConfigPath = configDir.absoluteFilePath("dalamud-config.json");
-    const QDir dalamudPluginDir = dalamudDir.absoluteFilePath("plugins");
+    const QDir dalamudConfigPath = userDalamudConfigDir.absoluteFilePath("dalamud-config.json");
 
     const QDir dalamudInstallDir = dalamudDir.absoluteFilePath(profile.dalamudChannelName());
     const QString dalamudInjector = dalamudInstallDir.absoluteFilePath("Dalamud.Injector.exe");
@@ -145,7 +154,6 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Pro
                       "-m",
                       "inject",
                       "--game=" + Utility::toWindowsPath(gameExecutablePath),
-                      "--dalamud-working-directory=" + Utility::toWindowsPath(dalamudDir),
                       "--dalamud-configuration-path=" + Utility::toWindowsPath(dalamudConfigPath),
                       "--dalamud-plugin-directory=" + Utility::toWindowsPath(dalamudPluginDir),
                       "--dalamud-asset-directory=" + Utility::toWindowsPath(dalamudAssetDir),
@@ -465,6 +473,48 @@ void LauncherCore::setKeepPatches(const bool value)
     }
 }
 
+QString LauncherCore::dalamudDistribServer() const
+{
+    return Config::dalamudDistribServer();
+}
+
+void LauncherCore::setDalamudDistribServer(const QString &value)
+{
+    if (value != Config::dalamudDistribServer()) {
+        Config::setDalamudDistribServer(value);
+        Config::self()->save();
+        Q_EMIT dalamudDistribServerChanged();
+    }
+}
+
+QString LauncherCore::squareEnixServer() const
+{
+    return Config::squareEnixServer();
+}
+
+void LauncherCore::setSquareEnixServer(const QString &value)
+{
+    if (value != Config::squareEnixServer()) {
+        Config::setSquareEnixServer(value);
+        Config::self()->save();
+        Q_EMIT squareEnixServerChanged();
+    }
+}
+
+QString LauncherCore::squareEnixLoginServer() const
+{
+    return Config::squareEnixLoginServer();
+}
+
+void LauncherCore::setSquareEnixLoginServer(const QString &value)
+{
+    if (value != Config::squareEnixLoginServer()) {
+        Config::setSquareEnixLoginServer(value);
+        Config::self()->save();
+        Q_EMIT squareEnixLoginServerChanged();
+    }
+}
+
 void LauncherCore::refreshNews()
 {
     QUrlQuery query;
@@ -473,7 +523,7 @@ void LauncherCore::refreshNews()
 
     QUrl url;
     url.setScheme("https");
-    url.setHost("frontier.ffxiv.com");
+    url.setHost(QStringLiteral("frontier.%1").arg(squareEnixServer()));
     url.setPath("/news/headline.json");
     url.setQuery(query);
 
