@@ -74,8 +74,8 @@ Kirigami.Page {
             id: loginPage
 
             Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-            Layout.minimumWidth: LauncherCore.showNews ? Kirigami.Units.gridUnit * 25 : undefined
-            Layout.fillWidth: true
+            Layout.minimumWidth: LauncherCore.showNews ? Kirigami.Units.gridUnit * 25 : 0
+            Layout.fillWidth: !LauncherCore.showNews
         }
     }
 }
