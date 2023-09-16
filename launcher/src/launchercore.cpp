@@ -371,8 +371,7 @@ void LauncherCore::readInitialInformation()
     Q_EMIT loadingFinished();
 }
 
-LauncherCore::LauncherCore(bool isSteam)
-    : m_isSteam(isSteam)
+LauncherCore::LauncherCore()
 {
     mgr = new QNetworkAccessManager(this);
     sapphireLauncher = new SapphireLauncher(*this, this);
@@ -703,4 +702,9 @@ void LauncherCore::openConfigBackup(Profile *profile)
 bool LauncherCore::isSteamDeck() const
 {
     return steamApi->isDeck();
+}
+
+void LauncherCore::setIsSteam(bool isSteam)
+{
+    m_isSteam = isSteam;
 }

@@ -5,12 +5,16 @@
 
 #include <QObject>
 #include <QString>
+#include <QtQml/qqmlregistration.h>
 
 class LauncherCore;
 
 class CompatibilityToolInstaller : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_UNCREATABLE("Use LauncherCore.createCompatInstaller")
+
 public:
     CompatibilityToolInstaller(LauncherCore &launcher, QObject *parent = nullptr);
 

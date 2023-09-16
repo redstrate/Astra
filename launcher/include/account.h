@@ -5,6 +5,7 @@
 
 #include <QDir>
 #include <QObject>
+#include <QtQml/qqmlregistration.h>
 
 #include "accountconfig.h"
 
@@ -13,6 +14,8 @@ class LauncherCore;
 class Account : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_UNCREATABLE("Use from AccountManager")
 
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(int language READ language WRITE setLanguage NOTIFY languageChanged)

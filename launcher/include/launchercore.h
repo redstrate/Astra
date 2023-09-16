@@ -54,6 +54,8 @@ struct LoginAuth {
 class LauncherCore : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
 
     Q_PROPERTY(bool loadingFinished READ isLoadingFinished NOTIFY loadingFinished)
     Q_PROPERTY(bool hasAccount READ hasAccount NOTIFY accountChanged)
@@ -72,12 +74,14 @@ class LauncherCore : public QObject
     Q_PROPERTY(Headline *headline READ headline NOTIFY newsChanged)
 
 public:
-    explicit LauncherCore(bool isSteam);
+    LauncherCore();
 
     QNetworkAccessManager *mgr;
 
     ProfileManager *profileManager();
     AccountManager *accountManager();
+
+    void setIsSteam(bool isSteam);
 
     /*
      * Begins the login process, and may call SquareBoot or SapphireLauncher depending on the profile type.

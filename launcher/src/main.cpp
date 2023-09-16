@@ -65,32 +65,13 @@ int main(int argc, char *argv[])
             return 0;
         }
     }
-
-    LauncherCore c(parser.isSet(steamOption));
-#else
-    LauncherCore c(false);
 #endif
 
-    qmlRegisterSingletonInstance("zone.xiv.astra", 1, 0, "LauncherCore", &c);
-    qmlRegisterUncreatableType<GameInstaller>("zone.xiv.astra", 1, 0, "GameInstaller", QStringLiteral("Use LauncherCore::createInstaller"));
-    qmlRegisterUncreatableType<CompatibilityToolInstaller>("zone.xiv.astra",
-                                                           1,
-                                                           0,
-                                                           "CompatibilityToolInstaller",
-                                                           QStringLiteral("Use LauncherCore::createCompatInstaller"));
-    qmlRegisterUncreatableType<AccountManager>("zone.xiv.astra", 1, 0, "AccountManager", QStringLiteral("Use LauncherCore::accountManager"));
-    qmlRegisterUncreatableType<ProfileManager>("zone.xiv.astra", 1, 0, "ProfileManager", QStringLiteral("Use LauncherCore::profileManager"));
-    qmlRegisterUncreatableType<Profile>("zone.xiv.astra", 1, 0, "Profile", QStringLiteral("Use from ProfileManager"));
-    qmlRegisterUncreatableType<Account>("zone.xiv.astra", 1, 0, "Account", QStringLiteral("Use from AccountManager"));
-    qmlRegisterSingletonType("zone.xiv.astra", 1, 0, "About", [](QQmlEngine *engine, QJSEngine *) -> QJSValue {
-        return engine->toScriptValue(KAboutData::applicationData());
-    });
-    qmlRegisterUncreatableType<Headline>("zone.xiv.astra", 1, 0, "Headline", QStringLiteral("Use from AccountManager"));
-    qRegisterMetaType<Banner>("Banner");
-    qRegisterMetaType<QList<Banner>>("QList<Banner>");
-    qRegisterMetaType<QList<News>>("QList<News>");
-
     QQmlApplicationEngine engine;
+
+    auto core = engine.singletonInstance<LauncherCore *>("zone.xiv.astra", "LauncherCore");
+    core->setIsSteam(parser.isSet(steamOption));
+
     engine.rootContext()->setContextObject(new KLocalizedContext(&engine));
     QObject::connect(&engine, &QQmlApplicationEngine::quit, &app, &QCoreApplication::quit);
 

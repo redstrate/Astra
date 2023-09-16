@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QtQml/qqmlregistration.h>
 
 class LauncherCore;
 class Profile;
@@ -12,6 +13,9 @@ class Profile;
 class GameInstaller : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_UNCREATABLE("Use Launchercore.createInstaller")
+
 public:
     GameInstaller(LauncherCore &launcher, Profile &profile, QObject *parent = nullptr);
 

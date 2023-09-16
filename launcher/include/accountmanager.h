@@ -4,12 +4,15 @@
 #pragma once
 
 #include <QAbstractListModel>
+#include <QtQml/qqmlregistration.h>
 
 #include "account.h"
 
 class AccountManager : public QAbstractListModel
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_UNCREATABLE("Use LauncherCore.accountManager")
 
 public:
     explicit AccountManager(LauncherCore &launcher, QObject *parent = nullptr);

@@ -4,12 +4,15 @@
 #pragma once
 
 #include <QAbstractListModel>
+#include <QtQml/qqmlregistration.h>
 
 #include "profile.h"
 
 class ProfileManager : public QAbstractListModel
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_UNCREATABLE("Use LauncherCore.profileManager")
 
 public:
     explicit ProfileManager(LauncherCore &launcher, QObject *parent = nullptr);
