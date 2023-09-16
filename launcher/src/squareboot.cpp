@@ -27,37 +27,34 @@ QCoro::Task<> SquareBoot::bootCheck(const LoginInformation &info)
     Q_EMIT window.stageChanged(i18n("Checking for launcher updates..."));
     qDebug() << "Performing boot check...";
 
-    patcher = new Patcher(window, info.profile->gamePath() + "/boot", info.profile->bootData, this);
+    patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/boot"), info.profile->bootData, this);
     connect(patcher, &Patcher::done, [this, &info] {
         info.profile->readGameVersion();
 
         launcher.login(info);
     });
 
-    QUrlQuery query;
-    query.addQueryItem("time", QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd-HH-mm"));
+    const QUrlQuery query{{QStringLiteral("time"), QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH-mm"))}};
 
     QUrl url;
-    url.setScheme("http");
+    url.setScheme(QStringLiteral("http"));
     url.setHost(QStringLiteral("patch-bootver.%1").arg(window.squareEnixServer()));
-    url.setPath(QString("/http/win32/ffxivneo_release_boot/%1").arg(info.profile->bootVersion));
+    url.setPath(QStringLiteral("/http/win32/ffxivneo_release_boot/%1").arg(info.profile->bootVersion));
     url.setQuery(query);
 
     auto request = QNetworkRequest(url);
     if (info.profile->account()->license() == Account::GameLicense::macOS) {
-        request.setRawHeader("User-Agent", "FFXIV-MAC PATCH CLIENT");
+        request.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("FFXIV-MAC PATCH CLIENT"));
     } else {
-        request.setRawHeader("User-Agent", "FFXIV PATCH CLIENT");
+        request.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("FFXIV PATCH CLIENT"));
     }
 
-    request.setRawHeader("Host", QStringLiteral("patch-bootver.%1").arg(window.squareEnixServer()).toUtf8());
+    request.setRawHeader(QByteArrayLiteral("Host"), QStringLiteral("patch-bootver.%1").arg(window.squareEnixServer()).toUtf8());
 
-    auto reply = window.mgr->get(request);
+    const auto reply = window.mgr->get(request);
     co_await reply;
 
-    const QString response = reply->readAll();
-
-    patcher->processPatchList(*window.mgr, response);
+    patcher->processPatchList(*window.mgr, reply->readAll());
 }
 
 QCoro::Task<> SquareBoot::checkGateStatus(LoginInformation *info)
@@ -66,9 +63,9 @@ QCoro::Task<> SquareBoot::checkGateStatus(LoginInformation *info)
     qDebug() << "Checking gate...";
 
     QUrl url;
-    url.setScheme("https");
+    url.setScheme(QStringLiteral("https"));
     url.setHost(QStringLiteral("frontier.%1").arg(window.squareEnixServer()));
-    url.setPath("/worldStatus/gate_status.json");
+    url.setPath(QStringLiteral("/worldStatus/gate_status.json"));
     url.setQuery(QString::number(QDateTime::currentMSecsSinceEpoch()));
 
     QNetworkRequest request(url);
@@ -76,12 +73,11 @@ QCoro::Task<> SquareBoot::checkGateStatus(LoginInformation *info)
     // TODO: really?
     window.buildRequest(*info->profile, request);
 
-    auto reply = window.mgr->get(request);
+    const auto reply = window.mgr->get(request);
     co_await reply;
 
     const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
-
-    const bool isGateOpen = !document.isEmpty() && document.object()["status"].toInt() != 0;
+    const bool isGateOpen = !document.isEmpty() && document.object()[QLatin1String("status")].toInt() != 0;
 
     if (isGateOpen) {
         bootCheck(*info);
