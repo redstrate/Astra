@@ -86,7 +86,10 @@ target_link_libraries(astra PRIVATE
         KF6::I18n
         KF6::ConfigCore
         KF6::ConfigGui
-        KF6::CoreAddons)
+        KF6::CoreAddons
+        QCoro::Core
+        QCoro::Network
+        QCoro::Qml)
 
 if (ENABLE_WATCHDOG)
     target_sources(astra PRIVATE

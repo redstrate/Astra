@@ -8,6 +8,7 @@
 #include <QProcess>
 #include <QStandardPaths>
 #include <algorithm>
+#include <qcoronetworkreply.h>
 #include <utility>
 
 #ifdef ENABLE_GAMEMODE
@@ -575,6 +576,11 @@ void LauncherCore::setSquareEnixLoginServer(const QString &value)
 
 void LauncherCore::refreshNews()
 {
+    fetchNews();
+}
+
+QCoro::Task<> LauncherCore::fetchNews()
+{
     QUrlQuery query;
     query.addQueryItem("lang", "en-us");
     query.addQueryItem("media", "pcapp");
@@ -594,56 +600,56 @@ void LauncherCore::refreshNews()
                              .toUtf8());
 
     auto reply = mgr->get(request);
-    QObject::connect(reply, &QNetworkReply::finished, [this, reply] {
-        auto document = QJsonDocument::fromJson(reply->readAll());
+    co_await reply;
 
-        auto headline = new Headline(this);
-        if (document.isEmpty()) {
-            headline->failedToLoad = true;
+    auto document = QJsonDocument::fromJson(reply->readAll());
+
+    auto headline = new Headline(this);
+    if (document.isEmpty()) {
+        headline->failedToLoad = true;
+    }
+
+    const auto parseNews = [](QJsonObject object) -> News {
+        News news;
+        news.date = QDateTime::fromString(object["date"].toString(), Qt::DateFormat::ISODate);
+        news.id = object["id"].toString();
+        news.tag = object["tag"].toString();
+        news.title = object["title"].toString();
+
+        if (object["url"].toString().isEmpty()) {
+            news.url = QUrl(QString("https://na.finalfantasyxiv.com/lodestone/news/detail/%1").arg(news.id));
+        } else {
+            news.url = QUrl(object["url"].toString());
         }
 
-        const auto parseNews = [](QJsonObject object) -> News {
-            News news;
-            news.date = QDateTime::fromString(object["date"].toString(), Qt::DateFormat::ISODate);
-            news.id = object["id"].toString();
-            news.tag = object["tag"].toString();
-            news.title = object["title"].toString();
+        return news;
+    };
 
-            if (object["url"].toString().isEmpty()) {
-                news.url = QUrl(QString("https://na.finalfantasyxiv.com/lodestone/news/detail/%1").arg(news.id));
-            } else {
-                news.url = QUrl(object["url"].toString());
-            }
+    for (auto bannerObject : document.object()["banner"].toArray()) {
+        auto banner = Banner();
+        banner.link = QUrl(bannerObject.toObject()["link"].toString());
+        banner.bannerImage = QUrl(bannerObject.toObject()["lsb_banner"].toString());
 
-            return news;
-        };
+        headline->banners.push_back(banner);
+    }
 
-        for (auto bannerObject : document.object()["banner"].toArray()) {
-            auto banner = Banner();
-            banner.link = QUrl(bannerObject.toObject()["link"].toString());
-            banner.bannerImage = QUrl(bannerObject.toObject()["lsb_banner"].toString());
+    for (auto newsObject : document.object()["news"].toArray()) {
+        auto news = parseNews(newsObject.toObject());
+        headline->news.push_back(news);
+    }
 
-            headline->banners.push_back(banner);
-        }
+    for (auto pinnedObject : document.object()["pinned"].toArray()) {
+        auto pinned = parseNews(pinnedObject.toObject());
+        headline->pinned.push_back(pinned);
+    }
 
-        for (auto newsObject : document.object()["news"].toArray()) {
-            auto news = parseNews(newsObject.toObject());
-            headline->news.push_back(news);
-        }
+    for (auto pinnedObject : document.object()["topics"].toArray()) {
+        auto pinned = parseNews(pinnedObject.toObject());
+        headline->topics.push_back(pinned);
+    }
 
-        for (auto pinnedObject : document.object()["pinned"].toArray()) {
-            auto pinned = parseNews(pinnedObject.toObject());
-            headline->pinned.push_back(pinned);
-        }
-
-        for (auto pinnedObject : document.object()["topics"].toArray()) {
-            auto pinned = parseNews(pinnedObject.toObject());
-            headline->topics.push_back(pinned);
-        }
-
-        m_headline = headline;
-        Q_EMIT newsChanged();
-    });
+    m_headline = headline;
+    Q_EMIT newsChanged();
 }
 
 Headline *LauncherCore::headline()

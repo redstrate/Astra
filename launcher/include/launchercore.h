@@ -7,6 +7,7 @@
 #include <QNetworkAccessManager>
 #include <QProcess>
 #include <QtQml>
+#include <qcorotask.h>
 
 #include "accountmanager.h"
 #include "headline.h"
@@ -207,6 +208,8 @@ private:
     QString getGameArgs(const Profile &profile, const LoginAuth &auth);
 
     bool checkIfInPath(const QString &program);
+
+    QCoro::Task<> fetchNews();
 
     SteamAPI *steamApi = nullptr;
 

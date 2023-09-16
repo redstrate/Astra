@@ -8,6 +8,7 @@
 #include <QCommandLineParser>
 #include <QQuickStyle>
 #include <QtWebView>
+#include <qcoroqml.h>
 
 #include "astra-version.h"
 #include "compatibilitytoolinstaller.h"
@@ -75,6 +76,8 @@ int main(int argc, char *argv[])
         }
     }
 #endif
+
+    QCoro::Qml::registerTypes();
 
     QQmlApplicationEngine engine;
 
