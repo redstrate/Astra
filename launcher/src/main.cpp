@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
     QtWebView::initialize();
 
     QApplication app(argc, argv);
+
     // Default to org.kde.desktop style unless the user forces another style
     if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE")) {
         QQuickStyle::setStyle(QStringLiteral("org.kde.desktop"));
@@ -33,7 +34,11 @@ int main(int argc, char *argv[])
                      i18n("FFXIV Launcher"),
                      KAboutLicense::GPL_V3,
                      i18n("© 2023 Joshua Goins"));
-    about.addAuthor(i18n("Joshua Goins"), i18n("Maintainer"), QStringLiteral("josh@redstrate.com"), QStringLiteral("https://redstrate.com/"));
+    about.addAuthor(i18n("Joshua Goins"),
+                    i18n("Maintainer"),
+                    QStringLiteral("josh@redstrate.com"),
+                    QStringLiteral("https://redstrate.com/"),
+                    QUrl("https://redstrate.com/rss-image.png"));
     about.setHomepage("https://xiv.zone/astra");
     about.addComponent("physis", "Library to access FFXIV data", physis_get_physis_version(), "https://xiv.zone/physis", KAboutLicense::GPL_V3);
     about.addComponent("libphysis", "C bindings for physis", physis_get_libphysis_version(), "", KAboutLicense::GPL_V3);
