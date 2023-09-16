@@ -39,13 +39,17 @@ int main(int argc, char *argv[])
                     QStringLiteral("josh@redstrate.com"),
                     QStringLiteral("https://redstrate.com/"),
                     QUrl("https://redstrate.com/rss-image.png"));
-    about.setHomepage("https://xiv.zone/astra");
-    about.addComponent("physis", "Library to access FFXIV data", physis_get_physis_version(), "https://xiv.zone/physis", KAboutLicense::GPL_V3);
-    about.addComponent("libphysis", "C bindings for physis", physis_get_libphysis_version(), "", KAboutLicense::GPL_V3);
-    about.setDesktopFileName("zone.xiv.astra");
-    about.setBugAddress("https://lists.sr.ht/~redstrate/public-inbox");
-    about.setComponentName("astra");
-    about.setProgramLogo("zone.xiv.astra");
+    about.setHomepage(QStringLiteral("https://xiv.zone/astra"));
+    about.addComponent(QStringLiteral("physis"),
+                       QStringLiteral("Library to access FFXIV data"),
+                       physis_get_physis_version(),
+                       QStringLiteral("https://xiv.zone/physis"),
+                       KAboutLicense::GPL_V3);
+    about.addComponent(QStringLiteral("libphysis"), QStringLiteral("C bindings for physis"), physis_get_libphysis_version(), {}, KAboutLicense::GPL_V3);
+    about.setDesktopFileName(QStringLiteral("zone.xiv.astra"));
+    about.setBugAddress(QByteArrayLiteral("https://lists.sr.ht/~redstrate/public-inbox"));
+    about.setComponentName(QStringLiteral("astra"));
+    about.setProgramLogo(QStringLiteral("zone.xiv.astra"));
 
     KAboutData::setApplicationData(about);
 
@@ -53,7 +57,7 @@ int main(int argc, char *argv[])
     parser.setApplicationDescription(i18n("Linux FFXIV Launcher"));
 
 #ifdef ENABLE_STEAM
-    QCommandLineOption steamOption("steam", "Used for booting the launcher from Steam.", "verb");
+    QCommandLineOption steamOption(QStringLiteral("steam"), QStringLiteral("Used for booting the launcher from Steam."), QStringLiteral("verb"));
     steamOption.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(steamOption);
 #endif
@@ -66,7 +70,7 @@ int main(int argc, char *argv[])
     if (parser.isSet(steamOption)) {
         const QStringList args = parser.positionalArguments();
         // Steam tries to use as a compatibiltiy tool, running install scripts (like DirectX), so try to ignore it.
-        if (!args[0].contains("ffxivboot.exe")) {
+        if (!args[0].contains(QLatin1String("ffxivboot.exe"))) {
             return 0;
         }
     }
@@ -74,7 +78,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    auto core = engine.singletonInstance<LauncherCore *>("zone.xiv.astra", "LauncherCore");
+    auto core = engine.singletonInstance<LauncherCore *>(QStringLiteral("zone.xiv.astra"), QStringLiteral("LauncherCore"));
     core->setIsSteam(parser.isSet(steamOption));
 
     engine.rootContext()->setContextObject(new KLocalizedContext(&engine));
