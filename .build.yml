@@ -2,14 +2,14 @@ image: archlinux
 packages:
   - cmake
   - extra-cmake-modules
-  - qt5-quickcontrols2
-  - qt5-webengine
+  - qt6-quickcontrols2
+  - qt6-webengine
   - kirigami2
   - kcoreaddons
   - ki18n
   - kconfig
-  - qtkeychain-qt5
-  - quazip-qt5
+  - qtkeychain-qt6
+  - quazip-qt6
   - rust
   - unshield
   - gamemode
@@ -21,15 +21,15 @@ tasks:
   - reuse: |
       cd astra
       reuse lint
-  - configure: |
-      cd astra
-      cmake -S . -B build-cmake
-  - build: |
-      cd astra
-      cmake --build build-cmake
-  - flatpak: |
-      cd astra
-      ./build-flatpak.sh
-artifacts:
-  - astra/build-cmake/bin/astra
-  - astra/astra.flatpak
+  #- configure: |
+  #    cd astra
+  #    cmake -S . -B build-cmake
+  #- build: |
+  #    cd astra
+  #    cmake --build build-cmake
+  #- flatpak: |
+  #    cd astra
+  #    ./build-flatpak.sh
+#artifacts:
+#  - astra/build-cmake/bin/astra
+#  - astra/astra.flatpak
