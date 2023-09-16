@@ -3,6 +3,8 @@
 
 import org.kde.kirigamiaddons.settings as KirigamiSettings
 
+import zone.xiv.astra
+
 KirigamiSettings.CategorizedSettings {
     id: settingsPage
 
