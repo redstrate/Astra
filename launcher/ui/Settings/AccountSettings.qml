@@ -1,13 +1,14 @@
 // SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import QtQuick 2.15
-import QtQuick.Window 2.15
-import org.kde.kirigami 2.20 as Kirigami
-import QtQuick.Controls 2.15 as Controls
-import QtQuick.Layouts 1.15
-import org.kde.kirigamiaddons.formcard 1.0 as FormCard
-import zone.xiv.astra 1.0
+import QtQuick
+import QtQuick.Controls as QQC2
+import QtQuick.Layouts
+
+import org.kde.kirigami as Kirigami
+import org.kde.kirigamiaddons.formcard as FormCard
+
+import zone.xiv.astra
 
 FormCard.FormCardPage {
     id: page
@@ -142,7 +143,7 @@ FormCard.FormCardPage {
 
                 onAccepted: page.account.lodestoneId = lodestoneIdField.text
 
-                Controls.TextField {
+                QQC2.TextField {
                     id: lodestoneIdField
                     text: page.account.lodestoneId
                     placeholderText: qsTr("123456...")
@@ -205,7 +206,7 @@ FormCard.FormCardPage {
 
                 onAccepted: page.account.setOTPSecret(otpSecretField.text)
 
-                Controls.TextField {
+                QQC2.TextField {
                     id: otpSecretField
                     placeholderText: qsTr("ABCD EFGH...")
                 }

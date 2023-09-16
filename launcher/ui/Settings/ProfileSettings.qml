@@ -1,13 +1,14 @@
 // SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import QtQuick 2.15
-import QtQuick.Window 2.15
-import org.kde.kirigami 2.20 as Kirigami
-import QtQuick.Controls 2.15 as Controls
-import QtQuick.Layouts 1.15
-import org.kde.kirigamiaddons.formcard 1.0 as FormCard
-import zone.xiv.astra 1.0
+import QtQuick
+import QtQuick.Controls as QQC2
+import QtQuick.Layouts
+
+import org.kde.kirigami as Kirigami
+import org.kde.kirigamiaddons.formcard as FormCard
+
+import zone.xiv.astra
 
 import "../Components"
 
@@ -193,29 +194,29 @@ FormCard.FormCardPage {
                 title: i18n("Configure Gamescope")
 
                 Kirigami.FormLayout {
-                    Controls.CheckBox {
+                    QQC2.CheckBox {
                         Kirigami.FormData.label: "Fullscreen:"
                         checked: page.profile.gamescopeFullscreen
                         onCheckedChanged: page.profile.gamescopeFullscreen = checked
                     }
-                    Controls.CheckBox {
+                    QQC2.CheckBox {
                         Kirigami.FormData.label: "Borderless:"
                         checked: page.profile.gamescopeBorderless
                         onCheckedChanged: page.profile.gamescopeBorderless = checked
                     }
-                    Controls.SpinBox {
+                    QQC2.SpinBox {
                         Kirigami.FormData.label: "Width:"
                         to: 4096
                         value: page.profile.gamescopeWidth
                         onValueModified: page.profile.gamescopeWidth = value
                     }
-                    Controls.SpinBox {
+                    QQC2.SpinBox {
                         Kirigami.FormData.label: "Height:"
                         to: 4096
                         value: page.profile.gamescopeHeight
                         onValueModified: page.profile.gamescopeHeight = value
                     }
-                    Controls.SpinBox {
+                    QQC2.SpinBox {
                         Kirigami.FormData.label: "Refresh Rate:"
                         to: 512
                         value: page.profile.gamescopeRefreshRate

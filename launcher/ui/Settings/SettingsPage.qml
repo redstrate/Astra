@@ -1,11 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import QtQuick 2.15
-import org.kde.kirigami 2.18 as Kirigami
-import org.kde.kirigamiaddons.settings 1.0 as KirigamiSettings
-import QtQuick.Layouts 1.15
-import zone.xiv.astra 1.0
+import org.kde.kirigamiaddons.settings as KirigamiSettings
 
 KirigamiSettings.CategorizedSettings {
     id: settingsPage

@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import QtQuick 2.15
-import QtQuick.Window 2.15
-import org.kde.kirigami 2.20 as Kirigami
-import QtQuick.Controls 2.15 as Controls
-import QtQuick.Layouts 1.15
-import zone.xiv.astra 1.0
+import QtQuick
+import QtQuick.Controls as QQC2
+
+import org.kde.kirigami as Kirigami
+
+import zone.xiv.astra
 
 import "Pages"
 
@@ -102,7 +102,7 @@ Kirigami.ApplicationWindow {
 
     Component.onCompleted: checkSetup()
 
-    property Item hoverLinkIndicator: Controls.Control {
+    property Item hoverLinkIndicator: QQC2.Control {
         parent: overlay.parent
         property alias text: linkText.text
         opacity: text.length > 0 ? 1 : 0
@@ -116,7 +116,7 @@ Kirigami.ApplicationWindow {
         z: 999990
         x: 0
         y: parent.height - implicitHeight
-        contentItem: Controls.Label {
+        contentItem: QQC2.Label {
             id: linkText
         }
         Kirigami.Theme.colorSet: Kirigami.Theme.View
