@@ -81,8 +81,10 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
+#ifdef ENABLE_STEAM
     auto core = engine.singletonInstance<LauncherCore *>(QStringLiteral("zone.xiv.astra"), QStringLiteral("LauncherCore"));
     core->setIsSteam(parser.isSet(steamOption));
+#endif
 
     engine.rootContext()->setContextObject(new KLocalizedContext(&engine));
     QObject::connect(&engine, &QQmlApplicationEngine::quit, &app, &QCoreApplication::quit);
