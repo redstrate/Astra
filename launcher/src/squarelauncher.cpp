@@ -9,6 +9,7 @@
 #include <QNetworkReply>
 #include <QRegularExpressionMatch>
 #include <QUrlQuery>
+#include <qcoronetworkreply.h>
 
 #include "account.h"
 #include "launchercore.h"
@@ -31,7 +32,7 @@ QString getFileHash(const QString &file)
     return QString("%1/%2").arg(QString::number(f.size()), hash.result().toHex());
 }
 
-void SquareLauncher::getStored(const LoginInformation &info)
+QCoro::Task<std::optional<SquareLauncher::StoredInfo>> SquareLauncher::getStored(const LoginInformation &info)
 {
     Q_EMIT window.stageChanged(i18n("Logging in..."));
 
@@ -62,39 +63,44 @@ void SquareLauncher::getStored(const LoginInformation &info)
     auto request = QNetworkRequest(url);
     window.buildRequest(*info.profile, request);
 
-    QNetworkReply *reply = window.mgr->get(request);
+    auto reply = window.mgr->get(request);
+    co_await reply;
 
-    connect(reply, &QNetworkReply::finished, [this, &info, reply, url] {
-        auto str = QString(reply->readAll());
+    const auto str = QString(reply->readAll());
 
-        // fetches Steam username
-        if (info.profile->account()->license() == Account::GameLicense::WindowsSteam) {
-            QRegularExpression re(R"lit(<input name=""sqexid"" type=""hidden"" value=""(?<sqexid>.*)""\/>)lit");
-            QRegularExpressionMatch match = re.match(str);
-
-            if (match.hasMatch()) {
-                username = match.captured(1);
-            } else {
-                Q_EMIT window.loginError(i18n("Could not get Steam username, have you attached your account?"));
-            }
-        } else {
-            username = info.username;
-        }
-
-        QRegularExpression re(R"lit(\t<\s*input .* name="_STORED_" value="(?<stored>.*)">)lit");
+    // fetches Steam username
+    if (info.profile->account()->license() == Account::GameLicense::WindowsSteam) {
+        QRegularExpression re(R"lit(<input name=""sqexid"" type=""hidden"" value=""(?<sqexid>.*)""\/>)lit");
         QRegularExpressionMatch match = re.match(str);
+
         if (match.hasMatch()) {
-            stored = match.captured(1);
-            login(info, url);
+            username = match.captured(1);
         } else {
-            Q_EMIT window.loginError(
-                i18n("Square Enix servers refused to confirm session information. The game may be under maintenance, try the official launcher."));
+            Q_EMIT window.loginError(i18n("Could not get Steam username, have you attached your account?"));
         }
-    });
+    } else {
+        username = info.username;
+    }
+
+    QRegularExpression re(R"lit(\t<\s*input .* name="_STORED_" value="(?<stored>.*)">)lit");
+    QRegularExpressionMatch match = re.match(str);
+    if (match.hasMatch()) {
+        co_return StoredInfo{match.captured(1), url};
+    } else {
+        Q_EMIT window.loginError(
+            i18n("Square Enix servers refused to confirm session information. The game may be under maintenance, try the official launcher."));
+        co_return {};
+    }
 }
 
-void SquareLauncher::login(const LoginInformation &info, const QUrl &referer)
+QCoro::Task<> SquareLauncher::login(const LoginInformation &info)
 {
+    const auto storedResult = co_await getStored(info);
+    if (storedResult == std::nullopt) {
+        co_return;
+    }
+    const auto [stored, referer] = *storedResult;
+
     QUrlQuery postData;
     postData.addQueryItem("_STORED_", stored);
     postData.addQueryItem("sqexid", info.username);
@@ -113,47 +119,47 @@ void SquareLauncher::login(const LoginInformation &info, const QUrl &referer)
     request.setRawHeader("Cache-Control", "no-cache");
 
     auto reply = window.mgr->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
-    connect(reply, &QNetworkReply::finished, [this, &info, reply] {
-        auto str = QString(reply->readAll());
+    co_await reply;
 
-        QRegularExpression re(R"lit(window.external.user\("login=auth,ok,(?<launchParams>.*)\);)lit");
-        QRegularExpressionMatch match = re.match(str);
-        if (match.hasMatch()) {
-            const auto parts = match.captured(1).split(',');
+    auto str = QString(reply->readAll());
 
-            const bool terms = parts[3] == "1";
-            const bool playable = parts[9] == "1";
+    QRegularExpression re(R"lit(window.external.user\("login=auth,ok,(?<launchParams>.*)\);)lit");
+    QRegularExpressionMatch match = re.match(str);
+    if (match.hasMatch()) {
+        const auto parts = match.captured(1).split(',');
 
-            if (!playable) {
-                Q_EMIT window.loginError(i18n("Your account is unplayable. Check that you have the correct license, and a valid subscription."));
-                return;
-            }
+        const bool terms = parts[3] == "1";
+        const bool playable = parts[9] == "1";
 
-            if (!terms) {
-                Q_EMIT window.loginError(i18n("Your account is unplayable. You need to accept the terms of service from the official launcher first."));
-                return;
-            }
-
-            SID = parts[1];
-            auth.region = parts[5].toInt();
-            auth.maxExpansion = parts[13].toInt();
-
-            registerSession(info);
-        } else {
-            QRegularExpression re(R"lit(window.external.user\("login=auth,ng,err,(?<launchParams>.*)\);)lit");
-            QRegularExpressionMatch match = re.match(str);
-
-            const auto parts = match.captured(1).split(',');
-
-            // there's a stray quote at the end of the error string, so let's remove that
-            QString errorStr = match.captured(1).chopped(1);
-
-            Q_EMIT window.loginError(errorStr);
+        if (!playable) {
+            Q_EMIT window.loginError(i18n("Your account is unplayable. Check that you have the correct license, and a valid subscription."));
+            co_return;
         }
-    });
+
+        if (!terms) {
+            Q_EMIT window.loginError(i18n("Your account is unplayable. You need to accept the terms of service from the official launcher first."));
+            co_return;
+        }
+
+        SID = parts[1];
+        auth.region = parts[5].toInt();
+        auth.maxExpansion = parts[13].toInt();
+
+        registerSession(info);
+    } else {
+        QRegularExpression re(R"lit(window.external.user\("login=auth,ng,err,(?<launchParams>.*)\);)lit");
+        QRegularExpressionMatch match = re.match(str);
+
+        const auto parts = match.captured(1).split(',');
+
+        // there's a stray quote at the end of the error string, so let's remove that
+        QString errorStr = match.captured(1).chopped(1);
+
+        Q_EMIT window.loginError(errorStr);
+    }
 }
 
-void SquareLauncher::registerSession(const LoginInformation &info)
+QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
 {
     QUrl url;
     url.setScheme("https");
@@ -177,35 +183,35 @@ void SquareLauncher::registerSession(const LoginInformation &info)
     }
 
     auto reply = window.mgr->post(request, report.toUtf8());
-    connect(reply, &QNetworkReply::finished, [this, &info, reply] {
-        if (reply->error() == QNetworkReply::NoError) {
-            if (reply->rawHeaderList().contains("X-Patch-Unique-Id")) {
-                QString body = reply->readAll();
+    co_await reply;
 
-                patcher = new Patcher(window, info.profile->gamePath() + "/game", info.profile->gameData, this);
-                connect(patcher, &Patcher::done, [this, &info, reply] {
-                    info.profile->readGameVersion();
+    if (reply->error() == QNetworkReply::NoError) {
+        if (reply->rawHeaderList().contains("X-Patch-Unique-Id")) {
+            QString body = reply->readAll();
 
-                    auth.SID = reply->rawHeader("X-Patch-Unique-Id");
+            patcher = new Patcher(window, info.profile->gamePath() + "/game", info.profile->gameData, this);
+            connect(patcher, &Patcher::done, [this, &info, reply] {
+                info.profile->readGameVersion();
 
-                    window.launchGame(*info.profile, auth);
-                });
+                auth.SID = reply->rawHeader("X-Patch-Unique-Id");
 
-                patcher->processPatchList(*window.mgr, body);
-            } else {
-                Q_EMIT window.loginError(i18n("Fatal error, request was successful but X-Patch-Unique-Id was not recieved."));
-            }
+                window.launchGame(*info.profile, auth);
+            });
+
+            patcher->processPatchList(*window.mgr, body);
         } else {
-            if (reply->error() == QNetworkReply::SslHandshakeFailedError) {
-                Q_EMIT window.loginError(
-                    i18n("SSL handshake error detected. If you are using OpenSUSE or Fedora, try running `update-crypto-policies --set LEGACY`."));
-            } else if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 405) {
-                Q_EMIT window.loginError(i18n("The game failed the anti-tamper check. Restore the game to the original state and try updating again."));
-            } else {
-                Q_EMIT window.loginError(i18n("Unknown error when registering the session."));
-            }
+            Q_EMIT window.loginError(i18n("Fatal error, request was successful but X-Patch-Unique-Id was not recieved."));
         }
-    });
+    } else {
+        if (reply->error() == QNetworkReply::SslHandshakeFailedError) {
+            Q_EMIT window.loginError(
+                i18n("SSL handshake error detected. If you are using OpenSUSE or Fedora, try running `update-crypto-policies --set LEGACY`."));
+        } else if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 405) {
+            Q_EMIT window.loginError(i18n("The game failed the anti-tamper check. Restore the game to the original state and try updating again."));
+        } else {
+            Q_EMIT window.loginError(i18n("Unknown error when registering the session."));
+        }
+    }
 }
 
 QString SquareLauncher::getBootHash(const LoginInformation &info)

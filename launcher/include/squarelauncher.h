@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <qcorotask.h>
+
 #include "launchercore.h"
 #include "patcher.h"
 
@@ -12,18 +14,19 @@ class SquareLauncher : public QObject
 public:
     explicit SquareLauncher(LauncherCore &window, QObject *parent = nullptr);
 
-    void getStored(const LoginInformation &info);
+    using StoredInfo = std::pair<QString, QUrl>;
+    QCoro::Task<std::optional<StoredInfo>> getStored(const LoginInformation &info);
 
-    void login(const LoginInformation &info, const QUrl &referer);
+    QCoro::Task<> login(const LoginInformation &info);
 
-    void registerSession(const LoginInformation &info);
+    QCoro::Task<> registerSession(const LoginInformation &info);
 
 private:
     QString getBootHash(const LoginInformation &info);
 
     Patcher *patcher = nullptr;
 
-    QString stored, SID, username;
+    QString SID, username;
     LoginAuth auth;
 
     LauncherCore &window;

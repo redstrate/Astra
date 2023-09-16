@@ -10,6 +10,7 @@
 #include <QStandardPaths>
 #include <QUrlQuery>
 #include <physis.hpp>
+#include <qcoronetworkreply.h>
 
 #include "account.h"
 #include "squarelauncher.h"
@@ -21,7 +22,7 @@ SquareBoot::SquareBoot(LauncherCore &window, SquareLauncher &launcher, QObject *
 {
 }
 
-void SquareBoot::bootCheck(const LoginInformation &info)
+QCoro::Task<> SquareBoot::bootCheck(const LoginInformation &info)
 {
     Q_EMIT window.stageChanged(i18n("Checking for launcher updates..."));
     qDebug() << "Performing boot check...";
@@ -30,7 +31,7 @@ void SquareBoot::bootCheck(const LoginInformation &info)
     connect(patcher, &Patcher::done, [this, &info] {
         info.profile->readGameVersion();
 
-        launcher.getStored(info);
+        launcher.login(info);
     });
 
     QUrlQuery query;
@@ -52,14 +53,14 @@ void SquareBoot::bootCheck(const LoginInformation &info)
     request.setRawHeader("Host", QStringLiteral("patch-bootver.%1").arg(window.squareEnixServer()).toUtf8());
 
     auto reply = window.mgr->get(request);
-    connect(reply, &QNetworkReply::finished, [this, reply] {
-        const QString response = reply->readAll();
+    co_await reply;
 
-        patcher->processPatchList(*window.mgr, response);
-    });
+    const QString response = reply->readAll();
+
+    patcher->processPatchList(*window.mgr, response);
 }
 
-void SquareBoot::checkGateStatus(LoginInformation *info)
+QCoro::Task<> SquareBoot::checkGateStatus(LoginInformation *info)
 {
     Q_EMIT window.stageChanged(i18n("Checking gate..."));
     qDebug() << "Checking gate...";
@@ -76,15 +77,15 @@ void SquareBoot::checkGateStatus(LoginInformation *info)
     window.buildRequest(*info->profile, request);
 
     auto reply = window.mgr->get(request);
-    connect(reply, &QNetworkReply::finished, [this, reply, info] {
-        const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
+    co_await reply;
 
-        const bool isGateOpen = !document.isEmpty() && document.object()["status"].toInt() != 0;
+    const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
 
-        if (isGateOpen) {
-            bootCheck(*info);
-        } else {
-            Q_EMIT window.loginError(i18n("The login gate is closed, the game may be under maintenance.\n\n%1", reply->errorString()));
-        }
-    });
+    const bool isGateOpen = !document.isEmpty() && document.object()["status"].toInt() != 0;
+
+    if (isGateOpen) {
+        bootCheck(*info);
+    } else {
+        Q_EMIT window.loginError(i18n("The login gate is closed, the game may be under maintenance.\n\n%1", reply->errorString()));
+    }
 }

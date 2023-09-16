@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <qcorotask.h>
+
 #include "patcher.h"
 
 class SquareLauncher;
@@ -15,9 +17,9 @@ class SquareBoot : public QObject
 public:
     SquareBoot(LauncherCore &window, SquareLauncher &launcher, QObject *parent = nullptr);
 
-    Q_INVOKABLE void checkGateStatus(LoginInformation *info);
+    QCoro::Task<> checkGateStatus(LoginInformation *info);
 
-    void bootCheck(const LoginInformation &info);
+    QCoro::Task<> bootCheck(const LoginInformation &info);
 
 private:
     Patcher *patcher = nullptr;
