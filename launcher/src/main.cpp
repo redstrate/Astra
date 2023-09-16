@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextObject(new KLocalizedContext(&engine));
     QObject::connect(&engine, &QQmlApplicationEngine::quit, &app, &QCoreApplication::quit);
 
-    engine.load(QUrl(QStringLiteral("qrc:/ui/main.qml")));
+    engine.loadFromModule(QStringLiteral("zone.xiv.astra"), QStringLiteral("Main"));
     if (engine.rootObjects().isEmpty()) {
         return -1;
     }

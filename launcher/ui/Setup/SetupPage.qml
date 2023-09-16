@@ -43,7 +43,7 @@ Kirigami.Page {
                 MobileForm.FormButtonDelegate {
                     text: i18n("Find Existing Installation")
                     icon.name: "edit-find"
-                    onClicked: pageStack.layers.push('qrc:/ui/Setup/ExistingSetup.qml', {
+                    onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ExistingSetup"), {
                         profile: page.profile
                     })
                 }
@@ -54,7 +54,7 @@ Kirigami.Page {
                 MobileForm.FormButtonDelegate {
                     text: i18n("Download Game")
                     icon.name: "cloud-download"
-                    onClicked: pageStack.layers.push('qrc:/ui/Setup/DownloadSetup.qml', {
+                    onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "DownloadSetup"), {
                         profile: page.profile
                     })
                 }

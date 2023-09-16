@@ -58,7 +58,7 @@ Kirigami.Page {
                 MobileForm.FormButtonDelegate {
                     text: i18n("Add Square Enix Account")
                     icon.name: "list-add-symbolic"
-                    onClicked: pageStack.layers.push('qrc:/ui/Setup/AddSquareEnix.qml', {
+                    onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"), {
                         profile: page.profile
                     })
                 }
@@ -69,7 +69,7 @@ Kirigami.Page {
                 MobileForm.FormButtonDelegate {
                     text: i18n("Add Sapphire Account")
                     icon.name: "list-add-symbolic"
-                    onClicked: pageStack.layers.push('qrc:/ui/Setup/AddSapphire.qml', {
+                    onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSapphire"), {
                         profile: page.profile
                     })
                 }

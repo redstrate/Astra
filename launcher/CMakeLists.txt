@@ -2,6 +2,11 @@
 # SPDX-License-Identifier: CC0-1.0
 
 add_executable(astra)
+
+qt_add_qml_module(astra
+        URI zone.xiv.astra
+        VERSION 1.0)
+
 target_sources(astra PRIVATE
         include/account.h
         include/accountmanager.h
@@ -35,9 +40,34 @@ target_sources(astra PRIVATE
         src/squareboot.cpp
         src/squarelauncher.cpp
         src/steamapi.cpp
-        src/utility.cpp
-
-        resources.qrc)
+        src/utility.cpp)
+qt_target_qml_sources(astra
+    QML_FILES
+        ui/Components/FormFileDelegate.qml
+        ui/Components/FormFolderDelegate.qml
+        ui/Pages/BrowserPage.qml
+        ui/Pages/LoginPage.qml
+        ui/Pages/MainPage.qml
+        ui/Pages/NewsPage.qml
+        ui/Pages/StatusPage.qml
+        ui/Settings/AboutPage.qml
+        ui/Settings/AccountSettings.qml
+        ui/Settings/AccountsPage.qml
+        ui/Settings/CompatibilityToolSetup.qml
+        ui/Settings/DeveloperSettings.qml
+        ui/Settings/GeneralSettings.qml
+        ui/Settings/ProfileSettings.qml
+        ui/Settings/ProfilesPage.qml
+        ui/Settings/SettingsPage.qml
+        ui/Setup/AccountSetup.qml
+        ui/Setup/AddSapphire.qml
+        ui/Setup/AddSquareEnix.qml
+        ui/Setup/DownloadSetup.qml
+        ui/Setup/ExistingSetup.qml
+        ui/Setup/InstallProgress.qml
+        ui/Setup/SetupPage.qml
+        ui/Main.qml
+)
 kconfig_add_kcfg_files(astra GENERATE_MOC config.kcfgc accountconfig.kcfgc profileconfig.kcfgc)
 target_include_directories(astra PRIVATE include ${CMAKE_BINARY_DIR})
 target_link_libraries(astra PRIVATE

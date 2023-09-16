@@ -39,7 +39,7 @@ Kirigami.Page {
                 MobileForm.FormButtonDelegate {
                     text: i18n("Begin installation")
                     icon.name: "cloud-download"
-                    onClicked: pageStack.layers.push('qrc:/ui/Setup/InstallProgress.qml', {
+                    onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "InstallProgress"), {
                         gameInstaller: LauncherCore.createInstaller(page.profile)
                     })
                 }

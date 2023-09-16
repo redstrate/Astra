@@ -47,7 +47,7 @@ Kirigami.Page {
         Kirigami.Action {
             text: i18n("Settings")
             icon.name: "configure"
-            onTriggered: applicationWindow().pushDialogLayer('qrc:/ui/Settings/SettingsPage.qml')
+            onTriggered: applicationWindow().pushDialogLayer(Qt.createComponent("zone.xiv.astra", "SettingsPage"))
         }
     ]
 

@@ -39,16 +39,16 @@ Kirigami.ApplicationWindow {
 
         if (!currentSetupProfile.isGameInstalled) {
             // User must set up the profile
-            pageStack.layers.replace('qrc:/ui/Setup/SetupPage.qml', {
+            pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "SetupPage"), {
                 profile: currentSetupProfile
             })
         } else if (!currentSetupProfile.account) {
             // User must select an account for the profile
-            pageStack.layers.replace('qrc:/ui/Setup/AccountSetup.qml', {
+            pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "AccountSetup"), {
                 profile: currentSetupProfile
             })
         } else {
-            pageStack.layers.replace('qrc:/ui/Pages/MainPage.qml')
+            pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
         }
     }
 
@@ -62,7 +62,7 @@ Kirigami.ApplicationWindow {
 
     function openUrl(url) {
         if (LauncherCore.isSteamDeck) {
-            pageStack.layers.push('qrc:/ui/Pages/BrowserPage.qml', {
+            pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "BrowserPage"), {
                 url: url
             })
         } else {
@@ -96,7 +96,7 @@ Kirigami.ApplicationWindow {
         function onShowNewsChanged() {
             // workaround annoying Qt layouting bug
             // TODO: see if this changed in Qt6
-            pageStack.layers.replace('qrc:/ui/Pages/MainPage.qml')
+            pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
         }
     }
 

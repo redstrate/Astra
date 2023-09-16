@@ -26,7 +26,7 @@ FormCard.FormCardPage {
                 required property var profile
 
                 text: profile.name
-                onClicked: applicationWindow().pageStack.layers.push('qrc:/ui/Settings/ProfileSettings.qml', {
+                onClicked: applicationWindow().pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ProfileSettings"), {
                     profile: profile
                 })
             }

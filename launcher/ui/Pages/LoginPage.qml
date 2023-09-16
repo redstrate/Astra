@@ -173,7 +173,7 @@ Controls.Control {
                 enabled: page.isLoginValid
                 onClicked: {
                     LauncherCore.login(page.profile, usernameField.text, passwordField.text, otpField.text)
-                    pageStack.layers.push('qrc:/ui/Pages/StatusPage.qml')
+                    pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "StatusPage"))
                 }
             }
 

@@ -33,7 +33,7 @@ FormCard.FormCardPage {
 
                 leadingPadding: Kirigami.Units.largeSpacing * 2
 
-                onClicked: applicationWindow().pageStack.layers.push('qrc:/ui/Settings/AccountSettings.qml', {
+                onClicked: applicationWindow().pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AccountSettings"), {
                     account: account
                 })
             }
@@ -48,7 +48,7 @@ FormCard.FormCardPage {
 
             text: i18n("Add Square Enix Account")
             icon.name: "list-add-symbolic"
-            onClicked: pageStack.layers.push('qrc:/ui/Setup/AddSquareEnix.qml')
+            onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"))
         }
 
         FormCard.FormDelegateSeparator {
@@ -61,7 +61,7 @@ FormCard.FormCardPage {
 
             text: i18n("Add Sapphire Account")
             icon.name: "list-add-symbolic"
-            onClicked: pageStack.layers.push('qrc:/ui/Setup/AddSapphire.qml')
+            onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSapphire"))
         }
     }
 }
