@@ -6,7 +6,7 @@ import QtQuick.Window 2.15
 import org.kde.kirigami 2.20 as Kirigami
 import QtQuick.Controls 2.15 as Controls
 import QtQuick.Layouts 1.15
-import QtWebEngine 1.10
+import QtWebView 1.10
 
 Kirigami.Page {
     id: page
@@ -17,7 +17,7 @@ Kirigami.Page {
 
     padding: 0
 
-    WebEngineView {
+    WebView {
         anchors.fill: parent
 
         url: page.url
