@@ -7,7 +7,7 @@
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QQuickStyle>
-#include <QtWebEngine>
+#include <QtWebView>
 
 #include "astra-version.h"
 #include "compatibilitytoolinstaller.h"
@@ -17,10 +17,7 @@
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-
-    QtWebEngine::initialize();
+    QtWebView::initialize();
 
     QApplication app(argc, argv);
     // Default to org.kde.desktop style unless the user forces another style

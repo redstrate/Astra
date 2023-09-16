@@ -45,18 +45,18 @@ target_link_libraries(astra PRIVATE
         cotp
         crypto
         QuaZip::QuaZip
-        Qt5Keychain::Qt5Keychain
-        Qt5::Core
-        Qt5::Network
-        Qt5::Widgets
-        Qt5::Quick
-        Qt5::QuickControls2
-        Qt5::WebEngine
-        KF5::Kirigami2
-        KF5::I18n
-        KF5::ConfigCore
-        KF5::ConfigGui
-        KF5::CoreAddons)
+        Qt6Keychain::Qt6Keychain
+        Qt6::Core
+        Qt6::Network
+        Qt6::Widgets
+        Qt6::Quick
+        Qt6::QuickControls2
+        Qt6::WebView
+        KF6::Kirigami2
+        KF6::I18n
+        KF6::ConfigCore
+        KF6::ConfigGui
+        KF6::CoreAddons)
 
 if (ENABLE_WATCHDOG)
     target_sources(astra PRIVATE

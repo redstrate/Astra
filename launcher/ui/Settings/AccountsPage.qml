@@ -7,6 +7,7 @@ import org.kde.kirigami 2.20 as Kirigami
 import QtQuick.Controls 2.15 as Controls
 import QtQuick.Layouts 1.15
 import org.kde.kirigamiaddons.formcard 1.0 as FormCard
+import org.kde.kirigamiaddons.components as Components
 import zone.xiv.astra 1.0
 
 FormCard.FormCardPage {
@@ -25,7 +26,7 @@ FormCard.FormCardPage {
 
                 text: account.name
 
-                leading: Kirigami.Avatar
+                leading: Components.Avatar
                     {
                     source: account.avatarUrl
                 }

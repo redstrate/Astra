@@ -93,7 +93,7 @@ void LauncherCore::beginVanillaGame(const QString &gameExecutablePath, const Pro
 {
     auto gameProcess = new QProcess(this);
     gameProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    connect(gameProcess, qOverload<int>(&QProcess::finished), this, [this](int exitCode) {
+    connect(gameProcess, &QProcess::finished, this, [this](int exitCode) {
         Q_UNUSED(exitCode)
         Q_EMIT gameClosed();
     });
@@ -133,7 +133,7 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Pro
     const QString dalamudInjector = dalamudInstallDir.absoluteFilePath("Dalamud.Injector.exe");
 
     auto dalamudProcess = new QProcess(this);
-    connect(dalamudProcess, qOverload<int>(&QProcess::finished), this, [this](int exitCode) {
+    connect(dalamudProcess, &QProcess::finished, this, [this](int exitCode) {
         Q_UNUSED(exitCode)
         Q_EMIT gameClosed();
     });

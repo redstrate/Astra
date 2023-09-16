@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 # SPDX-License-Identifier: CC0-1.0
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.25)
 project(Astra VERSION 0.5.0 LANGUAGES CXX)
 
 # build options used for distributors
@@ -19,8 +19,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(QT_MIN_VERSION 5.15)
-set(KF5_MIN_VERSION 5.83)
+set(QT_MIN_VERSION 6.5)
+set(KF_MIN_VERSION 5.240)
 
 find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)
 list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
@@ -40,13 +40,13 @@ ecm_setup_version(${PROJECT_VERSION}
         VERSION_HEADER ${CMAKE_CURRENT_BINARY_DIR}/astra-version.h
 )
 
-find_package(Qt5 ${QT_MIN_VERSION} NO_MODULE REQUIRED COMPONENTS
+find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
         Core
         Widgets
         Network
         QuickControls2
-        WebEngine)
-find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS Kirigami2 I18n Config CoreAddons)
+        WebView)
+find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS Kirigami2 I18n Config CoreAddons)
 find_package(PkgConfig REQUIRED)
 
 if (ENABLE_WATCHDOG)
@@ -69,8 +69,8 @@ if (ENABLE_STEAM)
     endif ()
 endif ()
 
-find_package(Qt5Keychain REQUIRED)
-find_package(QuaZip-Qt5 REQUIRED)
+find_package(Qt6Keychain REQUIRED)
+find_package(QuaZip-Qt6 REQUIRED)
 
 add_subdirectory(external)
 add_subdirectory(launcher)
