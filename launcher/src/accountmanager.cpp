@@ -15,8 +15,8 @@ void AccountManager::load()
 {
     auto config = KSharedConfig::openStateConfig();
     for (const auto &id : config->groupList()) {
-        if (id.contains("account-")) {
-            auto account = new Account(m_launcher, QString(id).remove("account-"), this);
+        if (id.contains(QLatin1String("account-"))) {
+            auto account = new Account(m_launcher, QString(id).remove(QLatin1String("account-")), this);
             m_accounts.append(account);
         }
     }
@@ -74,7 +74,7 @@ Account *AccountManager::createSapphireAccount(const QString &lobbyUrl, const QS
 
 Account *AccountManager::getByUuid(const QString &uuid) const
 {
-    for (auto &account : m_accounts) {
+    for (const auto &account : m_accounts) {
         if (account->uuid() == uuid) {
             return account;
         }
@@ -92,7 +92,7 @@ bool AccountManager::canDelete(Account *account) const
 void AccountManager::deleteAccount(Account *account)
 {
     auto config = KSharedConfig::openStateConfig();
-    config->deleteGroup(QString("account-%1").arg(account->uuid()));
+    config->deleteGroup(QStringLiteral("account-%1").arg(account->uuid()));
     config->sync();
 
     const int row = m_accounts.indexOf(account);

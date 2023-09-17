@@ -23,16 +23,16 @@ public:
         AccountRole = Qt::UserRole,
     };
 
-    int rowCount(const QModelIndex &index = QModelIndex()) const override;
+    [[nodiscard]] int rowCount(const QModelIndex &index) const override;
 
-    QVariant data(const QModelIndex &index, int role) const override;
+    [[nodiscard]] QVariant data(const QModelIndex &index, int role) const override;
 
-    QHash<int, QByteArray> roleNames() const override;
+    [[nodiscard]] QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE Account *createSquareEnixAccount(const QString &username, int licenseType, bool isFreeTrial);
     Q_INVOKABLE Account *createSapphireAccount(const QString &lobbyUrl, const QString &username);
 
-    Account *getByUuid(const QString &uuid) const;
+    [[nodiscard]] Account *getByUuid(const QString &uuid) const;
 
     Q_INVOKABLE bool canDelete(Account *account) const;
     Q_INVOKABLE void deleteAccount(Account *account);
