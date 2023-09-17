@@ -14,6 +14,30 @@ import zone.xiv.astra
 QQC2.Control {
     id: page
 
+    readonly property string invalidLoginReason: {
+        if (!LauncherCore.currentProfile.account) {
+            return i18n("Profile has no associated account.");
+        }
+
+        if (usernameField.text.length === 0) {
+            return i18n("Username is required.");
+        }
+
+        if (!LauncherCore.currentProfile.account.rememberPassword && passwordField.text.length === 0) {
+            return i18n("Password is required.");
+        }
+
+        if (LauncherCore.currentProfile.account.useOTP && !LauncherCore.currentProfile.account.rememberOTP && otpField.text.length === 0) {
+            return i18n("OTP is required.");
+        }
+
+        if (LauncherCore.currentProfile.loggedIn) {
+            return i18n("Already logged in.");
+        }
+
+        return "";
+    }
+
     readonly property bool isLoginValid: {
         if (!LauncherCore.currentProfile.account) {
             return false
@@ -152,6 +176,7 @@ QQC2.Control {
                 id: passwordField
                 label: LauncherCore.currentProfile.account.isSapphire ? i18n("Password") : i18n("Square Enix Password")
                 echoMode: TextInput.Password
+                enabled: !LauncherCore.currentProfile.account.rememberPassword
                 focus: true
                 onAccepted: {
                     if (otpField.visible) {
@@ -179,6 +204,7 @@ QQC2.Control {
                 id: loginButton
 
                 text: i18n("Log In")
+                description: invalidLoginReason
                 icon.name: "unlock"
                 enabled: page.isLoginValid
                 onClicked: {
