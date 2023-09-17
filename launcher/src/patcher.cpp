@@ -10,7 +10,10 @@
 #include <QNetworkRequest>
 #include <QRegExp>
 #include <QStandardPaths>
+#include <QtConcurrent>
 #include <physis.hpp>
+#include <qcorofuture.h>
+#include <qcoronetworkreply.h>
 #include <utility>
 
 #include "launchercore.h"
@@ -37,110 +40,97 @@ Patcher::Patcher(LauncherCore &launcher, QString baseDirectory, GameData *game_d
     Q_EMIT m_launcher.stageChanged(i18n("Checking the FINAL FANTASY XIV Game version."));
 }
 
-void Patcher::processPatchList(QNetworkAccessManager &mgr, const QString &patchList)
+QCoro::Task<> Patcher::patch(QNetworkAccessManager &mgr, const QString &patchList)
 {
     if (patchList.isEmpty()) {
-        emit done();
+        co_return;
+    }
+
+    if (isBoot()) {
+        Q_EMIT m_launcher.stageIndeterminate();
+        Q_EMIT m_launcher.stageChanged(i18n("Checking the FINAL FANTASY XIV Update/Launcher version."));
     } else {
-        if (isBoot()) {
-            Q_EMIT m_launcher.stageIndeterminate();
-            Q_EMIT m_launcher.stageChanged(i18n("Checking the FINAL FANTASY XIV Update/Launcher version."));
+        Q_EMIT m_launcher.stageIndeterminate();
+        Q_EMIT m_launcher.stageChanged(i18n("Checking the FINAL FANTASY XIV Game version."));
+    }
+
+    const QStringList parts = patchList.split("\r\n");
+
+    remainingPatches = parts.size() - 7;
+    patchQueue.resize(remainingPatches);
+
+    QFutureSynchronizer<void> synchronizer;
+
+    int patchIndex = 0;
+
+    for (int i = 5; i < parts.size() - 2; i++) {
+        const QStringList patchParts = parts[i].split("\t");
+
+        const int length = patchParts[0].toInt();
+        int ourIndex = patchIndex++;
+
+        const QString version = patchParts[4];
+        const long hashBlockSize = patchParts.size() == 9 ? patchParts[6].toLong() : 0;
+
+        const QString name = version;
+        const QStringList hashes = patchParts.size() == 9 ? (patchParts[7].split(',')) : QStringList();
+        const QString url = patchParts[patchParts.size() == 9 ? 8 : 5];
+        const QString filename = QStringLiteral("%1.patch").arg(name);
+
+        auto url_parts = url.split('/');
+        const QString repository = url_parts[url_parts.size() - 3];
+
+        const QDir repositoryDir = patchesDir.absoluteFilePath(repository);
+
+        if (!QDir().exists(repositoryDir.absolutePath()))
+            QDir().mkpath(repositoryDir.absolutePath());
+
+        const QString patchPath = repositoryDir.absoluteFilePath(filename);
+        if (!QFile::exists(patchPath)) {
+            auto patchReply = mgr.get(QNetworkRequest(url));
+
+            connect(patchReply, &QNetworkReply::downloadProgress, [this, repository, version, length](int recieved, int total) {
+                Q_UNUSED(total)
+
+                if (isBoot()) {
+                    Q_EMIT m_launcher.stageChanged(i18n("Updating the FINAL FANTASY XIV Updater/Launcher version.\nDownloading ffxivboot - %1", version));
+                } else {
+                    Q_EMIT m_launcher.stageChanged(i18n("Updating the FINAL FANTASY XIV Game version.\nDownloading %1 - %2", repository, version));
+                }
+
+                Q_EMIT m_launcher.stageDeterminate(0, length, recieved);
+            });
+
+            synchronizer.addFuture(QtFuture::connect(patchReply, &QNetworkReply::finished)
+                                       .then([this, patchPath, patchReply, ourIndex, name, repository, version, hashes, hashBlockSize, length] {
+                                           QFile file(patchPath);
+                                           file.open(QIODevice::WriteOnly);
+                                           file.write(patchReply->readAll());
+                                           file.close();
+
+                                           patchQueue[ourIndex] = {name, repository, version, patchPath, hashes, hashBlockSize, length};
+                                       }));
         } else {
-            Q_EMIT m_launcher.stageIndeterminate();
-            Q_EMIT m_launcher.stageChanged(i18n("Checking the FINAL FANTASY XIV Game version."));
-        }
+            qDebug() << "Found existing patch: " << name;
 
-        const QStringList parts = patchList.split("\r\n");
+            patchQueue[ourIndex] = {name, repository, version, patchPath, hashes, hashBlockSize, length};
 
-        remainingPatches = parts.size() - 7;
-        patchQueue.resize(remainingPatches);
-
-        int patchIndex = 0;
-
-        for (int i = 5; i < parts.size() - 2; i++) {
-            const QStringList patchParts = parts[i].split("\t");
-
-            const int length = patchParts[0].toInt();
-            int ourIndex = patchIndex++;
-
-            const QString version = patchParts[4];
-            const long hashBlockSize = patchParts.size() == 9 ? patchParts[6].toLong() : 0;
-
-            const QString name = version;
-            const QStringList hashes = patchParts.size() == 9 ? (patchParts[7].split(',')) : QStringList();
-            const QString url = patchParts[patchParts.size() == 9 ? 8 : 5];
-            const QString filename = QStringLiteral("%1.patch").arg(name);
-
-            auto url_parts = url.split('/');
-            const QString repository = url_parts[url_parts.size() - 3];
-
-            const QDir repositoryDir = patchesDir.absoluteFilePath(repository);
-
-            if (!QDir().exists(repositoryDir.absolutePath()))
-                QDir().mkpath(repositoryDir.absolutePath());
-
-            const QString patchPath = repositoryDir.absoluteFilePath(filename);
-            if (!QFile::exists(patchPath)) {
-                qDebug() << "Need to download " + name;
-
-                QNetworkRequest patchRequest(url);
-                auto patchReply = mgr.get(patchRequest);
-                connect(patchReply, &QNetworkReply::downloadProgress, [this, repository, version, length](int recieved, int total) {
-                    Q_UNUSED(total)
-
-                    if (isBoot()) {
-                        Q_EMIT m_launcher.stageChanged(i18n("Updating the FINAL FANTASY XIV Updater/Launcher version.\nDownloading ffxivboot - %1", version));
-                    } else {
-                        Q_EMIT m_launcher.stageChanged(i18n("Updating the FINAL FANTASY XIV Game version.\nDownloading %1 - %2", repository, version));
-                    }
-
-                    Q_EMIT m_launcher.stageDeterminate(0, length, recieved);
-                });
-
-                connect(patchReply,
-                        &QNetworkReply::finished,
-                        [this, ourIndex, patchPath, name, patchReply, repository, version, hashes, hashBlockSize, length] {
-                            QFile file(patchPath);
-                            file.open(QIODevice::WriteOnly);
-                            file.write(patchReply->readAll());
-                            file.close();
-
-                            patchQueue[ourIndex] = {name, repository, version, patchPath, hashes, hashBlockSize, length};
-
-                            remainingPatches--;
-                            checkIfDone();
-                        });
-            } else {
-                qDebug() << "Found existing patch: " << name;
-
-                patchQueue[ourIndex] = {name, repository, version, patchPath, hashes, hashBlockSize, length};
-
-                remainingPatches--;
-                checkIfDone();
-            }
+            synchronizer.addFuture({});
         }
     }
-}
 
-void Patcher::checkIfDone()
-{
-    if (remainingPatches <= 0) {
-        if (isBoot()) {
-            Q_EMIT m_launcher.stageChanged(i18n("Applying updates to the FINAL FANTASY XIV Updater/Launcher."));
-        } else {
-            Q_EMIT m_launcher.stageChanged(i18n("Applying updates to the FINAL FANTASY XIV Game."));
-        }
+    co_await QtConcurrent::run([&synchronizer] {
+        synchronizer.waitForFinished();
+    });
 
-        int i = 0;
-        for (const auto &patch : patchQueue) {
-            Q_EMIT m_launcher.stageDeterminate(0, patchQueue.size(), i++);
-            processPatch(patch);
-        }
-
-        patchQueue.clear();
-
-        emit done();
+    // This must happen synchronously
+    size_t i = 0;
+    for (const auto &patch : patchQueue) {
+        Q_EMIT m_launcher.stageDeterminate(0, patchQueue.size(), i++);
+        processPatch(patch);
     }
+
+    co_return;
 }
 
 void Patcher::processPatch(const QueuedPatch &patch)

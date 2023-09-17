@@ -170,7 +170,7 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
 
     QString report = QStringLiteral("%1=%2").arg(info.profile->bootVersion, getBootHash(info));
     for (int i = 1; i < auth.maxExpansion + 1; i++) {
-        if (i <= static_cast<int>(info.profile->repositories.repositories_count)) {
+        if (i < static_cast<int>(info.profile->repositories.repositories_count)) {
             report += QStringLiteral("\nex%1\t%2").arg(QString::number(i), info.profile->repositories.repositories[i].version);
         } else {
             report += QStringLiteral("\nex%1\t2012.01.01.0000.0000").arg(QString::number(i));
@@ -185,15 +185,13 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
             const QString body = reply->readAll();
 
             patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/game"), info.profile->gameData, this);
-            connect(patcher, &Patcher::done, [this, &info, reply] {
-                info.profile->readGameVersion();
+            co_await patcher->patch(*window.mgr, body);
 
-                auth.SID = reply->rawHeader(QByteArrayLiteral("X-Patch-Unique-Id"));
+            info.profile->readGameVersion();
 
-                window.launchGame(*info.profile, auth);
-            });
+            auth.SID = reply->rawHeader(QByteArrayLiteral("X-Patch-Unique-Id"));
 
-            patcher->processPatchList(*window.mgr, body);
+            window.launchGame(*info.profile, auth);
         } else {
             Q_EMIT window.loginError(i18n("Fatal error, request was successful but X-Patch-Unique-Id was not recieved."));
         }

@@ -27,13 +27,6 @@ QCoro::Task<> SquareBoot::bootCheck(const LoginInformation &info)
     Q_EMIT window.stageChanged(i18n("Checking for launcher updates..."));
     qDebug() << "Performing boot check...";
 
-    patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/boot"), info.profile->bootData, this);
-    connect(patcher, &Patcher::done, [this, &info] {
-        info.profile->readGameVersion();
-
-        launcher.login(info);
-    });
-
     const QUrlQuery query{{QStringLiteral("time"), QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH-mm"))}};
 
     QUrl url;
@@ -54,7 +47,13 @@ QCoro::Task<> SquareBoot::bootCheck(const LoginInformation &info)
     const auto reply = window.mgr->get(request);
     co_await reply;
 
-    patcher->processPatchList(*window.mgr, reply->readAll());
+    patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/boot"), info.profile->bootData, this);
+    co_await patcher->patch(*window.mgr, reply->readAll());
+
+    // update game version information
+    info.profile->readGameVersion();
+
+    launcher.login(info);
 }
 
 QCoro::Task<> SquareBoot::checkGateStatus(LoginInformation *info)

@@ -7,6 +7,7 @@
 #include <QNetworkAccessManager>
 #include <QString>
 #include <physis.hpp>
+#include <qcorotask.h>
 
 class LauncherCore;
 
@@ -19,13 +20,9 @@ public:
     Patcher(LauncherCore &launcher, QString baseDirectory, GameData *game_data, QObject *parent = nullptr);
     Patcher(LauncherCore &launcher, QString baseDirectory, BootData *game_data, QObject *parent = nullptr);
 
-    void processPatchList(QNetworkAccessManager &mgr, const QString &patchList);
-
-signals:
-    void done();
+    QCoro::Task<> patch(QNetworkAccessManager &mgr, const QString &patchList);
 
 private:
-    void checkIfDone();
     void setupDirectories();
 
     [[nodiscard]] bool isBoot() const

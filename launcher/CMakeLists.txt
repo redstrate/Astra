@@ -82,6 +82,7 @@ target_link_libraries(astra PRIVATE
         Qt6::Quick
         Qt6::QuickControls2
         Qt6::WebView
+        Qt6::Concurrent
         KF6::Kirigami2
         KF6::I18n
         KF6::ConfigCore

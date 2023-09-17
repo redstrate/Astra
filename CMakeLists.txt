@@ -45,7 +45,8 @@ find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
         Widgets
         Network
         QuickControls2
-        WebView)
+        WebView
+        Concurrent)
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS Kirigami2 I18n Config CoreAddons)
 find_package(PkgConfig REQUIRED)
 find_package(QCoro6 REQUIRED COMPONENTS Core Network Qml)
