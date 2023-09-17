@@ -23,11 +23,11 @@ public:
         ProfileRole = Qt::UserRole,
     };
 
-    int rowCount(const QModelIndex &index = QModelIndex()) const override;
+    [[nodiscard]] int rowCount(const QModelIndex &index) const override;
 
-    QVariant data(const QModelIndex &index, int role) const override;
+    [[nodiscard]] QVariant data(const QModelIndex &index, int role) const override;
 
-    QHash<int, QByteArray> roleNames() const override;
+    [[nodiscard]] QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE Profile *getProfile(int index);
 
@@ -35,7 +35,7 @@ public:
     Q_INVOKABLE Profile *addProfile();
     Q_INVOKABLE void deleteProfile(Profile *profile);
 
-    QVector<Profile *> profiles() const;
+    [[nodiscard]] QVector<Profile *> profiles() const;
 
     Q_INVOKABLE bool canDelete(Profile *account) const;
 

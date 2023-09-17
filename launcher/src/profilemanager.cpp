@@ -31,7 +31,7 @@ int ProfileManager::getProfileIndex(const QString &name)
 Profile *ProfileManager::addProfile()
 {
     auto newProfile = new Profile(m_launcher, QUuid::createUuid().toString(), this);
-    newProfile->setName("New Profile");
+    newProfile->setName(QStringLiteral("New Profile"));
 
     newProfile->readWineInfo();
 
@@ -45,7 +45,7 @@ Profile *ProfileManager::addProfile()
 void ProfileManager::deleteProfile(Profile *profile)
 {
     auto config = KSharedConfig::openStateConfig();
-    config->deleteGroup(QString("profile-%1").arg(profile->uuid()));
+    config->deleteGroup(QStringLiteral("profile-%1").arg(profile->uuid()));
     config->sync();
 
     const int row = m_profiles.indexOf(profile);
@@ -61,7 +61,7 @@ QString ProfileManager::getDefaultWinePrefixPath()
 #endif
 
 #if defined(Q_OS_LINUX)
-    return QDir::homePath() + "/.wine";
+    return QDir::homePath() + QStringLiteral("/.wine");
 #endif
 
     return "";
@@ -81,7 +81,7 @@ QString ProfileManager::getDefaultGamePath(const QString &uuid)
 
 #if defined(Q_OS_LINUX)
     const QDir appData = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::AppDataLocation)[0];
-    const QDir gameDir = appData.absoluteFilePath("game");
+    const QDir gameDir = appData.absoluteFilePath(QStringLiteral("game"));
     return gameDir.absoluteFilePath(uuid);
 #endif
 }
@@ -90,8 +90,8 @@ void ProfileManager::load()
 {
     auto config = KSharedConfig::openStateConfig();
     for (const auto &id : config->groupList()) {
-        if (id.contains("profile-")) {
-            auto profile = new Profile(m_launcher, QString(id).remove("profile-"), this);
+        if (id.contains(QLatin1String("profile-"))) {
+            auto profile = new Profile(m_launcher, QString(id).remove(QLatin1String("profile-")), this);
             insertProfile(profile);
         }
     }
