@@ -714,3 +714,17 @@ void LauncherCore::setIsSteam(bool isSteam)
 {
     m_isSteam = isSteam;
 }
+
+Profile *LauncherCore::currentProfile() const
+{
+    return m_profileManager->getProfile(m_currentProfileIndex);
+}
+
+void LauncherCore::setCurrentProfile(Profile *profile)
+{
+    const int newIndex = m_profileManager->getProfileIndex(profile->name());
+    if (newIndex != m_currentProfileIndex) {
+        m_currentProfileIndex = newIndex;
+        Q_EMIT currentProfileChanged();
+    }
+}

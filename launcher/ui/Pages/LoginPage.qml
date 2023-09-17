@@ -14,9 +14,8 @@ import zone.xiv.astra
 QQC2.Control {
     id: page
 
-    property var profile: LauncherCore.profileManager.getProfile(0)
     readonly property bool isLoginValid: {
-        if (!profile.account) {
+        if (!LauncherCore.currentProfile.account) {
             return false
         }
 
@@ -24,11 +23,11 @@ QQC2.Control {
             return false
         }
 
-        if (!profile.account.rememberPassword && passwordField.text.length === 0) {
+        if (!LauncherCore.currentProfile.account.rememberPassword && passwordField.text.length === 0) {
             return false
         }
 
-        if (profile.account.useOTP && !profile.account.rememberOTP && otpField.text.length === 0) {
+        if (LauncherCore.currentProfile.account.useOTP && !LauncherCore.currentProfile.account.rememberOTP && otpField.text.length === 0) {
             return false
         }
 
@@ -36,20 +35,26 @@ QQC2.Control {
     }
 
     function updateFields() {
-        usernameField.text = profile.account.name
-        passwordField.text = profile.account.rememberPassword ? profile.account.getPassword() : ""
+        usernameField.text = LauncherCore.currentProfile.account.name
+        passwordField.text = LauncherCore.currentProfile.account.rememberPassword ? LauncherCore.currentProfile.account.getPassword() : ""
         otpField.text = ""
     }
 
     Connections {
-        target: profile
+        target: LauncherCore
+
+        function onCurrentProfileChanged() {
+            updateFields();
+        }
+    }
+
+    Connections {
+        target: LauncherCore.currentProfile
 
         function onAccountChanged() {
             updateFields()
         }
     }
-
-    onProfileChanged: updateFields()
 
     contentItem: ColumnLayout {
         width: parent.width
@@ -59,7 +64,7 @@ QQC2.Control {
 
             FormCard.FormButtonDelegate {
                 text: i18n("Current Profile")
-                description: page.profile.name
+                description: LauncherCore.currentProfile.name
 
                 QQC2.Menu {
                     id: profileMenu
@@ -74,7 +79,7 @@ QQC2.Control {
                                 text: profile.name
 
                                 onClicked: {
-                                    page.profile = profile
+                                    LauncherCore.currentProfile = profile
                                     profileMenu.close()
                                 }
                             }
@@ -91,11 +96,11 @@ QQC2.Control {
 
             FormCard.FormButtonDelegate {
                 text: i18n("Current Account")
-                description: page.profile.account.name
+                description: LauncherCore.currentProfile.account.name
 
                 leading: Components.Avatar
                 {
-                    source: page.profile.account.avatarUrl
+                    source: LauncherCore.currentProfile.account.avatarUrl
                 }
 
                 leadingPadding: Kirigami.Units.largeSpacing * 2
@@ -115,7 +120,7 @@ QQC2.Control {
                                 icon.source: account.avatarUrl
 
                                 onClicked: {
-                                    page.profile.account = account
+                                    LauncherCore.currentProfile.account = account
                                     accountMenu.close()
                                 }
                             }
@@ -131,8 +136,8 @@ QQC2.Control {
 
             FormCard.FormTextFieldDelegate {
                 id: usernameField
-                label: page.profile.account.isSapphire ? i18n("Username") : i18n("Square Enix ID")
-                text: page.profile.account.name
+                label: LauncherCore.currentProfile.account.isSapphire ? i18n("Username") : i18n("Square Enix ID")
+                text: LauncherCore.currentProfile.account.name
                 enabled: false
             }
 
@@ -141,7 +146,7 @@ QQC2.Control {
 
             FormCard.FormTextFieldDelegate {
                 id: passwordField
-                label: page.profile.account.isSapphire ? i18n("Password") : i18n("Square Enix Password")
+                label: LauncherCore.currentProfile.account.isSapphire ? i18n("Password") : i18n("Square Enix Password")
                 echoMode: TextInput.Password
                 focus: true
                 onAccepted: {
@@ -151,7 +156,7 @@ QQC2.Control {
                         loginButton.clicked();
                     }
                 }
-                text: page.profile.account.rememberPassword ? "abcdefg" : ""
+                text: LauncherCore.currentProfile.account.rememberPassword ? LauncherCore.currentProfile.account.getPassword() : ""
             }
 
             FormCard.FormDelegateSeparator {
@@ -160,7 +165,7 @@ QQC2.Control {
             FormCard.FormTextFieldDelegate {
                 id: otpField
                 label: i18n("One-time Password")
-                visible: page.profile.account.useOTP
+                visible: LauncherCore.currentProfile.account.useOTP
                 onAccepted: loginButton.clicked()
             }
 
@@ -173,7 +178,7 @@ QQC2.Control {
                 icon.name: "unlock"
                 enabled: page.isLoginValid
                 onClicked: {
-                    LauncherCore.login(page.profile, usernameField.text, passwordField.text, otpField.text)
+                    LauncherCore.login(LauncherCore.currentProfile, usernameField.text, passwordField.text, otpField.text)
                     pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "StatusPage"))
                 }
             }
@@ -187,7 +192,7 @@ QQC2.Control {
 
                 text: i18n("Forgot ID or Password")
                 icon.name: "dialog-password"
-                visible: !page.profile.account.isSapphire
+                visible: !LauncherCore.currentProfile.account.isSapphire
                 onClicked: applicationWindow().openUrl('https://secure.square-enix.com/account/app/svc/reminder')
             }
         }

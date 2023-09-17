@@ -22,8 +22,6 @@ Kirigami.ApplicationWindow {
     visible: true
     title: LauncherCore.isSteam ? "Astra (Steam)" : "Astra"
 
-    property var currentSetupProfile: LauncherCore.profileManager.getProfile(0)
-
     pageStack.initialPage: Kirigami.Page {
         Kirigami.LoadingPlaceholder {
             anchors.centerIn: parent
@@ -37,15 +35,15 @@ Kirigami.ApplicationWindow {
 
         pageStack.layers.clear()
 
-        if (!currentSetupProfile.isGameInstalled) {
+        if (!LauncherCore.currentProfile.isGameInstalled) {
             // User must set up the profile
             pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "SetupPage"), {
-                profile: currentSetupProfile
+                profile: LauncherCore.currentProfile
             })
-        } else if (!currentSetupProfile.account) {
+        } else if (!LauncherCore.currentProfile.account) {
             // User must select an account for the profile
             pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "AccountSetup"), {
-                profile: currentSetupProfile
+                profile: LauncherCore.currentProfile
             })
         } else {
             pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
@@ -97,6 +95,10 @@ Kirigami.ApplicationWindow {
             // workaround annoying Qt layouting bug
             // TODO: see if this changed in Qt6
             pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
+        }
+
+        function onCurrentProfileChanged() {
+            checkSetup();
         }
     }
 

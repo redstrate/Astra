@@ -73,6 +73,7 @@ class LauncherCore : public QObject
     Q_PROPERTY(QString squareEnixServer READ squareEnixServer WRITE setSquareEnixServer NOTIFY squareEnixServerChanged)
     Q_PROPERTY(QString squareEnixLoginServer READ squareEnixLoginServer WRITE setSquareEnixLoginServer NOTIFY squareEnixLoginServerChanged)
     Q_PROPERTY(Headline *headline READ headline NOTIFY newsChanged)
+    Q_PROPERTY(Profile *currentProfile READ currentProfile WRITE setCurrentProfile NOTIFY currentProfileChanged)
 
 public:
     LauncherCore();
@@ -165,6 +166,9 @@ public:
     Q_INVOKABLE void openSystemInfo(Profile *profile);
     Q_INVOKABLE void openConfigBackup(Profile *profile);
 
+    Profile *currentProfile() const;
+    void setCurrentProfile(Profile *profile);
+
 signals:
     void loadingFinished();
     void gameInstallationChanged();
@@ -184,6 +188,7 @@ signals:
     void stageIndeterminate();
     void stageDeterminate(int min, int max, int value);
     void newsChanged();
+    void currentProfileChanged();
 
 private:
     /*
@@ -219,4 +224,6 @@ private:
     AccountManager *m_accountManager = nullptr;
 
     Headline *m_headline = nullptr;
+
+    int m_currentProfileIndex = 0;
 };
