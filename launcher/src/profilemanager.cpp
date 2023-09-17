@@ -48,7 +48,7 @@ void ProfileManager::deleteProfile(Profile *profile)
     config->deleteGroup(QStringLiteral("profile-%1").arg(profile->uuid()));
     config->sync();
 
-    const int row = m_profiles.indexOf(profile);
+    const int row = static_cast<int>(m_profiles.indexOf(profile));
     beginRemoveRows(QModelIndex(), row, row);
     m_profiles.removeAll(profile);
     endRemoveRows();
@@ -64,7 +64,7 @@ QString ProfileManager::getDefaultWinePrefixPath()
     return QDir::homePath() + QStringLiteral("/.wine");
 #endif
 
-    return "";
+    Q_UNREACHABLE();
 }
 
 QString ProfileManager::getDefaultGamePath(const QString &uuid)
@@ -105,7 +105,7 @@ void ProfileManager::load()
 int ProfileManager::rowCount(const QModelIndex &index) const
 {
     Q_UNUSED(index);
-    return m_profiles.size();
+    return static_cast<int>(m_profiles.size());
 }
 
 QVariant ProfileManager::data(const QModelIndex &index, int role) const
@@ -129,7 +129,7 @@ QHash<int, QByteArray> ProfileManager::roleNames() const
 
 void ProfileManager::insertProfile(Profile *profile)
 {
-    beginInsertRows(QModelIndex(), m_profiles.size(), m_profiles.size());
+    beginInsertRows(QModelIndex(), static_cast<int>(m_profiles.size()), static_cast<int>(m_profiles.size()));
     m_profiles.append(profile);
     endInsertRows();
 }

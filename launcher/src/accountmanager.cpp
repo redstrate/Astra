@@ -25,7 +25,7 @@ void AccountManager::load()
 int AccountManager::rowCount(const QModelIndex &index) const
 {
     Q_UNUSED(index);
-    return m_accounts.size();
+    return static_cast<int>(m_accounts.size());
 }
 
 QVariant AccountManager::data(const QModelIndex &index, int role) const
@@ -95,7 +95,7 @@ void AccountManager::deleteAccount(Account *account)
     config->deleteGroup(QStringLiteral("account-%1").arg(account->uuid()));
     config->sync();
 
-    const int row = m_accounts.indexOf(account);
+    const int row = static_cast<int>(m_accounts.indexOf(account));
     beginRemoveRows(QModelIndex(), row, row);
     m_accounts.removeAll(account);
     endRemoveRows();
@@ -103,7 +103,7 @@ void AccountManager::deleteAccount(Account *account)
 
 void AccountManager::insertAccount(Account *account)
 {
-    beginInsertRows(QModelIndex(), m_accounts.size(), m_accounts.size());
+    beginInsertRows(QModelIndex(), static_cast<int>(m_accounts.size()), static_cast<int>(m_accounts.size()));
     m_accounts.append(account);
     endInsertRows();
 }

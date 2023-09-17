@@ -4,7 +4,6 @@
 #include "assetupdater.h"
 
 #include <QFile>
-#include <QJsonArray>
 #include <QJsonDocument>
 #include <QNetworkReply>
 #include <QStandardPaths>
@@ -17,6 +16,7 @@ const QString dotnetDesktopPackageURL = "https://dotnetcli.azureedge.net/dotnet/
 AssetUpdater::AssetUpdater(Profile &profile, LauncherCore &launcher, QObject *parent)
     : QObject(parent)
     , launcher(launcher)
+    , chosenChannel(profile.dalamudChannel())
     , m_profile(profile)
 {
     launcher.mgr->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
@@ -86,8 +86,6 @@ void AssetUpdater::update()
     {
         QNetworkRequest request(dalamudVersionManifestUrl(m_profile.dalamudChannel()));
 
-        chosenChannel = m_profile.dalamudChannel();
-
         remoteDalamudVersion.clear();
         remoteRuntimeVersion.clear();
 
@@ -106,7 +104,7 @@ void AssetUpdater::update()
             // bytes, ex: \xFF\xFE{\x00\"\x00""A\x00s\x00s\x00""e\x00m\x00 so we
             // start at the first character of the json '{' and work our way up.
             QString reassmbled;
-            for (int i = str.indexOf('{'); i < str.size(); i++) {
+            for (int i = static_cast<int>(str.indexOf('{')); i < str.size(); i++) {
                 char t = str[i];
                 if (QChar(t).isPrint())
                     reassmbled += t;

@@ -148,7 +148,7 @@ public:
     [[nodiscard]] bool isSteamDeck() const;
 
     Q_INVOKABLE void refreshNews();
-    Headline *headline() const;
+    [[nodiscard]] Headline *headline() const;
 
     Q_INVOKABLE void openOfficialLauncher(Profile *profile);
     Q_INVOKABLE void openSystemInfo(Profile *profile);
