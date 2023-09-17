@@ -35,38 +35,38 @@ public:
     enum class GameLicense { WindowsStandalone, WindowsSteam, macOS };
     Q_ENUM(GameLicense)
 
-    QString uuid() const;
+    [[nodiscard]] QString uuid() const;
 
-    QString name() const;
+    [[nodiscard]] QString name() const;
     void setName(const QString &name);
 
-    int language() const;
+    [[nodiscard]] int language() const;
     void setLanguage(int value);
 
-    QString lodestoneId() const;
+    [[nodiscard]] QString lodestoneId() const;
     void setLodestoneId(const QString &id);
 
-    QString avatarUrl() const;
+    [[nodiscard]] QString avatarUrl() const;
 
-    bool isSapphire() const;
+    [[nodiscard]] bool isSapphire() const;
     void setIsSapphire(bool value);
 
-    QString lobbyUrl() const;
+    [[nodiscard]] QString lobbyUrl() const;
     void setLobbyUrl(const QString &url);
 
-    bool rememberPassword() const;
+    [[nodiscard]] bool rememberPassword() const;
     void setRememberPassword(bool value);
 
-    bool rememberOTP() const;
+    [[nodiscard]] bool rememberOTP() const;
     void setRememberOTP(bool value);
 
-    bool useOTP() const;
+    [[nodiscard]] bool useOTP() const;
     void setUseOTP(bool value);
 
-    GameLicense license() const;
+    [[nodiscard]] GameLicense license() const;
     void setLicense(GameLicense license);
 
-    bool isFreeTrial() const;
+    [[nodiscard]] bool isFreeTrial() const;
     void setIsFreeTrial(bool value);
 
     Q_INVOKABLE QString getPassword();
@@ -74,7 +74,7 @@ public:
 
     Q_INVOKABLE QString getOTP();
 
-    QDir getConfigDir() const;
+    [[nodiscard]] QDir getConfigDir() const;
 
 Q_SIGNALS:
     void nameChanged();

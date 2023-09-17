@@ -173,17 +173,17 @@ void Account::setIsFreeTrial(const bool value)
 
 QString Account::getPassword()
 {
-    return getKeychainValue("password");
+    return getKeychainValue(QStringLiteral("password"));
 }
 
 void Account::setPassword(const QString &password)
 {
-    setKeychainValue("password", password);
+    setKeychainValue(QStringLiteral("password"), password);
 }
 
 QString Account::getOTP()
 {
-    auto otpSecret = getKeychainValue("otp-secret");
+    auto otpSecret = getKeychainValue(QStringLiteral("otp-secret"));
 
     char *totp = get_totp(otpSecret.toStdString().c_str(), 6, 30, SHA1, nullptr);
     QString totpStr(totp);
@@ -195,7 +195,7 @@ QString Account::getOTP()
 QDir Account::getConfigDir() const
 {
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    const QDir userDir = dataDir.absoluteFilePath("user");
+    const QDir userDir = dataDir.absoluteFilePath(QStringLiteral("user"));
     return userDir.absoluteFilePath(m_key);
 }
 
@@ -205,7 +205,7 @@ void Account::fetchAvatar()
         return;
     }
 
-    const auto cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + "/avatars";
+    const auto cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + QStringLiteral("/avatars");
     if (!QDir().exists(cacheLocation)) {
         QDir().mkpath(cacheLocation);
     }
@@ -214,11 +214,11 @@ void Account::fetchAvatar()
     if (!QFile(filename).exists()) {
         qDebug() << "Did not find lodestone character " << lodestoneId() << " in cache, fetching from xivapi.";
         QNetworkRequest request(QStringLiteral("https://xivapi.com/character/%1").arg(lodestoneId()));
-        auto reply = m_launcher.mgr->get(request);
+        const auto reply = m_launcher.mgr->get(request);
         connect(reply, &QNetworkReply::finished, [this, filename, reply] {
             auto document = QJsonDocument::fromJson(reply->readAll());
             if (document.isObject()) {
-                QNetworkRequest avatarRequest(document.object()["Character"].toObject()["Avatar"].toString());
+                const QNetworkRequest avatarRequest(document.object()[QLatin1String("Character")].toObject()[QLatin1String("Avatar")].toString());
                 auto avatarReply = m_launcher.mgr->get(avatarRequest);
                 QObject::connect(avatarReply, &QNetworkReply::finished, [this, filename, avatarReply] {
                     QFile file(filename);
@@ -239,9 +239,9 @@ void Account::fetchAvatar()
 
 void Account::setKeychainValue(const QString &key, const QString &value)
 {
-    auto job = new QKeychain::WritePasswordJob("Astra", this);
+    auto job = new QKeychain::WritePasswordJob(QStringLiteral("Astra"), this);
     job->setTextData(value);
-    job->setKey(m_key + "-" + key);
+    job->setKey(m_key + QStringLiteral("-") + key);
     job->setInsecureFallback(m_launcher.isSteamDeck()); // The Steam Deck does not have secrets provider in Game Mode
     job->start();
 }
@@ -250,8 +250,8 @@ QString Account::getKeychainValue(const QString &key)
 {
     auto loop = new QEventLoop(this);
 
-    auto job = new QKeychain::ReadPasswordJob("Astra", this);
-    job->setKey(m_key + "-" + key);
+    auto job = new QKeychain::ReadPasswordJob(QStringLiteral("Astra"), this);
+    job->setKey(m_key + QStringLiteral("-") + key);
     job->setInsecureFallback(m_launcher.isSteamDeck());
     job->start();
 
