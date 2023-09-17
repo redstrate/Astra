@@ -24,6 +24,7 @@ public:
 
 private:
     void setupDirectories();
+    QString getBaseString() const;
 
     [[nodiscard]] bool isBoot() const
     {
@@ -35,6 +36,16 @@ private:
         QStringList hashes;
         long hashBlockSize;
         long length;
+        bool isBoot;
+
+        QString getVersion() const
+        {
+            if (isBoot) {
+                return QStringLiteral("ffxivboot - %1").arg(name);
+            } else {
+                return QStringLiteral("%1 - %2").arg(repository, name);
+            }
+        }
     };
 
     void processPatch(const QueuedPatch &patch);
