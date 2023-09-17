@@ -169,11 +169,11 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/x-www-form-urlencoded"));
 
     QString report = QStringLiteral("%1=%2").arg(info.profile->bootVersion(), getBootHash(info));
-    for (int i = 1; i < auth.maxExpansion + 1; i++) {
+    for (int i = 0; i < auth.maxExpansion; i++) {
         if (i < static_cast<int>(info.profile->numInstalledExpansions())) {
-            report += QStringLiteral("\nex%1\t%2").arg(QString::number(i), info.profile->expansionVersion(i));
+            report += QStringLiteral("\nex%1\t%2").arg(QString::number(i + 1), info.profile->expansionVersion(i));
         } else {
-            report += QStringLiteral("\nex%1\t2012.01.01.0000.0000").arg(QString::number(i));
+            report += QStringLiteral("\nex%1\t2012.01.01.0000.0000").arg(QString::number(i + 1));
         }
     }
 

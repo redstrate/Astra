@@ -536,7 +536,7 @@ int Profile::numInstalledExpansions() const
 
 QString Profile::expansionVersion(const int index) const
 {
-    Q_ASSERT(index < numInstalledExpansions());
+    Q_ASSERT(index <= numInstalledExpansions());
     return m_repositories.repositories[index + 1].version;
 }
 
