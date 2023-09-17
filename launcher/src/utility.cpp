@@ -12,12 +12,12 @@ QDir Utility::stateDirectory()
     }
 
     const QDir homeDir = QStandardPaths::standardLocations(QStandardPaths::HomeLocation)[0];
-    const QDir localDir = homeDir.absoluteFilePath(".local");
-    const QDir stateDir = localDir.absoluteFilePath("state");
-    return stateDir.absoluteFilePath("astra");
+    const QDir localDir = homeDir.absoluteFilePath(QStringLiteral(".local"));
+    const QDir stateDir = localDir.absoluteFilePath(QStringLiteral("state"));
+    return stateDir.absoluteFilePath(QStringLiteral("astra"));
 }
 
 QString Utility::toWindowsPath(const QDir &dir)
 {
-    return "Z:" + dir.absolutePath().replace('/', '\\');
+    return QStringLiteral("Z:") + dir.absolutePath().replace(QLatin1Char('/'), QLatin1Char('\\'));
 }
