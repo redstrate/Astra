@@ -23,7 +23,7 @@ Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData 
 {
     setupDirectories();
 
-    Q_EMIT m_launcher.stageChanged(i18n("Checking the FINAL FANTASY XIV Updater/Launcher version."));
+    Q_EMIT m_launcher.stageChanged(i18n("Checking %1 version.", getBaseString()));
 }
 
 Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, GameData &gameData, QObject *parent)
@@ -34,7 +34,7 @@ Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, GameData 
 {
     setupDirectories();
 
-    Q_EMIT m_launcher.stageChanged(i18n("Checking the FINAL FANTASY XIV Game version."));
+    Q_EMIT m_launcher.stageChanged(i18n("Checking %1 version.", getBaseString()));
 }
 
 QCoro::Task<> Patcher::patch(const QString &patchList)
@@ -44,7 +44,7 @@ QCoro::Task<> Patcher::patch(const QString &patchList)
     }
 
     Q_EMIT m_launcher.stageIndeterminate();
-    Q_EMIT m_launcher.stageChanged(i18n("Checking the %1 version.", getBaseString()));
+    Q_EMIT m_launcher.stageChanged(i18n("Checking %1 version.", getBaseString()));
 
     const QStringList parts = patchList.split("\r\n");
 
@@ -126,6 +126,7 @@ void Patcher::processPatch(const QueuedPatch &patch)
         Q_ASSERT(patch.length == f.size());
 
         const int parts = std::ceil(static_cast<double>(patch.length) / static_cast<double>(patch.hashBlockSize));
+
         QByteArray block;
         block.resize(patch.hashBlockSize);
 
