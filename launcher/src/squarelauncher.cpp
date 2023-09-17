@@ -184,7 +184,7 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
         if (reply->rawHeaderList().contains(QByteArrayLiteral("X-Patch-Unique-Id"))) {
             const QString body = reply->readAll();
 
-            patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/game"), info.profile->gameData, this);
+            patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/game"), *info.profile->gameData, this);
             co_await patcher->patch(body);
 
             info.profile->readGameVersion();
