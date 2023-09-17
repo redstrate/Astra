@@ -3,6 +3,7 @@
 
 #include "profile.h"
 
+#include <KLocalizedString>
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -23,55 +24,55 @@ Profile::Profile(LauncherCore &launcher, const QString &key, QObject *parent)
 
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
-    const QDir dalamudDir = dataDir.absoluteFilePath("dalamud");
+    const QDir dalamudDir = dataDir.absoluteFilePath(QStringLiteral("dalamud"));
 
     if (dalamudDir.exists()) {
         const QDir dalamudInstallDir = dalamudDir.absoluteFilePath(dalamudChannelName());
-        const QDir dalamudAssetsDir = dalamudDir.absoluteFilePath("assets");
-        const QDir dalamudRuntimeDir = dalamudDir.absoluteFilePath("runtime");
+        const QDir dalamudAssetsDir = dalamudDir.absoluteFilePath(QStringLiteral("assets"));
+        const QDir dalamudRuntimeDir = dalamudDir.absoluteFilePath(QStringLiteral("runtime"));
 
-        const QString dalamudDepsJson = dalamudInstallDir.absoluteFilePath("Dalamud.deps.json");
+        const QString dalamudDepsJson = dalamudInstallDir.absoluteFilePath(QStringLiteral("Dalamud.deps.json"));
         if (QFile::exists(dalamudDepsJson)) {
             QFile depsJson(dalamudDepsJson);
             depsJson.open(QFile::ReadOnly);
             QJsonDocument doc = QJsonDocument::fromJson(depsJson.readAll());
 
             QString versionString;
-            for (auto target : doc["targets"].toObject().keys()) {
-                if (target.contains(".NETCoreApp")) {
-                    versionString = doc["targets"].toObject()[target].toObject().keys().filter("Dalamud/")[0];
+            for (const auto &target : doc[QLatin1String("targets")].toObject().keys()) {
+                if (target.contains(QLatin1String(".NETCoreApp"))) {
+                    versionString = doc[QLatin1String("targets")].toObject()[target].toObject().keys().filter(QStringLiteral("Dalamud/"))[0];
                 }
             }
 
-            dalamudVersion = versionString.remove("Dalamud/");
+            m_dalamudVersion = versionString.remove(QLatin1String("Dalamud/"));
         }
 
-        const QString dalamudAssetsVer = dalamudAssetsDir.absoluteFilePath("asset.ver");
+        const QString dalamudAssetsVer = dalamudAssetsDir.absoluteFilePath(QStringLiteral("asset.ver"));
         if (QFile::exists(dalamudAssetsVer)) {
             QFile assetJson(dalamudAssetsVer);
             assetJson.open(QFile::ReadOnly | QFile::Text);
 
-            dalamudAssetVersion = QString(assetJson.readAll()).toInt();
+            m_dalamudAssetVersion = QString(assetJson.readAll()).toInt();
         }
 
-        const QString dalamudRuntimeVer = dalamudRuntimeDir.absoluteFilePath("runtime.ver");
+        const QString dalamudRuntimeVer = dalamudRuntimeDir.absoluteFilePath(QStringLiteral("runtime.ver"));
         if (QFile::exists(dalamudRuntimeVer)) {
             QFile runtimeVer(dalamudRuntimeVer);
             runtimeVer.open(QFile::ReadOnly | QFile::Text);
 
-            runtimeVersion = QString(runtimeVer.readAll());
+            m_runtimeVersion = QString(runtimeVer.readAll());
         }
     }
 }
 
 void Profile::readGameData()
 {
-    physis_EXH *exh = physis_gamedata_read_excel_sheet_header(gameData, "ExVersion");
+    physis_EXH *exh = physis_gamedata_read_excel_sheet_header(m_gameData, "ExVersion");
     if (exh != nullptr) {
-        physis_EXD exd = physis_gamedata_read_excel_sheet(gameData, "ExVersion", exh, Language::English, 0);
+        physis_EXD exd = physis_gamedata_read_excel_sheet(m_gameData, "ExVersion", exh, Language::English, 0);
 
         for (unsigned int i = 0; i < exd.row_count; i++) {
-            expansionNames.push_back(exd.row_data[i].column_data[0].string._0);
+            m_expansionNames.push_back(exd.row_data[i].column_data[0].string._0);
         }
 
         physis_gamedata_free_sheet(exd);
@@ -103,7 +104,7 @@ void Profile::readWineInfo()
 #if defined(Q_OS_LINUX)
     switch (wineType()) {
     case WineType::System: // system wine (should be in $PATH)
-        setWinePath("wine");
+        setWinePath(QStringLiteral("wine"));
         break;
     case WineType::Custom: // custom pth
     default:
@@ -117,10 +118,10 @@ void Profile::readWineInfo()
 
     connect(wineProcess, &QProcess::readyRead, this, [wineProcess, this] {
         m_wineVersion = wineProcess->readAllStandardOutput().trimmed();
-        Q_EMIT wineVersionText();
+        Q_EMIT wineChanged();
     });
 
-    m_launcher.launchExecutable(*this, wineProcess, {"--version"}, false, false);
+    m_launcher.launchExecutable(*this, wineProcess, {QStringLiteral("--version")}, false, false);
 
     wineProcess->waitForFinished();
 #endif
@@ -416,15 +417,15 @@ void Profile::readGameVersion()
         return;
     }
 
-    gameData = physis_gamedata_initialize((gamePath() + "/game").toStdString().c_str());
-    bootData = physis_bootdata_initialize((gamePath() + "/boot").toStdString().c_str());
+    m_gameData = physis_gamedata_initialize((gamePath() + QStringLiteral("/game")).toStdString().c_str());
+    m_bootData = physis_bootdata_initialize((gamePath() + QStringLiteral("/boot")).toStdString().c_str());
 
-    if (bootData != nullptr) {
-        bootVersion = physis_bootdata_get_version(bootData);
+    if (m_bootData != nullptr) {
+        m_bootVersion = physis_bootdata_get_version(m_bootData);
     }
 
-    if (gameData != nullptr) {
-        repositories = physis_gamedata_get_repositories(gameData);
+    if (m_gameData != nullptr) {
+        m_repositories = physis_gamedata_get_repositories(m_gameData);
         readGameData();
     }
 
@@ -439,20 +440,20 @@ QString Profile::accountUuid() const
 QString Profile::expansionVersionText() const
 {
     if (!isGameInstalled()) {
-        return "No game installed.";
+        return i18n("No game installed.");
     } else {
         QString expacString;
 
-        expacString += "Boot";
-        expacString += QString(" (%1)").arg(bootVersion);
+        expacString += QStringLiteral("Boot");
+        expacString += QStringLiteral(" (%1)").arg(m_bootVersion);
 
-        for (unsigned int i = 0; i < repositories.repositories_count; i++) {
-            QString expansionName = "Unknown Expansion";
-            if (i < static_cast<unsigned int>(expansionNames.size())) {
-                expansionName = expansionNames[i];
+        for (unsigned int i = 0; i < m_repositories.repositories_count; i++) {
+            QString expansionName = i18n("Unknown Expansion");
+            if (i < static_cast<unsigned int>(m_expansionNames.size())) {
+                expansionName = m_expansionNames[i];
             }
 
-            expacString += QString("\n%1 (%2)").arg(expansionName, repositories.repositories[i].version);
+            expacString += QStringLiteral("\n%1 (%2)").arg(expansionName, m_repositories.repositories[i].version);
         }
 
         return expacString;
@@ -462,14 +463,14 @@ QString Profile::expansionVersionText() const
 QString Profile::dalamudVersionText() const
 {
     QString text;
-    if (dalamudVersion.isEmpty()) {
-        text += "Dalamud is not installed.";
+    if (m_dalamudVersion.isEmpty()) {
+        text += i18n("Dalamud is not installed.");
     } else {
-        text += QStringLiteral("Dalamud (%1)").arg(dalamudVersion);
+        text += QStringLiteral("Dalamud (%1)").arg(m_dalamudVersion);
     }
 
-    if (dalamudAssetVersion != -1) {
-        text += QStringLiteral("\nAssets (%1)").arg(QString::number(dalamudAssetVersion));
+    if (m_dalamudAssetVersion != -1) {
+        text += QStringLiteral("\nAssets (%1)").arg(QString::number(m_dalamudAssetVersion));
     }
 
     return text;
@@ -483,11 +484,11 @@ QString Profile::uuid() const
 QString Profile::wineVersionText() const
 {
     if (m_launcher.isSteam()) {
-        return "Wine is being managed by Steam.";
+        return i18n("Wine is being managed by Steam.");
     }
 
     if (!isWineInstalled()) {
-        return "Wine is not installed.";
+        return i18n("Wine is not installed.");
     } else {
         return m_wineVersion;
     }
@@ -505,4 +506,72 @@ QString Profile::dalamudChannelName() const
     }
 
     Q_UNREACHABLE();
+}
+
+[[nodiscard]] bool Profile::isGameInstalled() const
+{
+    return m_repositories.repositories_count > 0;
+}
+
+[[nodiscard]] bool Profile::isWineInstalled() const
+{
+    return !m_wineVersion.isEmpty();
+}
+
+QString Profile::bootVersion() const
+{
+    return m_bootVersion;
+}
+
+QString Profile::baseGameVersion() const
+{
+    Q_ASSERT(m_repositories.repositories_count > 1);
+    return m_repositories.repositories[0].version;
+}
+
+int Profile::numInstalledExpansions() const
+{
+    Q_ASSERT(m_repositories.repositories_count > 1);
+    return m_repositories.repositories_count - 1;
+}
+
+QString Profile::expansionVersion(const int index) const
+{
+    Q_ASSERT(index < numInstalledExpansions());
+    return m_repositories.repositories[index + 1].version;
+}
+
+int Profile::dalamudAssetVersion() const
+{
+    return m_dalamudAssetVersion;
+}
+
+void Profile::setDalamudAssetVersion(int version)
+{
+    m_dalamudAssetVersion = version;
+}
+
+QString Profile::runtimeVersion() const
+{
+    return m_runtimeVersion;
+}
+
+QString Profile::dalamudVersion() const
+{
+    return m_dalamudVersion;
+}
+
+void Profile::setDalamudVersion(const QString &version)
+{
+    m_dalamudVersion = version;
+}
+
+BootData *Profile::bootData()
+{
+    return m_bootData;
+}
+
+GameData *Profile::gameData()
+{
+    return m_gameData;
 }

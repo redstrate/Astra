@@ -71,7 +71,7 @@ void AssetUpdater::update()
             QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
 
             qInfo() << "Dalamud asset remote version" << doc.object()["Version"].toInt();
-            qInfo() << "Dalamud asset local version" << m_profile.dalamudAssetVersion;
+            qInfo() << "Dalamud asset local version" << m_profile.dalamudAssetVersion();
 
             remoteDalamudAssetVersion = doc.object()["Version"].toInt();
 
@@ -162,7 +162,7 @@ void AssetUpdater::checkIfDalamudAssetsDone()
     if (dalamudAssetNeededFilenames.empty()) {
         qInfo() << "Finished downloading Dalamud assets.";
 
-        m_profile.dalamudAssetVersion = remoteDalamudAssetVersion;
+        m_profile.setDalamudAssetVersion(remoteDalamudAssetVersion);
 
         QFile file(dalamudAssetDir.absoluteFilePath("asset.ver"));
         file.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -196,7 +196,7 @@ void AssetUpdater::checkIfCheckingIsDone()
     Q_EMIT launcher.stageChanged("Starting Dalamud update...");
 
     // dalamud injector / net runtime
-    if (m_profile.runtimeVersion != remoteRuntimeVersion) {
+    if (m_profile.runtimeVersion() != remoteRuntimeVersion) {
         needsRuntimeInstall = true;
 
         // core
@@ -248,7 +248,7 @@ void AssetUpdater::checkIfCheckingIsDone()
         checkIfFinished();
     }
 
-    if (remoteDalamudVersion != m_profile.dalamudVersion) {
+    if (remoteDalamudVersion != m_profile.dalamudVersion()) {
         qInfo() << "Downloading Dalamud...";
 
         needsDalamudInstall = true;
@@ -268,7 +268,7 @@ void AssetUpdater::checkIfCheckingIsDone()
 
             doneDownloadingDalamud = true;
 
-            m_profile.dalamudVersion = remoteDalamudVersion;
+            m_profile.setDalamudVersion(remoteDalamudVersion);
 
             checkIfFinished();
         });
@@ -282,7 +282,7 @@ void AssetUpdater::checkIfCheckingIsDone()
     }
 
     // dalamud assets
-    if (remoteDalamudAssetVersion != m_profile.dalamudAssetVersion) {
+    if (remoteDalamudAssetVersion != m_profile.dalamudAssetVersion()) {
         qInfo() << "Dalamud assets out of date.";
 
         Q_EMIT launcher.stageChanged("Updating Dalamud assets...");

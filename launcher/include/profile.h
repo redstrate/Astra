@@ -56,100 +56,97 @@ public:
     enum class DalamudChannel { Stable, Staging, Net5 };
     Q_ENUM(DalamudChannel)
 
-    QString uuid() const;
+    [[nodiscard]] QString uuid() const;
 
-    QString name() const;
+    [[nodiscard]] QString name() const;
     void setName(const QString &name);
 
-    QString gamePath() const;
+    [[nodiscard]] QString gamePath() const;
     void setGamePath(const QString &path);
 
-    QString winePath() const;
+    [[nodiscard]] QString winePath() const;
     void setWinePath(const QString &path);
 
-    QString winePrefixPath() const;
+    [[nodiscard]] QString winePrefixPath() const;
     void setWinePrefixPath(const QString &path);
 
-    bool watchdogEnabled() const;
+    [[nodiscard]] bool watchdogEnabled() const;
     void setWatchdogEnabled(bool value);
 
-    WineType wineType() const;
+    [[nodiscard]] WineType wineType() const;
     void setWineType(WineType type);
 
-    bool esyncEnabled() const;
+    [[nodiscard]] bool esyncEnabled() const;
     void setESyncEnabled(bool value);
 
-    bool gamescopeEnabled() const;
+    [[nodiscard]] bool gamescopeEnabled() const;
     void setGamescopeEnabled(bool value);
 
-    bool gamemodeEnabled() const;
+    [[nodiscard]] bool gamemodeEnabled() const;
     void setGamemodeEnabled(bool value);
 
-    bool directx9Enabled() const;
+    [[nodiscard]] bool directx9Enabled() const;
     void setDirectX9Enabled(bool value);
 
-    bool gamescopeFullscreen() const;
+    [[nodiscard]] bool gamescopeFullscreen() const;
     void setGamescopeFullscreen(bool value);
 
-    bool gamescopeBorderless() const;
+    [[nodiscard]] bool gamescopeBorderless() const;
     void setGamescopeBorderless(bool value);
 
-    int gamescopeWidth() const;
+    [[nodiscard]] int gamescopeWidth() const;
     void setGamescopeWidth(int value);
 
-    int gamescopeHeight() const;
+    [[nodiscard]] int gamescopeHeight() const;
     void setGamescopeHeight(int value);
 
-    int gamescopeRefreshRate() const;
+    [[nodiscard]] int gamescopeRefreshRate() const;
     void setGamescopeRefreshRate(int value);
 
-    bool dalamudEnabled() const;
+    [[nodiscard]] bool dalamudEnabled() const;
     void setDalamudEnabled(bool value);
 
-    bool dalamudOptOut() const;
+    [[nodiscard]] bool dalamudOptOut() const;
     void setDalamudOptOut(bool value);
 
-    DalamudChannel dalamudChannel() const;
+    [[nodiscard]] DalamudChannel dalamudChannel() const;
     void setDalamudChannel(DalamudChannel channel);
 
-    bool argumentsEncrypted() const;
+    [[nodiscard]] bool argumentsEncrypted() const;
     void setArgumentsEncrypted(bool value);
 
-    Account *account() const;
-    QString accountUuid() const;
+    [[nodiscard]] Account *account() const;
+    [[nodiscard]] QString accountUuid() const;
     void setAccount(Account *account);
 
     void readGameData();
     void readGameVersion();
     void readWineInfo();
 
-    QVector<QString> expansionNames;
+    [[nodiscard]] QString expansionVersionText() const;
+    [[nodiscard]] QString dalamudVersionText() const;
+    [[nodiscard]] QString wineVersionText() const;
 
-    BootData *bootData;
-    GameData *gameData;
+    [[nodiscard]] QString dalamudChannelName() const;
 
-    physis_Repositories repositories = {};
-    const char *bootVersion = nullptr;
+    [[nodiscard]] bool isGameInstalled() const;
+    [[nodiscard]] bool isWineInstalled() const;
 
-    QString dalamudVersion;
-    int dalamudAssetVersion = -1;
-    QString runtimeVersion;
+    [[nodiscard]] QString bootVersion() const;
+    [[nodiscard]] QString baseGameVersion() const;
+    [[nodiscard]] int numInstalledExpansions() const;
+    [[nodiscard]] QString expansionVersion(int index) const;
 
-    QString expansionVersionText() const;
-    QString dalamudVersionText() const;
-    QString wineVersionText() const;
+    [[nodiscard]] int dalamudAssetVersion() const;
+    void setDalamudAssetVersion(int version);
 
-    [[nodiscard]] bool isGameInstalled() const
-    {
-        return repositories.repositories_count > 0;
-    }
+    [[nodiscard]] QString runtimeVersion() const;
 
-    [[nodiscard]] bool isWineInstalled() const
-    {
-        return !m_wineVersion.isEmpty();
-    }
+    [[nodiscard]] QString dalamudVersion() const;
+    void setDalamudVersion(const QString &version);
 
-    QString dalamudChannelName() const;
+    BootData *bootData();
+    GameData *gameData();
 
 Q_SIGNALS:
     void gameInstallChanged();
@@ -180,5 +177,18 @@ private:
     QString m_wineVersion;
     ProfileConfig *m_config = nullptr;
     Account *m_account = nullptr;
+
+    QVector<QString> m_expansionNames;
+
+    BootData *m_bootData = nullptr;
+    GameData *m_gameData = nullptr;
+
+    physis_Repositories m_repositories = {};
+    const char *m_bootVersion = nullptr;
+
+    QString m_dalamudVersion;
+    int m_dalamudAssetVersion = -1;
+    QString m_runtimeVersion;
+
     LauncherCore &m_launcher;
 };

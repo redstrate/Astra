@@ -160,7 +160,7 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
     QUrl url;
     url.setScheme(QStringLiteral("https"));
     url.setHost(QStringLiteral("patch-gamever.%1").arg(window.squareEnixServer()));
-    url.setPath(QStringLiteral("/http/win32/ffxivneo_release_game/%1/%2").arg(info.profile->repositories.repositories[0].version, SID));
+    url.setPath(QStringLiteral("/http/win32/ffxivneo_release_game/%1/%2").arg(info.profile->baseGameVersion(), SID));
 
     auto request = QNetworkRequest(url);
     window.setSSL(request);
@@ -168,14 +168,16 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
     request.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("FFXIV PATCH CLIENT"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/x-www-form-urlencoded"));
 
-    QString report = QStringLiteral("%1=%2").arg(info.profile->bootVersion, getBootHash(info));
+    QString report = QStringLiteral("%1=%2").arg(info.profile->bootVersion(), getBootHash(info));
     for (int i = 1; i < auth.maxExpansion + 1; i++) {
-        if (i < static_cast<int>(info.profile->repositories.repositories_count)) {
-            report += QStringLiteral("\nex%1\t%2").arg(QString::number(i), info.profile->repositories.repositories[i].version);
+        if (i < static_cast<int>(info.profile->numInstalledExpansions())) {
+            report += QStringLiteral("\nex%1\t%2").arg(QString::number(i), info.profile->expansionVersion(i));
         } else {
             report += QStringLiteral("\nex%1\t2012.01.01.0000.0000").arg(QString::number(i));
         }
     }
+
+    qInfo() << report;
 
     const auto reply = window.mgr->post(request, report.toUtf8());
     co_await reply;
@@ -184,7 +186,7 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
         if (reply->rawHeaderList().contains(QByteArrayLiteral("X-Patch-Unique-Id"))) {
             const QString body = reply->readAll();
 
-            patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/game"), *info.profile->gameData, this);
+            patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/game"), *info.profile->gameData(), this);
             co_await patcher->patch(body);
 
             info.profile->readGameVersion();

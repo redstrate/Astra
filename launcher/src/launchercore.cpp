@@ -182,7 +182,7 @@ QString LauncherCore::getGameArgs(const Profile &profile, const LoginAuth &auth)
     gameArgs.push_back({QStringLiteral("DEV.TestSID"), auth.SID});
     gameArgs.push_back({QStringLiteral("SYS.Region"), QString::number(auth.region)});
     gameArgs.push_back({QStringLiteral("language"), QString::number(profile.account()->language())});
-    gameArgs.push_back({QStringLiteral("ver"), profile.repositories.repositories[0].version});
+    gameArgs.push_back({QStringLiteral("ver"), profile.baseGameVersion()});
     gameArgs.push_back({QStringLiteral("UserPath"), Utility::toWindowsPath(profile.account()->getConfigDir().absolutePath())});
 
     // FIXME: this should belong somewhere else...

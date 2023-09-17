@@ -32,7 +32,7 @@ QCoro::Task<> SquareBoot::bootCheck(const LoginInformation &info)
     QUrl url;
     url.setScheme(QStringLiteral("http"));
     url.setHost(QStringLiteral("patch-bootver.%1").arg(window.squareEnixServer()));
-    url.setPath(QStringLiteral("/http/win32/ffxivneo_release_boot/%1").arg(info.profile->bootVersion));
+    url.setPath(QStringLiteral("/http/win32/ffxivneo_release_boot/%1").arg(info.profile->bootVersion()));
     url.setQuery(query);
 
     auto request = QNetworkRequest(url);
@@ -47,7 +47,7 @@ QCoro::Task<> SquareBoot::bootCheck(const LoginInformation &info)
     const auto reply = window.mgr->get(request);
     co_await reply;
 
-    patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/boot"), *info.profile->bootData, this);
+    patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/boot"), *info.profile->bootData(), this);
     co_await patcher->patch(reply->readAll());
 
     // update game version information
