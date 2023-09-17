@@ -16,7 +16,7 @@ class CompatibilityToolInstaller : public QObject
     QML_UNCREATABLE("Use LauncherCore.createCompatInstaller")
 
 public:
-    CompatibilityToolInstaller(LauncherCore &launcher, QObject *parent = nullptr);
+    explicit CompatibilityToolInstaller(LauncherCore &launcher, QObject *parent = nullptr);
 
     Q_INVOKABLE void installCompatibilityTool();
     Q_INVOKABLE void removeCompatibilityTool();

@@ -3,6 +3,8 @@
 
 #include "compatibilitytoolinstaller.h"
 
+#include <KLocalizedString>
+
 #include "launchercore.h"
 
 CompatibilityToolInstaller::CompatibilityToolInstaller(LauncherCore &launcher, QObject *parent)
@@ -14,16 +16,16 @@ CompatibilityToolInstaller::CompatibilityToolInstaller(LauncherCore &launcher, Q
 void CompatibilityToolInstaller::installCompatibilityTool()
 {
     const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::GenericDataLocation)[0];
-    const QDir steamDir = appDataDir.absoluteFilePath("Steam");
+    const QDir steamDir = appDataDir.absoluteFilePath(QStringLiteral("Steam"));
     if (!steamDir.exists()) {
-        Q_EMIT error("Could not find a Steam installation.");
+        Q_EMIT error(i18n("Could not find a Steam installation."));
         return;
     }
 
-    const QDir compatToolDir = steamDir.absoluteFilePath("compatibilitytools.d");
-    const QDir astraToolDir = compatToolDir.absoluteFilePath("astra");
+    const QDir compatToolDir = steamDir.absoluteFilePath(QStringLiteral("compatibilitytools.d"));
+    const QDir astraToolDir = compatToolDir.absoluteFilePath(QStringLiteral("astra"));
     if (astraToolDir.exists()) {
-        Q_EMIT error("The compatibility tool is already installed.");
+        Q_EMIT error(i18n("The compatibility tool is already installed."));
         return;
     } else {
         QDir().mkpath(astraToolDir.absolutePath());
@@ -31,7 +33,7 @@ void CompatibilityToolInstaller::installCompatibilityTool()
 
     const QString appPath = QCoreApplication::applicationFilePath();
     QFile appFile(appPath);
-    appFile.link(astraToolDir.absoluteFilePath("astra"));
+    appFile.link(astraToolDir.absoluteFilePath(QStringLiteral("astra")));
 
     const QString toolManifestContents = QStringLiteral(
         "\"manifest\"\n"
@@ -40,8 +42,8 @@ void CompatibilityToolInstaller::installCompatibilityTool()
         "  \"commandline\" \"/astra --steam %verb%\"\n"
         "}");
 
-    QFile toolManifestFile(astraToolDir.absoluteFilePath("toolmanifest.vdf"));
-    toolManifestFile.open(QIODevice::WriteOnly);
+    QFile toolManifestFile(astraToolDir.absoluteFilePath(QStringLiteral("toolmanifest.vdf")));
+    toolManifestFile.open(QIODevice::WriteOnly | QIODevice::Text);
     toolManifestFile.write(toolManifestContents.toUtf8());
     toolManifestFile.close();
 
@@ -61,8 +63,8 @@ void CompatibilityToolInstaller::installCompatibilityTool()
         "  }\n"
         "}");
 
-    QFile compatibilityToolFile(astraToolDir.absoluteFilePath("compatibilitytool.vdf"));
-    compatibilityToolFile.open(QIODevice::WriteOnly);
+    QFile compatibilityToolFile(astraToolDir.absoluteFilePath(QStringLiteral("compatibilitytool.vdf")));
+    compatibilityToolFile.open(QIODevice::WriteOnly | QIODevice::Text);
     compatibilityToolFile.write(compatibilityToolContents.toUtf8());
     compatibilityToolFile.close();
 
@@ -72,16 +74,16 @@ void CompatibilityToolInstaller::installCompatibilityTool()
 void CompatibilityToolInstaller::removeCompatibilityTool()
 {
     const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::GenericDataLocation)[0];
-    const QDir steamDir = appDataDir.absoluteFilePath("Steam");
+    const QDir steamDir = appDataDir.absoluteFilePath(QStringLiteral("Steam"));
     if (!steamDir.exists()) {
-        Q_EMIT error("Could not find a Steam installation.");
+        Q_EMIT error(i18n("Could not find a Steam installation."));
         return;
     }
 
-    const QDir compatToolDir = steamDir.absoluteFilePath("compatibilitytools.d");
-    QDir astraToolDir = compatToolDir.absoluteFilePath("astra");
+    const QDir compatToolDir = steamDir.absoluteFilePath(QStringLiteral("compatibilitytools.d"));
+    QDir astraToolDir = compatToolDir.absoluteFilePath(QStringLiteral("astra"));
     if (!astraToolDir.exists()) {
-        Q_EMIT error("The compatibility tool is not installed.");
+        Q_EMIT error(i18n("The compatibility tool is not installed."));
         return;
     } else {
         astraToolDir.removeRecursively();
