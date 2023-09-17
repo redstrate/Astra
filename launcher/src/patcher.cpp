@@ -8,12 +8,10 @@
 #include <QFile>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QRegExp>
 #include <QStandardPaths>
 #include <QtConcurrent>
 #include <physis.hpp>
 #include <qcorofuture.h>
-#include <qcoronetworkreply.h>
 #include <utility>
 
 #include "launchercore.h"
@@ -64,7 +62,7 @@ QCoro::Task<> Patcher::patch(QNetworkAccessManager &mgr, const QString &patchLis
     int patchIndex = 0;
 
     for (int i = 5; i < parts.size() - 2; i++) {
-        const QStringList patchParts = parts[i].split("\t");
+        const QStringList patchParts = parts[i].split(QLatin1Char('\t'));
 
         const int length = patchParts[0].toInt();
         int ourIndex = patchIndex++;
@@ -73,11 +71,11 @@ QCoro::Task<> Patcher::patch(QNetworkAccessManager &mgr, const QString &patchLis
         const long hashBlockSize = patchParts.size() == 9 ? patchParts[6].toLong() : 0;
 
         const QString name = version;
-        const QStringList hashes = patchParts.size() == 9 ? (patchParts[7].split(',')) : QStringList();
+        const QStringList hashes = patchParts.size() == 9 ? (patchParts[7].split(QLatin1Char(','))) : QStringList();
         const QString url = patchParts[patchParts.size() == 9 ? 8 : 5];
         const QString filename = QStringLiteral("%1.patch").arg(name);
 
-        auto url_parts = url.split('/');
+        auto url_parts = url.split(QLatin1Char('/'));
         const QString repository = url_parts[url_parts.size() - 3];
 
         const QDir repositoryDir = patchesDir.absoluteFilePath(repository);
@@ -89,7 +87,7 @@ QCoro::Task<> Patcher::patch(QNetworkAccessManager &mgr, const QString &patchLis
         if (!QFile::exists(patchPath)) {
             auto patchReply = mgr.get(QNetworkRequest(url));
 
-            connect(patchReply, &QNetworkReply::downloadProgress, [this, repository, version, length](int recieved, int total) {
+            connect(patchReply, &QNetworkReply::downloadProgress, [this, repository, version, length](int received, int total) {
                 Q_UNUSED(total)
 
                 if (isBoot()) {
@@ -98,7 +96,7 @@ QCoro::Task<> Patcher::patch(QNetworkAccessManager &mgr, const QString &patchLis
                     Q_EMIT m_launcher.stageChanged(i18n("Updating the FINAL FANTASY XIV Game version.\nDownloading %1 - %2", repository, version));
                 }
 
-                Q_EMIT m_launcher.stageDeterminate(0, length, recieved);
+                Q_EMIT m_launcher.stageDeterminate(0, length, received);
             });
 
             synchronizer.addFuture(QtFuture::connect(patchReply, &QNetworkReply::finished)
@@ -168,12 +166,12 @@ void Patcher::processPatch(const QueuedPatch &patch)
 
     QString verFilePath;
     if (isBoot()) {
-        verFilePath = baseDirectory + "/ffxivboot.ver";
+        verFilePath = baseDirectory + QStringLiteral("/ffxivboot.ver");
     } else {
-        if (patch.repository == "game") {
-            verFilePath = baseDirectory + "/ffxivgame.ver";
+        if (patch.repository == QLatin1String("game")) {
+            verFilePath = baseDirectory + QStringLiteral("/ffxivgame.ver");
         } else {
-            verFilePath = baseDirectory + "/sqpack/" + patch.repository + "/" + patch.repository + ".ver";
+            verFilePath = baseDirectory + QStringLiteral("/sqpack/") + patch.repository + QStringLiteral("/") + patch.repository + QStringLiteral(".ver");
         }
     }
 
@@ -192,5 +190,5 @@ void Patcher::setupDirectories()
         dataDir.setPath(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
     }
 
-    patchesDir.setPath(dataDir.absoluteFilePath("patches"));
+    patchesDir.setPath(dataDir.absoluteFilePath(QStringLiteral("patches")));
 }
