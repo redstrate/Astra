@@ -3,6 +3,7 @@
 
 #include "gameinstaller.h"
 
+#include <KLocalizedString>
 #include <QFile>
 #include <QNetworkReply>
 #include <QStandardPaths>
@@ -30,7 +31,7 @@ void GameInstaller::installGame()
     auto reply = m_launcher.mgr->get(request);
     QObject::connect(reply, &QNetworkReply::finished, [this, reply, installDirectory] {
         if (reply->error() != QNetworkReply::NetworkError::NoError) {
-            Q_EMIT error(QStringLiteral("An error has occurred when downloading the installer.\n\n%1").arg(reply->errorString()));
+            Q_EMIT error(i18n("An error has occurred when downloading the installer.\n\n%1", reply->errorString()));
             return;
         }
 
