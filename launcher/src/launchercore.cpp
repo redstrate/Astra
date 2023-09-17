@@ -3,6 +3,7 @@
 
 #include "gameinstaller.h"
 
+#include <KLocalizedString>
 #include <QDir>
 #include <QNetworkAccessManager>
 #include <QProcess>
@@ -43,21 +44,21 @@ void LauncherCore::buildRequest(const Profile &settings, QNetworkRequest &reques
     setSSL(request);
 
     if (settings.account()->license() == Account::GameLicense::macOS) {
-        request.setHeader(QNetworkRequest::UserAgentHeader, "macSQEXAuthor/2.0.0(MacOSX; ja-jp)");
+        request.setHeader(QNetworkRequest::UserAgentHeader, QByteArrayLiteral("macSQEXAuthor/2.0.0(MacOSX; ja-jp)"));
     } else {
-        request.setHeader(QNetworkRequest::UserAgentHeader, QString("SQEXAuthor/2.0.0(Windows 6.2; ja-jp; %1)").arg(QString(QSysInfo::bootUniqueId())));
+        request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("SQEXAuthor/2.0.0(Windows 6.2; ja-jp; %1)").arg(QString(QSysInfo::bootUniqueId())));
     }
 
-    request.setRawHeader("Accept",
-                         "image/gif, image/jpeg, image/pjpeg, application/x-ms-application, application/xaml+xml, "
-                         "application/x-ms-xbap, */*");
-    request.setRawHeader("Accept-Encoding", "gzip, deflate");
-    request.setRawHeader("Accept-Language", "en-us");
+    request.setRawHeader(QByteArrayLiteral("Accept"),
+                         QByteArrayLiteral("image/gif, image/jpeg, image/pjpeg, application/x-ms-application, application/xaml+xml, "
+                                           "application/x-ms-xbap, */*"));
+    request.setRawHeader(QByteArrayLiteral("Accept-Encoding"), QByteArrayLiteral("gzip, deflate"));
+    request.setRawHeader(QByteArrayLiteral("Accept-Language"), QByteArrayLiteral("en-us"));
 }
 
 void LauncherCore::launchGame(const Profile &profile, const LoginAuth &auth)
 {
-    steamApi->setLauncherMode(false);
+    m_steamApi->setLauncherMode(false);
 
 #ifdef ENABLE_WATCHDOG
     if (profile.enableWatchdog) {
@@ -72,13 +73,13 @@ void LauncherCore::launchGame(const Profile &profile, const LoginAuth &auth)
 
 void LauncherCore::beginGameExecutable(const Profile &profile, const LoginAuth &auth)
 {
-    Q_EMIT stageChanged("Launching game...");
+    Q_EMIT stageChanged(i18n("Launching game..."));
 
     QString gameExectuable;
     if (profile.directx9Enabled()) {
-        gameExectuable = profile.gamePath() + "/game/ffxiv.exe";
+        gameExectuable = profile.gamePath() + QStringLiteral("/game/ffxiv.exe");
     } else {
-        gameExectuable = profile.gamePath() + "/game/ffxiv_dx11.exe";
+        gameExectuable = profile.gamePath() + QStringLiteral("/game/ffxiv_dx11.exe");
     }
 
     if (profile.dalamudEnabled()) {
@@ -109,29 +110,29 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Pro
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     const QDir configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     const QDir stateDir = Utility::stateDirectory();
-    const QDir dalamudDir = dataDir.absoluteFilePath("dalamud");
+    const QDir dalamudDir = dataDir.absoluteFilePath(QStringLiteral("dalamud"));
 
-    const QDir dalamudConfigDir = configDir.absoluteFilePath("dalamud");
+    const QDir dalamudConfigDir = configDir.absoluteFilePath(QStringLiteral("dalamud"));
     const QDir userDalamudConfigDir = dalamudConfigDir.absoluteFilePath(profile.account()->uuid());
 
-    const QDir dalamudBasePluginDir = dalamudDir.absoluteFilePath("plugins");
+    const QDir dalamudBasePluginDir = dalamudDir.absoluteFilePath(QStringLiteral("plugins"));
     const QDir dalamudUserPluginDir = dalamudBasePluginDir.absoluteFilePath(profile.account()->uuid());
 
     // Some really dumb plugins check for "installedPlugins" in their assembly directory FOR SOME REASON
     // so we need to match typical XIVQuickLauncher behavior here. Why? I have no clue.
-    const QDir dalamudPluginDir = dalamudUserPluginDir.absoluteFilePath("installedPlugins");
+    const QDir dalamudPluginDir = dalamudUserPluginDir.absoluteFilePath(QStringLiteral("installedPlugins"));
 
-    const QString logDir = stateDir.absoluteFilePath("logs");
+    const QString logDir = stateDir.absoluteFilePath(QStringLiteral("logs"));
 
     if (!QDir().exists(logDir))
         QDir().mkpath(logDir);
 
-    const QDir dalamudRuntimeDir = dalamudDir.absoluteFilePath("runtime");
-    const QDir dalamudAssetDir = dalamudDir.absoluteFilePath("assets");
-    const QDir dalamudConfigPath = userDalamudConfigDir.absoluteFilePath("dalamud-config.json");
+    const QDir dalamudRuntimeDir = dalamudDir.absoluteFilePath(QStringLiteral("runtime"));
+    const QDir dalamudAssetDir = dalamudDir.absoluteFilePath(QStringLiteral("assets"));
+    const QDir dalamudConfigPath = userDalamudConfigDir.absoluteFilePath(QStringLiteral("dalamud-config.json"));
 
     const QDir dalamudInstallDir = dalamudDir.absoluteFilePath(profile.dalamudChannelName());
-    const QString dalamudInjector = dalamudInstallDir.absoluteFilePath("Dalamud.Injector.exe");
+    const QString dalamudInjector = dalamudInstallDir.absoluteFilePath(QStringLiteral("Dalamud.Injector.exe"));
 
     auto dalamudProcess = new QProcess(this);
     connect(dalamudProcess, &QProcess::finished, this, [this](int exitCode) {
@@ -140,10 +141,10 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Pro
     });
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    env.insert("DALAMUD_RUNTIME", Utility::toWindowsPath(dalamudRuntimeDir));
+    env.insert(QStringLiteral("DALAMUD_RUNTIME"), Utility::toWindowsPath(dalamudRuntimeDir));
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-    env.insert("XL_WINEONLINUX", "true");
+    env.insert(QStringLiteral("XL_WINEONLINUX"), QStringLiteral("true"));
 #endif
     dalamudProcess->setProcessEnvironment(env);
 
@@ -152,16 +153,16 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Pro
     launchExecutable(profile,
                      dalamudProcess,
                      {Utility::toWindowsPath(dalamudInjector),
-                      "launch",
-                      "-m",
-                      "inject",
-                      "--game=" + Utility::toWindowsPath(gameExecutablePath),
-                      "--dalamud-configuration-path=" + Utility::toWindowsPath(dalamudConfigPath),
-                      "--dalamud-plugin-directory=" + Utility::toWindowsPath(dalamudPluginDir),
-                      "--dalamud-asset-directory=" + Utility::toWindowsPath(dalamudAssetDir),
-                      "--dalamud-client-language=" + QString::number(profile.account()->language()),
-                      "--logpath=" + Utility::toWindowsPath(logDir),
-                      "--",
+                      QStringLiteral("launch"),
+                      QStringLiteral("-m"),
+                      QStringLiteral("inject"),
+                      QStringLiteral("--game=") + Utility::toWindowsPath(gameExecutablePath),
+                      QStringLiteral("--dalamud-configuration-path=") + Utility::toWindowsPath(dalamudConfigPath),
+                      QStringLiteral("--dalamud-plugin-directory=") + Utility::toWindowsPath(dalamudPluginDir),
+                      QStringLiteral("--dalamud-asset-directory=") + Utility::toWindowsPath(dalamudAssetDir),
+                      QStringLiteral("--dalamud-client-language=") + QString::number(profile.account()->language()),
+                      QStringLiteral("--logpath=") + Utility::toWindowsPath(logDir),
+                      QStringLiteral("--"),
                       args},
                      true,
                      true);
@@ -174,15 +175,15 @@ QString LauncherCore::getGameArgs(const Profile &profile, const LoginAuth &auth)
     };
 
     QList<Argument> gameArgs;
-    gameArgs.push_back({"DEV.DataPathType", QString::number(1)});
-    gameArgs.push_back({"DEV.UseSqPack", QString::number(1)});
+    gameArgs.push_back({QStringLiteral("DEV.DataPathType"), QString::number(1)});
+    gameArgs.push_back({QStringLiteral("DEV.UseSqPack"), QString::number(1)});
 
-    gameArgs.push_back({"DEV.MaxEntitledExpansionID", QString::number(auth.maxExpansion)});
-    gameArgs.push_back({"DEV.TestSID", auth.SID});
-    gameArgs.push_back({"SYS.Region", QString::number(auth.region)});
-    gameArgs.push_back({"language", QString::number(profile.account()->language())});
-    gameArgs.push_back({"ver", profile.repositories.repositories[0].version});
-    gameArgs.push_back({"UserPath", Utility::toWindowsPath(profile.account()->getConfigDir().absolutePath())});
+    gameArgs.push_back({QStringLiteral("DEV.MaxEntitledExpansionID"), QString::number(auth.maxExpansion)});
+    gameArgs.push_back({QStringLiteral("DEV.TestSID"), auth.SID});
+    gameArgs.push_back({QStringLiteral("SYS.Region"), QString::number(auth.region)});
+    gameArgs.push_back({QStringLiteral("language"), QString::number(profile.account()->language())});
+    gameArgs.push_back({QStringLiteral("ver"), profile.repositories.repositories[0].version});
+    gameArgs.push_back({QStringLiteral("UserPath"), Utility::toWindowsPath(profile.account()->getConfigDir().absolutePath())});
 
     // FIXME: this should belong somewhere else...
     if (!QDir().exists(profile.account()->getConfigDir().absolutePath())) {
@@ -190,18 +191,18 @@ QString LauncherCore::getGameArgs(const Profile &profile, const LoginAuth &auth)
     }
 
     if (!auth.lobbyhost.isEmpty()) {
-        gameArgs.push_back({"DEV.GMServerHost", auth.frontierHost});
+        gameArgs.push_back({QStringLiteral("DEV.GMServerHost"), auth.frontierHost});
         for (int i = 1; i < 9; i++) {
-            gameArgs.push_back({QString("DEV.LobbyHost0%1").arg(QString::number(i)), auth.lobbyhost});
-            gameArgs.push_back({QString("DEV.LobbyPort0%1").arg(QString::number(i)), QString::number(54994)});
+            gameArgs.push_back({QStringLiteral("DEV.LobbyHost0%1").arg(QString::number(i)), auth.lobbyhost});
+            gameArgs.push_back({QStringLiteral("DEV.LobbyPort0%1").arg(QString::number(i)), QString::number(54994)});
         }
     }
 
     if (profile.account()->license() == Account::GameLicense::WindowsSteam) {
-        gameArgs.push_back({"IsSteam", "1"});
+        gameArgs.push_back({QStringLiteral("IsSteam"), QStringLiteral("1")});
     }
 
-    const QString argFormat = profile.argumentsEncrypted() ? " /%1 =%2" : " %1=%2";
+    const QString argFormat = profile.argumentsEncrypted() ? QStringLiteral(" /%1 =%2") : QStringLiteral(" %1=%2");
 
     QString argJoined;
     for (const auto &arg : gameArgs) {
@@ -219,9 +220,9 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
     if (needsRegistrySetup) {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
         if (profile.account()->license() == Account::GameLicense::macOS) {
-            addRegistryKey(profile, "HKEY_CURRENT_USER\\Software\\Wine", "HideWineExports", "0");
+            addRegistryKey(profile, QStringLiteral("HKEY_CURRENT_USER\\Software\\Wine"), QStringLiteral("HideWineExports"), QStringLiteral("0"));
         } else {
-            addRegistryKey(profile, "HKEY_CURRENT_USER\\Software\\Wine", "HideWineExports", "1");
+            addRegistryKey(profile, QStringLiteral("HKEY_CURRENT_USER\\Software\\Wine"), QStringLiteral("HideWineExports"), QStringLiteral("1"));
         }
 #endif
     }
@@ -229,22 +230,22 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
 #if defined(Q_OS_LINUX)
     if (isGame) {
         if (profile.gamescopeEnabled()) {
-            arguments.push_back("gamescope");
+            arguments.push_back(QStringLiteral("gamescope"));
 
             if (profile.gamescopeFullscreen())
-                arguments.push_back("-f");
+                arguments.push_back(QStringLiteral("-f"));
 
             if (profile.gamescopeBorderless())
-                arguments.push_back("-b");
+                arguments.push_back(QStringLiteral("-b"));
 
             if (profile.gamescopeWidth() > 0)
-                arguments.push_back("-w " + QString::number(profile.gamescopeWidth()));
+                arguments.push_back(QStringLiteral("-w ") + QString::number(profile.gamescopeWidth()));
 
             if (profile.gamescopeHeight() > 0)
-                arguments.push_back("-h " + QString::number(profile.gamescopeHeight()));
+                arguments.push_back(QStringLiteral("-h ") + QString::number(profile.gamescopeHeight()));
 
             if (profile.gamescopeRefreshRate() > 0)
-                arguments.push_back("-r " + QString::number(profile.gamescopeRefreshRate()));
+                arguments.push_back(QStringLiteral("-r ") + QString::number(profile.gamescopeRefreshRate()));
         }
     }
 #endif
@@ -257,19 +258,19 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
 
 #if defined(Q_OS_LINUX)
     if (profile.esyncEnabled()) {
-        env.insert("WINEESYNC", QString::number(1));
-        env.insert("WINEFSYNC", QString::number(1));
-        env.insert("WINEFSYNC_FUTEX2", QString::number(1));
+        env.insert(QStringLiteral("WINEESYNC"), QString::number(1));
+        env.insert(QStringLiteral("WINEFSYNC"), QString::number(1));
+        env.insert(QStringLiteral("WINEFSYNC_FUTEX2"), QString::number(1));
     }
 #endif
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     if (m_isSteam) {
-        const QDir steamDirectory = QProcessEnvironment::systemEnvironment().value("STEAM_COMPAT_CLIENT_INSTALL_PATH");
+        const QDir steamDirectory = QProcessEnvironment::systemEnvironment().value(QStringLiteral("STEAM_COMPAT_CLIENT_INSTALL_PATH"));
         const QDir compatData =
-            QProcessEnvironment::systemEnvironment().value("STEAM_COMPAT_DATA_PATH"); // TODO: do these have to exist on the root steam folder?
+            QProcessEnvironment::systemEnvironment().value(QStringLiteral("STEAM_COMPAT_DATA_PATH")); // TODO: do these have to exist on the root steam folder?
 
-        const QString steamAppsPath = steamDirectory.absoluteFilePath("steamapps/common");
+        const QString steamAppsPath = steamDirectory.absoluteFilePath(QStringLiteral("steamapps/common"));
 
         // Find the highest Proton version
         QDirIterator it(steamAppsPath);
@@ -284,12 +285,12 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
             }
 
             QString dirName = fileInfo.fileName();
-            if (dirName.contains("Proton")) {
-                if (dirName == "Proton - Experimental") {
+            if (dirName.contains(QLatin1String("Proton"))) {
+                if (dirName == QLatin1String("Proton - Experimental")) {
                     highestVersion.setPath(dir);
                     break;
                 } else {
-                    QString version = dirName.remove("Proton ");
+                    QString version = dirName.remove(QLatin1String("Proton "));
                     // Exclude "BattlEye Runtime" and other unrelated things
                     if (version.contains('.')) {
                         // TODO: better error handling (they might never be invalid, but better safe than sorry)
@@ -306,34 +307,34 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
             }
         }
 
-        env.insert("STEAM_COMPAT_CLIENT_INSTALL_PATH", steamDirectory.absolutePath());
-        env.insert("STEAM_COMPAT_DATA_PATH", compatData.absolutePath());
+        env.insert(QStringLiteral("STEAM_COMPAT_CLIENT_INSTALL_PATH"), steamDirectory.absolutePath());
+        env.insert(QStringLiteral("STEAM_COMPAT_DATA_PATH"), compatData.absolutePath());
 
-        arguments.push_back(highestVersion.absoluteFilePath("proton"));
-        arguments.push_back("run");
+        arguments.push_back(highestVersion.absoluteFilePath(QStringLiteral("proton")));
+        arguments.push_back(QStringLiteral("run"));
 
         qInfo() << arguments << env.toStringList();
     } else {
-        env.insert("WINEPREFIX", profile.winePrefixPath());
+        env.insert(QStringLiteral("WINEPREFIX"), profile.winePrefixPath());
 
         // XIV on Mac bundle their own Wine install directory, complete with libs etc
         if (profile.wineType() == Profile::WineType::XIVOnMac) {
             // TODO: don't hardcode this
-            QString xivLibPath =
+            QString xivLibPath = QStringLiteral(
                 "/Applications/XIV on Mac.app/Contents/Resources/wine/lib:/Applications/XIV on "
-                "Mac.app/Contents/Resources/MoltenVK/modern";
+                "Mac.app/Contents/Resources/MoltenVK/modern");
 
-            env.insert("DYLD_FALLBACK_LIBRARY_PATH", xivLibPath);
-            env.insert("DYLD_VERSIONED_LIBRARY_PATH", xivLibPath);
-            env.insert("MVK_CONFIG_FULL_IMAGE_VIEW_SWIZZLE", "1");
-            env.insert("MVK_CONFIG_RESUME_LOST_DEVICE", "1");
-            env.insert("MVK_ALLOW_METAL_FENCES", "1");
-            env.insert("MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS", "1");
+            env.insert(QStringLiteral("DYLD_FALLBACK_LIBRARY_PATH"), xivLibPath);
+            env.insert(QStringLiteral("DYLD_VERSIONED_LIBRARY_PATH"), xivLibPath);
+            env.insert(QStringLiteral("MVK_CONFIG_FULL_IMAGE_VIEW_SWIZZLE"), QStringLiteral("1"));
+            env.insert(QStringLiteral("MVK_CONFIG_RESUME_LOST_DEVICE"), QStringLiteral("1"));
+            env.insert(QStringLiteral("MVK_ALLOW_METAL_FENCES"), QStringLiteral("1"));
+            env.insert(QStringLiteral("MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS"), QStringLiteral("1"));
         }
 
 #if defined(FLATPAK)
-        arguments.push_back("flatpak-spawn");
-        arguments.push_back("--host");
+        arguments.push_back(QStringLiteral("flatpak-spawn"));
+        arguments.push_back(QStringLiteral("--host"));
 #endif
         arguments.push_back(profile.winePath());
     }
@@ -345,7 +346,7 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
     arguments.removeFirst();
 
     if (isGame)
-        process->setWorkingDirectory(profile.gamePath() + "/game/");
+        process->setWorkingDirectory(profile.gamePath() + QStringLiteral("/game/"));
 
     process->setProcessEnvironment(env);
     process->setProcessChannelMode(QProcess::ProcessChannelMode::ForwardedChannels);
@@ -355,9 +356,6 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
 
 void LauncherCore::readInitialInformation()
 {
-    gamescopeAvailable = checkIfInPath("gamescope");
-    gamemodeAvailable = checkIfInPath("gamemoderun");
-
     m_profileManager->load();
     m_accountManager->load();
 
@@ -375,10 +373,10 @@ void LauncherCore::readInitialInformation()
 LauncherCore::LauncherCore()
 {
     mgr = new QNetworkAccessManager(this);
-    sapphireLauncher = new SapphireLauncher(*this, this);
-    squareLauncher = new SquareLauncher(*this, this);
-    squareBoot = new SquareBoot(*this, *squareLauncher, this);
-    steamApi = new SteamAPI(*this, this);
+    m_sapphireLauncher = new SapphireLauncher(*this, this);
+    m_squareLauncher = new SquareLauncher(*this, this);
+    m_squareBoot = new SquareBoot(*this, *m_squareLauncher, this);
+    m_steamApi = new SteamAPI(*this, this);
     m_profileManager = new ProfileManager(*this, this);
     m_accountManager = new AccountManager(*this, this);
 
@@ -388,7 +386,7 @@ LauncherCore::LauncherCore()
 
     readInitialInformation();
 
-    steamApi->setLauncherMode(true);
+    m_steamApi->setLauncherMode(true);
 }
 
 bool LauncherCore::checkIfInPath(const QString &program)
@@ -396,7 +394,7 @@ bool LauncherCore::checkIfInPath(const QString &program)
     const auto pathList = qgetenv("PATH").split(':');
 
     return std::any_of(pathList.cbegin(), pathList.cend(), [program](const QByteArray &path) {
-        QFileInfo fileInfo(path + "/" + program);
+        QFileInfo fileInfo(path + QStringLiteral("/") + program);
         return fileInfo.exists() && fileInfo.isFile();
     });
 }
@@ -405,7 +403,18 @@ void LauncherCore::addRegistryKey(const Profile &settings, QString key, QString 
 {
     auto process = new QProcess(this);
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(settings, process, {"reg", "add", std::move(key), "/v", std::move(value), "/d", std::move(data), "/f"}, false, false);
+    launchExecutable(settings,
+                     process,
+                     {QStringLiteral("reg"),
+                      QStringLiteral("add"),
+                      std::move(key),
+                      QStringLiteral("/v"),
+                      std::move(value),
+                      QStringLiteral("/d"),
+                      std::move(data),
+                      QStringLiteral("/f")},
+                     false,
+                     false);
 }
 
 void LauncherCore::login(Profile *profile, const QString &username, const QString &password, const QString &oneTimePassword)
@@ -427,9 +436,9 @@ void LauncherCore::login(Profile *profile, const QString &username, const QStrin
         }
 
         if (loginInformation->profile->account()->isSapphire()) {
-            sapphireLauncher->login(loginInformation->profile->account()->lobbyUrl(), *loginInformation);
+            m_sapphireLauncher->login(loginInformation->profile->account()->lobbyUrl(), *loginInformation);
         } else {
-            squareBoot->checkGateStatus(loginInformation);
+            m_squareBoot->checkGateStatus(loginInformation);
         }
 
         assetUpdater->deleteLater();
@@ -582,20 +591,20 @@ void LauncherCore::refreshNews()
 QCoro::Task<> LauncherCore::fetchNews()
 {
     QUrlQuery query;
-    query.addQueryItem("lang", "en-us");
-    query.addQueryItem("media", "pcapp");
+    query.addQueryItem(QStringLiteral("lang"), QStringLiteral("en-us"));
+    query.addQueryItem(QStringLiteral("media"), QStringLiteral("pcapp"));
 
     QUrl url;
-    url.setScheme("https");
+    url.setScheme(QStringLiteral("https"));
     url.setHost(QStringLiteral("frontier.%1").arg(squareEnixServer()));
-    url.setPath("/news/headline.json");
+    url.setPath(QStringLiteral("/news/headline.json"));
     url.setQuery(query);
 
-    QNetworkRequest request(QString("%1&%2").arg(url.toString(), QString::number(QDateTime::currentMSecsSinceEpoch())));
-    request.setRawHeader("Accept", "application/json, text/plain, */*");
-    request.setRawHeader("Origin", "https://launcher.finalfantasyxiv.com");
-    request.setRawHeader("Referer",
-                         QString("https://launcher.finalfantasyxiv.com/v600/index.html?rc_lang=%1&time=%2")
+    QNetworkRequest request(QStringLiteral("%1&%2").arg(url.toString(), QString::number(QDateTime::currentMSecsSinceEpoch())));
+    request.setRawHeader(QByteArrayLiteral("Accept"), QByteArrayLiteral("application/json, text/plain, */*"));
+    request.setRawHeader(QByteArrayLiteral("Origin"), QByteArrayLiteral("https://launcher.finalfantasyxiv.com"));
+    request.setRawHeader(QByteArrayLiteral("Referer"),
+                         QStringLiteral("https://launcher.finalfantasyxiv.com/v600/index.html?rc_lang=%1&time=%2")
                              .arg("en-us", QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd-HH"))
                              .toUtf8());
 
@@ -611,39 +620,39 @@ QCoro::Task<> LauncherCore::fetchNews()
 
     const auto parseNews = [](QJsonObject object) -> News {
         News news;
-        news.date = QDateTime::fromString(object["date"].toString(), Qt::DateFormat::ISODate);
-        news.id = object["id"].toString();
-        news.tag = object["tag"].toString();
-        news.title = object["title"].toString();
+        news.date = QDateTime::fromString(object[QLatin1String("date")].toString(), Qt::DateFormat::ISODate);
+        news.id = object[QLatin1String("id")].toString();
+        news.tag = object[QLatin1String("tag")].toString();
+        news.title = object[QLatin1String("title")].toString();
 
-        if (object["url"].toString().isEmpty()) {
-            news.url = QUrl(QString("https://na.finalfantasyxiv.com/lodestone/news/detail/%1").arg(news.id));
+        if (object[QLatin1String("url")].toString().isEmpty()) {
+            news.url = QUrl(QStringLiteral("https://na.finalfantasyxiv.com/lodestone/news/detail/%1").arg(news.id));
         } else {
-            news.url = QUrl(object["url"].toString());
+            news.url = QUrl(object[QLatin1String("url")].toString());
         }
 
         return news;
     };
 
-    for (auto bannerObject : document.object()["banner"].toArray()) {
+    for (auto bannerObject : document.object()[QLatin1String("banner")].toArray()) {
         auto banner = Banner();
-        banner.link = QUrl(bannerObject.toObject()["link"].toString());
-        banner.bannerImage = QUrl(bannerObject.toObject()["lsb_banner"].toString());
+        banner.link = QUrl(bannerObject.toObject()[QLatin1String("link")].toString());
+        banner.bannerImage = QUrl(bannerObject.toObject()[QLatin1String("lsb_banner")].toString());
 
         headline->banners.push_back(banner);
     }
 
-    for (auto newsObject : document.object()["news"].toArray()) {
+    for (auto newsObject : document.object()[QLatin1String("news")].toArray()) {
         auto news = parseNews(newsObject.toObject());
         headline->news.push_back(news);
     }
 
-    for (auto pinnedObject : document.object()["pinned"].toArray()) {
+    for (auto pinnedObject : document.object()[QLatin1String("pinned")].toArray()) {
         auto pinned = parseNews(pinnedObject.toObject());
         headline->pinned.push_back(pinned);
     }
 
-    for (auto pinnedObject : document.object()["topics"].toArray()) {
+    for (auto pinnedObject : document.object()[QLatin1String("topics")].toArray()) {
         auto pinned = parseNews(pinnedObject.toObject());
         headline->topics.push_back(pinned);
     }
@@ -652,7 +661,7 @@ QCoro::Task<> LauncherCore::fetchNews()
     Q_EMIT newsChanged();
 }
 
-Headline *LauncherCore::headline()
+Headline *LauncherCore::headline() const
 {
     return m_headline;
 }
@@ -668,46 +677,47 @@ void LauncherCore::openOfficialLauncher(Profile *profile)
         QString key, value;
     };
 
-    QString executeArg("%1%2%3%4");
+    QString executeArg = QStringLiteral("%1%2%3%4");
     QDateTime dateTime = QDateTime::currentDateTime();
     executeArg = executeArg.arg(dateTime.date().month() + 1, 2, 10, QLatin1Char('0'));
     executeArg = executeArg.arg(dateTime.date().day(), 2, 10, QLatin1Char('0'));
     executeArg = executeArg.arg(dateTime.time().hour(), 2, 10, QLatin1Char('0'));
     executeArg = executeArg.arg(dateTime.time().minute(), 2, 10, QLatin1Char('0'));
 
-    QList<Argument> arguments{{"ExecuteArg", executeArg}, {"UserPath", Utility::toWindowsPath(profile->account()->getConfigDir().absolutePath())}};
+    QList<Argument> arguments{{QStringLiteral("ExecuteArg"), executeArg},
+                              {QStringLiteral("UserPath"), Utility::toWindowsPath(profile->account()->getConfigDir().absolutePath())}};
 
-    const QString argFormat = " /%1 =%2";
+    const QString argFormat = QStringLiteral(" /%1 =%2");
 
     QString argJoined;
     for (auto &arg : arguments) {
-        argJoined += argFormat.arg(arg.key, arg.value.replace(" ", "  "));
+        argJoined += argFormat.arg(arg.key, arg.value.replace(QLatin1Char(' '), QLatin1String("  ")));
     }
 
     QString finalArg = encryptGameArg(argJoined);
 
     auto launcherProcess = new QProcess(this);
     launcherProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(*profile, launcherProcess, {profile->gamePath() + "/boot/ffxivlauncher64.exe", finalArg}, false, true);
+    launchExecutable(*profile, launcherProcess, {profile->gamePath() + QStringLiteral("/boot/ffxivlauncher64.exe"), finalArg}, false, true);
 }
 
 void LauncherCore::openSystemInfo(Profile *profile)
 {
     auto sysinfoProcess = new QProcess(this);
     sysinfoProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(*profile, sysinfoProcess, {profile->gamePath() + "/boot/ffxivsysinfo64.exe"}, false, false);
+    launchExecutable(*profile, sysinfoProcess, {profile->gamePath() + QStringLiteral("/boot/ffxivsysinfo64.exe")}, false, false);
 }
 
 void LauncherCore::openConfigBackup(Profile *profile)
 {
     auto configProcess = new QProcess(this);
     configProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(*profile, configProcess, {profile->gamePath() + "/boot/ffxivconfig64.exe"}, false, false);
+    launchExecutable(*profile, configProcess, {profile->gamePath() + QStringLiteral("/boot/ffxivconfig64.exe")}, false, false);
 }
 
 bool LauncherCore::isSteamDeck() const
 {
-    return steamApi->isDeck();
+    return m_steamApi->isDeck();
 }
 
 void LauncherCore::setIsSteam(bool isSteam)

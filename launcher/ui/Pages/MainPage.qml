@@ -24,19 +24,19 @@ Kirigami.Page {
             Kirigami.Action {
                 text: i18n("Open Official Launcher")
                 icon.name: "application-x-executable"
-                onTriggered: LauncherCore.openOfficialLauncher(loginPage.profile)
+                onTriggered: LauncherCore.openOfficialLauncher(LauncherCore.currentProfile)
             }
 
             Kirigami.Action {
                 text: i18n("Open System Info")
                 icon.name: "application-x-executable"
-                onTriggered: LauncherCore.openSystemInfo(loginPage.profile)
+                onTriggered: LauncherCore.openSystemInfo(LauncherCore.currentProfile)
             }
 
             Kirigami.Action {
                 text: i18n("Open Config Backup")
                 icon.name: "application-x-executable"
-                onTriggered: LauncherCore.openConfigBackup(loginPage.profile)
+                onTriggered: LauncherCore.openConfigBackup(LauncherCore.currentProfile)
             }
         },
         Kirigami.Action {

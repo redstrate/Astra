@@ -33,7 +33,7 @@ class LoginInformation : public QObject
     Q_PROPERTY(Profile *profile MEMBER profile)
 
 public:
-    LoginInformation(QObject *parent = nullptr)
+    explicit LoginInformation(QObject *parent = nullptr)
         : QObject(parent)
     {
     }
@@ -62,7 +62,7 @@ class LauncherCore : public QObject
     Q_PROPERTY(bool hasAccount READ hasAccount NOTIFY accountChanged)
     Q_PROPERTY(bool isSteam READ isSteam CONSTANT)
     Q_PROPERTY(bool isSteamDeck READ isSteamDeck CONSTANT)
-    Q_PROPERTY(SquareBoot *squareBoot MEMBER squareBoot)
+    Q_PROPERTY(SquareBoot *squareBoot MEMBER m_squareBoot)
     Q_PROPERTY(ProfileManager *profileManager READ profileManager CONSTANT)
     Q_PROPERTY(AccountManager *accountManager READ accountManager CONSTANT)
     Q_PROPERTY(bool closeWhenLaunched READ closeWhenLaunched WRITE setCloseWhenLaunched NOTIFY closeWhenLaunchedChanged)
@@ -118,55 +118,43 @@ public:
     void setSSL(QNetworkRequest &request);
     void readInitialInformation();
 
-    SapphireLauncher *sapphireLauncher = nullptr;
-    SquareBoot *squareBoot = nullptr;
-    SquareLauncher *squareLauncher = nullptr;
-    Watchdog *watchdog = nullptr;
-
-    bool gamescopeAvailable = false;
-    bool gamemodeAvailable = false;
-
-    bool closeWhenLaunched() const;
+    [[nodiscard]] bool closeWhenLaunched() const;
     void setCloseWhenLaunched(bool value);
 
-    bool showNews() const;
+    [[nodiscard]] bool showNews() const;
     void setShowNews(bool value);
 
-    bool showDevTools() const;
+    [[nodiscard]] bool showDevTools() const;
     void setShowDevTools(bool value);
 
-    bool keepPatches() const;
+    [[nodiscard]] bool keepPatches() const;
     void setKeepPatches(bool value);
 
-    QString dalamudDistribServer() const;
+    [[nodiscard]] QString dalamudDistribServer() const;
     void setDalamudDistribServer(const QString &value);
 
-    QString squareEnixServer() const;
+    [[nodiscard]] QString squareEnixServer() const;
     void setSquareEnixServer(const QString &value);
 
-    QString squareEnixLoginServer() const;
+    [[nodiscard]] QString squareEnixLoginServer() const;
     void setSquareEnixLoginServer(const QString &value);
-
-    int defaultProfileIndex = 0;
-
-    bool m_isSteam = false;
 
     Q_INVOKABLE GameInstaller *createInstaller(Profile *profile);
     Q_INVOKABLE CompatibilityToolInstaller *createCompatInstaller();
 
-    bool isLoadingFinished() const;
-    bool hasAccount() const;
-    bool isSteam() const;
-    bool isSteamDeck() const;
+    [[nodiscard]] bool isLoadingFinished() const;
+    [[nodiscard]] bool hasAccount() const;
+    [[nodiscard]] bool isSteam() const;
+    [[nodiscard]] bool isSteamDeck() const;
 
     Q_INVOKABLE void refreshNews();
-    Headline *headline();
+    Headline *headline() const;
 
     Q_INVOKABLE void openOfficialLauncher(Profile *profile);
     Q_INVOKABLE void openSystemInfo(Profile *profile);
     Q_INVOKABLE void openConfigBackup(Profile *profile);
 
-    Profile *currentProfile() const;
+    [[nodiscard]] Profile *currentProfile() const;
     void setCurrentProfile(Profile *profile);
 
 signals:
@@ -216,12 +204,18 @@ private:
 
     QCoro::Task<> fetchNews();
 
-    SteamAPI *steamApi = nullptr;
+    bool m_isSteam = false;
+    SteamAPI *m_steamApi = nullptr;
 
     bool m_loadingFinished = false;
 
     ProfileManager *m_profileManager = nullptr;
     AccountManager *m_accountManager = nullptr;
+
+    SapphireLauncher *m_sapphireLauncher = nullptr;
+    SquareBoot *m_squareBoot = nullptr;
+    SquareLauncher *m_squareLauncher = nullptr;
+    Watchdog *m_watchdog = nullptr;
 
     Headline *m_headline = nullptr;
 
