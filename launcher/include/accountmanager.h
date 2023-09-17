@@ -37,8 +37,6 @@ public:
     Q_INVOKABLE bool canDelete(Account *account) const;
     Q_INVOKABLE void deleteAccount(Account *account);
 
-Q_SIGNALS:
-
 private:
     void insertAccount(Account *account);
 

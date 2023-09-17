@@ -14,6 +14,7 @@ class LoginInformation;
 class SquareBoot : public QObject
 {
     Q_OBJECT
+
 public:
     SquareBoot(LauncherCore &window, SquareLauncher &launcher, QObject *parent = nullptr);
 

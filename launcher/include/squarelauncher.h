@@ -11,6 +11,7 @@
 class SquareLauncher : public QObject
 {
     Q_OBJECT
+
 public:
     explicit SquareLauncher(LauncherCore &window, QObject *parent = nullptr);
 

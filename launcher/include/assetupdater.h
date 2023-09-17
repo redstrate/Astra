@@ -15,6 +15,7 @@ class QNetworkReply;
 class AssetUpdater : public QObject
 {
     Q_OBJECT
+
 public:
     explicit AssetUpdater(Profile &profile, LauncherCore &launcher, QObject *parent = nullptr);
 
@@ -25,7 +26,7 @@ public:
     void checkIfDalamudAssetsDone();
     void checkIfFinished();
 
-signals:
+Q_SIGNALS:
     void finishedUpdating();
 
 private:

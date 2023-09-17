@@ -16,6 +16,7 @@ class LauncherCore;
 class Patcher : public QObject
 {
     Q_OBJECT
+
 public:
     Patcher(LauncherCore &launcher, const QString &baseDirectory, GameData &gameData, QObject *parent = nullptr);
     Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData &bootData, QObject *parent = nullptr);
