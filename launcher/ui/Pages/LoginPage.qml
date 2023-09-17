@@ -31,6 +31,10 @@ QQC2.Control {
             return false
         }
 
+        if (LauncherCore.currentProfile.loggedIn) {
+            return false;
+        }
+
         return true;
     }
 

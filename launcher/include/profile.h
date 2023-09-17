@@ -41,6 +41,7 @@ class Profile : public QObject
     Q_PROPERTY(QString expansionVersionText READ expansionVersionText NOTIFY gameInstallChanged)
     Q_PROPERTY(QString dalamudVersionText READ dalamudVersionText NOTIFY gameInstallChanged)
     Q_PROPERTY(QString wineVersionText READ wineVersionText NOTIFY wineChanged)
+    Q_PROPERTY(bool loggedIn READ loggedIn NOTIFY loggedInChanged)
 
 public:
     explicit Profile(LauncherCore &launcher, const QString &key, QObject *parent = nullptr);
@@ -148,6 +149,9 @@ public:
     BootData *bootData();
     GameData *gameData();
 
+    bool loggedIn() const;
+    void setLoggedIn(bool value);
+
 Q_SIGNALS:
     void gameInstallChanged();
     void nameChanged();
@@ -171,6 +175,7 @@ Q_SIGNALS:
     void encryptedArgumentsChanged();
     void accountChanged();
     void wineChanged();
+    void loggedInChanged();
 
 private:
     QString m_uuid;
@@ -189,6 +194,8 @@ private:
     QString m_dalamudVersion;
     int m_dalamudAssetVersion = -1;
     QString m_runtimeVersion;
+
+    bool m_loggedIn = false;
 
     LauncherCore &m_launcher;
 };

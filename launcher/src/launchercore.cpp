@@ -56,7 +56,7 @@ void LauncherCore::buildRequest(const Profile &settings, QNetworkRequest &reques
     request.setRawHeader(QByteArrayLiteral("Accept-Language"), QByteArrayLiteral("en-us"));
 }
 
-void LauncherCore::launchGame(const Profile &profile, const LoginAuth &auth)
+void LauncherCore::launchGame(Profile &profile, const LoginAuth &auth)
 {
     m_steamApi->setLauncherMode(false);
 
@@ -87,7 +87,7 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
     assetUpdater->deleteLater();
 }
 
-void LauncherCore::beginGameExecutable(const Profile &profile, const LoginAuth &auth)
+void LauncherCore::beginGameExecutable(Profile &profile, const LoginAuth &auth)
 {
     Q_EMIT stageChanged(i18n("Launching game..."));
 
@@ -104,14 +104,17 @@ void LauncherCore::beginGameExecutable(const Profile &profile, const LoginAuth &
         beginVanillaGame(gameExectuable, profile, auth);
     }
 
-    successfulLaunch();
+    Q_EMIT successfulLaunch();
 }
 
-void LauncherCore::beginVanillaGame(const QString &gameExecutablePath, const Profile &profile, const LoginAuth &auth)
+void LauncherCore::beginVanillaGame(const QString &gameExecutablePath, Profile &profile, const LoginAuth &auth)
 {
+    profile.setLoggedIn(true);
+
     auto gameProcess = new QProcess(this);
     gameProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    connect(gameProcess, &QProcess::finished, this, [this](int exitCode) {
+    connect(gameProcess, &QProcess::finished, this, [this, &profile](int exitCode) {
+        profile.setLoggedIn(false);
         Q_UNUSED(exitCode)
         Q_EMIT gameClosed();
     });
@@ -121,8 +124,10 @@ void LauncherCore::beginVanillaGame(const QString &gameExecutablePath, const Pro
     launchExecutable(profile, gameProcess, {gameExecutablePath, args}, true, true);
 }
 
-void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Profile &profile, const LoginAuth &auth)
+void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, Profile &profile, const LoginAuth &auth)
 {
+    profile.setLoggedIn(true);
+
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     const QDir configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     const QDir stateDir = Utility::stateDirectory();
@@ -151,7 +156,8 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Pro
     const QString dalamudInjector = dalamudInstallDir.absoluteFilePath(QStringLiteral("Dalamud.Injector.exe"));
 
     auto dalamudProcess = new QProcess(this);
-    connect(dalamudProcess, &QProcess::finished, this, [this](int exitCode) {
+    connect(dalamudProcess, &QProcess::finished, this, [this, &profile](int exitCode) {
+        profile.setLoggedIn(false);
         Q_UNUSED(exitCode)
         Q_EMIT gameClosed();
     });

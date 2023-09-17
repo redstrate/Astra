@@ -22,6 +22,8 @@ Kirigami.ApplicationWindow {
     visible: true
     title: LauncherCore.isSteam ? "Astra (Steam)" : "Astra"
 
+    property bool checkedAutoLogin: false
+
     pageStack.initialPage: Kirigami.Page {
         Kirigami.LoadingPlaceholder {
             anchors.centerIn: parent
@@ -46,8 +48,9 @@ Kirigami.ApplicationWindow {
                 profile: LauncherCore.currentProfile
             })
         } else {
-            if (LauncherCore.autoLoginProfile) {
+            if (LauncherCore.autoLoginProfile && !checkedAutoLogin) {
                 pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "AutoLoginPage"))
+                checkedAutoLogin = true;
             } else {
                 pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
             }

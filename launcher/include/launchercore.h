@@ -106,7 +106,7 @@ public:
     /*
      * Launches the game using the provided authentication.
      */
-    void launchGame(const Profile &settings, const LoginAuth &auth);
+    void launchGame(Profile &settings, const LoginAuth &auth);
 
     /*
      * This just wraps it in wine if needed.
@@ -190,17 +190,17 @@ private:
     /*
      * Begins the game executable, but calls to Dalamud if needed.
      */
-    void beginGameExecutable(const Profile &settings, const LoginAuth &auth);
+    void beginGameExecutable(Profile &settings, const LoginAuth &auth);
 
     /*
      * Starts a vanilla game session with no Dalamud injection.
      */
-    void beginVanillaGame(const QString &gameExecutablePath, const Profile &profile, const LoginAuth &auth);
+    void beginVanillaGame(const QString &gameExecutablePath, Profile &profile, const LoginAuth &auth);
 
     /*
      * Starts a game session with Dalamud injected.
      */
-    void beginDalamudGame(const QString &gameExecutablePath, const Profile &profile, const LoginAuth &auth);
+    void beginDalamudGame(const QString &gameExecutablePath, Profile &profile, const LoginAuth &auth);
 
     /*
      * Returns the game arguments needed to properly launch the game. This encrypts it too if needed, and it's already

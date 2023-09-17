@@ -37,6 +37,7 @@ Kirigami.Page {
         interval: 5000
         running: true
         onTriggered: {
+            autoLoginTimer.stop();
             LauncherCore.autoLogin(LauncherCore.autoLoginProfile);
             pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "StatusPage"));
         }
