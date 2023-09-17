@@ -9,6 +9,8 @@
 #include <QNetworkReply>
 #include <QRegularExpressionMatch>
 #include <QUrlQuery>
+#include <QtConcurrentMap>
+#include <qcorofuture.h>
 #include <qcoronetworkreply.h>
 
 #include "account.h"
@@ -99,6 +101,7 @@ QCoro::Task<> SquareLauncher::login(const LoginInformation &info)
     if (storedResult == std::nullopt) {
         co_return;
     }
+
     const auto [stored, referer] = *storedResult;
 
     QUrlQuery postData;
@@ -168,7 +171,7 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
     request.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("FFXIV PATCH CLIENT"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/x-www-form-urlencoded"));
 
-    QString report = QStringLiteral("%1=%2").arg(info.profile->bootVersion(), getBootHash(info));
+    QString report = QStringLiteral("%1=%2").arg(info.profile->bootVersion(), co_await getBootHash(info));
     for (int i = 0; i < auth.maxExpansion; i++) {
         if (i < static_cast<int>(info.profile->numInstalledExpansions())) {
             report += QStringLiteral("\nex%1\t%2").arg(QString::number(i + 1), info.profile->expansionVersion(i));
@@ -177,8 +180,6 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
         }
     }
 
-    qInfo() << report;
-
     const auto reply = window.mgr->post(request, report.toUtf8());
     co_await reply;
 
@@ -186,10 +187,15 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
         if (reply->rawHeaderList().contains(QByteArrayLiteral("X-Patch-Unique-Id"))) {
             const QString body = reply->readAll();
 
-            patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/game"), *info.profile->gameData(), this);
-            co_await patcher->patch(body);
-
-            info.profile->readGameVersion();
+            if (!body.isEmpty()) {
+                patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/game"), *info.profile->gameData(), this);
+                const bool hasPatched = co_await patcher->patch(body);
+                if (hasPatched) {
+                    // re-read game version if it has updated
+                    info.profile->readGameVersion();
+                }
+                patcher->deleteLater();
+            }
 
             auth.SID = reply->rawHeader(QByteArrayLiteral("X-Patch-Unique-Id"));
 
@@ -209,7 +215,7 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
     }
 }
 
-QString SquareLauncher::getBootHash(const LoginInformation &info)
+QCoro::Task<QString> SquareLauncher::getBootHash(const LoginInformation &info)
 {
     const QList<QString> fileList = {QStringLiteral("ffxivboot.exe"),
                                      QStringLiteral("ffxivboot64.exe"),
@@ -218,13 +224,20 @@ QString SquareLauncher::getBootHash(const LoginInformation &info)
                                      QStringLiteral("ffxivupdater.exe"),
                                      QStringLiteral("ffxivupdater64.exe")};
 
+    const auto hashFuture = QtConcurrent::mapped(fileList, [&info](const auto &filename) -> QString {
+        return getFileHash(info.profile->gamePath() + QStringLiteral("/boot/") + filename);
+    });
+
+    co_await hashFuture;
+    const QList<QString> hashes = hashFuture.results();
+
     QString result;
     for (int i = 0; i < fileList.count(); i++) {
-        result += fileList[i] + QStringLiteral("/") + getFileHash(info.profile->gamePath() + QStringLiteral("/boot/") + fileList[i]);
+        result += fileList[i] + QStringLiteral("/") + hashes[i];
 
         if (i != fileList.length() - 1)
             result += QStringLiteral(",");
     }
 
-    return result;
+    co_return result;
 }

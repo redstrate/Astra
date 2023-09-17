@@ -6,6 +6,7 @@
 #include <QJsonArray>
 #include <QObject>
 #include <QTemporaryDir>
+#include <qcorotask.h>
 
 #include "launchercore.h"
 
@@ -19,17 +20,16 @@ class AssetUpdater : public QObject
 public:
     explicit AssetUpdater(Profile &profile, LauncherCore &launcher, QObject *parent = nullptr);
 
-    void update();
-    void beginInstall();
-
-    void checkIfCheckingIsDone();
-    void checkIfDalamudAssetsDone();
-    void checkIfFinished();
-
-Q_SIGNALS:
-    void finishedUpdating();
+    QCoro::Task<> update();
 
 private:
+    QCoro::Task<> checkRemoteDalamudAssetVersion();
+    QCoro::Task<> checkRemoteDalamudVersion();
+
+    QCoro::Task<> installDalamudAssets();
+    QCoro::Task<> installDalamud();
+    QCoro::Task<> installRuntime();
+
     [[nodiscard]] QUrl dalamudVersionManifestUrl(Profile::DalamudChannel channel) const;
     [[nodiscard]] QUrl dalamudLatestPackageUrl(Profile::DalamudChannel channel) const;
     [[nodiscard]] QUrl dalamudAssetManifestUrl() const;
@@ -48,14 +48,7 @@ private:
     QDir dalamudAssetDir;
     QDir dalamudRuntimeDir;
 
-    bool doneDownloadingDalamud = false;
-    bool doneDownloadingRuntimeCore = false;
-    bool doneDownloadingRuntimeDesktop = false;
-    bool needsRuntimeInstall = false;
-    bool needsDalamudInstall = false;
-
     int remoteDalamudAssetVersion = -1;
-    QList<QString> dalamudAssetNeededFilenames;
     QJsonArray remoteDalamudAssetArray;
 
     Profile &m_profile;

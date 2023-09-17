@@ -23,7 +23,7 @@ public:
     QCoro::Task<> registerSession(const LoginInformation &info);
 
 private:
-    QString getBootHash(const LoginInformation &info);
+    static QCoro::Task<QString> getBootHash(const LoginInformation &info);
 
     Patcher *patcher = nullptr;
 

@@ -71,6 +71,22 @@ void LauncherCore::launchGame(const Profile &profile, const LoginAuth &auth)
 #endif
 }
 
+QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
+{
+    qDebug() << "Logging in, performing asset update check.";
+
+    auto assetUpdater = new AssetUpdater(*info.profile, *this, this);
+    co_await assetUpdater->update();
+
+    if (info.profile->account()->isSapphire()) {
+        m_sapphireLauncher->login(info.profile->account()->lobbyUrl(), info);
+    } else {
+        m_squareBoot->checkGateStatus(info);
+    }
+
+    assetUpdater->deleteLater();
+}
+
 void LauncherCore::beginGameExecutable(const Profile &profile, const LoginAuth &auth)
 {
     Q_EMIT stageChanged(i18n("Launching game..."));
@@ -148,7 +164,7 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, const Pro
 #endif
     dalamudProcess->setProcessEnvironment(env);
 
-    auto args = getGameArgs(profile, auth);
+    const auto args = getGameArgs(profile, auth);
 
     launchExecutable(profile,
                      dalamudProcess,
@@ -312,8 +328,6 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
 
         arguments.push_back(highestVersion.absoluteFilePath(QStringLiteral("proton")));
         arguments.push_back(QStringLiteral("run"));
-
-        qInfo() << arguments << env.toStringList();
     } else {
         env.insert(QStringLiteral("WINEPREFIX"), profile.winePrefixPath());
 
@@ -419,31 +433,19 @@ void LauncherCore::addRegistryKey(const Profile &settings, QString key, QString 
 
 void LauncherCore::login(Profile *profile, const QString &username, const QString &password, const QString &oneTimePassword)
 {
-    qDebug() << "Logging in, performing asset update check.";
+    Q_ASSERT(profile != nullptr);
 
-    auto assetUpdater = new AssetUpdater(*profile, *this, this);
-    connect(assetUpdater, &AssetUpdater::finishedUpdating, this, [this, assetUpdater, profile, username, password, oneTimePassword] {
-        qDebug() << "Assets done updating!";
+    auto loginInformation = new LoginInformation(this);
+    loginInformation->profile = profile;
+    loginInformation->username = username;
+    loginInformation->password = password;
+    loginInformation->oneTimePassword = oneTimePassword;
 
-        auto loginInformation = new LoginInformation(this);
-        loginInformation->profile = profile;
-        loginInformation->username = username;
-        loginInformation->password = password;
-        loginInformation->oneTimePassword = oneTimePassword;
+    if (profile->account()->rememberPassword()) {
+        profile->account()->setPassword(password);
+    }
 
-        if (profile->account()->rememberPassword()) {
-            profile->account()->setPassword(password);
-        }
-
-        if (loginInformation->profile->account()->isSapphire()) {
-            m_sapphireLauncher->login(loginInformation->profile->account()->lobbyUrl(), *loginInformation);
-        } else {
-            m_squareBoot->checkGateStatus(loginInformation);
-        }
-
-        assetUpdater->deleteLater();
-    });
-    assetUpdater->update();
+    beginLogin(*loginInformation);
 }
 
 bool LauncherCore::autoLogin(Profile &profile)

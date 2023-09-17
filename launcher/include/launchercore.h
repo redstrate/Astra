@@ -179,6 +179,8 @@ signals:
     void currentProfileChanged();
 
 private:
+    QCoro::Task<> beginLogin(LoginInformation &info);
+
     /*
      * Begins the game executable, but calls to Dalamud if needed.
      */

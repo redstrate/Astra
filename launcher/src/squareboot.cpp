@@ -47,16 +47,21 @@ QCoro::Task<> SquareBoot::bootCheck(const LoginInformation &info)
     const auto reply = window.mgr->get(request);
     co_await reply;
 
-    patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/boot"), *info.profile->bootData(), this);
-    co_await patcher->patch(reply->readAll());
-
-    // update game version information
-    info.profile->readGameVersion();
+    const QString patchList = reply->readAll();
+    if (!patchList.isEmpty()) {
+        patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/boot"), *info.profile->bootData(), this);
+        const bool hasPatched = co_await patcher->patch(reply->readAll());
+        if (hasPatched) {
+            // update game version information
+            info.profile->readGameVersion();
+        }
+        patcher->deleteLater();
+    }
 
     launcher.login(info);
 }
 
-QCoro::Task<> SquareBoot::checkGateStatus(LoginInformation *info)
+QCoro::Task<> SquareBoot::checkGateStatus(const LoginInformation &info)
 {
     Q_EMIT window.stageChanged(i18n("Checking gate..."));
     qDebug() << "Checking gate...";
@@ -70,7 +75,7 @@ QCoro::Task<> SquareBoot::checkGateStatus(LoginInformation *info)
     QNetworkRequest request(url);
 
     // TODO: really?
-    window.buildRequest(*info->profile, request);
+    window.buildRequest(*info.profile, request);
 
     const auto reply = window.mgr->get(request);
     co_await reply;
@@ -79,7 +84,7 @@ QCoro::Task<> SquareBoot::checkGateStatus(LoginInformation *info)
     const bool isGateOpen = !document.isEmpty() && document.object()[QLatin1String("status")].toInt() != 0;
 
     if (isGateOpen) {
-        bootCheck(*info);
+        bootCheck(info);
     } else {
         Q_EMIT window.loginError(i18n("The login gate is closed, the game may be under maintenance.\n\n%1", reply->errorString()));
     }

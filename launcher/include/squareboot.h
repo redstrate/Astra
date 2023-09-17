@@ -18,11 +18,11 @@ class SquareBoot : public QObject
 public:
     SquareBoot(LauncherCore &window, SquareLauncher &launcher, QObject *parent = nullptr);
 
-    QCoro::Task<> checkGateStatus(LoginInformation *info);
-
-    QCoro::Task<> bootCheck(const LoginInformation &info);
+    QCoro::Task<> checkGateStatus(const LoginInformation &info);
 
 private:
+    QCoro::Task<> bootCheck(const LoginInformation &info);
+
     Patcher *patcher = nullptr;
 
     LauncherCore &window;

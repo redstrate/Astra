@@ -21,7 +21,7 @@ public:
     Patcher(LauncherCore &launcher, const QString &baseDirectory, GameData &gameData, QObject *parent = nullptr);
     Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData &bootData, QObject *parent = nullptr);
 
-    QCoro::Task<> patch(const QString &patchList);
+    QCoro::Task<bool> patch(const QString &patchList);
 
 private:
     void setupDirectories();

@@ -37,10 +37,10 @@ Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, GameData 
     Q_EMIT m_launcher.stageChanged(i18n("Checking %1 version.", getBaseString()));
 }
 
-QCoro::Task<> Patcher::patch(const QString &patchList)
+QCoro::Task<bool> Patcher::patch(const QString &patchList)
 {
     if (patchList.isEmpty()) {
-        co_return;
+        co_return false;
     }
 
     Q_EMIT m_launcher.stageIndeterminate();
@@ -114,6 +114,8 @@ QCoro::Task<> Patcher::patch(const QString &patchList)
 
         processPatch(patch);
     }
+
+    co_return true;
 }
 
 void Patcher::processPatch(const QueuedPatch &patch)
