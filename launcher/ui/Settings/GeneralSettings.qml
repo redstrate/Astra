@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import QtQuick
+import QtQuick.Controls as QQC2
+
 import org.kde.kirigamiaddons.formcard as FormCard
 
 import zone.xiv.astra
@@ -13,6 +16,43 @@ FormCard.FormCardPage {
     }
 
     FormCard.FormCard {
+        FormCard.FormButtonDelegate {
+            text: i18n("Auto-login Profile")
+            description: LauncherCore.autoLoginProfile ? LauncherCore.autoLoginProfile.name : i18n("Disabled")
+
+            QQC2.Menu {
+                id: profileMenu
+
+                QQC2.MenuItem {
+                    text: "Disabled"
+
+                    onClicked: {
+                        LauncherCore.autoLoginProfile = null;
+                        profileMenu.close();
+                    }
+                }
+
+                Repeater {
+                    model: LauncherCore.profileManager
+
+                    QQC2.MenuItem {
+                        required property var profile
+
+                        text: profile.name
+
+                        onClicked: {
+                            LauncherCore.autoLoginProfile = profile;
+                            profileMenu.close();
+                        }
+                    }
+                }
+            }
+
+            onClicked: profileMenu.popup()
+        }
+
+        FormCard.FormDelegateSeparator {}
+
         FormCard.FormCheckDelegate {
             id: closeAstraDelegate
 

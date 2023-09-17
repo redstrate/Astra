@@ -28,6 +28,16 @@ int ProfileManager::getProfileIndex(const QString &name)
     return -1;
 }
 
+Profile *ProfileManager::getProfileByUUID(const QString &uuid)
+{
+    for (auto &m_profile : m_profiles) {
+        if (m_profile->uuid() == uuid)
+            return m_profile;
+    }
+
+    return nullptr;
+}
+
 Profile *ProfileManager::addProfile()
 {
     auto newProfile = new Profile(m_launcher, QUuid::createUuid().toString(), this);
@@ -91,6 +101,7 @@ void ProfileManager::load()
     auto config = KSharedConfig::openStateConfig();
     for (const auto &id : config->groupList()) {
         if (id.contains(QLatin1String("profile-"))) {
+            qInfo() << "Adding profile" << id;
             auto profile = new Profile(m_launcher, QString(id).remove(QLatin1String("profile-")), this);
             insertProfile(profile);
         }

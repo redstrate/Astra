@@ -47,6 +47,7 @@ qt_target_qml_sources(astra
     QML_FILES
         ui/Components/FormFileDelegate.qml
         ui/Components/FormFolderDelegate.qml
+        ui/Pages/AutoLoginPage.qml
         ui/Pages/BrowserPage.qml
         ui/Pages/LoginPage.qml
         ui/Pages/MainPage.qml

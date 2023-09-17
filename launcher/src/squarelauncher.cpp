@@ -104,6 +104,8 @@ QCoro::Task<> SquareLauncher::login(const LoginInformation &info)
 
     const auto [stored, referer] = *storedResult;
 
+    qInfo() << "Performing oauth...";
+
     QUrlQuery postData;
     postData.addQueryItem(QStringLiteral("_STORED_"), stored);
     postData.addQueryItem(QStringLiteral("sqexid"), info.username);

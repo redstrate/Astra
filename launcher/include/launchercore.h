@@ -74,6 +74,7 @@ class LauncherCore : public QObject
     Q_PROPERTY(QString squareEnixLoginServer READ squareEnixLoginServer WRITE setSquareEnixLoginServer NOTIFY squareEnixLoginServerChanged)
     Q_PROPERTY(Headline *headline READ headline NOTIFY newsChanged)
     Q_PROPERTY(Profile *currentProfile READ currentProfile WRITE setCurrentProfile NOTIFY currentProfileChanged)
+    Q_PROPERTY(Profile *autoLoginProfile READ autoLoginProfile WRITE setAutoLoginProfile NOTIFY autoLoginProfileChanged)
 
 public:
     LauncherCore();
@@ -100,7 +101,7 @@ public:
      * The launcher will still warn the user about any possible errors, however the call site will need to check the
      * result to see whether they need to "reset" or show a failed state or not.
      */
-    bool autoLogin(Profile &settings);
+    Q_INVOKABLE void autoLogin(Profile *profile);
 
     /*
      * Launches the game using the provided authentication.
@@ -138,6 +139,10 @@ public:
 
     [[nodiscard]] QString squareEnixLoginServer() const;
     void setSquareEnixLoginServer(const QString &value);
+
+    [[nodiscard]] QString autoLoginProfileName() const;
+    [[nodiscard]] Profile *autoLoginProfile() const;
+    void setAutoLoginProfile(Profile *value);
 
     Q_INVOKABLE GameInstaller *createInstaller(Profile *profile);
     Q_INVOKABLE CompatibilityToolInstaller *createCompatInstaller();
@@ -177,6 +182,7 @@ signals:
     void stageDeterminate(int min, int max, int value);
     void newsChanged();
     void currentProfileChanged();
+    void autoLoginProfileChanged();
 
 private:
     QCoro::Task<> beginLogin(LoginInformation &info);

@@ -46,8 +46,17 @@ Kirigami.ApplicationWindow {
                 profile: LauncherCore.currentProfile
             })
         } else {
-            pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
+            if (LauncherCore.autoLoginProfile) {
+                pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "AutoLoginPage"))
+            } else {
+                pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
+            }
         }
+    }
+
+    function cancelAutoLogin() {
+        pageStack.layers.clear();
+        pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"));
     }
 
     function pushDialogLayer(url) {

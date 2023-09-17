@@ -448,12 +448,9 @@ void LauncherCore::login(Profile *profile, const QString &username, const QStrin
     beginLogin(*loginInformation);
 }
 
-bool LauncherCore::autoLogin(Profile &profile)
+void LauncherCore::autoLogin(Profile *profile)
 {
-    // TODO: when login fails, we need some way to propagate this back? or not?
-    login(&profile, profile.account()->name(), profile.account()->getPassword(), profile.account()->getOTP());
-
-    return true;
+    login(profile, profile->account()->name(), profile->account()->getPassword(), profile->account()->useOTP() ? profile->account()->getOTP() : QString());
 }
 
 GameInstaller *LauncherCore::createInstaller(Profile *profile)
@@ -582,6 +579,36 @@ void LauncherCore::setSquareEnixLoginServer(const QString &value)
         Config::setSquareEnixLoginServer(value);
         Config::self()->save();
         Q_EMIT squareEnixLoginServerChanged();
+    }
+}
+
+[[nodiscard]] QString LauncherCore::autoLoginProfileName() const
+{
+    return Config::autoLoginProfile();
+}
+
+[[nodiscard]] Profile *LauncherCore::autoLoginProfile() const
+{
+    if (Config::autoLoginProfile().isEmpty()) {
+        return nullptr;
+    }
+    return m_profileManager->getProfileByUUID(Config::autoLoginProfile());
+}
+
+void LauncherCore::setAutoLoginProfile(Profile *profile)
+{
+    if (profile == nullptr) {
+        Config::setAutoLoginProfile({});
+        Config::self()->save();
+        Q_EMIT autoLoginProfileChanged();
+        return;
+    }
+
+    auto uuid = profile->uuid();
+    if (uuid != Config::autoLoginProfile()) {
+        Config::setAutoLoginProfile(uuid);
+        Config::self()->save();
+        Q_EMIT autoLoginProfileChanged();
     }
 }
 

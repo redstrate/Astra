@@ -30,6 +30,7 @@ public:
     [[nodiscard]] QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE Profile *getProfile(int index);
+    Profile *getProfileByUUID(const QString &uuid);
 
     int getProfileIndex(const QString &name);
     Q_INVOKABLE Profile *addProfile();
