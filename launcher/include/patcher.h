@@ -17,18 +17,18 @@ class Patcher : public QObject
 {
     Q_OBJECT
 public:
-    Patcher(LauncherCore &launcher, QString baseDirectory, GameData *game_data, QObject *parent = nullptr);
-    Patcher(LauncherCore &launcher, QString baseDirectory, BootData *game_data, QObject *parent = nullptr);
+    Patcher(LauncherCore &launcher, const QString &baseDirectory, GameData &gameData, QObject *parent = nullptr);
+    Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData &bootData, QObject *parent = nullptr);
 
-    QCoro::Task<> patch(QNetworkAccessManager &mgr, const QString &patchList);
+    QCoro::Task<> patch(const QString &patchList);
 
 private:
     void setupDirectories();
-    QString getBaseString() const;
+    [[nodiscard]] QString getBaseString() const;
 
     [[nodiscard]] bool isBoot() const
     {
-        return boot_data != nullptr;
+        return m_bootData != nullptr;
     }
 
     struct QueuedPatch {
@@ -38,7 +38,7 @@ private:
         long length;
         bool isBoot;
 
-        QString getVersion() const
+        [[nodiscard]] QString getVersion() const
         {
             if (isBoot) {
                 return QStringLiteral("ffxivboot - %1").arg(name);
@@ -50,14 +50,14 @@ private:
 
     void processPatch(const QueuedPatch &patch);
 
-    QVector<QueuedPatch> patchQueue;
+    QVector<QueuedPatch> m_patchQueue;
 
-    QDir patchesDir;
-    QString baseDirectory;
-    BootData *boot_data = nullptr;
-    GameData *game_data = nullptr;
+    QDir m_patchesDir;
+    QString m_baseDirectory;
+    BootData *m_bootData = nullptr;
+    GameData *m_gameData = nullptr;
 
-    int remainingPatches = -1;
+    int m_remainingPatches = -1;
 
     LauncherCore &m_launcher;
 };

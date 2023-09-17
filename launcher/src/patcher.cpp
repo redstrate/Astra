@@ -12,14 +12,13 @@
 #include <QtConcurrent>
 #include <physis.hpp>
 #include <qcorofuture.h>
-#include <utility>
 
 #include "launchercore.h"
 
-Patcher::Patcher(LauncherCore &launcher, QString baseDirectory, BootData *boot_data, QObject *parent)
+Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData &bootData, QObject *parent)
     : QObject(parent)
-    , baseDirectory(std::move(baseDirectory))
-    , boot_data(boot_data)
+    , m_baseDirectory(baseDirectory)
+    , m_bootData(&bootData)
     , m_launcher(launcher)
 {
     setupDirectories();
@@ -27,10 +26,10 @@ Patcher::Patcher(LauncherCore &launcher, QString baseDirectory, BootData *boot_d
     Q_EMIT m_launcher.stageChanged(i18n("Checking the FINAL FANTASY XIV Updater/Launcher version."));
 }
 
-Patcher::Patcher(LauncherCore &launcher, QString baseDirectory, GameData *game_data, QObject *parent)
+Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, GameData &gameData, QObject *parent)
     : QObject(parent)
-    , baseDirectory(std::move(baseDirectory))
-    , game_data(game_data)
+    , m_baseDirectory(baseDirectory)
+    , m_gameData(&gameData)
     , m_launcher(launcher)
 {
     setupDirectories();
@@ -38,7 +37,7 @@ Patcher::Patcher(LauncherCore &launcher, QString baseDirectory, GameData *game_d
     Q_EMIT m_launcher.stageChanged(i18n("Checking the FINAL FANTASY XIV Game version."));
 }
 
-QCoro::Task<> Patcher::patch(QNetworkAccessManager &mgr, const QString &patchList)
+QCoro::Task<> Patcher::patch(const QString &patchList)
 {
     if (patchList.isEmpty()) {
         co_return;
@@ -49,8 +48,8 @@ QCoro::Task<> Patcher::patch(QNetworkAccessManager &mgr, const QString &patchLis
 
     const QStringList parts = patchList.split("\r\n");
 
-    remainingPatches = parts.size() - 7;
-    patchQueue.resize(remainingPatches);
+    m_remainingPatches = parts.size() - 7;
+    m_patchQueue.resize(m_remainingPatches);
 
     QFutureSynchronizer<void> synchronizer;
 
@@ -73,7 +72,7 @@ QCoro::Task<> Patcher::patch(QNetworkAccessManager &mgr, const QString &patchLis
         auto url_parts = url.split(QLatin1Char('/'));
         const QString repository = url_parts[url_parts.size() - 3];
 
-        const QDir repositoryDir = patchesDir.absoluteFilePath(repository);
+        const QDir repositoryDir = m_patchesDir.absoluteFilePath(repository);
 
         if (!QDir().exists(repositoryDir.absolutePath()))
             QDir().mkpath(repositoryDir.absolutePath());
@@ -82,12 +81,12 @@ QCoro::Task<> Patcher::patch(QNetworkAccessManager &mgr, const QString &patchLis
 
         const QueuedPatch patch{name, repository, version, patchPath, hashes, hashBlockSize, length, isBoot()};
 
-        patchQueue[ourIndex] = patch;
+        m_patchQueue[ourIndex] = patch;
 
         if (!QFile::exists(patchPath)) {
-            auto patchReply = mgr.get(QNetworkRequest(url));
+            auto patchReply = m_launcher.mgr->get(QNetworkRequest(url));
 
-            connect(patchReply, &QNetworkReply::downloadProgress, [this, patch](int received, int total) {
+            connect(patchReply, &QNetworkReply::downloadProgress, this, [this, patch](int received, int total) {
                 Q_EMIT m_launcher.stageChanged(i18n("Updating %1.\nDownloading %2", getBaseString(), patch.getVersion()));
                 Q_EMIT m_launcher.stageDeterminate(0, total, received);
             });
@@ -109,14 +108,12 @@ QCoro::Task<> Patcher::patch(QNetworkAccessManager &mgr, const QString &patchLis
 
     // This must happen synchronously
     size_t i = 0;
-    for (const auto &patch : patchQueue) {
+    for (const auto &patch : m_patchQueue) {
         Q_EMIT m_launcher.stageChanged(i18n("Updating %1.\nInstalling %2", getBaseString(), patch.getVersion()));
-        Q_EMIT m_launcher.stageDeterminate(0, patchQueue.size(), i++);
+        Q_EMIT m_launcher.stageDeterminate(0, m_patchQueue.size(), i++);
 
         processPatch(patch);
     }
-
-    co_return;
 }
 
 void Patcher::processPatch(const QueuedPatch &patch)
@@ -147,19 +144,19 @@ void Patcher::processPatch(const QueuedPatch &patch)
     }
 
     if (isBoot()) {
-        physis_bootdata_apply_patch(boot_data, patch.path.toStdString().c_str());
+        physis_bootdata_apply_patch(m_bootData, patch.path.toStdString().c_str());
     } else {
-        physis_gamedata_apply_patch(game_data, patch.path.toStdString().c_str());
+        physis_gamedata_apply_patch(m_gameData, patch.path.toStdString().c_str());
     }
 
     QString verFilePath;
     if (isBoot()) {
-        verFilePath = baseDirectory + QStringLiteral("/ffxivboot.ver");
+        verFilePath = m_baseDirectory + QStringLiteral("/ffxivboot.ver");
     } else {
         if (patch.repository == QLatin1String("game")) {
-            verFilePath = baseDirectory + QStringLiteral("/ffxivgame.ver");
+            verFilePath = m_baseDirectory + QStringLiteral("/ffxivgame.ver");
         } else {
-            verFilePath = baseDirectory + QStringLiteral("/sqpack/") + patch.repository + QStringLiteral("/") + patch.repository + QStringLiteral(".ver");
+            verFilePath = m_baseDirectory + QStringLiteral("/sqpack/") + patch.repository + QStringLiteral("/") + patch.repository + QStringLiteral(".ver");
         }
     }
 
@@ -178,7 +175,7 @@ void Patcher::setupDirectories()
         dataDir.setPath(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
     }
 
-    patchesDir.setPath(dataDir.absoluteFilePath(QStringLiteral("patches")));
+    m_patchesDir.setPath(dataDir.absoluteFilePath(QStringLiteral("patches")));
 }
 
 QString Patcher::getBaseString() const

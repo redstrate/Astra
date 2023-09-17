@@ -48,7 +48,7 @@ QCoro::Task<> SquareBoot::bootCheck(const LoginInformation &info)
     co_await reply;
 
     patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/boot"), info.profile->bootData, this);
-    co_await patcher->patch(*window.mgr, reply->readAll());
+    co_await patcher->patch(reply->readAll());
 
     // update game version information
     info.profile->readGameVersion();

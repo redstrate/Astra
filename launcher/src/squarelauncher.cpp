@@ -185,7 +185,7 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
             const QString body = reply->readAll();
 
             patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/game"), info.profile->gameData, this);
-            co_await patcher->patch(*window.mgr, body);
+            co_await patcher->patch(body);
 
             info.profile->readGameVersion();
 
