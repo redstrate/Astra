@@ -6,7 +6,7 @@
 #include <QEventLoop>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <qt5keychain/keychain.h>
+#include <qt6keychain/keychain.h>
 
 #include "cotp.h"
 #include "launchercore.h"
