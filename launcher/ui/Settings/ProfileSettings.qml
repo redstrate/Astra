@@ -286,6 +286,8 @@ FormCard.FormCardPage {
             text: i18n("Injection Method")
             description: "It shouldn't be nessecary to change this setting, unless you're running into issues injecting Dalamud."
             model: ["Entrypoint", "DLL Injection"]
+            currentIndex: page.profile.dalamudInjectMethod
+            onCurrentIndexChanged: page.profile.dalamudInjectMethod = currentIndex
             enabled: page.profile.dalamudEnabled
         }
 
@@ -298,25 +300,13 @@ FormCard.FormCardPage {
             id: dalamudDelayDelegate
 
             label: i18n("Injection Delay")
+            value: page.profile.dalamudInjectDelay
+            onValueChanged: page.profile.dalamudInjectDelay = value
             enabled: page.profile.dalamudEnabled
         }
 
         FormCard.FormDelegateSeparator {
             above: dalamudDelayDelegate
-            below: dalamudOptOutDelegate
-        }
-
-        FormCard.FormCheckDelegate {
-            id: dalamudOptOutDelegate
-
-            text: i18n("Opt Out of Automatic Marketboard Collection")
-            checked: page.profile.dalamudOptOut
-            onCheckedChanged: page.profile.dalamudOptOut = checked
-            enabled: page.profile.dalamudEnabled
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: dalamudOptOutDelegate
         }
 
         FormCard.FormTextDelegate {

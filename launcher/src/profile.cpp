@@ -351,20 +351,6 @@ void Profile::setDalamudEnabled(const bool value)
     }
 }
 
-bool Profile::dalamudOptOut() const
-{
-    return m_config->dalamudOptOut();
-}
-
-void Profile::setDalamudOptOut(const bool value)
-{
-    if (m_config->dalamudOptOut() != value) {
-        m_config->setDalamudOptOut(value);
-        m_config->save();
-        Q_EMIT dalamudOptOutChanged();
-    }
-}
-
 Profile::DalamudChannel Profile::dalamudChannel() const
 {
     return static_cast<DalamudChannel>(m_config->dalamudChannel());
@@ -376,6 +362,34 @@ void Profile::setDalamudChannel(const DalamudChannel value)
         m_config->setDalamudChannel(static_cast<int>(value));
         m_config->save();
         Q_EMIT dalamudChannelChanged();
+    }
+}
+
+Profile::DalamudInjectMethod Profile::dalamudInjectMethod() const
+{
+    return static_cast<DalamudInjectMethod>(m_config->dalamudInjectMethod());
+}
+
+void Profile::setDalamudInjectMethod(const Profile::DalamudInjectMethod value)
+{
+    if (static_cast<DalamudInjectMethod>(m_config->dalamudInjectMethod()) != value) {
+        m_config->setDalamudInjectMethod(static_cast<int>(value));
+        m_config->save();
+        Q_EMIT dalamudInjectMethodChanged();
+    }
+}
+
+int Profile::dalamudInjectDelay() const
+{
+    return m_config->dalamudInjectDelay();
+}
+
+void Profile::setDalamudInjectDelay(const int value)
+{
+    if (m_config->dalamudInjectDelay() != value) {
+        m_config->setDalamudInjectDelay(static_cast<int>(value));
+        m_config->save();
+        Q_EMIT dalamudInjectDelayChanged();
     }
 }
 

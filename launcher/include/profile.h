@@ -33,7 +33,8 @@ class Profile : public QObject
     Q_PROPERTY(int gamescopeHeight READ gamescopeHeight WRITE setGamescopeHeight NOTIFY gamescopeHeightChanged)
     Q_PROPERTY(int gamescopeRefreshRate READ gamescopeRefreshRate WRITE setGamescopeRefreshRate NOTIFY gamescopeRefreshRateChanged)
     Q_PROPERTY(bool dalamudEnabled READ dalamudEnabled WRITE setDalamudEnabled NOTIFY dalamudEnabledChanged)
-    Q_PROPERTY(bool dalamudOptOut READ dalamudOptOut WRITE setDalamudOptOut NOTIFY dalamudOptOutChanged)
+    Q_PROPERTY(DalamudInjectMethod dalamudInjectMethod READ dalamudInjectMethod WRITE setDalamudInjectMethod NOTIFY dalamudInjectMethodChanged)
+    Q_PROPERTY(int dalamudInjectDelay READ dalamudInjectDelay WRITE setDalamudInjectDelay NOTIFY dalamudInjectDelayChanged)
     Q_PROPERTY(DalamudChannel dalamudChannel READ dalamudChannel WRITE setDalamudChannel NOTIFY dalamudChannelChanged)
     Q_PROPERTY(bool argumentsEncrypted READ argumentsEncrypted WRITE setArgumentsEncrypted NOTIFY encryptedArgumentsChanged)
     Q_PROPERTY(bool isGameInstalled READ isGameInstalled NOTIFY gameInstallChanged)
@@ -56,6 +57,9 @@ public:
 
     enum class DalamudChannel { Stable, Staging, Net5 };
     Q_ENUM(DalamudChannel)
+
+    enum class DalamudInjectMethod { Entrypoint, DLLInject };
+    Q_ENUM(DalamudInjectMethod)
 
     [[nodiscard]] QString uuid() const;
 
@@ -107,11 +111,14 @@ public:
     [[nodiscard]] bool dalamudEnabled() const;
     void setDalamudEnabled(bool value);
 
-    [[nodiscard]] bool dalamudOptOut() const;
-    void setDalamudOptOut(bool value);
-
     [[nodiscard]] DalamudChannel dalamudChannel() const;
     void setDalamudChannel(DalamudChannel channel);
+
+    [[nodiscard]] DalamudInjectMethod dalamudInjectMethod() const;
+    void setDalamudInjectMethod(DalamudInjectMethod value);
+
+    [[nodiscard]] int dalamudInjectDelay() const;
+    void setDalamudInjectDelay(int value);
 
     [[nodiscard]] bool argumentsEncrypted() const;
     void setArgumentsEncrypted(bool value);
@@ -170,8 +177,9 @@ Q_SIGNALS:
     void gamescopeHeightChanged();
     void gamescopeRefreshRateChanged();
     void dalamudEnabledChanged();
-    void dalamudOptOutChanged();
     void dalamudChannelChanged();
+    void dalamudInjectMethodChanged();
+    void dalamudInjectDelayChanged();
     void encryptedArgumentsChanged();
     void accountChanged();
     void wineChanged();

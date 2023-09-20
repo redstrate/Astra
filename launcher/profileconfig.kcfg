@@ -69,9 +69,6 @@ SPDX-License-Identifier: CC0-1.0
       <entry key="DalamudEnabled" type="bool">
         <default>false</default>
       </entry>
-      <entry key="DalamudOptOut" type="bool">
-        <default>false</default>
-      </entry>
       <entry key="DalamudChannel" type="Enum">
         <choices>
           <choice name="Stable">
@@ -82,6 +79,18 @@ SPDX-License-Identifier: CC0-1.0
           </choice>
         </choices>
         <default>Stable</default>
+      </entry>
+      <entry key="DalamudInjectMethod" type="Enum">
+        <choices>
+          <choice name="Entrypoint">
+          </choice>
+          <choice name="DLLInject">
+          </choice>
+        </choices>
+        <default>Entrypoint</default>
+      </entry>
+      <entry key="DalamudInjectDelay" type="int">
+        <default>0</default>
       </entry>
       <entry key="EncryptArguments" type="bool">
         <default>true</default>
