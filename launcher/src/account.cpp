@@ -192,6 +192,11 @@ QString Account::getOTP()
     return totpStr;
 }
 
+void Account::setOTPSecret(const QString &secret)
+{
+    setKeychainValue(QStringLiteral("otp-secret"), secret);
+}
+
 QDir Account::getConfigDir() const
 {
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);

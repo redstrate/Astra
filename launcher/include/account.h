@@ -73,6 +73,7 @@ public:
     void setPassword(const QString &password);
 
     Q_INVOKABLE QString getOTP();
+    Q_INVOKABLE void setOTPSecret(const QString &secret);
 
     [[nodiscard]] QDir getConfigDir() const;
 
