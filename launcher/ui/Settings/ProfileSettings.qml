@@ -4,6 +4,7 @@
 import QtQuick
 import QtQuick.Controls as QQC2
 import QtQuick.Layouts
+import QtQuick.Window
 
 import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.formcard as FormCard
@@ -334,7 +335,7 @@ FormCard.FormCardPage {
 
                 onAccepted: {
                     LauncherCore.profileManager.deleteProfile(page.profile);
-                    applicationWindow().pageStack.layers.pop();
+                    page.Window.window.pageStack.layers.pop();
                 }
             }
 

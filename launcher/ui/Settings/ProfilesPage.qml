@@ -3,6 +3,7 @@
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Window
 
 import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.formcard as FormCard
@@ -10,6 +11,8 @@ import org.kde.kirigamiaddons.formcard as FormCard
 import zone.xiv.astra
 
 FormCard.FormCardPage {
+    id: page
+
     title: i18nc("@title:window", "Profiles")
 
     FormCard.FormCard {
@@ -23,7 +26,7 @@ FormCard.FormCardPage {
                 required property var profile
 
                 text: profile.name
-                onClicked: applicationWindow().pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ProfileSettings"), {
+                onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ProfileSettings"), {
                     profile: profile
                 })
             }
@@ -39,8 +42,8 @@ FormCard.FormCardPage {
             text: i18n("Add Profile")
             icon.name: "list-add"
             onClicked: {
-                applicationWindow().currentSetupProfile = LauncherCore.profileManager.addProfile()
-                applicationWindow().checkSetup()
+                page.Window.window.close();
+                LauncherCore.currentProfile = LauncherCore.profileManager.addProfile();
             }
         }
     }

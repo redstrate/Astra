@@ -128,7 +128,7 @@ public:
     void setAccount(Account *account);
 
     void readGameData();
-    void readGameVersion();
+    Q_INVOKABLE void readGameVersion();
     void readWineInfo();
 
     [[nodiscard]] QString expansionVersionText() const;

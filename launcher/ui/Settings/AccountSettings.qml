@@ -3,6 +3,7 @@
 
 import QtQuick
 import QtQuick.Controls as QQC2
+import QtQuick.Window
 import QtQuick.Layouts
 
 import org.kde.kirigami as Kirigami
@@ -236,7 +237,7 @@ FormCard.FormCardPage {
 
                 onAccepted: {
                     LauncherCore.accountManager.deleteAccount(page.account);
-                    applicationWindow().pageStack.layers.pop();
+                    page.Window.window.pageStack.layers.pop();
                 }
             }
 

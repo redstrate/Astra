@@ -3,6 +3,7 @@
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Window
 
 import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.formcard as FormCard
@@ -11,6 +12,8 @@ import org.kde.kirigamiaddons.components as Components
 import zone.xiv.astra
 
 FormCard.FormCardPage {
+    id: root
+
     title: i18nc("@title:window", "Accounts")
 
     FormCard.FormCard {
@@ -31,7 +34,7 @@ FormCard.FormCardPage {
 
                 leadingPadding: Kirigami.Units.largeSpacing * 2
 
-                onClicked: applicationWindow().pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AccountSettings"), {
+                onClicked: root.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AccountSettings"), {
                     account: account
                 })
             }
@@ -46,7 +49,7 @@ FormCard.FormCardPage {
 
             text: i18n("Add Square Enix Account")
             icon.name: "list-add-symbolic"
-            onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"))
+            onClicked: root.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"))
         }
 
         FormCard.FormDelegateSeparator {
@@ -59,7 +62,7 @@ FormCard.FormCardPage {
 
             text: i18n("Add Sapphire Account")
             icon.name: "list-add-symbolic"
-            onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSapphire"))
+            onClicked: root.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSapphire"))
         }
     }
 }

@@ -29,7 +29,7 @@ Kirigami.Page {
                 }
 
                 MobileForm.FormTextDelegate {
-                    text: i18n("Select an account below to use.")
+                    text: i18n("Select an account below to use for profile '%1'.", LauncherCore.currentProfile.name)
                 }
 
                 Repeater {

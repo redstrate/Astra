@@ -3,6 +3,7 @@
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Window
 
 import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.labs.mobileform as MobileForm
@@ -68,7 +69,7 @@ Kirigami.Page {
                             page.profile.account = account
                             applicationWindow().checkSetup()
                         } else {
-                            applicationWindow().pageStack.layers.pop()
+                            page.Window.window.pageStack.layers.pop()
                         }
                     }
                 }
