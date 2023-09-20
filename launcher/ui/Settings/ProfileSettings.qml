@@ -17,7 +17,7 @@ FormCard.FormCardPage {
 
     property var profile
 
-    title: i18n("Profile Settings")
+    title: i18nc("@window:title", "Edit Profile")
 
     FormCard.FormHeader {
         title: i18n("General")

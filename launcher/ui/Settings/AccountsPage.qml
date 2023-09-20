@@ -11,12 +11,11 @@ import org.kde.kirigamiaddons.components as Components
 import zone.xiv.astra
 
 FormCard.FormCardPage {
-    FormCard.FormHeader {
-        title: i18n("Accounts")
-    }
+    title: i18nc("@title:window", "Accounts")
 
     FormCard.FormCard {
         Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
 
         Repeater {
             model: LauncherCore.accountManager

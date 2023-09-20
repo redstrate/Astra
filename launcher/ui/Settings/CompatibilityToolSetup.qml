@@ -14,14 +14,11 @@ FormCard.FormCardPage {
 
     property var installer: null
 
-    title: i18n("Install Compatibility Tool")
-
-    FormCard.FormHeader {
-        title: i18n("Compatibility Tool")
-    }
+    title: i18nc("@title:window", "Compatibility Tool")
 
     FormCard.FormCard {
         Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
 
         FormCard.FormTextDelegate {
             text: i18n("Press the button below to install the compatibility tool for Steam.")

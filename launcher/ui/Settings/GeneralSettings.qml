@@ -3,19 +3,19 @@
 
 import QtQuick
 import QtQuick.Controls as QQC2
+import QtQuick.Layouts
 
+import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.formcard as FormCard
 
 import zone.xiv.astra
 
 FormCard.FormCardPage {
-    title: i18n("General")
-
-    FormCard.FormHeader {
-        title: i18n("General settings")
-    }
+    title: i18nc("@title:window", "General")
 
     FormCard.FormCard {
+        Layout.topMargin: Kirigami.Units.largeSpacing
+
         FormCard.FormButtonDelegate {
             text: i18n("Auto-login Profile")
             description: LauncherCore.autoLoginProfile ? LauncherCore.autoLoginProfile.name : i18n("Disabled")

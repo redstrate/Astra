@@ -14,7 +14,7 @@ import "../Components"
 FormCard.FormCardPage {
     id: page
 
-    title: i18n("Developer Settings")
+    title: i18nc("@title:window", "Developer Settings")
 
     FormCard.FormHeader {
         title: i18n("Patching")

@@ -4,19 +4,17 @@
 import QtQuick
 import QtQuick.Layouts
 
+import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.formcard as FormCard
 
 import zone.xiv.astra
 
 FormCard.FormCardPage {
-    title: i18n("General")
-
-    FormCard.FormHeader {
-        title: i18n("Profiles")
-    }
+    title: i18nc("@title:window", "Profiles")
 
     FormCard.FormCard {
         Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
 
         Repeater {
             model: LauncherCore.profileManager
