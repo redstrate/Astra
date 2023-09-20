@@ -44,6 +44,8 @@ FormCard.FormCardPage {
 
             text: i18n("Game Path")
             folder: page.profile.gamePath
+
+            onAccepted: (folder) => page.profile.gamePath = folder
         }
 
         FormCard.FormDelegateSeparator {
