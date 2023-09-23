@@ -3,7 +3,6 @@
 
 set(BUILD_SHARED_LIBS OFF)
 
-add_subdirectory(libbaseencode)
 add_subdirectory(libcotp)
 
 find_package(Corrosion REQUIRED)
