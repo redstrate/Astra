@@ -6,9 +6,9 @@
 #include <QEventLoop>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <cotp.h>
 #include <qt6keychain/keychain.h>
 
-#include "cotp.h"
 #include "launchercore.h"
 
 Account::Account(LauncherCore &launcher, const QString &key, QObject *parent)

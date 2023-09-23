@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: CC0-1.0
 
 set(BUILD_SHARED_LIBS OFF)
+set(BUILD_TESTS OFF)
 
 add_subdirectory(libcotp)
 
