@@ -6,14 +6,9 @@ set(BUILD_SHARED_LIBS OFF)
 add_subdirectory(libbaseencode)
 add_subdirectory(libcotp)
 
-include(FetchContent)
+find_package(Corrosion REQUIRED)
 
-FetchContent_Declare(
-        Corrosion
-        GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
-        GIT_TAG v0.4.2
-)
-FetchContent_MakeAvailable(Corrosion)
+include(FetchContent)
 
 FetchContent_Declare(
         libphysis
