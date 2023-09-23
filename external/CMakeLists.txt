@@ -8,21 +8,13 @@ add_subdirectory(libcotp)
 
 find_package(Corrosion REQUIRED)
 
-include(FetchContent)
-
-FetchContent_Declare(
-        libphysis
-        GIT_REPOSITORY https://git.sr.ht/~redstrate/libphysis
-        GIT_TAG        main
-)
-FetchContent_MakeAvailable(libphysis)
-
-corrosion_import_crate(MANIFEST_PATH ${libphysis_SOURCE_DIR}/Cargo.toml
+corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/libphysis/Cargo.toml
+        NO_DEFAULT_FEATURES
         FEATURES game_install)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(UNSHIELD REQUIRED IMPORTED_TARGET libunshield)
 
-target_include_directories(physis INTERFACE ${libphysis_SOURCE_DIR}/target/public)
+target_include_directories(physis INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/libphysis/target/public)
 target_link_libraries(physis INTERFACE ${UNSHIELD_LIBRARIES})
 target_link_directories(physis INTERFACE ${UNSHIELD_LIBRARY_DIRS})

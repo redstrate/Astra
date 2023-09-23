@@ -1,3 +1,6 @@
 [submodule "external/libcotp"]
 	path = external/libcotp
 	url = https://github.com/redstrate/libcotp.git
+[submodule "external/libphysis"]
+	path = external/libphysis
+	url = https://git.sr.ht/~redstrate/libphysis
