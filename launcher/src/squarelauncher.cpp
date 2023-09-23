@@ -211,6 +211,8 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
                 i18n("SSL handshake error detected. If you are using OpenSUSE or Fedora, try running `update-crypto-policies --set LEGACY`."));
         } else if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 405) {
             Q_EMIT window.loginError(i18n("The game failed the anti-tamper check. Restore the game to the original state and try updating again."));
+        } else if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 410) {
+            Q_EMIT window.loginError(i18n("This game version is no longer supported."));
         } else {
             Q_EMIT window.loginError(i18n("Unknown error when registering the session."));
         }
