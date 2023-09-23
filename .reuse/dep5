@@ -3,7 +3,7 @@ Upstream-Name: Astra
 Upstream-Contact: Joshua Goins <josh@redstrate.com>
 Source: https://git.sr.ht/~redstrate/astra
 
-Files: README.md BUILDING.md CONTRIBUTING.md .build.yml .editorconfig zone.xiv.astra.yml zone.xiv.astra.desktop build-flatpak.sh misc/*
+Files: .gitmodules README.md BUILDING.md CONTRIBUTING.md .build.yml .editorconfig zone.xiv.astra.yml zone.xiv.astra.desktop build-flatpak.sh misc/*
 Copyright: Joshua Goins <josh@redstrate.com>
 License: CC0-1.0
 
