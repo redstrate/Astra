@@ -1,0 +1,9 @@
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source."git+https://git.sr.ht/~redstrate/physis"]
+git = "https://git.sr.ht/~redstrate/physis"
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "../../cargo-vendored"

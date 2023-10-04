@@ -21,6 +21,9 @@ tasks:
   - reuse: |
       cd astra
       reuse lint
+  - tarball: |
+      cd astra
+      ./scripts/tarball.sh
   #- configure: |
   #    cd astra
   #    cmake -S . -B build-cmake
@@ -30,6 +33,7 @@ tasks:
   #- flatpak: |
   #    cd astra
   #    ./build-flatpak.sh
-#artifacts:
+artifacts:
+  - astra-source.tar.gz
 #  - astra/build-cmake/bin/astra
 #  - astra/astra.flatpak
