@@ -4,7 +4,7 @@
 set(BUILD_SHARED_LIBS OFF)
 set(BUILD_TESTS OFF)
 
-add_subdirectory(libcotp)
+add_subdirectory(libcotp EXCLUDE_FROM_ALL)
 
 find_package(Corrosion REQUIRED)
 
