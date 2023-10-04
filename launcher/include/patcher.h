@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "patchlist.h"
 #include <QDir>
 #include <QNetworkAccessManager>
 #include <QString>
@@ -21,7 +22,7 @@ public:
     Patcher(LauncherCore &launcher, const QString &baseDirectory, GameData &gameData, QObject *parent = nullptr);
     Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData &bootData, QObject *parent = nullptr);
 
-    QCoro::Task<bool> patch(const QString &patchList);
+    QCoro::Task<bool> patch(const PatchList &patchList);
 
 private:
     void setupDirectories();

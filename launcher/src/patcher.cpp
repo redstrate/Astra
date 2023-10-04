@@ -14,6 +14,7 @@
 #include <qcorofuture.h>
 
 #include "launchercore.h"
+#include "patchlist.h"
 
 Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData &bootData, QObject *parent)
     : QObject(parent)
@@ -37,7 +38,7 @@ Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, GameData 
     Q_EMIT m_launcher.stageChanged(i18n("Checking %1 version.", getBaseString()));
 }
 
-QCoro::Task<bool> Patcher::patch(const QString &patchList)
+QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
 {
     if (patchList.isEmpty()) {
         co_return false;
@@ -46,48 +47,42 @@ QCoro::Task<bool> Patcher::patch(const QString &patchList)
     Q_EMIT m_launcher.stageIndeterminate();
     Q_EMIT m_launcher.stageChanged(i18n("Checking %1 version.", getBaseString()));
 
-    const QStringList parts = patchList.split("\r\n");
-
-    m_remainingPatches = parts.size() - 7;
+    m_remainingPatches = patchList.patches().size();
     m_patchQueue.resize(m_remainingPatches);
 
     QFutureSynchronizer<void> synchronizer;
 
     int patchIndex = 0;
 
-    for (int i = 5; i < parts.size() - 2; i++) {
-        const QStringList patchParts = parts[i].split(QLatin1Char('\t'));
-
-        const int length = patchParts[0].toInt();
+    for (auto &patch : patchList.patches()) {
         const int ourIndex = patchIndex++;
 
-        const QString &version = patchParts[4];
-        const long hashBlockSize = patchParts.size() == 9 ? patchParts[6].toLong() : 0;
-
-        const QString &name = version;
-        const QStringList hashes = patchParts.size() == 9 ? (patchParts[7].split(QLatin1Char(','))) : QStringList();
-        const QString &url = patchParts[patchParts.size() == 9 ? 8 : 5];
-        const QString filename = QStringLiteral("%1.patch").arg(name);
-
-        auto url_parts = url.split(QLatin1Char('/'));
-        const QString repository = url_parts[url_parts.size() - 3];
-
-        const QDir repositoryDir = m_patchesDir.absoluteFilePath(repository);
+        const QString filename = QStringLiteral("%1.patch").arg(patch.name);
+        const QDir repositoryDir = m_patchesDir.absoluteFilePath(patch.repository);
 
         if (!QDir().exists(repositoryDir.absolutePath()))
             QDir().mkpath(repositoryDir.absolutePath());
 
         const QString patchPath = repositoryDir.absoluteFilePath(filename);
 
-        const QueuedPatch patch{name, repository, version, patchPath, hashes, hashBlockSize, length, isBoot()};
+        const QueuedPatch queuedPatch{patch.name, patch.repository, patch.version, patchPath, patch.hashes, patch.hashBlockSize, patch.length, isBoot()};
 
-        m_patchQueue[ourIndex] = patch;
+        qDebug() << "Adding a queued patch:";
+        qDebug() << "- Name:" << patch.name;
+        qDebug() << "- Repository or is boot:" << (isBoot() ? QStringLiteral("boot") : patch.repository);
+        qDebug() << "- Version:" << patch.version;
+        qDebug() << "- Downloaded Path:" << patchPath;
+        qDebug() << "- Hashes:" << patch.hashes;
+        qDebug() << "- Hash Block Size:" << patch.hashBlockSize;
+        qDebug() << "- Length:" << patch.length;
+
+        m_patchQueue[ourIndex] = queuedPatch;
 
         if (!QFile::exists(patchPath)) {
-            auto patchReply = m_launcher.mgr->get(QNetworkRequest(url));
+            auto patchReply = m_launcher.mgr->get(QNetworkRequest(patch.url));
 
-            connect(patchReply, &QNetworkReply::downloadProgress, this, [this, patch](int received, int total) {
-                Q_EMIT m_launcher.stageChanged(i18n("Updating %1.\nDownloading %2", getBaseString(), patch.getVersion()));
+            connect(patchReply, &QNetworkReply::downloadProgress, this, [this, queuedPatch](int received, int total) {
+                Q_EMIT m_launcher.stageChanged(i18n("Updating %1.\nDownloading %2", getBaseString(), queuedPatch.getVersion()));
                 Q_EMIT m_launcher.stageDeterminate(0, total, received);
             });
 
@@ -98,7 +93,7 @@ QCoro::Task<bool> Patcher::patch(const QString &patchList)
                 file.close();
             }));
         } else {
-            qDebug() << "Found existing patch: " << name;
+            qDebug() << "Found existing patch: " << patch.name;
         }
     }
 
@@ -151,6 +146,8 @@ void Patcher::processPatch(const QueuedPatch &patch)
     } else {
         physis_gamedata_apply_patch(m_gameData, patch.path.toStdString().c_str());
     }
+
+    qDebug() << "Installed" << patch.path << "to" << (isBoot() ? QStringLiteral("boot") : patch.repository);
 
     QString verFilePath;
     if (isBoot()) {

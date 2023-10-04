@@ -50,7 +50,7 @@ QCoro::Task<> SquareBoot::bootCheck(const LoginInformation &info)
     const QString patchList = reply->readAll();
     if (!patchList.isEmpty()) {
         patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/boot"), *info.profile->bootData(), this);
-        const bool hasPatched = co_await patcher->patch(reply->readAll());
+        const bool hasPatched = co_await patcher->patch(PatchList(patchList));
         if (hasPatched) {
             // update game version information
             info.profile->readGameVersion();

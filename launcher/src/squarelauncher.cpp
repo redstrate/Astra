@@ -191,7 +191,7 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
 
             if (!body.isEmpty()) {
                 patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/game"), *info.profile->gameData(), this);
-                const bool hasPatched = co_await patcher->patch(body);
+                const bool hasPatched = co_await patcher->patch(PatchList(body));
                 if (hasPatched) {
                     // re-read game version if it has updated
                     info.profile->readGameVersion();

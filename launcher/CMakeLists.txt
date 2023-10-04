@@ -1,6 +1,15 @@
 # SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 # SPDX-License-Identifier: CC0-1.0
 
+add_library(astra_static STATIC)
+
+target_sources(astra_static PRIVATE
+        include/patchlist.h
+        src/patchlist.cpp)
+target_include_directories(astra_static PUBLIC include)
+target_link_libraries(astra_static PUBLIC
+        Qt6::Core)
+
 add_executable(astra)
 
 qt_add_qml_module(astra
@@ -75,6 +84,7 @@ qt_target_qml_sources(astra
 kconfig_add_kcfg_files(astra GENERATE_MOC config.kcfgc accountconfig.kcfgc profileconfig.kcfgc)
 target_include_directories(astra PRIVATE include ${CMAKE_BINARY_DIR})
 target_link_libraries(astra PRIVATE
+        astra_static
         physis
         cotp
         QuaZip::QuaZip
@@ -142,3 +152,7 @@ if (WIN32)
             COMMAND "${WINDEPLOYQT_ENV_SETUP}" && "${WINDEPLOYQT_EXECUTABLE}" \"$<TARGET_FILE:astra>\"
             )
 endif ()
+
+if (BUILD_TESTING)
+    add_subdirectory(autotests)
+endif()

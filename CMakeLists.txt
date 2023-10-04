@@ -34,6 +34,7 @@ include(ECMGenerateHeaders)
 include(ECMPoQmTools)
 include(KDEGitCommitHooks)
 include(KDEClangFormat)
+include(ECMAddTests)
 
 ecm_setup_version(${PROJECT_VERSION}
         VARIABLE_PREFIX ASTRA
@@ -46,7 +47,8 @@ find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
         Network
         QuickControls2
         WebView
-        Concurrent)
+        Concurrent
+        Test)
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS Kirigami2 I18n Config CoreAddons)
 find_package(PkgConfig REQUIRED)
 find_package(QCoro6 REQUIRED COMPONENTS Core Network Qml)
