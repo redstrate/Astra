@@ -11,4 +11,4 @@ mkdir .cargo
 cp ../../scripts/config.toml .cargo/config.toml
 cd ../../
 
-tar --exclude='*build*' --exclude='.idea' --exclude='.clang-format' --exclude='astra-source.tar.gz' --exclude-vcs -zcvf ../astra-source.tar.gz .
+tar --exclude='cmake-build*' --exclude='.idea' --exclude='.clang-format' --exclude='astra-source.tar.gz' --exclude-vcs -zcvf ../astra-source.tar.gz .
