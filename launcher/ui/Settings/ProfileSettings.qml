@@ -78,22 +78,6 @@ FormCard.FormCardPage {
 
         FormCard.FormDelegateSeparator {
             above: encryptArgDelegate
-            below: enableWatchdogDelegate
-        }
-
-        FormCard.FormCheckDelegate {
-            id: enableWatchdogDelegate
-
-            text: i18n("Enable Watchdog")
-            description: i18n("Gives real-time queue updates. X11 only.")
-            checked: page.profile.watchdogEnabled
-            onCheckedChanged: page.profile.watchdogEnabled = checked
-            enabled: false
-            visible: false
-        }
-
-        FormCard.FormDelegateSeparator {
-            visible: false
         }
 
         FormCard.FormTextDelegate {

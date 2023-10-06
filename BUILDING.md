@@ -52,7 +52,6 @@ Remember that unless you're running in a kdesrc-build session you need to set so
 
 When configuring Astra, there are several optional features you may want to enable or disable:
 
-* `ENABLE_WATCHDOG`: Watchdog support, requires Tesseract and X11.
 * `ENABLE_STEAM`: Steam integration, requires the Steamworks SDK.
 * `ENABLE_GAMEMODE`: Gamemode integration, reqires Gamemode.
 

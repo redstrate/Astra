@@ -21,7 +21,6 @@ class Profile : public QObject
     Q_PROPERTY(QString gamePath READ gamePath WRITE setGamePath NOTIFY gamePathChanged)
     Q_PROPERTY(QString winePath READ winePath WRITE setWinePath NOTIFY winePathChanged)
     Q_PROPERTY(QString winePrefixPath READ winePrefixPath WRITE setWinePrefixPath NOTIFY winePrefixPathChanged)
-    Q_PROPERTY(bool watchdogEnabled READ watchdogEnabled WRITE setWatchdogEnabled NOTIFY enableWatchdogChanged)
     Q_PROPERTY(WineType wineType READ wineType WRITE setWineType NOTIFY wineTypeChanged)
     Q_PROPERTY(bool esyncEnabled READ esyncEnabled WRITE setESyncEnabled NOTIFY useESyncChanged)
     Q_PROPERTY(bool gamescopeEnabled READ gamescopeEnabled WRITE setGamescopeEnabled NOTIFY useGamescopeChanged)
@@ -74,9 +73,6 @@ public:
 
     [[nodiscard]] QString winePrefixPath() const;
     void setWinePrefixPath(const QString &path);
-
-    [[nodiscard]] bool watchdogEnabled() const;
-    void setWatchdogEnabled(bool value);
 
     [[nodiscard]] WineType wineType() const;
     void setWineType(WineType type);
@@ -165,7 +161,6 @@ Q_SIGNALS:
     void gamePathChanged();
     void winePathChanged();
     void winePrefixPathChanged();
-    void enableWatchdogChanged();
     void wineTypeChanged();
     void useESyncChanged();
     void useGamescopeChanged();

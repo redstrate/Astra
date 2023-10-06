@@ -182,20 +182,6 @@ void Profile::setWinePrefixPath(const QString &path)
     }
 }
 
-bool Profile::watchdogEnabled() const
-{
-    return m_config->enableWatchdog();
-}
-
-void Profile::setWatchdogEnabled(const bool value)
-{
-    if (m_config->enableWatchdog() != value) {
-        m_config->setEnableWatchdog(value);
-        m_config->save();
-        Q_EMIT enableWatchdogChanged();
-    }
-}
-
 Profile::WineType Profile::wineType() const
 {
     return static_cast<WineType>(m_config->wineType());

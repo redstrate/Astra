@@ -19,7 +19,6 @@
 class SapphireLauncher;
 class SquareLauncher;
 class AssetUpdater;
-class Watchdog;
 class GameInstaller;
 class CompatibilityToolInstaller;
 
@@ -223,7 +222,6 @@ private:
     SapphireLauncher *m_sapphireLauncher = nullptr;
     SquareBoot *m_squareBoot = nullptr;
     SquareLauncher *m_squareLauncher = nullptr;
-    Watchdog *m_watchdog = nullptr;
 
     Headline *m_headline = nullptr;
 

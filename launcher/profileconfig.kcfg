@@ -23,9 +23,6 @@ SPDX-License-Identifier: CC0-1.0
       </entry>
       <entry key="WinePrefixPath" type="Path">
       </entry>
-      <entry key="EnableWatchdog" type="bool">
-        <default>false</default>
-      </entry>
       <entry key="WineType" type="Enum">
         <choices>
           <choice name="System">

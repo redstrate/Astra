@@ -8,7 +8,6 @@ project(Astra VERSION 0.5.0 LANGUAGES CXX)
 option(BUILD_FLATPAK "Build for Flatpak." OFF)
 
 # options for features you may want or need
-option(ENABLE_WATCHDOG "Build support for Watchdog, requires X11." OFF)
 option(ENABLE_STEAM "Build with Steam support, requires supplying the Steam SDK yourself." OFF)
 option(ENABLE_GAMEMODE "Build with Feral GameMode support, requires the daemon to be installed." ON)
 
@@ -55,11 +54,6 @@ find_package(QCoro6 REQUIRED COMPONENTS Core Network Qml)
 qcoro_enable_coroutines()
 
 qt_policy(SET QTP0001 NEW)
-
-if (ENABLE_WATCHDOG)
-    pkg_search_module(TESSERACT REQUIRED tesseract)
-    pkg_search_module(LEPTONICA REQUIRED lept)
-endif ()
 
 if (ENABLE_GAMEMODE)
     pkg_search_module(GAMEMODE REQUIRED gamemode)

@@ -26,10 +26,6 @@
 #include "squarelauncher.h"
 #include "utility.h"
 
-#ifdef ENABLE_WATCHDOG
-#include "watchdog.h"
-#endif
-
 void LauncherCore::setSSL(QNetworkRequest &request)
 {
     QSslConfiguration config;
@@ -60,15 +56,7 @@ void LauncherCore::launchGame(Profile &profile, const LoginAuth &auth)
 {
     m_steamApi->setLauncherMode(false);
 
-#ifdef ENABLE_WATCHDOG
-    if (profile.enableWatchdog) {
-        watchdog->launchGame(profile, auth);
-    } else {
-        beginGameExecutable(profile, auth);
-    }
-#else
     beginGameExecutable(profile, auth);
-#endif
 }
 
 QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
@@ -400,10 +388,6 @@ LauncherCore::LauncherCore()
     m_steamApi = new SteamAPI(*this, this);
     m_profileManager = new ProfileManager(*this, this);
     m_accountManager = new AccountManager(*this, this);
-
-#ifdef ENABLE_WATCHDOG
-    watchdog = new Watchdog(*this);
-#endif
 
     readInitialInformation();
 
