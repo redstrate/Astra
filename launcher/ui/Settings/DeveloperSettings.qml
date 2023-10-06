@@ -41,6 +41,19 @@ FormCard.FormCardPage {
         Layout.fillWidth: true
 
         FormCard.FormTextFieldDelegate {
+            id: preferredProtocolDelegate
+
+            label: i18n("Preferred Protocol")
+            text: LauncherCore.preferredProtocol
+            onTextChanged: LauncherCore.preferredProtocol = text
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: preferredProtocolDelegate
+            below: dalamudServerDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
             id: dalamudServerDelegate
 
             label: i18n("Dalamud Distribution Server")

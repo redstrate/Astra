@@ -57,7 +57,7 @@ QCoro::Task<std::optional<SquareLauncher::StoredInfo>> SquareLauncher::getStored
     }
 
     QUrl url;
-    url.setScheme(QStringLiteral("https"));
+    url.setScheme(window.preferredProtocol());
     url.setHost(QStringLiteral("ffxiv-login.%1").arg(window.squareEnixLoginServer()));
     url.setPath(QStringLiteral("/oauth/ffxivarr/login/top"));
     url.setQuery(query);
@@ -124,6 +124,7 @@ QCoro::Task<> SquareLauncher::login(const LoginInformation &info)
     request.setRawHeader(QByteArrayLiteral("Cache-Control"), QByteArrayLiteral("no-cache"));
 
     const auto reply = window.mgr->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
+    window.setupIgnoreSSL(reply);
     co_await reply;
 
     const QString str = reply->readAll();
@@ -186,7 +187,14 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
     co_await reply;
 
     if (reply->error() == QNetworkReply::NoError) {
+        QString patchUniqueId;
         if (reply->rawHeaderList().contains(QByteArrayLiteral("X-Patch-Unique-Id"))) {
+            patchUniqueId = reply->rawHeader(QByteArrayLiteral("X-Patch-Unique-Id"));
+        } else if (reply->rawHeaderList().contains(QByteArrayLiteral("x-patch-unique-id"))) {
+            patchUniqueId = reply->rawHeader(QByteArrayLiteral("x-patch-unique-id"));
+        }
+
+        if (!patchUniqueId.isEmpty()) {
             const QString body = reply->readAll();
 
             if (!body.isEmpty()) {
@@ -199,7 +207,7 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
                 patcher->deleteLater();
             }
 
-            auth.SID = reply->rawHeader(QByteArrayLiteral("X-Patch-Unique-Id"));
+            auth.SID = patchUniqueId;
 
             window.launchGame(*info.profile, auth);
         } else {

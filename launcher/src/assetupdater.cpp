@@ -247,7 +247,7 @@ static const QMap<Profile::DalamudChannel, QString> channelToDistribPrefix = {{P
 QUrl AssetUpdater::dalamudVersionManifestUrl(const Profile::DalamudChannel channel) const
 {
     QUrl url;
-    url.setScheme(QStringLiteral("https"));
+    url.setScheme(launcher.preferredProtocol());
     url.setHost(launcher.dalamudDistribServer());
     url.setPath(QStringLiteral("/dalamud-distrib/%1version").arg(channelToDistribPrefix[channel]));
 
@@ -257,7 +257,7 @@ QUrl AssetUpdater::dalamudVersionManifestUrl(const Profile::DalamudChannel chann
 QUrl AssetUpdater::dalamudLatestPackageUrl(Profile::DalamudChannel channel) const
 {
     QUrl url;
-    url.setScheme(QStringLiteral("https"));
+    url.setScheme(launcher.preferredProtocol());
     url.setHost(launcher.dalamudDistribServer());
     url.setPath(QStringLiteral("/dalamud-distrib/%1latest.zip").arg(channelToDistribPrefix[channel]));
 
@@ -267,7 +267,7 @@ QUrl AssetUpdater::dalamudLatestPackageUrl(Profile::DalamudChannel channel) cons
 QUrl AssetUpdater::dalamudAssetManifestUrl() const
 {
     QUrl url;
-    url.setScheme(QStringLiteral("https"));
+    url.setScheme(launcher.preferredProtocol());
     url.setHost(launcher.dalamudDistribServer());
     url.setPath(QStringLiteral("/DalamudAssets/asset.json"));
 

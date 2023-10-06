@@ -71,6 +71,7 @@ class LauncherCore : public QObject
     Q_PROPERTY(QString dalamudDistribServer READ dalamudDistribServer WRITE setDalamudDistribServer NOTIFY dalamudDistribServerChanged)
     Q_PROPERTY(QString squareEnixServer READ squareEnixServer WRITE setSquareEnixServer NOTIFY squareEnixServerChanged)
     Q_PROPERTY(QString squareEnixLoginServer READ squareEnixLoginServer WRITE setSquareEnixLoginServer NOTIFY squareEnixLoginServerChanged)
+    Q_PROPERTY(QString preferredProtocol READ preferredProtocol WRITE setPreferredProtocol NOTIFY preferredProtocolChanged)
     Q_PROPERTY(Headline *headline READ headline NOTIFY newsChanged)
     Q_PROPERTY(Profile *currentProfile READ currentProfile WRITE setCurrentProfile NOTIFY currentProfileChanged)
     Q_PROPERTY(Profile *autoLoginProfile READ autoLoginProfile WRITE setAutoLoginProfile NOTIFY autoLoginProfileChanged)
@@ -116,6 +117,8 @@ public:
 
     void buildRequest(const Profile &settings, QNetworkRequest &request);
     void setSSL(QNetworkRequest &request);
+    void setupIgnoreSSL(QNetworkReply *reply);
+
     void readInitialInformation();
 
     [[nodiscard]] bool closeWhenLaunched() const;
@@ -138,6 +141,9 @@ public:
 
     [[nodiscard]] QString squareEnixLoginServer() const;
     void setSquareEnixLoginServer(const QString &value);
+
+    [[nodiscard]] QString preferredProtocol() const;
+    void setPreferredProtocol(const QString &value);
 
     [[nodiscard]] QString autoLoginProfileName() const;
     [[nodiscard]] Profile *autoLoginProfile() const;
@@ -175,6 +181,7 @@ signals:
     void dalamudDistribServerChanged();
     void squareEnixServerChanged();
     void squareEnixLoginServerChanged();
+    void preferredProtocolChanged();
     void loginError(QString message);
     void stageChanged(QString message);
     void stageIndeterminate();

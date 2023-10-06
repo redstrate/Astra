@@ -35,6 +35,15 @@ void LauncherCore::setSSL(QNetworkRequest &request)
     request.setSslConfiguration(config);
 }
 
+void LauncherCore::setupIgnoreSSL(QNetworkReply *reply)
+{
+    if (preferredProtocol() == QStringLiteral("http")) {
+        connect(reply, &QNetworkReply::sslErrors, this, [reply](const QList<QSslError> &errors) {
+            reply->ignoreSslErrors(errors);
+        });
+    }
+}
+
 void LauncherCore::buildRequest(const Profile &settings, QNetworkRequest &request)
 {
     setSSL(request);
@@ -587,6 +596,20 @@ void LauncherCore::setSquareEnixLoginServer(const QString &value)
     }
 }
 
+QString LauncherCore::preferredProtocol() const
+{
+    return Config::preferredProtocol();
+}
+
+void LauncherCore::setPreferredProtocol(const QString &value)
+{
+    if (value != Config::preferredProtocol()) {
+        Config::setPreferredProtocol(value);
+        Config::self()->save();
+        Q_EMIT preferredProtocolChanged();
+    }
+}
+
 [[nodiscard]] QString LauncherCore::autoLoginProfileName() const
 {
     return Config::autoLoginProfile();
@@ -629,7 +652,7 @@ QCoro::Task<> LauncherCore::fetchNews()
     query.addQueryItem(QStringLiteral("media"), QStringLiteral("pcapp"));
 
     QUrl url;
-    url.setScheme(QStringLiteral("https"));
+    url.setScheme(preferredProtocol());
     url.setHost(QStringLiteral("frontier.%1").arg(squareEnixServer()));
     url.setPath(QStringLiteral("/news/headline.json"));
     url.setQuery(query);

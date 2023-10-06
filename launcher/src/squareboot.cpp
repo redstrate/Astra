@@ -67,7 +67,7 @@ QCoro::Task<> SquareBoot::checkGateStatus(const LoginInformation &info)
     qDebug() << "Checking gate...";
 
     QUrl url;
-    url.setScheme(QStringLiteral("https"));
+    url.setScheme(window.preferredProtocol());
     url.setHost(QStringLiteral("frontier.%1").arg(window.squareEnixServer()));
     url.setPath(QStringLiteral("/worldStatus/gate_status.json"));
     url.setQuery(QString::number(QDateTime::currentMSecsSinceEpoch()));
@@ -78,6 +78,7 @@ QCoro::Task<> SquareBoot::checkGateStatus(const LoginInformation &info)
     window.buildRequest(*info.profile, request);
 
     const auto reply = window.mgr->get(request);
+    window.setupIgnoreSSL(reply);
     co_await reply;
 
     const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
