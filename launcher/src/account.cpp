@@ -7,6 +7,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <cotp.h>
+#include <qcorocore.h>
 #include <qt6keychain/keychain.h>
 
 #include "launchercore.h"
@@ -173,7 +174,7 @@ void Account::setIsFreeTrial(const bool value)
 
 QString Account::getPassword()
 {
-    return getKeychainValue(QStringLiteral("password"));
+    return QCoro::waitFor(getKeychainValue(QStringLiteral("password")));
 }
 
 void Account::setPassword(const QString &password)
@@ -183,13 +184,21 @@ void Account::setPassword(const QString &password)
 
 QString Account::getOTP()
 {
-    auto otpSecret = getKeychainValue(QStringLiteral("otp-secret"));
+    auto otpSecret = QCoro::waitFor(getKeychainValue(QStringLiteral("otp-secret")));
+    if (otpSecret.isEmpty()) {
+        return {};
+    }
 
-    char *totp = get_totp(otpSecret.toStdString().c_str(), 6, 30, SHA1, nullptr);
-    QString totpStr(totp);
-    free(totp);
+    cotp_error err;
+    char *totp = get_totp(otpSecret.toStdString().c_str(), 6, 30, SHA1, &err);
 
-    return totpStr;
+    if (err == NO_ERROR) {
+        QString totpStr(totp);
+        free(totp);
+        return totpStr;
+    } else {
+        return {};
+    }
 }
 
 void Account::setOTPSecret(const QString &secret)
@@ -251,24 +260,14 @@ void Account::setKeychainValue(const QString &key, const QString &value)
     job->start();
 }
 
-QString Account::getKeychainValue(const QString &key)
+QCoro::Task<QString> Account::getKeychainValue(const QString &key)
 {
-    auto loop = new QEventLoop(this);
-
     auto job = new QKeychain::ReadPasswordJob(QStringLiteral("Astra"), this);
     job->setKey(m_key + QStringLiteral("-") + key);
     job->setInsecureFallback(m_launcher.isSteamDeck());
     job->start();
 
-    QString value;
+    co_await qCoro(job, &QKeychain::ReadPasswordJob::finished);
 
-    QObject::connect(job, &QKeychain::ReadPasswordJob::finished, [loop, job, &value](QKeychain::Job *j) {
-        Q_UNUSED(j)
-        value = job->textData();
-        loop->quit();
-    });
-
-    loop->exec();
-
-    return value;
+    co_return job->textData();
 }

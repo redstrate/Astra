@@ -6,6 +6,7 @@
 #include <QDir>
 #include <QObject>
 #include <QtQml/qqmlregistration.h>
+#include <qcorotask.h>
 
 #include "accountconfig.h"
 
@@ -101,7 +102,7 @@ private:
     /*
      * Retrieves a value from the keychain. This function is synchronous.
      */
-    QString getKeychainValue(const QString &key);
+    QCoro::Task<QString> getKeychainValue(const QString &key);
 
     AccountConfig m_config;
     QString m_key;
