@@ -105,24 +105,6 @@ target_link_libraries(astra PRIVATE
         QCoro::Network
         QCoro::Qml)
 
-if (ENABLE_WATCHDOG)
-    target_sources(astra PRIVATE
-            include/gameparser.h
-            include/watchdog.h
-
-            src/gameparser.cpp
-            src/watchdog.cpp)
-    target_link_libraries(astra PRIVATE
-            ${TESSERACT_LIBRARIES}
-            ${LEPTONICA_LIBRARIES}
-            X11
-            Xcomposite
-            Xrender)
-
-    target_include_directories(astra_core PRIVATE ${TESSERACT_INCLUDE_DIRS} ${LEPTONICA_INCLUDE_DIRS})
-    target_compile_definitions(astra_core PRIVATE ENABLE_WATCHDOG)
-endif ()
-
 if (BUILD_FLATPAK)
     target_compile_definitions(astra PRIVATE FLATPAK)
 endif ()
