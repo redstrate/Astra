@@ -379,20 +379,6 @@ void Profile::setDalamudInjectDelay(const int value)
     }
 }
 
-bool Profile::argumentsEncrypted() const
-{
-    return m_config->encryptArguments();
-}
-
-void Profile::setArgumentsEncrypted(const bool value)
-{
-    if (m_config->encryptArguments() != value) {
-        m_config->setEncryptArguments(value);
-        m_config->save();
-        Q_EMIT encryptedArgumentsChanged();
-    }
-}
-
 Account *Profile::account() const
 {
     return m_account;
