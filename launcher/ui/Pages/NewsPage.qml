@@ -33,10 +33,14 @@ QQC2.Control {
         running: true
         repeat: true
         onTriggered: {
+            if (page.numBannerImages === 0) {
+                return;
+            }
+
             if (page.currentBannerIndex + 1 === page.numBannerImages) {
-                page.currentBannerIndex = 0
+                page.currentBannerIndex = 0;
             } else {
-                page.currentBannerIndex++
+                page.currentBannerIndex++;
             }
         }
     }
@@ -56,7 +60,17 @@ QQC2.Control {
             Layout.preferredHeight: aspectRatio * width
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
-            source: LauncherCore.headline !== null ? LauncherCore.headline.banners[page.currentBannerIndex].bannerImage : ""
+            source: {
+                if (LauncherCore.headline === null) {
+                    return "";
+                }
+
+                if (page.numBannerImages === 0) {
+                    return "";
+                }
+
+                return LauncherCore.headline.banners[page.currentBannerIndex].bannerImage;
+            }
 
             MouseArea {
                 anchors.fill: parent
