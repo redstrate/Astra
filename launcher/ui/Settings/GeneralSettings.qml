@@ -87,4 +87,18 @@ FormCard.FormCardPage {
             onCheckedChanged: LauncherCore.showDevTools = checked
         }
     }
+
+
+    FormCard.FormCard {
+        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.fillWidth: true
+
+        FormCard.FormButtonDelegate {
+            text: i18n("Clear Lodestone Avatar Cache")
+            description: i18n("Refreshes the avatars for all accounts, and requires Astra to restart to take effect.")
+            icon.name: "delete"
+
+            onClicked: LauncherCore.clearAvatarCache()
+        }
+    }
 }

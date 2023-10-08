@@ -175,6 +175,8 @@ public:
     [[nodiscard]] Profile *currentProfile() const;
     void setCurrentProfile(Profile *profile);
 
+    Q_INVOKABLE void clearAvatarCache();
+
 signals:
     void loadingFinished();
     void gameInstallationChanged();

@@ -824,3 +824,12 @@ void LauncherCore::setCurrentProfile(Profile *profile)
         Q_EMIT currentProfileChanged();
     }
 }
+
+void LauncherCore::clearAvatarCache()
+{
+    const auto cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + QStringLiteral("/avatars");
+    qInfo() << cacheLocation;
+    if (QDir(cacheLocation).exists()) {
+        QDir(cacheLocation).removeRecursively();
+    }
+}
