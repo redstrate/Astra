@@ -5,5 +5,5 @@ ClassName=Config
 Mutators=true
 DefaultValueGetters=true
 GenerateProperties=true
-ParentInConstructor=true
-Singleton=true
+ParentInConstructor=false
+Singleton=false

@@ -10,6 +10,7 @@
 #include <qcorotask.h>
 
 #include "accountmanager.h"
+#include "config.h"
 #include "headline.h"
 #include "profile.h"
 #include "profilemanager.h"
@@ -243,6 +244,7 @@ private:
     SquareLauncher *m_squareLauncher = nullptr;
 
     Headline *m_headline = nullptr;
+    Config *m_config = nullptr;
 
     int m_currentProfileIndex = 0;
 };

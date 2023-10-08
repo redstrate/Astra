@@ -7,7 +7,7 @@
 SPDX-FileCopyrightText: Joshua Goins <josh@redstrate.com>
 SPDX-License-Identifier: CC0-1.0
 -->
-  <kcfgfile name="astrarc" />
+  <kcfgfile arg="true" />
   <group name="General">
     <entry name="CloseWhenLaunched" type="bool">
       <default>true</default>
@@ -20,6 +20,10 @@ SPDX-License-Identifier: CC0-1.0
     <entry name="ShowDevTools" type="bool">
       <default>false</default>
     </entry>
+    <entry name="AutoLoginProfile" type="String">
+    </entry>
+  </group>
+  <group name="Developer">
     <entry name="KeepPatches" type="bool">
       <default>false</default>
     </entry>
@@ -37,8 +41,6 @@ SPDX-License-Identifier: CC0-1.0
     </entry>
     <entry name="PreferredProtocol" type="String">
       <default>https</default>
-    </entry>
-    <entry name="AutoLoginProfile" type="String">
     </entry>
     <entry key="EncryptArguments" type="bool">
       <default>true</default>

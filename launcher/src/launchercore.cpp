@@ -390,6 +390,7 @@ void LauncherCore::readInitialInformation()
 
 LauncherCore::LauncherCore()
 {
+    m_config = new Config(KSharedConfig::openConfig("astrarc", KConfig::SimpleConfig, QStandardPaths::AppConfigLocation));
     mgr = new QNetworkAccessManager(this);
     m_sapphireLauncher = new SapphireLauncher(*this, this);
     m_squareLauncher = new SquareLauncher(*this, this);
@@ -501,170 +502,170 @@ AccountManager *LauncherCore::accountManager()
 
 bool LauncherCore::closeWhenLaunched() const
 {
-    return Config::closeWhenLaunched();
+    return m_config->closeWhenLaunched();
 }
 
 void LauncherCore::setCloseWhenLaunched(const bool value)
 {
-    if (value != Config::closeWhenLaunched()) {
-        Config::setCloseWhenLaunched(value);
-        Config::self()->save();
+    if (value != m_config->closeWhenLaunched()) {
+        m_config->setCloseWhenLaunched(value);
+        m_config->save();
         Q_EMIT closeWhenLaunchedChanged();
     }
 }
 
 bool LauncherCore::showNews() const
 {
-    return Config::showNews();
+    return m_config->showNews();
 }
 
 void LauncherCore::setShowNews(const bool value)
 {
-    if (value != Config::showNews()) {
-        Config::setShowNews(value);
-        Config::self()->save();
+    if (value != m_config->showNews()) {
+        m_config->setShowNews(value);
+        m_config->save();
         Q_EMIT showNewsChanged();
     }
 }
 
 bool LauncherCore::showDevTools() const
 {
-    return Config::showDevTools();
+    return m_config->showDevTools();
 }
 
 void LauncherCore::setShowDevTools(const bool value)
 {
-    if (value != Config::showDevTools()) {
-        Config::setShowDevTools(value);
-        Config::self()->save();
+    if (value != m_config->showDevTools()) {
+        m_config->setShowDevTools(value);
+        m_config->save();
         Q_EMIT showDevToolsChanged();
     }
 }
 
 bool LauncherCore::keepPatches() const
 {
-    return Config::keepPatches();
+    return m_config->keepPatches();
 }
 
 void LauncherCore::setKeepPatches(const bool value)
 {
-    if (value != Config::keepPatches()) {
-        Config::setKeepPatches(value);
-        Config::self()->save();
+    if (value != m_config->keepPatches()) {
+        m_config->setKeepPatches(value);
+        m_config->save();
         Q_EMIT keepPatchesChanged();
     }
 }
 
 QString LauncherCore::dalamudDistribServer() const
 {
-    return Config::dalamudDistribServer();
+    return m_config->dalamudDistribServer();
 }
 
 void LauncherCore::setDalamudDistribServer(const QString &value)
 {
-    if (value != Config::dalamudDistribServer()) {
-        Config::setDalamudDistribServer(value);
-        Config::self()->save();
+    if (value != m_config->dalamudDistribServer()) {
+        m_config->setDalamudDistribServer(value);
+        m_config->save();
         Q_EMIT dalamudDistribServerChanged();
     }
 }
 
 QString LauncherCore::squareEnixServer() const
 {
-    return Config::squareEnixServer();
+    return m_config->squareEnixServer();
 }
 
 void LauncherCore::setSquareEnixServer(const QString &value)
 {
-    if (value != Config::squareEnixServer()) {
-        Config::setSquareEnixServer(value);
-        Config::self()->save();
+    if (value != m_config->squareEnixServer()) {
+        m_config->setSquareEnixServer(value);
+        m_config->save();
         Q_EMIT squareEnixServerChanged();
     }
 }
 
 QString LauncherCore::squareEnixLoginServer() const
 {
-    return Config::squareEnixLoginServer();
+    return m_config->squareEnixLoginServer();
 }
 
 void LauncherCore::setSquareEnixLoginServer(const QString &value)
 {
-    if (value != Config::squareEnixLoginServer()) {
-        Config::setSquareEnixLoginServer(value);
-        Config::self()->save();
+    if (value != m_config->squareEnixLoginServer()) {
+        m_config->setSquareEnixLoginServer(value);
+        m_config->save();
         Q_EMIT squareEnixLoginServerChanged();
     }
 }
 
 QString LauncherCore::xivApiServer() const
 {
-    return Config::xivApiServer();
+    return m_config->xivApiServer();
 }
 
 void LauncherCore::setXivApiServer(const QString &value)
 {
-    if (value != Config::xivApiServer()) {
-        Config::setXivApiServer(value);
-        Config::self()->save();
+    if (value != m_config->xivApiServer()) {
+        m_config->setXivApiServer(value);
+        m_config->save();
         Q_EMIT xivApiServerChanged();
     }
 }
 
 QString LauncherCore::preferredProtocol() const
 {
-    return Config::preferredProtocol();
+    return m_config->preferredProtocol();
 }
 
 void LauncherCore::setPreferredProtocol(const QString &value)
 {
-    if (value != Config::preferredProtocol()) {
-        Config::setPreferredProtocol(value);
-        Config::self()->save();
+    if (value != m_config->preferredProtocol()) {
+        m_config->setPreferredProtocol(value);
+        m_config->save();
         Q_EMIT preferredProtocolChanged();
     }
 }
 
 bool LauncherCore::argumentsEncrypted() const
 {
-    return Config::encryptArguments();
+    return m_config->encryptArguments();
 }
 
 void LauncherCore::setArgumentsEncrypted(const bool value)
 {
-    if (Config::encryptArguments() != value) {
-        Config::setEncryptArguments(value);
-        Config::self()->save();
+    if (m_config->encryptArguments() != value) {
+        m_config->setEncryptArguments(value);
+        m_config->save();
         Q_EMIT encryptedArgumentsChanged();
     }
 }
 
 [[nodiscard]] QString LauncherCore::autoLoginProfileName() const
 {
-    return Config::autoLoginProfile();
+    return m_config->autoLoginProfile();
 }
 
 [[nodiscard]] Profile *LauncherCore::autoLoginProfile() const
 {
-    if (Config::autoLoginProfile().isEmpty()) {
+    if (m_config->autoLoginProfile().isEmpty()) {
         return nullptr;
     }
-    return m_profileManager->getProfileByUUID(Config::autoLoginProfile());
+    return m_profileManager->getProfileByUUID(m_config->autoLoginProfile());
 }
 
 void LauncherCore::setAutoLoginProfile(Profile *profile)
 {
     if (profile == nullptr) {
-        Config::setAutoLoginProfile({});
-        Config::self()->save();
+        m_config->setAutoLoginProfile({});
+        m_config->save();
         Q_EMIT autoLoginProfileChanged();
         return;
     }
 
     auto uuid = profile->uuid();
-    if (uuid != Config::autoLoginProfile()) {
-        Config::setAutoLoginProfile(uuid);
-        Config::self()->save();
+    if (uuid != m_config->autoLoginProfile()) {
+        m_config->setAutoLoginProfile(uuid);
+        m_config->save();
         Q_EMIT autoLoginProfileChanged();
     }
 }
