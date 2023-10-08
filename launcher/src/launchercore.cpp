@@ -65,7 +65,9 @@ void LauncherCore::buildRequest(const Profile &settings, QNetworkRequest &reques
 
 void LauncherCore::launchGame(Profile &profile, const LoginAuth &auth)
 {
-    m_steamApi->setLauncherMode(false);
+    if (m_steamApi != nullptr) {
+        m_steamApi->setLauncherMode(false);
+    }
 
     beginGameExecutable(profile, auth);
 }
@@ -397,13 +399,10 @@ LauncherCore::LauncherCore()
     m_sapphireLauncher = new SapphireLauncher(*this, this);
     m_squareLauncher = new SquareLauncher(*this, this);
     m_squareBoot = new SquareBoot(*this, *m_squareLauncher, this);
-    m_steamApi = new SteamAPI(*this, this);
     m_profileManager = new ProfileManager(*this, this);
     m_accountManager = new AccountManager(*this, this);
 
     readInitialInformation();
-
-    m_steamApi->setLauncherMode(true);
 }
 
 bool LauncherCore::checkIfInPath(const QString &program)
@@ -765,12 +764,11 @@ bool LauncherCore::isSteam() const
 
 bool LauncherCore::isSteamDeck() const
 {
-    return m_steamApi->isDeck();
-}
-
-void LauncherCore::setIsSteam(bool isSteam)
-{
-    m_isSteam = isSteam;
+    if (m_steamApi != nullptr) {
+        return m_steamApi->isDeck();
+    } else {
+        return false;
+    }
 }
 
 Profile *LauncherCore::currentProfile() const
@@ -796,4 +794,11 @@ void LauncherCore::clearAvatarCache()
     if (QDir(cacheLocation).exists()) {
         QDir(cacheLocation).removeRecursively();
     }
+}
+
+void LauncherCore::initializeSteam()
+{
+    m_isSteam = true;
+    m_steamApi = new SteamAPI(*this, this);
+    m_steamApi->setLauncherMode(true);
 }

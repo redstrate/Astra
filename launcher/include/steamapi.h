@@ -11,6 +11,7 @@ class SteamAPI : public QObject
 {
 public:
     explicit SteamAPI(LauncherCore &core, QObject *parent = nullptr);
+    ~SteamAPI();
 
     void setLauncherMode(bool isLauncher);
 

@@ -6,6 +6,7 @@
 #include <KLocalizedString>
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QMessageBox>
 #include <QQuickStyle>
 #include <QtWebView>
 #include <qcoroqml.h>
@@ -67,24 +68,37 @@ int main(int argc, char *argv[])
     parser.parse(QCoreApplication::arguments());
     about.processCommandLine(&parser);
 
-#ifdef ENABLE_STEAM
+    // We must handle these manually, since we use parse() and not process()
+    if (parser.isSet("help")) {
+        parser.showHelp();
+    }
+
+    if (parser.isSet("version")) {
+        parser.showVersion();
+    }
+
     if (parser.isSet(steamOption)) {
+#ifndef ENABLE_STEAM
+        QMessageBox::warning(nullptr,
+                             i18n("Warning"),
+                             i18n("You somehow launched Astra through Steam, despite it not being compiled with Steam support. Some features may not work!"));
+#endif
+
         const QStringList args = parser.positionalArguments();
         // Steam tries to use as a compatibility tool, running installation scripts (like DirectX), so try to ignore it.
-        if (!args[0].contains(QLatin1String("ffxivboot.exe"))) {
+        if (!args.empty() && !args[0].contains(QLatin1String("ffxivboot.exe"))) {
             return 0;
         }
     }
-#endif
 
     QCoro::Qml::registerTypes();
 
     QQmlApplicationEngine engine;
 
-#ifdef ENABLE_STEAM
     auto core = engine.singletonInstance<LauncherCore *>(QStringLiteral("zone.xiv.astra"), QStringLiteral("LauncherCore"));
-    core->setIsSteam(parser.isSet(steamOption));
-#endif
+    if (parser.isSet(steamOption)) {
+        core->initializeSteam();
+    }
 
     engine.rootContext()->setContextObject(new KLocalizedContext(&engine));
     QObject::connect(&engine, &QQmlApplicationEngine::quit, &app, &QCoreApplication::quit);

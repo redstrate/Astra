@@ -87,7 +87,7 @@ public:
     ProfileManager *profileManager();
     AccountManager *accountManager();
 
-    void setIsSteam(bool isSteam);
+    void initializeSteam();
 
     /*
      * Begins the login process, and may call SquareBoot or SapphireLauncher depending on the profile type.

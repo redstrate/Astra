@@ -24,12 +24,15 @@ SteamAPI::SteamAPI(LauncherCore &core, QObject *parent)
 #endif
 }
 
+SteamAPI::~SteamAPI()
+{
+    SteamAPI_Shutdown();
+}
+
 void SteamAPI::setLauncherMode(bool isLauncher)
 {
 #ifdef ENABLE_STEAM
-    if (core.isSteam()) {
-        SteamUtils()->SetGameLauncherMode(isLauncher);
-    }
+    SteamUtils()->SetGameLauncherMode(isLauncher);
 #else
     Q_UNUSED(isLauncher)
 #endif
@@ -38,11 +41,7 @@ void SteamAPI::setLauncherMode(bool isLauncher)
 bool SteamAPI::isDeck() const
 {
 #ifdef ENABLE_STEAM
-    if (core.isSteam()) {
-        return SteamUtils()->IsSteamRunningOnSteamDeck();
-    } else {
-        return false;
-    }
+    return SteamUtils()->IsSteamRunningOnSteamDeck();
 #else
     return false;
 #endif
