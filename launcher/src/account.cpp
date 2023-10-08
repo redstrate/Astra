@@ -266,7 +266,11 @@ void Account::setKeychainValue(const QString &key, const QString &value)
 {
     auto job = new QKeychain::WritePasswordJob(QStringLiteral("Astra"), this);
     job->setTextData(value);
+#ifdef FLATPAK
+    job->setKey(QStringLiteral("flatpak-") + m_key + QStringLiteral("-") + key);
+#else
     job->setKey(m_key + QStringLiteral("-") + key);
+#endif
     job->setInsecureFallback(m_launcher.isSteamDeck()); // The Steam Deck does not have secrets provider in Game Mode
     job->start();
 }
@@ -274,7 +278,11 @@ void Account::setKeychainValue(const QString &key, const QString &value)
 QCoro::Task<QString> Account::getKeychainValue(const QString &key)
 {
     auto job = new QKeychain::ReadPasswordJob(QStringLiteral("Astra"), this);
+#ifdef FLATPAK
+    job->setKey(QStringLiteral("flatpak-") + m_key + QStringLiteral("-") + key);
+#else
     job->setKey(m_key + QStringLiteral("-") + key);
+#endif
     job->setInsecureFallback(m_launcher.isSteamDeck());
     job->start();
 
