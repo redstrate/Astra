@@ -41,6 +41,7 @@ public:
     Q_INVOKABLE bool canDelete(Profile *account) const;
 
     static QString getDefaultGamePath(const QString &uuid);
+    static QString getDefaultWinePrefixPath(const QString &uuid);
 
 private:
     void insertProfile(Profile *profile);

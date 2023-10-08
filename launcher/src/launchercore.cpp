@@ -218,6 +218,10 @@ QString LauncherCore::getGameArgs(const Profile &profile, const LoginAuth &auth)
         QDir().mkpath(profile.account()->getConfigDir().absolutePath());
     }
 
+    if (!QDir().exists(profile.winePrefixPath())) {
+        QDir().mkpath(profile.winePrefixPath());
+    }
+
     if (!auth.lobbyhost.isEmpty()) {
         gameArgs.push_back({QStringLiteral("DEV.GMServerHost"), auth.frontierHost});
         for (int i = 1; i < 9; i++) {
