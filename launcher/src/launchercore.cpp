@@ -37,6 +37,8 @@ void LauncherCore::setSSL(QNetworkRequest &request)
 
 void LauncherCore::setupIgnoreSSL(QNetworkReply *reply)
 {
+    Q_ASSERT(reply != nullptr);
+
     if (preferredProtocol() == QStringLiteral("http")) {
         connect(reply, &QNetworkReply::sslErrors, this, [reply](const QList<QSslError> &errors) {
             reply->ignoreSslErrors(errors);
@@ -451,6 +453,8 @@ void LauncherCore::login(Profile *profile, const QString &username, const QStrin
 
 bool LauncherCore::autoLogin(Profile *profile)
 {
+    Q_ASSERT(profile != nullptr);
+
     QString otp;
     if (profile->account()->useOTP()) {
         if (!profile->account()->rememberOTP()) {
@@ -472,6 +476,7 @@ bool LauncherCore::autoLogin(Profile *profile)
 GameInstaller *LauncherCore::createInstaller(Profile *profile)
 {
     Q_ASSERT(profile != nullptr);
+
     return new GameInstaller(*this, *profile, this);
 }
 
@@ -775,6 +780,8 @@ Profile *LauncherCore::currentProfile() const
 
 void LauncherCore::setCurrentProfile(Profile *profile)
 {
+    Q_ASSERT(profile != nullptr);
+
     const int newIndex = m_profileManager->getProfileIndex(profile->name());
     if (newIndex != m_currentProfileIndex) {
         m_currentProfileIndex = newIndex;
