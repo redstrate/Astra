@@ -192,6 +192,7 @@ signals:
     void preferredProtocolChanged();
     void encryptedArgumentsChanged();
     void loginError(QString message);
+    void dalamudError(QString message);
     void stageChanged(QString message);
     void stageIndeterminate();
     void stageDeterminate(int min, int max, int value);

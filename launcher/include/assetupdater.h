@@ -20,15 +20,15 @@ class AssetUpdater : public QObject
 public:
     explicit AssetUpdater(Profile &profile, LauncherCore &launcher, QObject *parent = nullptr);
 
-    QCoro::Task<> update();
+    QCoro::Task<bool> update();
 
 private:
-    QCoro::Task<> checkRemoteDalamudAssetVersion();
-    QCoro::Task<> checkRemoteDalamudVersion();
+    QCoro::Task<bool> checkRemoteDalamudAssetVersion();
+    QCoro::Task<bool> checkRemoteDalamudVersion();
 
-    QCoro::Task<> installDalamudAssets();
-    QCoro::Task<> installDalamud();
-    QCoro::Task<> installRuntime();
+    QCoro::Task<bool> installDalamudAssets();
+    QCoro::Task<bool> installDalamud();
+    QCoro::Task<bool> installRuntime();
 
     [[nodiscard]] QUrl dalamudVersionManifestUrl() const;
     [[nodiscard]] QUrl dalamudAssetManifestUrl() const;

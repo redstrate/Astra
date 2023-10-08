@@ -31,6 +31,20 @@ Kirigami.Page {
         onRejected: applicationWindow().pageStack.layers.pop()
     }
 
+    Kirigami.PromptDialog {
+        id: dalamudErrorDialog
+        title: i18n("Dalamud Error")
+
+        showCloseButton: false
+        standardButtons: Kirigami.Dialog.Yes | Kirigami.Dialog.Cancel
+
+        onAccepted: {
+            LauncherCore.currentProfile.dalamudEnabled = false;
+            applicationWindow().pageStack.layers.pop()
+        }
+        onRejected: applicationWindow().pageStack.layers.pop()
+    }
+
     Connections {
         target: LauncherCore
 
@@ -52,6 +66,11 @@ Kirigami.Page {
         function onLoginError(message) {
             errorDialog.subtitle = message
             errorDialog.open()
+        }
+
+        function onDalamudError(message) {
+            dalamudErrorDialog.subtitle = i18n("An error occured while updating Dalamud:\n\n%1.\n\nWould you like to disable Dalamud?", message);
+            dalamudErrorDialog.open();
         }
     }
 }

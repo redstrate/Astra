@@ -77,12 +77,12 @@ void LauncherCore::launchGame(Profile &profile, const LoginAuth &auth)
 QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 {
     auto assetUpdater = new AssetUpdater(*info.profile, *this, this);
-    co_await assetUpdater->update();
-
-    if (info.profile->account()->isSapphire()) {
-        m_sapphireLauncher->login(info.profile->account()->lobbyUrl(), info);
-    } else {
-        m_squareBoot->checkGateStatus(info);
+    if (co_await assetUpdater->update()) {
+        if (info.profile->account()->isSapphire()) {
+            m_sapphireLauncher->login(info.profile->account()->lobbyUrl(), info);
+        } else {
+            m_squareBoot->checkGateStatus(info);
+        }
     }
 
     assetUpdater->deleteLater();
