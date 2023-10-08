@@ -46,8 +46,6 @@ public:
 private:
     void insertProfile(Profile *profile);
 
-    QString getDefaultWinePrefixPath();
-
     QVector<Profile *> m_profiles;
 
     LauncherCore &m_launcher;

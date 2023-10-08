@@ -126,6 +126,7 @@ void Profile::setGamePath(const QString &path)
     if (m_config->gamePath() != path) {
         m_config->setGamePath(path);
         m_config->save();
+        readGameVersion();
         Q_EMIT gamePathChanged();
     }
 }

@@ -37,7 +37,6 @@ Kirigami.Page {
         target: gameInstaller
 
         function onInstallFinished() {
-            LauncherCore.currentProfile.readGameVersion();
             applicationWindow().checkSetup();
         }
 

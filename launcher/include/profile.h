@@ -119,10 +119,7 @@ public:
     [[nodiscard]] QString accountUuid() const;
     void setAccount(Account *account);
 
-    void readGameData();
-    Q_INVOKABLE void readGameVersion();
-    void readWineInfo();
-    void readDalamudInfo();
+    void readGameVersion();
 
     [[nodiscard]] QString expansionVersionText() const;
     [[nodiscard]] QString dalamudVersionText() const;
@@ -177,6 +174,10 @@ Q_SIGNALS:
     void loggedInChanged();
 
 private:
+    void readGameData();
+    void readWineInfo();
+    void readDalamudInfo();
+
     QString m_uuid;
     QString m_wineVersion;
     ProfileConfig *m_config = nullptr;

@@ -64,7 +64,6 @@ Kirigami.Page {
 
                         onClicked: {
                             LauncherCore.currentProfile.gamePath = profile.gamePath;
-                            LauncherCore.currentProfile.readGameVersion();
                             applicationWindow().checkSetup();
                         }
                     }

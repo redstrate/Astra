@@ -44,10 +44,6 @@ Profile *ProfileManager::addProfile()
     auto newProfile = new Profile(m_launcher, QUuid::createUuid().toString(), this);
     newProfile->setName(QStringLiteral("New Profile"));
 
-    newProfile->readWineInfo();
-
-    newProfile->setWinePrefixPath(getDefaultWinePrefixPath());
-
     insertProfile(newProfile);
 
     return newProfile;
@@ -63,19 +59,6 @@ void ProfileManager::deleteProfile(Profile *profile)
     beginRemoveRows(QModelIndex(), row, row);
     m_profiles.removeAll(profile);
     endRemoveRows();
-}
-
-QString ProfileManager::getDefaultWinePrefixPath()
-{
-#if defined(Q_OS_MACOS)
-    return QDir::homePath() + "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy";
-#endif
-
-#if defined(Q_OS_LINUX)
-    return QDir::homePath() + QStringLiteral("/.wine");
-#endif
-
-    Q_UNREACHABLE();
 }
 
 QString ProfileManager::getDefaultGamePath(const QString &uuid)

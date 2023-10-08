@@ -58,6 +58,8 @@ void GameInstaller::installGame()
 
         physis_install_game(fileNameStd.c_str(), installDirectoryStd.c_str());
 
+        m_profile.readGameVersion();
+
         Q_EMIT installFinished();
         qInfo(ASTRA_LOG) << "Installed game in" << installDirectory;
     });
