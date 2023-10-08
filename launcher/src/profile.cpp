@@ -81,47 +81,15 @@ void Profile::readGameData()
 
 void Profile::readWineInfo()
 {
-#if defined(Q_OS_MAC)
-    switch (wineType) {
-    case WineType::System: // system wine
-        winePath = "/usr/local/bin/wine64";
-        break;
-    case WineType::Custom: // custom path
-        winePath = profile.winePath;
-        break;
-    case WineType::Builtin: // ffxiv built-in (for mac users)
-        winePath =
-            "/Applications/FINAL FANTASY XIV "
-            "ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine";
-        break;
-    case WineType::XIVOnMac:
-        winePath = "/Applications/XIV on Mac.app/Contents/Resources/wine/bin/wine64";
-        break;
-    }
-#endif
-
-#if defined(Q_OS_LINUX)
-    switch (wineType()) {
-    case WineType::System: // system wine (should be in $PATH)
-        setWinePath(QStringLiteral("wine"));
-        break;
-    case WineType::Custom: // custom pth
-    default:
-        break;
-    }
-#endif
-
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
     auto wineProcess = new QProcess(this);
-    wineProcess->setProcessChannelMode(QProcess::MergedChannels);
 
-    connect(wineProcess, &QProcess::readyRead, this, [wineProcess, this] {
+    connect(wineProcess, &QProcess::readyReadStandardOutput, this, [wineProcess, this] {
         m_wineVersion = wineProcess->readAllStandardOutput().trimmed();
         Q_EMIT wineChanged();
     });
 
-    m_launcher.launchExecutable(*this, wineProcess, {QStringLiteral("--version")}, false, false);
-
+    wineProcess->start(winePath(), {QStringLiteral("--version")});
     wineProcess->waitForFinished();
 #endif
 }
@@ -156,7 +124,37 @@ void Profile::setGamePath(const QString &path)
 
 QString Profile::winePath() const
 {
-    return m_config->winePath();
+#if defined(Q_OS_MAC)
+    switch (wineType()) {
+    case WineType::System: // system wine
+        return "/usr/local/bin/wine64";
+        break;
+    case WineType::Custom: // custom path
+        return m_config->winePath();
+        break;
+    case WineType::Builtin: // ffxiv built-in (for mac users)
+        return "/Applications/FINAL FANTASY XIV "
+               "ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine";
+        break;
+    case WineType::XIVOnMac:
+        return "/Applications/XIV on Mac.app/Contents/Resources/wine/bin/wine64";
+        break;
+    }
+#endif
+
+#if defined(Q_OS_LINUX)
+    switch (wineType()) {
+    case WineType::System: // system wine (should be in $PATH)
+        return QStringLiteral("wine");
+        break;
+    case WineType::Custom: // custom pth
+        return m_config->winePath();
+    default:
+        break;
+    }
+#endif
+
+    return {};
 }
 
 void Profile::setWinePath(const QString &path)
