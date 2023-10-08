@@ -3,6 +3,30 @@
 
 add_library(astra_static STATIC)
 
+ecm_qt_declare_logging_category(astra_static
+        HEADER astra_log.h
+        IDENTIFIER ASTRA_LOG
+        CATEGORY_NAME zone.xiv.astra
+        DESCRIPTION "Astra logs"
+        EXPORT ASTRA
+)
+
+ecm_qt_declare_logging_category(astra_static
+        HEADER astra_http_log.h
+        IDENTIFIER ASTRA_HTTP
+        CATEGORY_NAME zone.xiv.astra.http
+        DESCRIPTION "Astra HTTP requests"
+        EXPORT ASTRA
+)
+
+ecm_qt_declare_logging_category(astra_static
+        HEADER astra_patcher_log.h
+        IDENTIFIER ASTRA_PATCHER
+        CATEGORY_NAME zone.xiv.astra.patcher
+        DESCRIPTION "Astra patcher"
+        EXPORT ASTRA
+)
+
 target_sources(astra_static PRIVATE
         include/patchlist.h
         src/patchlist.cpp)
@@ -25,7 +49,9 @@ target_sources(astra PRIVATE
         include/gameinstaller.h
         include/headline.h
         include/launchercore.h
+        include/logger.h
         include/patcher.h
+        include/processlogger.h
         include/profile.h
         include/profilemanager.h
         include/sapphirelauncher.h
@@ -41,8 +67,10 @@ target_sources(astra PRIVATE
         src/encryptedarg.cpp
         src/gameinstaller.cpp
         src/launchercore.cpp
+        src/logger.cpp
         src/main.cpp
         src/patcher.cpp
+        src/processlogger.cpp
         src/profile.cpp
         src/profilemanager.cpp
         src/sapphirelauncher.cpp

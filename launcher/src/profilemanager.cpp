@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "profilemanager.h"
+#include "astra_log.h"
 
 #include <KSharedConfig>
 #include <QDir>
@@ -101,8 +102,9 @@ void ProfileManager::load()
     auto config = KSharedConfig::openStateConfig();
     for (const auto &id : config->groupList()) {
         if (id.contains(QLatin1String("profile-"))) {
-            qInfo() << "Adding profile" << id;
-            auto profile = new Profile(m_launcher, QString(id).remove(QLatin1String("profile-")), this);
+            const QString uuid = QString(id).remove(QLatin1String("profile-"));
+            qInfo(ASTRA_LOG) << "Loading profile" << uuid;
+            auto profile = new Profile(m_launcher, uuid, this);
             insertProfile(profile);
         }
     }

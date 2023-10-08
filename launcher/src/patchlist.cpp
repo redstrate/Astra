@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "patchlist.h"
+#include "astra_patcher_log.h"
 
 #include <QDebug>
 
@@ -32,7 +33,7 @@ PatchList::PatchList(const QString &patchList)
                "PatchList",
                "Patch parsing failed, we were given an non-empty patchlist body but nothing were parsed.");
 
-    qDebug() << "Finished parsing patch list. Num patches:" << m_patches.size();
+    qDebug(ASTRA_PATCHER) << "Finished parsing patch list. # of patches:" << m_patches.size();
 }
 
 QVector<Patch> PatchList::patches() const

@@ -13,8 +13,10 @@
 #include <physis.hpp>
 #include <qcorofuture.h>
 
+#include "astra_patcher_log.h"
 #include "launchercore.h"
 #include "patchlist.h"
+#include "utility.h"
 
 Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData &bootData, QObject *parent)
     : QObject(parent)
@@ -67,19 +69,22 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
 
         const QueuedPatch queuedPatch{patch.name, patch.repository, patch.version, patchPath, patch.hashes, patch.hashBlockSize, patch.length, isBoot()};
 
-        qDebug() << "Adding a queued patch:";
-        qDebug() << "- Name:" << patch.name;
-        qDebug() << "- Repository or is boot:" << (isBoot() ? QStringLiteral("boot") : patch.repository);
-        qDebug() << "- Version:" << patch.version;
-        qDebug() << "- Downloaded Path:" << patchPath;
-        qDebug() << "- Hashes:" << patch.hashes;
-        qDebug() << "- Hash Block Size:" << patch.hashBlockSize;
-        qDebug() << "- Length:" << patch.length;
+        qDebug(ASTRA_PATCHER) << "Adding a queued patch:";
+        qDebug(ASTRA_PATCHER) << "- Name:" << patch.name;
+        qDebug(ASTRA_PATCHER) << "- Repository or is boot:" << (isBoot() ? QStringLiteral("boot") : patch.repository);
+        qDebug(ASTRA_PATCHER) << "- Version:" << patch.version;
+        qDebug(ASTRA_PATCHER) << "- Downloaded Path:" << patchPath;
+        qDebug(ASTRA_PATCHER) << "- Hashes:" << patch.hashes;
+        qDebug(ASTRA_PATCHER) << "- Hash Block Size:" << patch.hashBlockSize;
+        qDebug(ASTRA_PATCHER) << "- Length:" << patch.length;
 
         m_patchQueue[ourIndex] = queuedPatch;
 
         if (!QFile::exists(patchPath)) {
-            auto patchReply = m_launcher.mgr->get(QNetworkRequest(patch.url));
+            const auto patchRequest = QNetworkRequest(patch.url);
+            Utility::printRequest(QStringLiteral("GET"), patchRequest);
+
+            auto patchReply = m_launcher.mgr->get(patchRequest);
 
             connect(patchReply, &QNetworkReply::downloadProgress, this, [this, queuedPatch](int received, int total) {
                 Q_EMIT m_launcher.stageChanged(i18n("Updating %1.\nDownloading %2", getBaseString(), queuedPatch.getVersion()));
@@ -93,7 +98,7 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
                 file.close();
             }));
         } else {
-            qDebug() << "Found existing patch: " << patch.name;
+            qDebug(ASTRA_PATCHER) << "Found existing patch: " << patch.name;
         }
     }
 
@@ -147,7 +152,7 @@ void Patcher::processPatch(const QueuedPatch &patch)
         physis_gamedata_apply_patch(m_gameData, patch.path.toStdString().c_str());
     }
 
-    qDebug() << "Installed" << patch.path << "to" << (isBoot() ? QStringLiteral("boot") : patch.repository);
+    qDebug(ASTRA_PATCHER) << "Installed" << patch.path << "to" << (isBoot() ? QStringLiteral("boot") : patch.repository);
 
     QString verFilePath;
     if (isBoot()) {

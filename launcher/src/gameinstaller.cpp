@@ -9,8 +9,10 @@
 #include <QStandardPaths>
 #include <physis.hpp>
 
+#include "astra_log.h"
 #include "launchercore.h"
 #include "profile.h"
+#include "utility.h"
 
 const QString installerUrl = QStringLiteral("https://download.finalfantasyxiv.com/inst/ffxivsetup.exe");
 const QByteArray installerSha256 = QByteArray::fromHex("cf70bfaaf4f429794358ef84acbcbdc4193bee109fa1b6aea81bd4de038e500e");
@@ -29,6 +31,8 @@ void GameInstaller::installGame()
     QNetworkRequest request((QUrl(installerUrl)));
 
     auto reply = m_launcher.mgr->get(request);
+    Utility::printRequest(QStringLiteral("GET"), request);
+
     QObject::connect(reply, &QNetworkReply::finished, [this, reply, installDirectory] {
         if (reply->error() != QNetworkReply::NetworkError::NoError) {
             Q_EMIT error(i18n("An error has occurred when downloading the installer.\n\n%1", reply->errorString()));
@@ -55,5 +59,6 @@ void GameInstaller::installGame()
         physis_install_game(fileNameStd.c_str(), installDirectoryStd.c_str());
 
         Q_EMIT installFinished();
+        qInfo(ASTRA_LOG) << "Installed game in" << installDirectory;
     });
 }

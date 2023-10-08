@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "utility.h"
+#include "astra_http_log.h"
 
 #include <QStandardPaths>
 
@@ -20,4 +21,9 @@ QDir Utility::stateDirectory()
 QString Utility::toWindowsPath(const QDir &dir)
 {
     return QStringLiteral("Z:") + dir.absolutePath().replace(QLatin1Char('/'), QLatin1Char('\\'));
+}
+
+void Utility::printRequest(const QString &type, const QNetworkRequest &request)
+{
+    qDebug(ASTRA_HTTP) << type.toUtf8().constData() << request.url().toDisplayString();
 }

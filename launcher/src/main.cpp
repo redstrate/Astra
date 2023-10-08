@@ -15,10 +15,13 @@
 #include "compatibilitytoolinstaller.h"
 #include "gameinstaller.h"
 #include "launchercore.h"
+#include "logger.h"
 #include "sapphirelauncher.h"
 
 int main(int argc, char *argv[])
 {
+    initializeLogging();
+
     QtWebView::initialize();
 
     QApplication app(argc, argv);
@@ -26,6 +29,11 @@ int main(int argc, char *argv[])
     // Default to org.kde.desktop style unless the user forces another style
     if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE")) {
         QQuickStyle::setStyle(QStringLiteral("org.kde.desktop"));
+    }
+
+    // Default to a sensible message pattern
+    if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
+        qputenv("QT_MESSAGE_PATTERN", "[%{time yyyy-MM-dd h:mm:ss.zzz}] %{if-category}[%{category}] %{endif}[%{type}] %{message}");
     }
 
     KLocalizedString::setApplicationDomain("astra");
@@ -47,7 +55,11 @@ int main(int argc, char *argv[])
                        physis_get_physis_version(),
                        QStringLiteral("https://xiv.zone/physis"),
                        KAboutLicense::GPL_V3);
-    about.addComponent(QStringLiteral("libphysis"), QStringLiteral("C bindings for physis"), physis_get_libphysis_version(), {}, KAboutLicense::GPL_V3);
+    about.addComponent(QStringLiteral("libphysis"),
+                       QStringLiteral("C bindings for physis"),
+                       physis_get_libphysis_version(),
+                       QStringLiteral("https://git.sr.ht/~redstrate/libphysis"),
+                       KAboutLicense::GPL_V3);
     about.setDesktopFileName(QStringLiteral("zone.xiv.astra"));
     about.setBugAddress(QByteArrayLiteral("https://lists.sr.ht/~redstrate/public-inbox"));
     about.setComponentName(QStringLiteral("astra"));
@@ -58,11 +70,9 @@ int main(int argc, char *argv[])
     QCommandLineParser parser;
     parser.setApplicationDescription(i18n("Linux FFXIV Launcher"));
 
-#ifdef ENABLE_STEAM
     QCommandLineOption steamOption(QStringLiteral("steam"), QStringLiteral("Used for booting the launcher from Steam."), QStringLiteral("verb"));
     steamOption.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(steamOption);
-#endif
 
     about.setupCommandLine(&parser);
     parser.parse(QCoreApplication::arguments());

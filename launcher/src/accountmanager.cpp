@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "accountmanager.h"
+#include "astra_log.h"
 
 #include <KSharedConfig>
 
@@ -16,7 +17,10 @@ void AccountManager::load()
     auto config = KSharedConfig::openStateConfig();
     for (const auto &id : config->groupList()) {
         if (id.contains(QLatin1String("account-"))) {
-            auto account = new Account(m_launcher, QString(id).remove(QLatin1String("account-")), this);
+            const QString uuid = QString(id).remove(QLatin1String("account-"));
+            qInfo(ASTRA_LOG) << "Loading account" << uuid;
+
+            auto account = new Account(m_launcher, uuid, this);
             m_accounts.append(account);
         }
     }

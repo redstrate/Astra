@@ -14,6 +14,7 @@
 
 #include "account.h"
 #include "squarelauncher.h"
+#include "utility.h"
 
 SquareBoot::SquareBoot(LauncherCore &window, SquareLauncher &launcher, QObject *parent)
     : QObject(parent)
@@ -43,6 +44,7 @@ QCoro::Task<> SquareBoot::bootCheck(const LoginInformation &info)
     }
 
     request.setRawHeader(QByteArrayLiteral("Host"), QStringLiteral("patch-bootver.%1").arg(window.squareEnixServer()).toUtf8());
+    Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = window.mgr->get(request);
     co_await reply;
@@ -76,6 +78,8 @@ QCoro::Task<> SquareBoot::checkGateStatus(const LoginInformation &info)
 
     // TODO: really?
     window.buildRequest(*info.profile, request);
+
+    Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = window.mgr->get(request);
     window.setupIgnoreSSL(reply);

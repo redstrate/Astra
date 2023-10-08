@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "assetupdater.h"
+#include "utility.h"
 
 #include <KLocalizedString>
 #include <QFile>
@@ -56,6 +57,7 @@ QCoro::Task<> AssetUpdater::checkRemoteDalamudAssetVersion()
 {
     // first we want to fetch the list of assets required
     const QNetworkRequest request(dalamudAssetManifestUrl());
+    Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = launcher.mgr->get(request);
     co_await reply;
@@ -80,6 +82,7 @@ QCoro::Task<> AssetUpdater::checkRemoteDalamudAssetVersion()
 QCoro::Task<> AssetUpdater::checkRemoteDalamudVersion()
 {
     const QNetworkRequest request(dalamudVersionManifestUrl(m_profile.dalamudChannel()));
+    Utility::printRequest(QStringLiteral("GET"), request);
 
     remoteDalamudVersion.clear();
     remoteRuntimeVersion.clear();
@@ -132,6 +135,8 @@ QCoro::Task<> AssetUpdater::installDalamudAssets()
 
     for (const auto &assetObject : remoteDalamudAssetArray) {
         const QNetworkRequest assetRequest(assetObject.toObject()[QLatin1String("Url")].toString());
+        Utility::printRequest(QStringLiteral("GET"), assetRequest);
+
         const auto assetReply = launcher.mgr->get(assetRequest);
 
         const auto future = QtFuture::connect(assetReply, &QNetworkReply::finished).then([this, assetReply, assetObject] {
@@ -171,6 +176,7 @@ QCoro::Task<> AssetUpdater::installDalamud()
     Q_EMIT launcher.stageChanged(i18n("Updating Dalamud..."));
 
     const QNetworkRequest request(dalamudLatestPackageUrl(chosenChannel));
+    Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = launcher.mgr->get(request);
     co_await reply;
@@ -200,6 +206,7 @@ QCoro::Task<> AssetUpdater::installRuntime()
     // core
     {
         const QNetworkRequest request(dotnetRuntimePackageURL.arg(remoteRuntimeVersion));
+        Utility::printRequest(QStringLiteral("GET"), request);
 
         const auto reply = launcher.mgr->get(request);
         co_await reply;
@@ -215,6 +222,7 @@ QCoro::Task<> AssetUpdater::installRuntime()
     // desktop
     {
         const QNetworkRequest request(dotnetDesktopPackageURL.arg(remoteRuntimeVersion));
+        Utility::printRequest(QStringLiteral("GET"), request);
 
         const auto reply = launcher.mgr->get(request);
         co_await reply;

@@ -4,9 +4,11 @@
 #pragma once
 
 #include <QDir>
+#include <QNetworkRequest>
 
 namespace Utility
 {
 QDir stateDirectory();
 QString toWindowsPath(const QDir &dir);
+void printRequest(const QString &type, const QNetworkRequest &request);
 }

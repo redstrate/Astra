@@ -122,6 +122,7 @@ public:
     void readGameData();
     Q_INVOKABLE void readGameVersion();
     void readWineInfo();
+    void readDalamudInfo();
 
     [[nodiscard]] QString expansionVersionText() const;
     [[nodiscard]] QString dalamudVersionText() const;

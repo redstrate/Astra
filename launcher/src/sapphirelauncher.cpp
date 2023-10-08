@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "sapphirelauncher.h"
+#include "utility.h"
 
 #include <KLocalizedString>
 #include <QJsonDocument>
@@ -22,8 +23,10 @@ void SapphireLauncher::login(const QString &lobbyUrl, const LoginInformation &in
 
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/x-www-form-urlencoded"));
+    Utility::printRequest(QStringLiteral("POST"), request);
 
     const auto reply = window.mgr->post(request, QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Compact));
+
     connect(reply, &QNetworkReply::finished, [this, reply, &info] {
         if (reply->error() != QNetworkReply::NetworkError::NoError) {
             Q_EMIT window.loginError(i18n("Could not contact lobby server.\n\n%1", reply->errorString()));
@@ -52,6 +55,8 @@ void SapphireLauncher::registerAccount(const QString &lobbyUrl, const LoginInfor
 
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/x-www-form-urlencoded"));
+
+    Utility::printRequest(QStringLiteral("POST"), request);
 
     const auto reply = window.mgr->post(request, QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Compact));
     connect(reply, &QNetworkReply::finished, [&] {

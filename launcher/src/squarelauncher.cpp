@@ -15,6 +15,7 @@
 
 #include "account.h"
 #include "launchercore.h"
+#include "utility.h"
 
 SquareLauncher::SquareLauncher(LauncherCore &window, QObject *parent)
     : QObject(parent)
@@ -64,6 +65,8 @@ QCoro::Task<std::optional<SquareLauncher::StoredInfo>> SquareLauncher::getStored
 
     auto request = QNetworkRequest(url);
     window.buildRequest(*info.profile, request);
+
+    Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = window.mgr->get(request);
     co_await reply;
@@ -122,6 +125,8 @@ QCoro::Task<> SquareLauncher::login(const LoginInformation &info)
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/x-www-form-urlencoded"));
     request.setRawHeader(QByteArrayLiteral("Referer"), referer.toEncoded());
     request.setRawHeader(QByteArrayLiteral("Cache-Control"), QByteArrayLiteral("no-cache"));
+
+    Utility::printRequest(QStringLiteral("POST"), request);
 
     const auto reply = window.mgr->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
     window.setupIgnoreSSL(reply);
@@ -182,6 +187,8 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
             report += QStringLiteral("\nex%1\t2012.01.01.0000.0000").arg(QString::number(i + 1));
         }
     }
+
+    Utility::printRequest(QStringLiteral("POST"), request);
 
     const auto reply = window.mgr->post(request, report.toUtf8());
     co_await reply;

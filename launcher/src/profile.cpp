@@ -9,6 +9,7 @@
 #include <QProcess>
 
 #include "account.h"
+#include "astra_log.h"
 #include "launchercore.h"
 #include "profileconfig.h"
 
@@ -44,6 +45,7 @@ Profile::Profile(LauncherCore &launcher, const QString &key, QObject *parent)
             }
 
             m_dalamudVersion = versionString.remove(QLatin1String("Dalamud/"));
+            qInfo(ASTRA_LOG) << "Dalamud version:" << m_dalamudVersion;
         }
 
         const QString dalamudAssetsVer = dalamudAssetsDir.absoluteFilePath(QStringLiteral("asset.ver"));
@@ -52,6 +54,7 @@ Profile::Profile(LauncherCore &launcher, const QString &key, QObject *parent)
             assetJson.open(QFile::ReadOnly | QFile::Text);
 
             m_dalamudAssetVersion = QString(assetJson.readAll()).toInt();
+            qInfo(ASTRA_LOG) << "Dalamud asset version:" << m_dalamudVersion;
         }
 
         const QString dalamudRuntimeVer = dalamudRuntimeDir.absoluteFilePath(QStringLiteral("runtime.ver"));
@@ -60,6 +63,7 @@ Profile::Profile(LauncherCore &launcher, const QString &key, QObject *parent)
             runtimeVer.open(QFile::ReadOnly | QFile::Text);
 
             m_runtimeVersion = QString(runtimeVer.readAll());
+            qInfo(ASTRA_LOG) << "Dalamud runtime version:" << m_dalamudVersion;
         }
     }
 }

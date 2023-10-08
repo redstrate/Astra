@@ -18,10 +18,12 @@
 
 #include "account.h"
 #include "assetupdater.h"
+#include "astra_log.h"
 #include "compatibilitytoolinstaller.h"
 #include "config.h"
 #include "encryptedarg.h"
 #include "launchercore.h"
+#include "processlogger.h"
 #include "sapphirelauncher.h"
 #include "squarelauncher.h"
 #include "utility.h"
@@ -74,8 +76,6 @@ void LauncherCore::launchGame(Profile &profile, const LoginAuth &auth)
 
 QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 {
-    qDebug() << "Logging in, performing asset update check.";
-
     auto assetUpdater = new AssetUpdater(*info.profile, *this, this);
     co_await assetUpdater->update();
 
@@ -122,6 +122,8 @@ void LauncherCore::beginVanillaGame(const QString &gameExecutablePath, Profile &
 
     auto args = getGameArgs(profile, auth);
 
+    new ProcessLogger(gameProcess);
+
     launchExecutable(profile, gameProcess, {gameExecutablePath, args}, true, true);
 }
 
@@ -144,7 +146,7 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, Profile &
     // so we need to match typical XIVQuickLauncher behavior here. Why? I have no clue.
     const QDir dalamudPluginDir = dalamudUserPluginDir.absoluteFilePath(QStringLiteral("installedPlugins"));
 
-    const QString logDir = stateDir.absoluteFilePath(QStringLiteral("logs"));
+    const QString logDir = stateDir.absoluteFilePath(QStringLiteral("log"));
 
     if (!QDir().exists(logDir))
         QDir().mkpath(logDir);
@@ -170,6 +172,8 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, Profile &
     env.insert(QStringLiteral("XL_WINEONLINUX"), QStringLiteral("true"));
 #endif
     dalamudProcess->setProcessEnvironment(env);
+
+    new ProcessLogger(dalamudProcess);
 
     const auto args = getGameArgs(profile, auth);
 
@@ -286,6 +290,10 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
         env.insert(QStringLiteral("WINEFSYNC"), QString::number(1));
         env.insert(QStringLiteral("WINEFSYNC_FUTEX2"), QString::number(1));
     }
+
+    const QString logDir = Utility::stateDirectory().absoluteFilePath(QStringLiteral("log"));
+
+    env.insert(QStringLiteral("DXVK_LOG_PATH"), logDir);
 #endif
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
@@ -371,7 +379,6 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
         process->setWorkingDirectory(profile.gamePath() + QStringLiteral("/game/"));
 
     process->setProcessEnvironment(env);
-    process->setProcessChannelMode(QProcess::ProcessChannelMode::ForwardedChannels);
 
     process->start(executable, arguments);
 }
@@ -457,13 +464,13 @@ bool LauncherCore::autoLogin(Profile *profile)
     QString otp;
     if (profile->account()->useOTP()) {
         if (!profile->account()->rememberOTP()) {
-            Q_EMIT loginError("This account does not have an OTP secret set, but requires it for login.");
+            Q_EMIT loginError(i18n("This account does not have an OTP secret set, but requires it for login."));
             return false;
         }
 
         otp = profile->account()->getOTP();
         if (otp.isEmpty()) {
-            Q_EMIT loginError("Failed to generate OTP, review the stored secret.");
+            Q_EMIT loginError(i18n("Failed to generate OTP, review the stored secret."));
             return false;
         }
     }
@@ -681,6 +688,8 @@ void LauncherCore::refreshNews()
 
 QCoro::Task<> LauncherCore::fetchNews()
 {
+    qInfo(ASTRA_LOG) << "Fetching news...";
+
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("lang"), QStringLiteral("en-us"));
     query.addQueryItem(QStringLiteral("media"), QStringLiteral("pcapp"));
@@ -698,6 +707,7 @@ QCoro::Task<> LauncherCore::fetchNews()
                          QStringLiteral("https://launcher.finalfantasyxiv.com/v600/index.html?rc_lang=%1&time=%2")
                              .arg("en-us", QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd-HH"))
                              .toUtf8());
+    Utility::printRequest(QStringLiteral("GET"), request);
 
     auto reply = mgr->get(request);
     co_await reply;
@@ -790,7 +800,6 @@ void LauncherCore::setCurrentProfile(Profile *profile)
 void LauncherCore::clearAvatarCache()
 {
     const auto cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + QStringLiteral("/avatars");
-    qInfo() << cacheLocation;
     if (QDir(cacheLocation).exists()) {
         QDir(cacheLocation).removeRecursively();
     }
