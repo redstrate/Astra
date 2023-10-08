@@ -597,6 +597,20 @@ void LauncherCore::setSquareEnixLoginServer(const QString &value)
     }
 }
 
+QString LauncherCore::xivApiServer() const
+{
+    return Config::xivApiServer();
+}
+
+void LauncherCore::setXivApiServer(const QString &value)
+{
+    if (value != Config::xivApiServer()) {
+        Config::setXivApiServer(value);
+        Config::self()->save();
+        Q_EMIT xivApiServerChanged();
+    }
+}
+
 QString LauncherCore::preferredProtocol() const
 {
     return Config::preferredProtocol();

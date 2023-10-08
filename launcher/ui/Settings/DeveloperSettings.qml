@@ -27,7 +27,7 @@ FormCard.FormCardPage {
             id: keepPatchesDelegate
 
             text: i18n("Keep Patches")
-            description: i18n("Do not delete patches after they're used. Astra will not redownload patch data, if found.")
+            description: i18n("Do not delete patches after they're used. Astra will not download patch data, if found.")
             checked: LauncherCore.keepPatches
             onCheckedChanged: LauncherCore.keepPatches = checked
         }
@@ -101,6 +101,19 @@ FormCard.FormCardPage {
             label: i18n("SE Login Server")
             text: LauncherCore.squareEnixLoginServer
             onTextChanged: LauncherCore.squareEnixLoginServer = text
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: loginServerDelegate
+            below: xivApiServerDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: xivApiServerDelegate
+
+            label: i18n("XIV Api Server")
+            text: LauncherCore.xivApiServer
+            onTextChanged: LauncherCore.xivApiServer = text
         }
     }
 }

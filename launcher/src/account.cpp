@@ -227,7 +227,13 @@ void Account::fetchAvatar()
     const QString filename(QStringLiteral("%1/%2.jpg").arg(cacheLocation, lodestoneId()));
     if (!QFile(filename).exists()) {
         qDebug() << "Did not find lodestone character " << lodestoneId() << " in cache, fetching from xivapi.";
-        QNetworkRequest request(QStringLiteral("https://xivapi.com/character/%1").arg(lodestoneId()));
+
+        QUrl url;
+        url.setScheme(m_launcher.preferredProtocol());
+        url.setHost(m_launcher.xivApiServer());
+        url.setPath(QStringLiteral("/character/%1").arg(lodestoneId()));
+
+        QNetworkRequest request(url);
         const auto reply = m_launcher.mgr->get(request);
         connect(reply, &QNetworkReply::finished, [this, filename, reply] {
             auto document = QJsonDocument::fromJson(reply->readAll());
