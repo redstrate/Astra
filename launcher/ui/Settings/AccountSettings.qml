@@ -35,20 +35,6 @@ FormCard.FormCardPage {
 
         FormCard.FormDelegateSeparator {
             above: usernameDelegate
-            below: languageDelegate
-        }
-
-        FormCard.FormComboBoxDelegate {
-            id: languageDelegate
-
-            text: i18n("Language")
-            model: ["Japanese", "English", "German", "French"]
-            currentIndex: page.account.language
-            onCurrentIndexChanged: page.account.language = currentIndex
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: languageDelegate
             below: accountTypeDelegate
         }
 
@@ -63,8 +49,29 @@ FormCard.FormCardPage {
 
         FormCard.FormDelegateSeparator {
             above: accountTypeDelegate
-            below: licenseField
+            below: languageDelegate
         }
+
+        FormCard.FormComboBoxDelegate {
+            id: languageDelegate
+
+            text: i18n("Language")
+            description: i18n("The language used in the game client.")
+            model: ["Japanese", "English", "German", "French"]
+            currentIndex: page.account.language
+            onCurrentIndexChanged: page.account.language = currentIndex
+        }
+    }
+
+    FormCard.FormHeader {
+        title: i18n("Square Enix")
+        visible: !page.account.isSapphire
+    }
+
+    FormCard.FormCard {
+        visible: !page.account.isSapphire
+
+        Layout.fillWidth: true
 
         FormCard.FormComboBoxDelegate {
             id: licenseField
@@ -74,59 +81,37 @@ FormCard.FormCardPage {
             model: ["Windows", "Steam", "macOS"]
             currentIndex: page.account.license
             onCurrentIndexChanged: page.account.license = currentIndex
-            visible: !page.account.isSapphire
         }
 
         FormCard.FormDelegateSeparator {
             above: licenseField
             below: freeTrialField
-
-            visible: licenseField.visible
         }
 
         FormCard.FormCheckDelegate {
             id: freeTrialField
             text: i18n("Free trial")
+            description: i18n("If the account has a free trial license.")
             checked: page.account.isFreeTrial
             onCheckedChanged: page.account.isFreeTrial = checked
-            visible: !page.account.isSapphire
         }
 
         FormCard.FormDelegateSeparator {
             above: freeTrialField
             below: needOTPField
-
-            visible: freeTrialField.visible
         }
 
         FormCard.FormCheckDelegate {
             id: needOTPField
 
             text: i18n("Needs a one-time password")
+            description: i18n("Prompt for the one-time password when logging in.")
             checked: page.account.useOTP
             onCheckedChanged: page.account.useOTP = checked
-            visible: !page.account.isSapphire
         }
 
         FormCard.FormDelegateSeparator {
             above: needOTPField
-            below: lobbyURLDelegate
-
-            visible: needOTPField.visible
-        }
-
-        FormCard.FormTextFieldDelegate {
-            id: lobbyURLDelegate
-
-            label: i18n("Lobby URL")
-            text: page.account.lobbyUrl
-            onTextChanged: page.account.lobbyUrl = text
-            visible: page.account.isSapphire
-            placeholderText: "neolobby0X.ffxiv.com"
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: lobbyURLDelegate
             below: lodestoneDelegate
         }
 
@@ -134,7 +119,7 @@ FormCard.FormCardPage {
             id: lodestoneDelegate
 
             text: i18n("Set Lodestone Character")
-            description: i18n("Associate a character's avatar with this account.")
+            description: i18n("Associate a character's avatar with this account for easier identification.")
             icon.name: "actor"
             Kirigami.PromptDialog {
                 id: lodestoneDialog
@@ -156,6 +141,27 @@ FormCard.FormCardPage {
     }
 
     FormCard.FormHeader {
+        title: i18n("Sapphire")
+        visible: page.account.isSapphire
+    }
+
+    FormCard.FormCard {
+        visible: page.account.isSapphire
+
+        Layout.fillWidth: true
+
+        FormCard.FormTextFieldDelegate {
+            id: lobbyURLDelegate
+
+            label: i18n("Lobby URL")
+            text: page.account.lobbyUrl
+            onTextChanged: page.account.lobbyUrl = text
+            visible: page.account.isSapphire
+            placeholderText: "neolobby0X.ffxiv.com"
+        }
+    }
+
+    FormCard.FormHeader {
         title: i18n("Login")
     }
 
@@ -166,6 +172,7 @@ FormCard.FormCardPage {
             id: rememberPasswordDelegate
 
             text: i18n("Remember password")
+            description: i18n("Stores the password on the device, using it's existing secure credential storage.")
             checked: page.account.rememberPassword
             onCheckedChanged: page.account.rememberPassword = checked
         }
@@ -179,6 +186,8 @@ FormCard.FormCardPage {
             id: generateOTPField
 
             text: i18n("Automatically generate one-time passwords")
+            description: i18n("Stores the one-time password secret on this device, making it inherently insecure. Only use this feature if you understand the risks.")
+
             checked: page.account.rememberOTP
             onCheckedChanged: page.account.rememberOTP = checked
             enabled: page.account.useOTP
