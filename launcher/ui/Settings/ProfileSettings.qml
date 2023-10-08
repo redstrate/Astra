@@ -97,7 +97,7 @@ FormCard.FormCardPage {
         FormFileDelegate {
             id: winePathDelegate
 
-            text: i18n("Wine Path")
+            text: i18n("Wine Executable")
             file: page.profile.winePath
             enabled: !LauncherCore.isSteam && page.profile.wineType !== Profile.System
         }
