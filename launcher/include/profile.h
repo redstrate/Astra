@@ -148,7 +148,7 @@ public:
     BootData *bootData();
     GameData *gameData();
 
-    bool loggedIn() const;
+    [[nodiscard]] bool loggedIn() const;
     void setLoggedIn(bool value);
 
 Q_SIGNALS:
