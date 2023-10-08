@@ -222,14 +222,14 @@ QString LauncherCore::getGameArgs(const Profile &profile, const LoginAuth &auth)
         gameArgs.push_back({QStringLiteral("IsSteam"), QStringLiteral("1")});
     }
 
-    const QString argFormat = profile.argumentsEncrypted() ? QStringLiteral(" /%1 =%2") : QStringLiteral(" %1=%2");
+    const QString argFormat = argumentsEncrypted() ? QStringLiteral(" /%1 =%2") : QStringLiteral(" %1=%2");
 
     QString argJoined;
     for (const auto &arg : gameArgs) {
         argJoined += argFormat.arg(arg.key, arg.value);
     }
 
-    return profile.argumentsEncrypted() ? encryptGameArg(argJoined) : argJoined;
+    return argumentsEncrypted() ? encryptGameArg(argJoined) : argJoined;
 }
 
 void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, const QStringList &args, bool isGame, bool needsRegistrySetup)
@@ -607,6 +607,20 @@ void LauncherCore::setPreferredProtocol(const QString &value)
         Config::setPreferredProtocol(value);
         Config::self()->save();
         Q_EMIT preferredProtocolChanged();
+    }
+}
+
+bool LauncherCore::argumentsEncrypted() const
+{
+    return Config::encryptArguments();
+}
+
+void LauncherCore::setArgumentsEncrypted(const bool value)
+{
+    if (Config::encryptArguments() != value) {
+        Config::setEncryptArguments(value);
+        Config::self()->save();
+        Q_EMIT encryptedArgumentsChanged();
     }
 }
 

@@ -72,6 +72,7 @@ class LauncherCore : public QObject
     Q_PROPERTY(QString squareEnixServer READ squareEnixServer WRITE setSquareEnixServer NOTIFY squareEnixServerChanged)
     Q_PROPERTY(QString squareEnixLoginServer READ squareEnixLoginServer WRITE setSquareEnixLoginServer NOTIFY squareEnixLoginServerChanged)
     Q_PROPERTY(QString preferredProtocol READ preferredProtocol WRITE setPreferredProtocol NOTIFY preferredProtocolChanged)
+    Q_PROPERTY(bool argumentsEncrypted READ argumentsEncrypted WRITE setArgumentsEncrypted NOTIFY encryptedArgumentsChanged)
     Q_PROPERTY(Headline *headline READ headline NOTIFY newsChanged)
     Q_PROPERTY(Profile *currentProfile READ currentProfile WRITE setCurrentProfile NOTIFY currentProfileChanged)
     Q_PROPERTY(Profile *autoLoginProfile READ autoLoginProfile WRITE setAutoLoginProfile NOTIFY autoLoginProfileChanged)
@@ -145,6 +146,9 @@ public:
     [[nodiscard]] QString preferredProtocol() const;
     void setPreferredProtocol(const QString &value);
 
+    [[nodiscard]] bool argumentsEncrypted() const;
+    void setArgumentsEncrypted(bool value);
+
     [[nodiscard]] QString autoLoginProfileName() const;
     [[nodiscard]] Profile *autoLoginProfile() const;
     void setAutoLoginProfile(Profile *value);
@@ -182,6 +186,7 @@ signals:
     void squareEnixServerChanged();
     void squareEnixLoginServerChanged();
     void preferredProtocolChanged();
+    void encryptedArgumentsChanged();
     void loginError(QString message);
     void stageChanged(QString message);
     void stageIndeterminate();

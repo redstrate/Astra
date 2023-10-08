@@ -35,7 +35,6 @@ class Profile : public QObject
     Q_PROPERTY(DalamudInjectMethod dalamudInjectMethod READ dalamudInjectMethod WRITE setDalamudInjectMethod NOTIFY dalamudInjectMethodChanged)
     Q_PROPERTY(int dalamudInjectDelay READ dalamudInjectDelay WRITE setDalamudInjectDelay NOTIFY dalamudInjectDelayChanged)
     Q_PROPERTY(DalamudChannel dalamudChannel READ dalamudChannel WRITE setDalamudChannel NOTIFY dalamudChannelChanged)
-    Q_PROPERTY(bool argumentsEncrypted READ argumentsEncrypted WRITE setArgumentsEncrypted NOTIFY encryptedArgumentsChanged)
     Q_PROPERTY(bool isGameInstalled READ isGameInstalled NOTIFY gameInstallChanged)
     Q_PROPERTY(Account *account READ account WRITE setAccount NOTIFY accountChanged)
     Q_PROPERTY(QString expansionVersionText READ expansionVersionText NOTIFY gameInstallChanged)
@@ -116,9 +115,6 @@ public:
     [[nodiscard]] int dalamudInjectDelay() const;
     void setDalamudInjectDelay(int value);
 
-    [[nodiscard]] bool argumentsEncrypted() const;
-    void setArgumentsEncrypted(bool value);
-
     [[nodiscard]] Account *account() const;
     [[nodiscard]] QString accountUuid() const;
     void setAccount(Account *account);
@@ -175,7 +171,6 @@ Q_SIGNALS:
     void dalamudChannelChanged();
     void dalamudInjectMethodChanged();
     void dalamudInjectDelayChanged();
-    void encryptedArgumentsChanged();
     void accountChanged();
     void wineChanged();
     void loggedInChanged();

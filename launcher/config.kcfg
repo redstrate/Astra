@@ -37,5 +37,8 @@ SPDX-License-Identifier: CC0-1.0
     </entry>
     <entry name="AutoLoginProfile" type="String">
     </entry>
+    <entry key="EncryptArguments" type="bool">
+      <default>true</default>
+    </entry>
   </group>
 </kcfg>

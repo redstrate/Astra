@@ -89,8 +89,5 @@ SPDX-License-Identifier: CC0-1.0
       <entry key="DalamudInjectDelay" type="int">
         <default>0</default>
       </entry>
-      <entry key="EncryptArguments" type="bool">
-        <default>true</default>
-      </entry>
     </group>
 </kcfg>

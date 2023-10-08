@@ -65,19 +65,6 @@ FormCard.FormCardPage {
 
         FormCard.FormDelegateSeparator {
             above: directXDelegate
-            below: encryptArgDelegate
-        }
-
-        FormCard.FormCheckDelegate {
-            id: encryptArgDelegate
-
-            text: i18n("Encrypt Game Arguments")
-            checked: page.profile.argumentsEncrypted
-            onCheckedChanged: page.profile.argumentsEncrypted = checked
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: encryptArgDelegate
         }
 
         FormCard.FormTextDelegate {

@@ -34,6 +34,22 @@ FormCard.FormCardPage {
     }
 
     FormCard.FormHeader {
+        title: i18n("Launching")
+    }
+
+    FormCard.FormCard {
+        Layout.fillWidth: true
+
+        FormCard.FormCheckDelegate {
+            id: encryptArgDelegate
+
+            text: i18n("Encrypt Game Arguments")
+            checked: LauncherCore.argumentsEncrypted
+            onCheckedChanged: LauncherCore.argumentsEncrypted = checked
+        }
+    }
+
+    FormCard.FormHeader {
         title: i18n("Servers")
     }
 
