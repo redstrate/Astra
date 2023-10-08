@@ -40,19 +40,19 @@ QQC2.Control {
 
     readonly property bool isLoginValid: {
         if (!LauncherCore.currentProfile.account) {
-            return false
+            return false;
         }
 
         if (usernameField.text.length === 0) {
-            return false
+            return false;
         }
 
         if (!LauncherCore.currentProfile.account.rememberPassword && passwordField.text.length === 0) {
-            return false
+            return false;
         }
 
         if (LauncherCore.currentProfile.account.useOTP && !LauncherCore.currentProfile.account.rememberOTP && otpField.text.length === 0) {
-            return false
+            return false;
         }
 
         if (LauncherCore.currentProfile.loggedIn) {
@@ -63,9 +63,9 @@ QQC2.Control {
     }
 
     function updateFields() {
-        usernameField.text = LauncherCore.currentProfile.account.name
-        passwordField.text = LauncherCore.currentProfile.account.rememberPassword ? LauncherCore.currentProfile.account.getPassword() : ""
-        otpField.text = ""
+        usernameField.text = LauncherCore.currentProfile.account.name;
+        passwordField.text = LauncherCore.currentProfile.account.rememberPassword ? LauncherCore.currentProfile.account.getPassword() : "";
+        otpField.text = "";
     }
 
     Connections {
@@ -80,7 +80,19 @@ QQC2.Control {
         target: LauncherCore.currentProfile
 
         function onAccountChanged() {
-            updateFields()
+            updateFields();
+
+            if (!LauncherCore.currentProfile.account.rememberPassword) {
+                passwordField.forceActiveFocus();
+                return;
+            }
+
+            if (LauncherCore.currentProfile.account.useOTP) {
+                otpField.forceActiveFocus();
+                return;
+            }
+
+            loginButton.forceActiveFocus();
         }
     }
 
@@ -123,11 +135,12 @@ QQC2.Control {
             Layout.fillWidth: true
 
             FormCard.FormButtonDelegate {
+                id: currentAccountDelegate
+
                 text: i18n("Current Account")
                 description: LauncherCore.currentProfile.account.name
 
-                leading: Components.Avatar
-                {
+                leading: Components.Avatar {
                     source: LauncherCore.currentProfile.account.avatarUrl
                 }
 
@@ -160,6 +173,8 @@ QQC2.Control {
             }
 
             FormCard.FormDelegateSeparator {
+                above: currentAccountDelegate
+                below: usernameField
             }
 
             FormCard.FormTextFieldDelegate {
@@ -170,6 +185,8 @@ QQC2.Control {
             }
 
             FormCard.FormDelegateSeparator {
+                above: usernameField
+                below: passwordField
             }
 
             FormCard.FormTextFieldDelegate {
@@ -189,16 +206,25 @@ QQC2.Control {
             }
 
             FormCard.FormDelegateSeparator {
+                above: passwordField
+                below: otpField
             }
 
             FormCard.FormTextFieldDelegate {
                 id: otpField
                 label: i18n("One-time Password")
                 visible: LauncherCore.currentProfile.account.useOTP
-                onAccepted: loginButton.clicked()
+                onAccepted: {
+                    if (page.isLoginValid) {
+                        loginButton.clicked()
+                    }
+                }
             }
 
-            FormCard.FormDelegateSeparator {}
+            FormCard.FormDelegateSeparator {
+                above: otpField
+                below: loginButton
+            }
 
             FormCard.FormButtonDelegate {
                 id: loginButton
@@ -214,7 +240,8 @@ QQC2.Control {
             }
 
             FormCard.FormDelegateSeparator {
-                visible: forgotPasswordButton.visible
+                above: loginButton
+                below: forgotPasswordButton
             }
 
             FormCard.FormButtonDelegate {
@@ -226,7 +253,28 @@ QQC2.Control {
                 onClicked: applicationWindow().openUrl('https://secure.square-enix.com/account/app/svc/reminder')
             }
         }
-    }
 
-    Component.onCompleted: passwordField.forceActiveFocus()
+        FormCard.FormCard {
+            Layout.fillWidth: true
+
+            FormCard.FormButtonDelegate {
+                id: serverStatusButton
+
+                text: i18n("Server Status")
+                icon.name: "cloudstatus"
+                onClicked: applicationWindow().openUrl('https://na.finalfantasyxiv.com/lodestone/worldstatus/')
+            }
+
+            FormCard.FormDelegateSeparator {
+            }
+
+            FormCard.FormButtonDelegate {
+                id: settingsButton
+
+                text: i18n("Settings")
+                icon.name: "configure"
+                onClicked: applicationWindow().pushDialogLayer(Qt.createComponent("zone.xiv.astra", "SettingsPage"))
+            }
+        }
+    }
 }
