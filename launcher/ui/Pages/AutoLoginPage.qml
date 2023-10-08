@@ -13,7 +13,9 @@ Kirigami.Page {
 
     title: i18n("Auto Login")
 
-    Kirigami.LoadingPlaceholder {
+    globalToolBarStyle: Kirigami.ApplicationHeaderStyle.None
+
+    Kirigami.PlaceholderMessage {
         id: placeholderMessage
 
         anchors.centerIn: parent
@@ -38,8 +40,29 @@ Kirigami.Page {
         running: true
         onTriggered: {
             autoLoginTimer.stop();
-            LauncherCore.autoLogin(LauncherCore.autoLoginProfile);
-            pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "StatusPage"));
+            if (LauncherCore.autoLogin(LauncherCore.autoLoginProfile)) {
+                pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "StatusPage"));
+            }
+        }
+    }
+
+    Kirigami.PromptDialog {
+        id: errorDialog
+        title: i18n("Login Error")
+
+        showCloseButton: false
+        standardButtons: Kirigami.Dialog.Ok
+
+        onAccepted: applicationWindow().cancelAutoLogin()
+        onRejected: applicationWindow().cancelAutoLogin()
+    }
+
+    Connections {
+        target: LauncherCore
+
+        function onLoginError(message) {
+            errorDialog.subtitle = message
+            errorDialog.open()
         }
     }
 }

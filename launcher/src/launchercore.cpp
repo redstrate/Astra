@@ -448,23 +448,24 @@ void LauncherCore::login(Profile *profile, const QString &username, const QStrin
     beginLogin(*loginInformation);
 }
 
-void LauncherCore::autoLogin(Profile *profile)
+bool LauncherCore::autoLogin(Profile *profile)
 {
     QString otp;
     if (profile->account()->useOTP()) {
         if (!profile->account()->rememberOTP()) {
             Q_EMIT loginError("This account does not have an OTP secret set, but requires it for login.");
-            return;
+            return false;
         }
 
         otp = profile->account()->getOTP();
         if (otp.isEmpty()) {
             Q_EMIT loginError("Failed to generate OTP, review the stored secret.");
-            return;
+            return false;
         }
     }
 
     login(profile, profile->account()->name(), profile->account()->getPassword(), otp);
+    return true;
 }
 
 GameInstaller *LauncherCore::createInstaller(Profile *profile)

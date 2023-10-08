@@ -102,7 +102,7 @@ public:
      * The launcher will still warn the user about any possible errors, however the call site will need to check the
      * result to see whether they need to "reset" or show a failed state or not.
      */
-    Q_INVOKABLE void autoLogin(Profile *profile);
+    Q_INVOKABLE bool autoLogin(Profile *profile);
 
     /*
      * Launches the game using the provided authentication.
