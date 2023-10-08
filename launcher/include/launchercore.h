@@ -169,10 +169,6 @@ public:
     Q_INVOKABLE void refreshNews();
     [[nodiscard]] Headline *headline() const;
 
-    Q_INVOKABLE void openOfficialLauncher(Profile *profile);
-    Q_INVOKABLE void openSystemInfo(Profile *profile);
-    Q_INVOKABLE void openConfigBackup(Profile *profile);
-
     [[nodiscard]] Profile *currentProfile() const;
     void setCurrentProfile(Profile *profile);
 

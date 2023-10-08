@@ -758,50 +758,6 @@ bool LauncherCore::isSteam() const
     return m_isSteam;
 }
 
-void LauncherCore::openOfficialLauncher(Profile *profile)
-{
-    struct Argument {
-        QString key, value;
-    };
-
-    QString executeArg = QStringLiteral("%1%2%3%4");
-    QDateTime dateTime = QDateTime::currentDateTime();
-    executeArg = executeArg.arg(dateTime.date().month() + 1, 2, 10, QLatin1Char('0'));
-    executeArg = executeArg.arg(dateTime.date().day(), 2, 10, QLatin1Char('0'));
-    executeArg = executeArg.arg(dateTime.time().hour(), 2, 10, QLatin1Char('0'));
-    executeArg = executeArg.arg(dateTime.time().minute(), 2, 10, QLatin1Char('0'));
-
-    QList<Argument> arguments{{QStringLiteral("ExecuteArg"), executeArg},
-                              {QStringLiteral("UserPath"), Utility::toWindowsPath(profile->account()->getConfigDir().absolutePath())}};
-
-    const QString argFormat = QStringLiteral(" /%1 =%2");
-
-    QString argJoined;
-    for (auto &arg : arguments) {
-        argJoined += argFormat.arg(arg.key, arg.value.replace(QLatin1Char(' '), QLatin1String("  ")));
-    }
-
-    QString finalArg = encryptGameArg(argJoined);
-
-    auto launcherProcess = new QProcess(this);
-    launcherProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(*profile, launcherProcess, {profile->gamePath() + QStringLiteral("/boot/ffxivlauncher64.exe"), finalArg}, false, true);
-}
-
-void LauncherCore::openSystemInfo(Profile *profile)
-{
-    auto sysinfoProcess = new QProcess(this);
-    sysinfoProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(*profile, sysinfoProcess, {profile->gamePath() + QStringLiteral("/boot/ffxivsysinfo64.exe")}, false, false);
-}
-
-void LauncherCore::openConfigBackup(Profile *profile)
-{
-    auto configProcess = new QProcess(this);
-    configProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(*profile, configProcess, {profile->gamePath() + QStringLiteral("/boot/ffxivconfig64.exe")}, false, false);
-}
-
 bool LauncherCore::isSteamDeck() const
 {
     return m_steamApi->isDeck();
