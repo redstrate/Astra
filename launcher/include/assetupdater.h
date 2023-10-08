@@ -30,9 +30,10 @@ private:
     QCoro::Task<> installDalamud();
     QCoro::Task<> installRuntime();
 
-    [[nodiscard]] QUrl dalamudVersionManifestUrl(Profile::DalamudChannel channel) const;
-    [[nodiscard]] QUrl dalamudLatestPackageUrl(Profile::DalamudChannel channel) const;
+    [[nodiscard]] QUrl dalamudVersionManifestUrl() const;
     [[nodiscard]] QUrl dalamudAssetManifestUrl() const;
+    [[nodiscard]] QUrl dotnetRuntimePackageUrl(const QString &version) const;
+    [[nodiscard]] QUrl dotnetDesktopPackageUrl(const QString &version) const;
 
     LauncherCore &launcher;
 
@@ -50,6 +51,7 @@ private:
 
     int remoteDalamudAssetVersion = -1;
     QJsonArray remoteDalamudAssetArray;
+    QString remoteDalamudDownloadUrl;
 
     Profile &m_profile;
 };

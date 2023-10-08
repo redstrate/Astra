@@ -28,7 +28,7 @@ SPDX-License-Identifier: CC0-1.0
       <default>false</default>
     </entry>
     <entry name="DalamudDistribServer" type="String">
-      <default>goatcorp.github.io</default>
+      <default>kamori.goats.dev</default>
     </entry>
     <entry name="SquareEnixServer" type="String">
       <default>ffxiv.com</default>

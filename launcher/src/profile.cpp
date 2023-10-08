@@ -487,8 +487,6 @@ QString Profile::dalamudChannelName() const
         return QStringLiteral("stable");
     case DalamudChannel::Staging:
         return QStringLiteral("staging");
-    case DalamudChannel::Net5:
-        return QStringLiteral("net5");
     }
 
     Q_UNREACHABLE();
