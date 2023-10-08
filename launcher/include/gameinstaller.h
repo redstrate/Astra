@@ -14,7 +14,7 @@ class GameInstaller : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
-    QML_UNCREATABLE("Use Launchercore.createInstaller")
+    QML_UNCREATABLE("Use LauncherCore.createInstaller")
 
 public:
     GameInstaller(LauncherCore &launcher, Profile &profile, QObject *parent = nullptr);

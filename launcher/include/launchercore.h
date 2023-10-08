@@ -47,7 +47,7 @@ struct LoginAuth {
     int region = 2; // america?
     int maxExpansion = 1;
 
-    // if empty, dont set on the client
+    // if empty, don't set on the client
     QString lobbyhost, frontierHost;
 };
 

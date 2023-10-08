@@ -48,8 +48,8 @@ public:
     enum class WineType {
         System,
         Custom,
-        Builtin, // macos only
-        XIVOnMac // macos only
+        Builtin, // macOS only
+        XIVOnMac // macOS only
     };
     Q_ENUM(WineType)
 

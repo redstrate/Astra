@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 #ifdef ENABLE_STEAM
     if (parser.isSet(steamOption)) {
         const QStringList args = parser.positionalArguments();
-        // Steam tries to use as a compatibiltiy tool, running install scripts (like DirectX), so try to ignore it.
+        // Steam tries to use as a compatibility tool, running installation scripts (like DirectX), so try to ignore it.
         if (!args[0].contains(QLatin1String("ffxivboot.exe"))) {
             return 0;
         }

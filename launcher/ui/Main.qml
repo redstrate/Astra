@@ -19,8 +19,7 @@ Kirigami.ApplicationWindow {
     minimumWidth: 800
     minimumHeight: 500
 
-    visible: true
-    title: LauncherCore.isSteam ? "Astra (Steam)" : "Astra"
+    title: "Astra"
 
     property bool checkedAutoLogin: false
 
@@ -104,7 +103,7 @@ Kirigami.ApplicationWindow {
         }
 
         function onShowNewsChanged() {
-            // workaround annoying Qt layouting bug
+            // workaround annoying Qt layout bug
             // TODO: see if this changed in Qt6
             pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
         }

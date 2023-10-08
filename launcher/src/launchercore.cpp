@@ -136,7 +136,7 @@ void LauncherCore::beginDalamudGame(const QString &gameExecutablePath, Profile &
     const QDir dalamudBasePluginDir = dalamudDir.absoluteFilePath(QStringLiteral("plugins"));
     const QDir dalamudUserPluginDir = dalamudBasePluginDir.absoluteFilePath(profile.account()->uuid());
 
-    // Some really dumb plugins check for "installedPlugins" in their assembly directory FOR SOME REASON
+    // Some really dumb plugins check for "installedPlugins" in their assembly directory FOR SOME REASON,
     // so we need to match typical XIVQuickLauncher behavior here. Why? I have no clue.
     const QDir dalamudPluginDir = dalamudUserPluginDir.absoluteFilePath(QStringLiteral("installedPlugins"));
 

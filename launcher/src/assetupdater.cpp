@@ -94,7 +94,7 @@ QCoro::Task<> AssetUpdater::checkRemoteDalamudVersion()
 
     const QByteArray str = reply->readAll();
 
-    // for some god forsaken reason, the version string comes back as raw
+    // for some godforsaken reason, the version string comes back as raw
     // bytes, ex: \xFF\xFE{\x00\"\x00""A\x00s\x00s\x00""e\x00m\x00 so we
     // start at the first character of the json '{' and work our way up.
     QString reassmbled;

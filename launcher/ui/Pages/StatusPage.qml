@@ -15,12 +15,14 @@ Kirigami.Page {
     Kirigami.LoadingPlaceholder {
         id: placeholder
 
+        text: "Logging in..."
+
         anchors.centerIn: parent
     }
 
     Kirigami.PromptDialog {
         id: errorDialog
-        title: i18n("Login error")
+        title: i18n("Login Error")
 
         showCloseButton: false
         standardButtons: Kirigami.Dialog.Ok
