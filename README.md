@@ -37,7 +37,7 @@ Distribution packaging is encouraged, so please send an [email through the maili
 
 ## Support
 
-If you have an issue with Astra, please [send an email to the mailing list](https://lists.sr.ht/~redstrate/public-inbox).
+If you have an issue with Astra, please [email the mailing list](https://lists.sr.ht/~redstrate/public-inbox).
 
 ## Building
 

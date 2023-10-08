@@ -42,7 +42,7 @@ Fedora's KDE SIG has a repository for KDE Frameworks and Plasma 6 [located here]
 
 ### Build from source
 
-The most time consuming option but the one that will definitely work is building the required frameworks from source. See the [page on the KDE Community Wiki](https://community.kde.org/Get_Involved/development/Build_software_with_kdesrc-build) on how to build KDE software yourself. Then, when building Astra feed the kdesrc-build usr directory and it will pick up on these libraries automatically: `-DCMAKE_PREFIX_PATH=/home/<username>/kde/usr`.
+The most time-consuming option but the one that will definitely work is building the required frameworks from source. See the [page on the KDE Community Wiki](https://community.kde.org/Get_Involved/development/Build_software_with_kdesrc-build) on how to build KDE software yourself. Then, when building Astra feed the kdesrc-build usr directory, and it will pick up on these libraries automatically: `-DCMAKE_PREFIX_PATH=/home/<username>/kde/usr`.
 
 Remember that unless you're running in a kdesrc-build session you need to set some environment variables otherwise Astra will fail to run (because it fails to find some runtime KF6 dependencies). Make sure to `source prefix.sh` from the build directory, or from another kdesrc-build project.
 
@@ -53,7 +53,7 @@ Remember that unless you're running in a kdesrc-build session you need to set so
 When configuring Astra, there are several optional features you may want to enable or disable:
 
 * `ENABLE_STEAM`: Steam integration, requires the Steamworks SDK.
-* `ENABLE_GAMEMODE`: Gamemode integration, reqires Gamemode.
+* `ENABLE_GAMEMODE`: Gamemode integration, requires Gamemode.
 
 To configure, run `cmake` in the source directory:
 
@@ -62,7 +62,7 @@ $ cd astra
 $ cmake -S . -B build
 ```
 
-This command will create a new build directory and configure the source directory (`.`). If you want to enable more options, pass the mnow:
+This command will create a new build directory and configure the source directory (`.`). If you want to enable more options, pass them now:
 
 ```bash
 $ cmake -S . -B build -DENABLE_STEAM=ON
