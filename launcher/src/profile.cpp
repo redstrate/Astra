@@ -21,7 +21,11 @@ Profile::Profile(LauncherCore &launcher, const QString &key, QObject *parent)
 {
     readGameVersion();
     readWineInfo();
+    readDalamudInfo();
+}
 
+void Profile::readDalamudInfo()
+{
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
     const QDir dalamudDir = dataDir.absoluteFilePath(QStringLiteral("dalamud"));
@@ -132,17 +136,13 @@ QString Profile::winePath() const
     switch (wineType()) {
     case WineType::System: // system wine
         return "/usr/local/bin/wine64";
-        break;
     case WineType::Custom: // custom path
         return m_config->winePath();
-        break;
     case WineType::Builtin: // ffxiv built-in (for mac users)
         return "/Applications/FINAL FANTASY XIV "
                "ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine";
-        break;
     case WineType::XIVOnMac:
         return "/Applications/XIV on Mac.app/Contents/Resources/wine/bin/wine64";
-        break;
     }
 #endif
 
@@ -150,11 +150,10 @@ QString Profile::winePath() const
     switch (wineType()) {
     case WineType::System: // system wine (should be in $PATH)
         return QStringLiteral("wine");
-        break;
     case WineType::Custom: // custom pth
         return m_config->winePath();
     default:
-        break;
+        return {};
     }
 #endif
 
