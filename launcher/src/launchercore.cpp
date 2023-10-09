@@ -399,6 +399,11 @@ void LauncherCore::readInitialInformation()
         }
     }
 
+    // set default profile, if found
+    if (auto profile = m_profileManager->getProfileByUUID(m_config->currentProfile()); profile != nullptr) {
+        setCurrentProfile(profile);
+    }
+
     m_loadingFinished = true;
     Q_EMIT loadingFinished();
 }
@@ -797,6 +802,8 @@ void LauncherCore::setCurrentProfile(Profile *profile)
     const int newIndex = m_profileManager->getProfileIndex(profile->uuid());
     if (newIndex != m_currentProfileIndex) {
         m_currentProfileIndex = newIndex;
+        m_config->setCurrentProfile(profile->uuid());
+        m_config->save();
         Q_EMIT currentProfileChanged();
     }
 }
