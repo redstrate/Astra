@@ -2,15 +2,8 @@
 
 [![builds.sr.ht status](https://builds.sr.ht/~redstrate/astra.svg)](https://builds.sr.ht/~redstrate/astra?)
 
-A FFXIV launcher for Linux that supports profiles, multiple accounts and [Dalamud](https://github.com/goatcorp/Dalamud)
+Linux FFXIV launcher that supports profiles, multiple accounts and [Dalamud](https://github.com/goatcorp/Dalamud)
 plugins!
-
-### Notice
-
-Astra is _beta software_. Despite this, the launcher is feature complete, but you may find it lacking for the use-cases
-below:
-
-* [Logging into Steam-linked accounts is unsupported.](https://todo.sr.ht/~redstrate/astra/1)
 
 ![Main Screenshot](misc/screenshot.png)
 
