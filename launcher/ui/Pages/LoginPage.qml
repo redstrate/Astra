@@ -99,7 +99,11 @@ QQC2.Control {
     contentItem: ColumnLayout {
         width: parent.width
 
+        spacing: Kirigami.Units.largeSpacing
+
         FormCard.FormCard {
+            maximumWidth: Kirigami.Units.gridUnit * 25
+
             Layout.fillWidth: true
 
             FormCard.FormButtonDelegate {
@@ -132,6 +136,8 @@ QQC2.Control {
         }
 
         FormCard.FormCard {
+            maximumWidth: Kirigami.Units.gridUnit * 25
+
             Layout.fillWidth: true
 
             FormCard.FormButtonDelegate {
@@ -255,6 +261,8 @@ QQC2.Control {
         }
 
         FormCard.FormCard {
+            maximumWidth: Kirigami.Units.gridUnit * 25
+
             Layout.fillWidth: true
 
             FormCard.FormButtonDelegate {

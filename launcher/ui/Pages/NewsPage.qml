@@ -50,6 +50,8 @@ QQC2.Control {
 
         readonly property real maximumWidth: Kirigami.Units.gridUnit * 50
 
+        spacing: Kirigami.Units.largeSpacing
+
         Image {
             id: bannerImage
 

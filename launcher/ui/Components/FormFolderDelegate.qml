@@ -20,7 +20,11 @@ FormCard.AbstractFormDelegate {
     onClicked: dialog.open()
 
     contentItem: RowLayout {
+        spacing: Kirigami.Units.mediumSpacing
+
         ColumnLayout {
+            spacing: Kirigami.Units.mediumSpacing
+
             Layout.fillWidth: true
 
             QQC2.Label {

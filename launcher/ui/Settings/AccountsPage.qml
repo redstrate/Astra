@@ -23,26 +23,36 @@ FormCard.FormCardPage {
         Repeater {
             model: LauncherCore.accountManager
 
-            FormCard.FormButtonDelegate {
+            ColumnLayout {
                 required property var account
+                required property int index
 
-                text: account.name
+                spacing: 0
 
-                leading: Components.Avatar {
-                    source: account.avatarUrl
+                FormCard.FormButtonDelegate {
+                    text: account.name
+
+                    leading: Components.Avatar {
+                        source: account.avatarUrl
+                    }
+
+                    leadingPadding: Kirigami.Units.largeSpacing * 2
+
+                    onClicked: root.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AccountSettings"), {
+                        account: account
+                    })
                 }
 
-                leadingPadding: Kirigami.Units.largeSpacing * 2
-
-                onClicked: root.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AccountSettings"), {
-                    account: account
-                })
+                FormCard.FormDelegateSeparator {
+                    visible: index + 1 < LauncherCore.accountManager.numAccounts()
+                }
             }
         }
+    }
 
-        FormCard.FormDelegateSeparator {
-            below: addSquareEnixButton
-        }
+    FormCard.FormCard {
+        Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
 
         FormCard.FormButtonDelegate {
             id: addSquareEnixButton

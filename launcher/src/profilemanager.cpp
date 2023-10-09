@@ -158,3 +158,8 @@ bool ProfileManager::hasAnyExistingInstallations() const
 
     return false;
 }
+
+int ProfileManager::numProfiles() const
+{
+    return m_profiles.count();
+}

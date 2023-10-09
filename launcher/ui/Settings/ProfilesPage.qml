@@ -22,19 +22,31 @@ FormCard.FormCardPage {
         Repeater {
             model: LauncherCore.profileManager
 
-            FormCard.FormButtonDelegate {
+            ColumnLayout {
                 required property var profile
+                required property int index
 
-                text: profile.name
-                onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ProfileSettings"), {
-                    profile: profile
-                })
+                spacing: 0
+
+                FormCard.FormButtonDelegate {
+                    id: buttonDelegate
+
+                    text: profile.name
+                    onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ProfileSettings"), {
+                        profile: profile
+                    })
+                }
+
+                FormCard.FormDelegateSeparator {
+                    visible: index + 1 < LauncherCore.profileManager.numProfiles()
+                }
             }
         }
+    }
 
-        FormCard.FormDelegateSeparator {
-            below: addProfileButton
-        }
+    FormCard.FormCard {
+        Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
 
         FormCard.FormButtonDelegate {
             id: addProfileButton

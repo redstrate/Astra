@@ -37,7 +37,8 @@ public:
     Q_INVOKABLE bool canDelete(Account *account) const;
     Q_INVOKABLE void deleteAccount(Account *account);
 
-    Q_INVOKABLE bool hasAnyAccounts() const;
+    Q_INVOKABLE [[nodiscard]] bool hasAnyAccounts() const;
+    Q_INVOKABLE [[nodiscard]] int numAccounts() const;
 
 private:
     void insertAccount(Account *account);

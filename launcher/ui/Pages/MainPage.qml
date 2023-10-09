@@ -24,6 +24,8 @@ Kirigami.Page {
     RowLayout {
         anchors.fill: parent
 
+        spacing: Kirigami.Units.largeSpacing
+
         Loader {
             active: LauncherCore.showNews
 
@@ -44,7 +46,7 @@ Kirigami.Page {
             id: loginPage
 
             Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-            Layout.minimumWidth: LauncherCore.showNews ? Kirigami.Units.gridUnit * 25 : 0
+            Layout.minimumWidth: LauncherCore.showNews ? Kirigami.Units.gridUnit * 26 : 0
             Layout.fillWidth: !LauncherCore.showNews
         }
     }

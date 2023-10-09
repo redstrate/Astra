@@ -116,3 +116,8 @@ bool AccountManager::hasAnyAccounts() const
 {
     return !m_accounts.empty();
 }
+
+int AccountManager::numAccounts() const
+{
+    return m_accounts.count();
+}
