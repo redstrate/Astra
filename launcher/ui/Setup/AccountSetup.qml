@@ -5,75 +5,91 @@ import QtQuick
 import QtQuick.Layouts
 
 import org.kde.kirigami as Kirigami
-import org.kde.kirigamiaddons.labs.mobileform as MobileForm
+import org.kde.kirigamiaddons.formcard as FormCard
 
 import zone.xiv.astra
 
-Kirigami.Page {
+FormCard.FormCardPage {
     id: page
 
     property var profile
 
     title: i18n("Account Setup")
 
-    ColumnLayout {
-        width: parent.width
-        MobileForm.FormCard {
-            Layout.topMargin: Kirigami.Units.largeSpacing
-            Layout.fillWidth: true
-            contentItem: ColumnLayout {
-                spacing: 0
+    FormCard.FormCard {
+        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.fillWidth: true
 
-                MobileForm.FormCardHeader {
-                    title: i18n("Accounts")
-                }
+        FormCard.FormTextDelegate {
+            id: helpTextDelegate
 
-                MobileForm.FormTextDelegate {
-                    text: i18n("Select an account below to use for profile '%1'.", LauncherCore.currentProfile.name)
-                }
+            text: i18n("Select an account to use for '%1'", LauncherCore.currentProfile.name)
+        }
+    }
 
-                Repeater {
-                    model: LauncherCore.accountManager
+    FormCard.FormHeader {
+        title: i18n("Existing Accounts")
+        visible: LauncherCore.accountManager.hasAnyAccounts()
+    }
 
-                    MobileForm.FormButtonDelegate {
-                        required property var account
+    FormCard.FormCard {
+        visible: LauncherCore.accountManager.hasAnyAccounts()
 
-                        text: account.name
+        Layout.fillWidth: true
 
-                        onClicked: {
-                            page.profile.account = account
-                            applicationWindow().checkSetup()
-                        }
-                    }
+        FormCard.FormTextDelegate {
+            id: existingHelpDelegate
+
+            text: i18n("You can select an existing account.")
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: existingHelpDelegate
+        }
+
+        Repeater {
+            model: LauncherCore.accountManager
+
+            FormCard.FormButtonDelegate {
+                required property var account
+
+                text: account.name
+
+                onClicked: {
+                    page.profile.account = account
+                    applicationWindow().checkSetup()
                 }
             }
         }
+    }
 
-        MobileForm.FormCard {
-            Layout.topMargin: Kirigami.Units.largeSpacing
-            Layout.fillWidth: true
-            contentItem: ColumnLayout {
-                spacing: 0
+    FormCard.FormCard {
+        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.fillWidth: true
 
-                MobileForm.FormButtonDelegate {
-                    text: i18n("Add Square Enix Account")
-                    icon.name: "list-add-symbolic"
-                    onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"), {
-                        profile: page.profile
-                    })
-                }
+        FormCard.FormButtonDelegate {
+            id: addSquareEnixButton
 
-                MobileForm.FormDelegateSeparator {
-                }
+            text: i18n("Add Square Enix Account")
+            icon.name: "list-add-symbolic"
+            onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"), {
+                profile: page.profile
+            })
+        }
 
-                MobileForm.FormButtonDelegate {
-                    text: i18n("Add Sapphire Account")
-                    icon.name: "list-add-symbolic"
-                    onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSapphire"), {
-                        profile: page.profile
-                    })
-                }
-            }
+        FormCard.FormDelegateSeparator {
+            above: addSquareEnixButton
+            below: addSapphireButton
+        }
+
+        FormCard.FormButtonDelegate {
+            id: addSapphireButton
+
+            text: i18n("Add Sapphire Account")
+            icon.name: "list-add-symbolic"
+            onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSapphire"), {
+                profile: page.profile
+            })
         }
     }
 }

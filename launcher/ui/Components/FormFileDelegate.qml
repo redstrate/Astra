@@ -4,9 +4,9 @@
 import QtCore
 import QtQuick.Dialogs
 
-import org.kde.kirigamiaddons.labs.mobileform as MobileForm
+import org.kde.kirigamiaddons.formcard as FormCard
 
-MobileForm.FormButtonDelegate {
+FormCard.FormButtonDelegate {
     id: control
 
     property string file

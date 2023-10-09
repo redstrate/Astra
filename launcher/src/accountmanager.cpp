@@ -111,3 +111,8 @@ void AccountManager::insertAccount(Account *account)
     m_accounts.append(account);
     endInsertRows();
 }
+
+bool AccountManager::hasAnyAccounts() const
+{
+    return !m_accounts.empty();
+}

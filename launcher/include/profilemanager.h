@@ -40,6 +40,8 @@ public:
 
     Q_INVOKABLE bool canDelete(Profile *account) const;
 
+    Q_INVOKABLE bool hasAnyExistingInstallations() const;
+
     static QString getDefaultGamePath(const QString &uuid);
     static QString getDefaultWinePrefixPath(const QString &uuid);
 

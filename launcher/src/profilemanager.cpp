@@ -22,7 +22,7 @@ Profile *ProfileManager::getProfile(const int index)
 int ProfileManager::getProfileIndex(const QString &name)
 {
     for (int i = 0; i < m_profiles.size(); i++) {
-        if (m_profiles[i]->name() == name)
+        if (m_profiles[i]->uuid() == name)
             return i;
     }
 
@@ -146,4 +146,15 @@ bool ProfileManager::canDelete(Profile *account) const
 {
     Q_UNUSED(account)
     return m_profiles.size() != 1;
+}
+
+bool ProfileManager::hasAnyExistingInstallations() const
+{
+    for (auto &profile : m_profiles) {
+        if (profile->isGameInstalled()) {
+            return true;
+        }
+    }
+
+    return false;
 }

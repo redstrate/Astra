@@ -88,7 +88,6 @@ FormCard.FormCardPage {
         }
     }
 
-
     FormCard.FormCard {
         Layout.topMargin: Kirigami.Units.largeSpacing
         Layout.fillWidth: true

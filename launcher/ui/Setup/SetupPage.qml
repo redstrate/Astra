@@ -5,97 +5,107 @@ import QtQuick
 import QtQuick.Layouts
 
 import org.kde.kirigami as Kirigami
-import org.kde.kirigamiaddons.labs.mobileform as MobileForm
+import org.kde.kirigamiaddons.formcard as FormCard
 
 import zone.xiv.astra
 
-Kirigami.Page {
+FormCard.FormCardPage {
     id: page
 
     property var profile
+    readonly property bool isInitialSetup: !LauncherCore.profileManager.hasAnyExistingInstallations()
 
-    title: i18n("Game Setup")
+    title: isInitialSetup ? i18n("Initial Setup") : i18n("Profile Setup")
 
-    ColumnLayout {
-        width: parent.width
-        MobileForm.FormCard {
-            Layout.topMargin: Kirigami.Units.largeSpacing
-            Layout.fillWidth: true
-            contentItem: ColumnLayout {
-                spacing: 0
+    Image {
+        source: "qrc:/zone.xiv.astra.svg"
 
-                MobileForm.FormCardHeader {
-                    title: i18n("Welcome to Astra")
-                }
+        fillMode: Image.PreserveAspectFit
 
-                MobileForm.FormTextDelegate {
-                    text: i18n("The profile '%1' must be set up before first.", LauncherCore.currentProfile.name)
-                }
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        Layout.margins: Kirigami.Units.largeSpacing * 3
+    }
 
-                MobileForm.FormTextDelegate {
-                    text: i18n("A copy of the game must be located or installed.")
-                    description: i18n("A valid game account will be required at the end of installation.")
-                }
-            }
-        }
+    FormCard.FormCard {
+        Layout.fillWidth: true
 
-        MobileForm.FormCard {
-            Layout.topMargin: Kirigami.Units.largeSpacing
-            Layout.fillWidth: true
-            contentItem: ColumnLayout {
-                spacing: 0
-
-                MobileForm.FormCardHeader {
-                    title: i18n("Existing Installations")
-                }
-
-                MobileForm.FormTextDelegate {
-                    text: i18n("Select an existing installation from another profile below.")
-                }
-
-                Repeater {
-                    model: LauncherCore.profileManager
-
-                    MobileForm.FormButtonDelegate {
-                        required property var profile
-
-                        text: profile.name
-                        description: profile.gamePath
-
-                        onClicked: {
-                            LauncherCore.currentProfile.gamePath = profile.gamePath;
-                            applicationWindow().checkSetup();
-                        }
-                    }
+        FormCard.FormTextDelegate {
+            text: {
+                if (isInitialSetup) {
+                    return i18n("You must have a legitimate installation of the FFXIV to continue.");
+                } else {
+                    return i18n("You must select a legitimate installation of FFXIV for '%1'", page.profile.name);
                 }
             }
         }
+    }
 
-        MobileForm.FormCard {
-            Layout.topMargin: Kirigami.Units.largeSpacing
-            Layout.fillWidth: true
-            contentItem: ColumnLayout {
-                spacing: 0
+    FormCard.FormHeader {
+        title: i18n("Existing Installations")
+        visible: LauncherCore.profileManager.hasAnyExistingInstallations()
+    }
 
-                MobileForm.FormButtonDelegate {
-                    text: i18n("Find Existing Installation")
-                    icon.name: "edit-find"
-                    onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ExistingSetup"), {
-                        profile: page.profile
-                    })
-                }
+    FormCard.FormCard {
+        visible: LauncherCore.profileManager.hasAnyExistingInstallations()
 
-                MobileForm.FormDelegateSeparator {
-                }
+        Layout.fillWidth: true
 
-                MobileForm.FormButtonDelegate {
-                    text: i18n("Download Game")
-                    icon.name: "cloud-download"
-                    onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "DownloadSetup"), {
-                        profile: page.profile
-                    })
+        FormCard.FormTextDelegate {
+            id: existingHelpDelegate
+
+            text: i18n("You can select an existing installation from another profile.")
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: existingHelpDelegate
+        }
+
+        Repeater {
+            model: LauncherCore.profileManager
+
+            FormCard.FormButtonDelegate {
+                required property var profile
+
+                text: profile.name
+                description: profile.gamePath
+                visible: profile.isGameInstalled
+
+                onClicked: {
+                    LauncherCore.currentProfile.gamePath = profile.gamePath;
+                    applicationWindow().checkSetup();
                 }
             }
+        }
+    }
+
+    FormCard.FormCard {
+        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.fillWidth: true
+
+        FormCard.FormButtonDelegate {
+            id: findExistingDelegate
+
+            text: i18n("Find Existing Installation")
+            icon.name: "edit-find"
+            onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ExistingSetup"), {
+                profile: page.profile
+            })
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: findExistingDelegate
+            below: downloadDelegate
+        }
+
+        FormCard.FormButtonDelegate {
+            id: downloadDelegate
+
+            text: i18n("Download Game")
+            icon.name: "cloud-download"
+            onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "DownloadSetup"), {
+                profile: page.profile
+            })
         }
     }
 }

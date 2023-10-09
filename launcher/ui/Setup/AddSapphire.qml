@@ -6,60 +6,65 @@ import QtQuick.Layouts
 import QtQuick.Window
 
 import org.kde.kirigami as Kirigami
-import org.kde.kirigamiaddons.labs.mobileform as MobileForm
+import org.kde.kirigamiaddons.formcard as FormCard
 
 import zone.xiv.astra
 
-Kirigami.Page {
+FormCard.FormCardPage {
     id: page
 
     property var profile
 
     title: i18n("Add Sapphire Account")
 
-    ColumnLayout {
-        width: parent.width
-        MobileForm.FormCard {
-            Layout.topMargin: Kirigami.Units.largeSpacing
-            Layout.fillWidth: true
-            contentItem: ColumnLayout {
-                spacing: 0
+    readonly property bool isValid: usernameField.text.length !== 0 && lobbyUrlField.text.length !== 0
 
-                MobileForm.FormTextDelegate {
-                    description: i18n("Passwords will be entered on the login page. The username will be associated with this profile but can be changed later.")
-                }
+    FormCard.FormCard {
+        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.fillWidth: true
 
-                MobileForm.FormDelegateSeparator {
-                }
+        FormCard.FormTextDelegate {
+            id: helpTextDelegate
+            description: i18n("The password will be entered on the login page. A username will be associated with this account but can always be changed later.")
+        }
 
-                MobileForm.FormTextFieldDelegate {
-                    id: lobbyUrlField
-                    label: i18n("Lobby URL")
-                }
+        FormCard.FormDelegateSeparator {
+            above: helpTextDelegate
+            below: usernameField
+        }
 
-                MobileForm.FormDelegateSeparator {
-                }
+        FormCard.FormTextFieldDelegate {
+            id: usernameField
+            label: i18n("Username")
+        }
 
-                MobileForm.FormTextFieldDelegate {
-                    id: usernameField
-                    label: i18n("Username")
-                }
+        FormCard.FormDelegateSeparator {
+            above: usernameField
+            below: lobbyUrlField
+        }
 
-                MobileForm.FormDelegateSeparator {
-                }
+        FormCard.FormTextFieldDelegate {
+            id: lobbyUrlField
+            label: i18n("Lobby URL")
+        }
 
-                MobileForm.FormButtonDelegate {
-                    text: i18n("Add Account")
-                    icon.name: "list-add-symbolic"
-                    onClicked: {
-                        let account = LauncherCore.accountManager.createSapphireAccount(lobbyUrlField.text, usernameField.text)
-                        if (page.profile) {
-                            page.profile.account = account
-                            applicationWindow().checkSetup()
-                        } else {
-                            page.Window.window.pageStack.layers.pop()
-                        }
-                    }
+        FormCard.FormDelegateSeparator {
+            above: lobbyUrlField
+            below: buttonDelegate
+        }
+
+        FormCard.FormButtonDelegate {
+            id: buttonDelegate
+            text: i18n("Add Account")
+            icon.name: "list-add-symbolic"
+            enabled: page.isValid
+            onClicked: {
+                let account = LauncherCore.accountManager.createSapphireAccount(lobbyUrlField.text, usernameField.text)
+                if (page.profile) {
+                    page.profile.account = account
+                    applicationWindow().checkSetup()
+                } else {
+                    page.Window.window.pageStack.layers.pop()
                 }
             }
         }

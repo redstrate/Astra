@@ -794,7 +794,7 @@ void LauncherCore::setCurrentProfile(Profile *profile)
 {
     Q_ASSERT(profile != nullptr);
 
-    const int newIndex = m_profileManager->getProfileIndex(profile->name());
+    const int newIndex = m_profileManager->getProfileIndex(profile->uuid());
     if (newIndex != m_currentProfileIndex) {
         m_currentProfileIndex = newIndex;
         Q_EMIT currentProfileChanged();

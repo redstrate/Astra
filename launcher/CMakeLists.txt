@@ -109,6 +109,16 @@ qt_target_qml_sources(astra
         ui/Main.qml
 )
 
+set_source_files_properties(../zone.xiv.astra.svg PROPERTIES
+        QT_RESOURCE_ALIAS /zone.xiv.astra.svg
+)
+
+qt_target_qml_sources(astra
+        PREFIX /
+        RESOURCES
+        ../zone.xiv.astra.svg
+)
+
 kconfig_add_kcfg_files(astra GENERATE_MOC config.kcfgc accountconfig.kcfgc profileconfig.kcfgc)
 target_include_directories(astra PRIVATE include ${CMAKE_BINARY_DIR})
 target_link_libraries(astra PRIVATE

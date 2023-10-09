@@ -510,13 +510,13 @@ QString Profile::bootVersion() const
 
 QString Profile::baseGameVersion() const
 {
-    Q_ASSERT(m_repositories.repositories_count > 1);
+    Q_ASSERT(m_repositories.repositories_count >= 1);
     return m_repositories.repositories[0].version;
 }
 
 int Profile::numInstalledExpansions() const
 {
-    Q_ASSERT(m_repositories.repositories_count > 1);
+    Q_ASSERT(m_repositories.repositories_count >= 1);
     return m_repositories.repositories_count - 1;
 }
 
