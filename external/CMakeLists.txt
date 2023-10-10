@@ -11,6 +11,7 @@ find_package(Corrosion REQUIRED)
 corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/libphysis/Cargo.toml
         NO_DEFAULT_FEATURES
         FEATURES game_install)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libphysis/logger)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(UNSHIELD REQUIRED IMPORTED_TARGET libunshield)

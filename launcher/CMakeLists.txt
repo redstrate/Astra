@@ -124,6 +124,7 @@ target_include_directories(astra PRIVATE include ${CMAKE_BINARY_DIR})
 target_link_libraries(astra PRIVATE
         astra_static
         physis
+        physis-logger
         cotp
         QuaZip::QuaZip
         Qt6Keychain::Qt6Keychain

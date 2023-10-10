@@ -16,11 +16,13 @@
 #include "gameinstaller.h"
 #include "launchercore.h"
 #include "logger.h"
+#include "physis_logger.h"
 #include "sapphirelauncher.h"
 
 int main(int argc, char *argv[])
 {
     initializeLogging();
+    setup_physis_logging();
 
     QtWebView::initialize();
 
