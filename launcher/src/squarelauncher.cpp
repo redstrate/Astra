@@ -58,8 +58,8 @@ QCoro::Task<std::optional<SquareLauncher::StoredInfo>> SquareLauncher::getStored
     }
 
     QUrl url;
-    url.setScheme(window.preferredProtocol());
-    url.setHost(QStringLiteral("ffxiv-login.%1").arg(window.squareEnixLoginServer()));
+    url.setScheme(window.settings()->preferredProtocol());
+    url.setHost(QStringLiteral("ffxiv-login.%1").arg(window.settings()->squareEnixLoginServer()));
     url.setPath(QStringLiteral("/oauth/ffxivarr/login/top"));
     url.setQuery(query);
 
@@ -117,7 +117,7 @@ QCoro::Task<> SquareLauncher::login(const LoginInformation &info)
 
     QUrl url;
     url.setScheme(QStringLiteral("https"));
-    url.setHost(QStringLiteral("ffxiv-login.%1").arg(window.squareEnixLoginServer()));
+    url.setHost(QStringLiteral("ffxiv-login.%1").arg(window.settings()->squareEnixLoginServer()));
     url.setPath(QStringLiteral("/oauth/ffxivarr/login/login.send"));
 
     QNetworkRequest request(url);
@@ -170,7 +170,7 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
 {
     QUrl url;
     url.setScheme(QStringLiteral("https"));
-    url.setHost(QStringLiteral("patch-gamever.%1").arg(window.squareEnixServer()));
+    url.setHost(QStringLiteral("patch-gamever.%1").arg(window.settings()->squareEnixServer()));
     url.setPath(QStringLiteral("/http/win32/ffxivneo_release_game/%1/%2").arg(info.profile->baseGameVersion(), SID));
 
     auto request = QNetworkRequest(url);

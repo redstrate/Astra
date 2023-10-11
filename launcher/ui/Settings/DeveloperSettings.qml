@@ -28,8 +28,8 @@ FormCard.FormCardPage {
 
             text: i18n("Keep Patches")
             description: i18n("Do not delete patches after they're used. Astra will not download patch data, if found.")
-            checked: LauncherCore.keepPatches
-            onCheckedChanged: LauncherCore.keepPatches = checked
+            checked: LauncherCore.settings.keepPatches
+            onCheckedChanged: LauncherCore.settings.keepPatches = checked
         }
     }
 
@@ -44,8 +44,8 @@ FormCard.FormCardPage {
             id: encryptArgDelegate
 
             text: i18n("Encrypt Game Arguments")
-            checked: LauncherCore.argumentsEncrypted
-            onCheckedChanged: LauncherCore.argumentsEncrypted = checked
+            checked: LauncherCore.settings.argumentsEncrypted
+            onCheckedChanged: LauncherCore.settings.argumentsEncrypted = checked
         }
     }
 
@@ -60,8 +60,8 @@ FormCard.FormCardPage {
             id: preferredProtocolDelegate
 
             label: i18n("Preferred Protocol")
-            text: LauncherCore.preferredProtocol
-            onTextChanged: LauncherCore.preferredProtocol = text
+            text: LauncherCore.settings.preferredProtocol
+            onTextChanged: LauncherCore.settings.preferredProtocol = text
         }
 
         FormCard.FormDelegateSeparator {
@@ -73,8 +73,8 @@ FormCard.FormCardPage {
             id: dalamudServerDelegate
 
             label: i18n("Dalamud Distribution Server")
-            text: LauncherCore.dalamudDistribServer
-            onTextChanged: LauncherCore.dalamudDistribServer = text
+            text: LauncherCore.settings.dalamudDistribServer
+            onTextChanged: LauncherCore.settings.dalamudDistribServer = text
         }
 
         FormCard.FormDelegateSeparator {
@@ -86,8 +86,8 @@ FormCard.FormCardPage {
             id: mainServerDelegate
 
             label: i18n("SE Main Server")
-            text: LauncherCore.squareEnixServer
-            onTextChanged: LauncherCore.squareEnixServer = text
+            text: LauncherCore.settings.squareEnixServer
+            onTextChanged: LauncherCore.settings.squareEnixServer = text
         }
 
         FormCard.FormDelegateSeparator {
@@ -99,8 +99,8 @@ FormCard.FormCardPage {
             id: loginServerDelegate
 
             label: i18n("SE Login Server")
-            text: LauncherCore.squareEnixLoginServer
-            onTextChanged: LauncherCore.squareEnixLoginServer = text
+            text: LauncherCore.settings.squareEnixLoginServer
+            onTextChanged: LauncherCore.settings.squareEnixLoginServer = text
         }
 
         FormCard.FormDelegateSeparator {
@@ -112,8 +112,8 @@ FormCard.FormCardPage {
             id: xivApiServerDelegate
 
             label: i18n("XIV Api Server")
-            text: LauncherCore.xivApiServer
-            onTextChanged: LauncherCore.xivApiServer = text
+            text: LauncherCore.settings.xivApiServer
+            onTextChanged: LauncherCore.settings.xivApiServer = text
         }
     }
 }

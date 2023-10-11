@@ -231,8 +231,8 @@ void Account::fetchAvatar()
         qDebug() << "Did not find lodestone character " << lodestoneId() << " in cache, fetching from xivapi.";
 
         QUrl url;
-        url.setScheme(m_launcher.preferredProtocol());
-        url.setHost(m_launcher.xivApiServer());
+        url.setScheme(m_launcher.settings()->preferredProtocol());
+        url.setHost(m_launcher.settings()->xivApiServer());
         url.setPath(QStringLiteral("/character/%1").arg(lodestoneId()));
 
         QNetworkRequest request(url);
@@ -310,7 +310,7 @@ void Account::updateConfig()
     // Ensure that the opening cutscene movie never plays, since it's broken in most versions of Wine
     physis_cfg_set_value(cfgFile, "CutsceneMovieOpening", "1");
 
-    auto screenshotDir = m_launcher.screenshotDir();
+    auto screenshotDir = m_launcher.settings()->screenshotDir();
 
     if (!QDir().exists(screenshotDir))
         QDir().mkpath(screenshotDir);

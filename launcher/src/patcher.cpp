@@ -174,7 +174,7 @@ void Patcher::processPatch(const QueuedPatch &patch)
 void Patcher::setupDirectories()
 {
     QDir dataDir;
-    if (m_launcher.keepPatches()) {
+    if (m_launcher.settings()->keepPatches()) {
         dataDir.setPath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
     } else {
         dataDir.setPath(QStandardPaths::writableLocation(QStandardPaths::TempLocation));

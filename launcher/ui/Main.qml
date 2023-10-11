@@ -87,7 +87,7 @@ Kirigami.ApplicationWindow {
         }
 
         function onSuccessfulLaunch() {
-            if (LauncherCore.closeWhenLaunched) {
+            if (LauncherCore.settings.closeWhenLaunched) {
                 hide();
             } else {
                 checkSetup();
@@ -95,7 +95,7 @@ Kirigami.ApplicationWindow {
         }
 
         function onGameClosed() {
-            if (LauncherCore.closeWhenLaunched) {
+            if (LauncherCore.settings.closeWhenLaunched) {
                 Qt.callLater(Qt.quit);
             } else {
                 checkSetup();

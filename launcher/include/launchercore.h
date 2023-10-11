@@ -10,8 +10,8 @@
 #include <qcorotask.h>
 
 #include "accountmanager.h"
-#include "config.h"
 #include "headline.h"
+#include "launchersettings.h"
 #include "profile.h"
 #include "profilemanager.h"
 #include "squareboot.h"
@@ -62,20 +62,10 @@ class LauncherCore : public QObject
     Q_PROPERTY(bool hasAccount READ hasAccount NOTIFY accountChanged)
     Q_PROPERTY(bool isSteam READ isSteam CONSTANT)
     Q_PROPERTY(bool isSteamDeck READ isSteamDeck CONSTANT)
+    Q_PROPERTY(LauncherSettings *settings READ settings CONSTANT)
     Q_PROPERTY(SquareBoot *squareBoot MEMBER m_squareBoot)
     Q_PROPERTY(ProfileManager *profileManager READ profileManager CONSTANT)
     Q_PROPERTY(AccountManager *accountManager READ accountManager CONSTANT)
-    Q_PROPERTY(bool closeWhenLaunched READ closeWhenLaunched WRITE setCloseWhenLaunched NOTIFY closeWhenLaunchedChanged)
-    Q_PROPERTY(bool showNews READ showNews WRITE setShowNews NOTIFY showNewsChanged)
-    Q_PROPERTY(bool showDevTools READ showDevTools WRITE setShowDevTools NOTIFY showDevToolsChanged)
-    Q_PROPERTY(bool keepPatches READ keepPatches WRITE setKeepPatches NOTIFY keepPatchesChanged)
-    Q_PROPERTY(QString dalamudDistribServer READ dalamudDistribServer WRITE setDalamudDistribServer NOTIFY dalamudDistribServerChanged)
-    Q_PROPERTY(QString squareEnixServer READ squareEnixServer WRITE setSquareEnixServer NOTIFY squareEnixServerChanged)
-    Q_PROPERTY(QString squareEnixLoginServer READ squareEnixLoginServer WRITE setSquareEnixLoginServer NOTIFY squareEnixLoginServerChanged)
-    Q_PROPERTY(QString xivApiServer READ xivApiServer WRITE setXivApiServer NOTIFY xivApiServerChanged)
-    Q_PROPERTY(QString preferredProtocol READ preferredProtocol WRITE setPreferredProtocol NOTIFY preferredProtocolChanged)
-    Q_PROPERTY(QString screenshotDir READ screenshotDir WRITE setScreenshotDir NOTIFY screenshotDirChanged)
-    Q_PROPERTY(bool argumentsEncrypted READ argumentsEncrypted WRITE setArgumentsEncrypted NOTIFY encryptedArgumentsChanged)
     Q_PROPERTY(Headline *headline READ headline NOTIFY newsChanged)
     Q_PROPERTY(Profile *currentProfile READ currentProfile WRITE setCurrentProfile NOTIFY currentProfileChanged)
     Q_PROPERTY(Profile *autoLoginProfile READ autoLoginProfile WRITE setAutoLoginProfile NOTIFY autoLoginProfileChanged)
@@ -85,6 +75,7 @@ public:
 
     QNetworkAccessManager *mgr;
 
+    LauncherSettings *settings();
     ProfileManager *profileManager();
     AccountManager *accountManager();
 
@@ -125,43 +116,6 @@ public:
 
     void readInitialInformation();
 
-    [[nodiscard]] bool closeWhenLaunched() const;
-    void setCloseWhenLaunched(bool value);
-
-    [[nodiscard]] bool showNews() const;
-    void setShowNews(bool value);
-
-    [[nodiscard]] bool showDevTools() const;
-    void setShowDevTools(bool value);
-
-    [[nodiscard]] bool keepPatches() const;
-    void setKeepPatches(bool value);
-
-    [[nodiscard]] QString dalamudDistribServer() const;
-    void setDalamudDistribServer(const QString &value);
-
-    [[nodiscard]] QString squareEnixServer() const;
-    void setSquareEnixServer(const QString &value);
-
-    [[nodiscard]] QString squareEnixLoginServer() const;
-    void setSquareEnixLoginServer(const QString &value);
-
-    [[nodiscard]] QString xivApiServer() const;
-    void setXivApiServer(const QString &value);
-
-    [[nodiscard]] QString preferredProtocol() const;
-    void setPreferredProtocol(const QString &value);
-
-    [[nodiscard]] QString screenshotDir() const;
-    void setScreenshotDir(const QString &value);
-
-    [[nodiscard]] bool argumentsEncrypted() const;
-    void setArgumentsEncrypted(bool value);
-
-    [[nodiscard]] QString autoLoginProfileName() const;
-    [[nodiscard]] Profile *autoLoginProfile() const;
-    void setAutoLoginProfile(Profile *value);
-
     Q_INVOKABLE GameInstaller *createInstaller(Profile *profile);
     Q_INVOKABLE CompatibilityToolInstaller *createCompatInstaller();
 
@@ -178,24 +132,15 @@ public:
 
     Q_INVOKABLE void clearAvatarCache();
 
+    [[nodiscard]] QString autoLoginProfileName() const;
+    [[nodiscard]] Profile *autoLoginProfile() const;
+    void setAutoLoginProfile(Profile *value);
+
 signals:
     void loadingFinished();
-    void gameInstallationChanged();
     void accountChanged();
-    void settingsChanged();
     void successfulLaunch();
     void gameClosed();
-    void closeWhenLaunchedChanged();
-    void showNewsChanged();
-    void showDevToolsChanged();
-    void keepPatchesChanged();
-    void dalamudDistribServerChanged();
-    void squareEnixServerChanged();
-    void squareEnixLoginServerChanged();
-    void xivApiServerChanged();
-    void preferredProtocolChanged();
-    void screenshotDirChanged();
-    void encryptedArgumentsChanged();
     void loginError(QString message);
     void dalamudError(QString message);
     void stageChanged(QString message);
@@ -246,7 +191,7 @@ private:
     SquareLauncher *m_squareLauncher = nullptr;
 
     Headline *m_headline = nullptr;
-    Config *m_config = nullptr;
+    LauncherSettings *m_settings = nullptr;
 
     int m_currentProfileIndex = 0;
 };

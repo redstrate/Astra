@@ -49,6 +49,7 @@ target_sources(astra PRIVATE
         include/gameinstaller.h
         include/headline.h
         include/launchercore.h
+        include/launchersettings.h
         include/logger.h
         include/patcher.h
         include/processlogger.h
@@ -67,6 +68,7 @@ target_sources(astra PRIVATE
         src/encryptedarg.cpp
         src/gameinstaller.cpp
         src/launchercore.cpp
+        src/launchersettings.cpp
         src/logger.cpp
         src/main.cpp
         src/patcher.cpp

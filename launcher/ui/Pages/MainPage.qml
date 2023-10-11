@@ -27,7 +27,7 @@ Kirigami.Page {
         spacing: Kirigami.Units.largeSpacing
 
         Loader {
-            active: LauncherCore.showNews
+            active: LauncherCore.settings.showNews
 
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -46,8 +46,8 @@ Kirigami.Page {
             id: loginPage
 
             Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-            Layout.minimumWidth: LauncherCore.showNews ? Kirigami.Units.gridUnit * 26 : 0
-            Layout.fillWidth: !LauncherCore.showNews
+            Layout.minimumWidth: LauncherCore.settings.showNews ? Kirigami.Units.gridUnit * 26 : 0
+            Layout.fillWidth: !LauncherCore.settings.showNews
         }
     }
 }

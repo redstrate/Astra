@@ -38,7 +38,7 @@ KirigamiSettings.CategorizedSettings {
             text: i18n("Developer Settings")
             icon.name: "preferences-others"
             page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/DeveloperSettings.qml")
-            visible: LauncherCore.showDevTools
+            visible: LauncherCore.settings.showDevTools
         },
         KirigamiSettings.SettingAction {
             actionName: "about"

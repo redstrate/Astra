@@ -41,7 +41,7 @@ void LauncherCore::setupIgnoreSSL(QNetworkReply *reply)
 {
     Q_ASSERT(reply != nullptr);
 
-    if (preferredProtocol() == QStringLiteral("http")) {
+    if (m_settings->preferredProtocol() == QStringLiteral("http")) {
         connect(reply, &QNetworkReply::sslErrors, this, [reply](const QList<QSslError> &errors) {
             reply->ignoreSslErrors(errors);
         });
@@ -236,14 +236,14 @@ QString LauncherCore::getGameArgs(const Profile &profile, const LoginAuth &auth)
         gameArgs.push_back({QStringLiteral("IsSteam"), QStringLiteral("1")});
     }
 
-    const QString argFormat = argumentsEncrypted() ? QStringLiteral(" /%1 =%2") : QStringLiteral(" %1=%2");
+    const QString argFormat = m_settings->argumentsEncrypted() ? QStringLiteral(" /%1 =%2") : QStringLiteral(" %1=%2");
 
     QString argJoined;
     for (const auto &arg : gameArgs) {
         argJoined += argFormat.arg(arg.key, arg.value);
     }
 
-    return argumentsEncrypted() ? encryptGameArg(argJoined) : argJoined;
+    return m_settings->argumentsEncrypted() ? encryptGameArg(argJoined) : argJoined;
 }
 
 void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, const QStringList &args, bool isGame, bool needsRegistrySetup)
@@ -402,7 +402,7 @@ void LauncherCore::readInitialInformation()
     }
 
     // set default profile, if found
-    if (auto profile = m_profileManager->getProfileByUUID(m_config->currentProfile()); profile != nullptr) {
+    if (auto profile = m_profileManager->getProfileByUUID(m_settings->config()->currentProfile()); profile != nullptr) {
         setCurrentProfile(profile);
     }
 
@@ -412,7 +412,7 @@ void LauncherCore::readInitialInformation()
 
 LauncherCore::LauncherCore()
 {
-    m_config = new Config(KSharedConfig::openConfig("astrarc", KConfig::SimpleConfig, QStandardPaths::AppConfigLocation));
+    m_settings = new LauncherSettings(this);
     mgr = new QNetworkAccessManager(this);
     m_sapphireLauncher = new SapphireLauncher(*this, this);
     m_squareLauncher = new SquareLauncher(*this, this);
@@ -522,186 +522,32 @@ AccountManager *LauncherCore::accountManager()
     return m_accountManager;
 }
 
-bool LauncherCore::closeWhenLaunched() const
-{
-    return m_config->closeWhenLaunched();
-}
-
-void LauncherCore::setCloseWhenLaunched(const bool value)
-{
-    if (value != m_config->closeWhenLaunched()) {
-        m_config->setCloseWhenLaunched(value);
-        m_config->save();
-        Q_EMIT closeWhenLaunchedChanged();
-    }
-}
-
-bool LauncherCore::showNews() const
-{
-    return m_config->showNews();
-}
-
-void LauncherCore::setShowNews(const bool value)
-{
-    if (value != m_config->showNews()) {
-        m_config->setShowNews(value);
-        m_config->save();
-        Q_EMIT showNewsChanged();
-    }
-}
-
-bool LauncherCore::showDevTools() const
-{
-    return m_config->showDevTools();
-}
-
-void LauncherCore::setShowDevTools(const bool value)
-{
-    if (value != m_config->showDevTools()) {
-        m_config->setShowDevTools(value);
-        m_config->save();
-        Q_EMIT showDevToolsChanged();
-    }
-}
-
-bool LauncherCore::keepPatches() const
-{
-    return m_config->keepPatches();
-}
-
-void LauncherCore::setKeepPatches(const bool value)
-{
-    if (value != m_config->keepPatches()) {
-        m_config->setKeepPatches(value);
-        m_config->save();
-        Q_EMIT keepPatchesChanged();
-    }
-}
-
-QString LauncherCore::dalamudDistribServer() const
-{
-    return m_config->dalamudDistribServer();
-}
-
-void LauncherCore::setDalamudDistribServer(const QString &value)
-{
-    if (value != m_config->dalamudDistribServer()) {
-        m_config->setDalamudDistribServer(value);
-        m_config->save();
-        Q_EMIT dalamudDistribServerChanged();
-    }
-}
-
-QString LauncherCore::squareEnixServer() const
-{
-    return m_config->squareEnixServer();
-}
-
-void LauncherCore::setSquareEnixServer(const QString &value)
-{
-    if (value != m_config->squareEnixServer()) {
-        m_config->setSquareEnixServer(value);
-        m_config->save();
-        Q_EMIT squareEnixServerChanged();
-    }
-}
-
-QString LauncherCore::squareEnixLoginServer() const
-{
-    return m_config->squareEnixLoginServer();
-}
-
-void LauncherCore::setSquareEnixLoginServer(const QString &value)
-{
-    if (value != m_config->squareEnixLoginServer()) {
-        m_config->setSquareEnixLoginServer(value);
-        m_config->save();
-        Q_EMIT squareEnixLoginServerChanged();
-    }
-}
-
-QString LauncherCore::xivApiServer() const
-{
-    return m_config->xivApiServer();
-}
-
-void LauncherCore::setXivApiServer(const QString &value)
-{
-    if (value != m_config->xivApiServer()) {
-        m_config->setXivApiServer(value);
-        m_config->save();
-        Q_EMIT xivApiServerChanged();
-    }
-}
-
-QString LauncherCore::preferredProtocol() const
-{
-    return m_config->preferredProtocol();
-}
-
-void LauncherCore::setPreferredProtocol(const QString &value)
-{
-    if (value != m_config->preferredProtocol()) {
-        m_config->setPreferredProtocol(value);
-        m_config->save();
-        Q_EMIT preferredProtocolChanged();
-    }
-}
-
-QString LauncherCore::screenshotDir() const
-{
-    return m_config->screenshotDir();
-}
-
-void LauncherCore::setScreenshotDir(const QString &value)
-{
-    if (value != m_config->screenshotDir()) {
-        m_config->setScreenshotDir(value);
-        m_config->save();
-        Q_EMIT screenshotDirChanged();
-    }
-}
-
-bool LauncherCore::argumentsEncrypted() const
-{
-    return m_config->encryptArguments();
-}
-
-void LauncherCore::setArgumentsEncrypted(const bool value)
-{
-    if (m_config->encryptArguments() != value) {
-        m_config->setEncryptArguments(value);
-        m_config->save();
-        Q_EMIT encryptedArgumentsChanged();
-    }
-}
-
 [[nodiscard]] QString LauncherCore::autoLoginProfileName() const
 {
-    return m_config->autoLoginProfile();
+    return m_settings->config()->autoLoginProfile();
 }
 
 [[nodiscard]] Profile *LauncherCore::autoLoginProfile() const
 {
-    if (m_config->autoLoginProfile().isEmpty()) {
+    if (m_settings->config()->autoLoginProfile().isEmpty()) {
         return nullptr;
     }
-    return m_profileManager->getProfileByUUID(m_config->autoLoginProfile());
+    return m_profileManager->getProfileByUUID(m_settings->config()->autoLoginProfile());
 }
 
 void LauncherCore::setAutoLoginProfile(Profile *profile)
 {
     if (profile == nullptr) {
-        m_config->setAutoLoginProfile({});
-        m_config->save();
+        m_settings->config()->setAutoLoginProfile({});
+        m_settings->config()->save();
         Q_EMIT autoLoginProfileChanged();
         return;
     }
 
     auto uuid = profile->uuid();
-    if (uuid != m_config->autoLoginProfile()) {
-        m_config->setAutoLoginProfile(uuid);
-        m_config->save();
+    if (uuid != m_settings->config()->autoLoginProfile()) {
+        m_settings->config()->setAutoLoginProfile(uuid);
+        m_settings->config()->save();
         Q_EMIT autoLoginProfileChanged();
     }
 }
@@ -720,8 +566,8 @@ QCoro::Task<> LauncherCore::fetchNews()
     query.addQueryItem(QStringLiteral("media"), QStringLiteral("pcapp"));
 
     QUrl url;
-    url.setScheme(preferredProtocol());
-    url.setHost(QStringLiteral("frontier.%1").arg(squareEnixServer()));
+    url.setScheme(m_settings->preferredProtocol());
+    url.setHost(QStringLiteral("frontier.%1").arg(m_settings->squareEnixServer()));
     url.setPath(QStringLiteral("/news/headline.json"));
     url.setQuery(query);
 
@@ -818,8 +664,8 @@ void LauncherCore::setCurrentProfile(Profile *profile)
     const int newIndex = m_profileManager->getProfileIndex(profile->uuid());
     if (newIndex != m_currentProfileIndex) {
         m_currentProfileIndex = newIndex;
-        m_config->setCurrentProfile(profile->uuid());
-        m_config->save();
+        m_settings->config()->setCurrentProfile(profile->uuid());
+        m_settings->config()->save();
         Q_EMIT currentProfileChanged();
     }
 }
@@ -837,4 +683,9 @@ void LauncherCore::initializeSteam()
     m_isSteam = true;
     m_steamApi = new SteamAPI(*this, this);
     m_steamApi->setLauncherMode(true);
+}
+
+LauncherSettings *LauncherCore::settings()
+{
+    return m_settings;
 }
