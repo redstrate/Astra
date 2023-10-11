@@ -35,7 +35,7 @@ QCoro::Task<std::optional<LoginAuth>> SquareEnixLogin::login(LoginInformation *i
 
     co_await checkBootUpdates();
 
-    if (!co_await loginOauth()) {
+    if (!co_await loginOAuth()) {
         co_return std::nullopt;
     }
 
@@ -186,7 +186,7 @@ QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStor
     }
 }
 
-QCoro::Task<bool> SquareEnixLogin::loginOauth()
+QCoro::Task<bool> SquareEnixLogin::loginOAuth()
 {
     const auto storedResult = co_await getStoredValue();
     if (storedResult == std::nullopt) {

@@ -35,7 +35,7 @@ private:
 
     /// Logs into the server
     /// \return Returns false if the oauth call failed for some reason
-    QCoro::Task<bool> loginOauth();
+    QCoro::Task<bool> loginOAuth();
 
     /// Registers a new session with the login server and patches the game if necessary
     /// \return Returns false if the session registration failed for some reason
