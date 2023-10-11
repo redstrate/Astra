@@ -15,14 +15,14 @@ class SquareLauncher : public QObject
 public:
     explicit SquareLauncher(LauncherCore &window, QObject *parent = nullptr);
 
+    QCoro::Task<> login(const LoginInformation &info);
+
+private:
     using StoredInfo = std::pair<QString, QUrl>;
     QCoro::Task<std::optional<StoredInfo>> getStored(const LoginInformation &info);
 
-    QCoro::Task<> login(const LoginInformation &info);
-
     QCoro::Task<> registerSession(const LoginInformation &info);
 
-private:
     static QCoro::Task<QString> getBootHash(const LoginInformation &info);
 
     Patcher *m_patcher = nullptr;
