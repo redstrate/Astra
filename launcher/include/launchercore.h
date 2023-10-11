@@ -71,11 +71,6 @@ class LauncherCore : public QObject
 public:
     LauncherCore();
 
-    QNetworkAccessManager *mgr();
-    LauncherSettings *settings();
-    ProfileManager *profileManager();
-    AccountManager *accountManager();
-
     /// Initializes the Steamworks API.
     void initializeSteam();
 
@@ -89,28 +84,33 @@ public:
     /// check the result to see whether they need to "reset" or show a failed state or not. \note The login process is asynchronous.
     Q_INVOKABLE bool autoLogin(Profile *profile);
 
+    Q_INVOKABLE GameInstaller *createInstaller(Profile *profile);
+    Q_INVOKABLE CompatibilityToolInstaller *createCompatInstaller();
+
+    Q_INVOKABLE void clearAvatarCache();
+    Q_INVOKABLE void refreshNews();
+
+    [[nodiscard]] Profile *currentProfile() const;
+    void setCurrentProfile(Profile *profile);
+
+    [[nodiscard]] QString autoLoginProfileName() const;
+    [[nodiscard]] Profile *autoLoginProfile() const;
+    void setAutoLoginProfile(Profile *value);
+
+    // Networking misc.
     void buildRequest(const Profile &settings, QNetworkRequest &request);
     void setSSL(QNetworkRequest &request);
     void setupIgnoreSSL(QNetworkReply *reply);
-
-    Q_INVOKABLE GameInstaller *createInstaller(Profile *profile);
-    Q_INVOKABLE CompatibilityToolInstaller *createCompatInstaller();
 
     [[nodiscard]] bool isLoadingFinished() const;
     [[nodiscard]] bool isSteam() const;
     [[nodiscard]] bool isSteamDeck() const;
 
-    Q_INVOKABLE void refreshNews();
+    [[nodiscard]] QNetworkAccessManager *mgr();
+    [[nodiscard]] LauncherSettings *settings();
+    [[nodiscard]] ProfileManager *profileManager();
+    [[nodiscard]] AccountManager *accountManager();
     [[nodiscard]] Headline *headline() const;
-
-    [[nodiscard]] Profile *currentProfile() const;
-    void setCurrentProfile(Profile *profile);
-
-    Q_INVOKABLE void clearAvatarCache();
-
-    [[nodiscard]] QString autoLoginProfileName() const;
-    [[nodiscard]] Profile *autoLoginProfile() const;
-    void setAutoLoginProfile(Profile *value);
 
 signals:
     void loadingFinished();
@@ -126,8 +126,6 @@ signals:
     void autoLoginProfileChanged();
 
 private:
-    void readInitialInformation();
-
     QCoro::Task<> beginLogin(LoginInformation &info);
 
     QCoro::Task<> fetchNews();

@@ -20,72 +20,17 @@
 #include "squareenixlogin.h"
 #include "utility.h"
 
-void LauncherCore::setSSL(QNetworkRequest &request)
+LauncherCore::LauncherCore()
+    : QObject()
 {
-    QSslConfiguration config;
-    config.setProtocol(QSsl::AnyProtocol);
-    config.setPeerVerifyMode(QSslSocket::VerifyNone);
+    m_settings = new LauncherSettings(this);
+    m_mgr = new QNetworkAccessManager(this);
+    m_sapphireLogin = new SapphireLogin(*this, this);
+    m_squareEnixLogin = new SquareEnixLogin(*this, this);
+    m_profileManager = new ProfileManager(*this, this);
+    m_accountManager = new AccountManager(*this, this);
+    m_runner = new GameRunner(*this, this);
 
-    request.setSslConfiguration(config);
-}
-
-void LauncherCore::setupIgnoreSSL(QNetworkReply *reply)
-{
-    Q_ASSERT(reply != nullptr);
-
-    if (m_settings->preferredProtocol() == QStringLiteral("http")) {
-        connect(reply, &QNetworkReply::sslErrors, this, [reply](const QList<QSslError> &errors) {
-            reply->ignoreSslErrors(errors);
-        });
-    }
-}
-
-void LauncherCore::buildRequest(const Profile &settings, QNetworkRequest &request)
-{
-    setSSL(request);
-
-    if (settings.account()->license() == Account::GameLicense::macOS) {
-        request.setHeader(QNetworkRequest::UserAgentHeader, QByteArrayLiteral("macSQEXAuthor/2.0.0(MacOSX; ja-jp)"));
-    } else {
-        request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("SQEXAuthor/2.0.0(Windows 6.2; ja-jp; %1)").arg(QString(QSysInfo::bootUniqueId())));
-    }
-
-    request.setRawHeader(QByteArrayLiteral("Accept"),
-                         QByteArrayLiteral("image/gif, image/jpeg, image/pjpeg, application/x-ms-application, application/xaml+xml, "
-                                           "application/x-ms-xbap, */*"));
-    request.setRawHeader(QByteArrayLiteral("Accept-Encoding"), QByteArrayLiteral("gzip, deflate"));
-    request.setRawHeader(QByteArrayLiteral("Accept-Language"), QByteArrayLiteral("en-us"));
-}
-
-QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
-{
-    info.profile->account()->updateConfig();
-
-    auto assetUpdater = new AssetUpdater(*info.profile, *this, this);
-    if (co_await assetUpdater->update()) {
-        std::optional<LoginAuth> auth;
-        if (info.profile->account()->isSapphire()) {
-            auth = co_await m_sapphireLogin->login(info.profile->account()->lobbyUrl(), info);
-        } else {
-            auth = co_await m_squareEnixLogin->login(&info);
-        }
-
-        if (auth != std::nullopt) {
-            Q_EMIT stageChanged(i18n("Launching game..."));
-
-            if (isSteam()) {
-                m_steamApi->setLauncherMode(false);
-            }
-
-            m_runner->beginGameExecutable(*info.profile, *auth);
-        }
-    }
-
-    assetUpdater->deleteLater();
-}
-
-void LauncherCore::readInitialInformation()
-{
     m_profileManager->load();
     m_accountManager->load();
 
@@ -105,17 +50,10 @@ void LauncherCore::readInitialInformation()
     Q_EMIT loadingFinished();
 }
 
-LauncherCore::LauncherCore()
+void LauncherCore::initializeSteam()
 {
-    m_settings = new LauncherSettings(this);
-    m_mgr = new QNetworkAccessManager(this);
-    m_sapphireLogin = new SapphireLogin(*this, this);
-    m_squareEnixLogin = new SquareEnixLogin(*this, this);
-    m_profileManager = new ProfileManager(*this, this);
-    m_accountManager = new AccountManager(*this, this);
-    m_runner = new GameRunner(*this, this);
-
-    readInitialInformation();
+    m_steamApi = new SteamAPI(this);
+    m_steamApi->setLauncherMode(true);
 }
 
 void LauncherCore::login(Profile *profile, const QString &username, const QString &password, const QString &oneTimePassword)
@@ -169,19 +107,35 @@ CompatibilityToolInstaller *LauncherCore::createCompatInstaller()
     return new CompatibilityToolInstaller(*this, this);
 }
 
-bool LauncherCore::isLoadingFinished() const
+void LauncherCore::clearAvatarCache()
 {
-    return m_loadingFinished;
+    const auto cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + QStringLiteral("/avatars");
+    if (QDir(cacheLocation).exists()) {
+        QDir(cacheLocation).removeRecursively();
+    }
 }
 
-ProfileManager *LauncherCore::profileManager()
+void LauncherCore::refreshNews()
 {
-    return m_profileManager;
+    fetchNews();
 }
 
-AccountManager *LauncherCore::accountManager()
+Profile *LauncherCore::currentProfile() const
 {
-    return m_accountManager;
+    return m_profileManager->getProfile(m_currentProfileIndex);
+}
+
+void LauncherCore::setCurrentProfile(Profile *profile)
+{
+    Q_ASSERT(profile != nullptr);
+
+    const int newIndex = m_profileManager->getProfileIndex(profile->uuid());
+    if (newIndex != m_currentProfileIndex) {
+        m_currentProfileIndex = newIndex;
+        m_settings->config()->setCurrentProfile(profile->uuid());
+        m_settings->config()->save();
+        Q_EMIT currentProfileChanged();
+    }
 }
 
 [[nodiscard]] QString LauncherCore::autoLoginProfileName() const
@@ -214,9 +168,112 @@ void LauncherCore::setAutoLoginProfile(Profile *profile)
     }
 }
 
-void LauncherCore::refreshNews()
+void LauncherCore::buildRequest(const Profile &settings, QNetworkRequest &request)
 {
-    fetchNews();
+    setSSL(request);
+
+    if (settings.account()->license() == Account::GameLicense::macOS) {
+        request.setHeader(QNetworkRequest::UserAgentHeader, QByteArrayLiteral("macSQEXAuthor/2.0.0(MacOSX; ja-jp)"));
+    } else {
+        request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("SQEXAuthor/2.0.0(Windows 6.2; ja-jp; %1)").arg(QString(QSysInfo::bootUniqueId())));
+    }
+
+    request.setRawHeader(QByteArrayLiteral("Accept"),
+                         QByteArrayLiteral("image/gif, image/jpeg, image/pjpeg, application/x-ms-application, application/xaml+xml, "
+                                           "application/x-ms-xbap, */*"));
+    request.setRawHeader(QByteArrayLiteral("Accept-Encoding"), QByteArrayLiteral("gzip, deflate"));
+    request.setRawHeader(QByteArrayLiteral("Accept-Language"), QByteArrayLiteral("en-us"));
+}
+
+void LauncherCore::setSSL(QNetworkRequest &request)
+{
+    QSslConfiguration config;
+    config.setProtocol(QSsl::AnyProtocol);
+    config.setPeerVerifyMode(QSslSocket::VerifyNone);
+
+    request.setSslConfiguration(config);
+}
+
+void LauncherCore::setupIgnoreSSL(QNetworkReply *reply)
+{
+    Q_ASSERT(reply != nullptr);
+
+    if (m_settings->preferredProtocol() == QStringLiteral("http")) {
+        connect(reply, &QNetworkReply::sslErrors, this, [reply](const QList<QSslError> &errors) {
+            reply->ignoreSslErrors(errors);
+        });
+    }
+}
+
+bool LauncherCore::isLoadingFinished() const
+{
+    return m_loadingFinished;
+}
+
+bool LauncherCore::isSteam() const
+{
+    return m_steamApi != nullptr;
+}
+
+bool LauncherCore::isSteamDeck() const
+{
+    if (m_steamApi != nullptr) {
+        return m_steamApi->isDeck();
+    } else {
+        return false;
+    }
+}
+
+QNetworkAccessManager *LauncherCore::mgr()
+{
+    return m_mgr;
+}
+
+LauncherSettings *LauncherCore::settings()
+{
+    return m_settings;
+}
+
+ProfileManager *LauncherCore::profileManager()
+{
+    return m_profileManager;
+}
+
+AccountManager *LauncherCore::accountManager()
+{
+    return m_accountManager;
+}
+
+Headline *LauncherCore::headline() const
+{
+    return m_headline;
+}
+
+QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
+{
+    info.profile->account()->updateConfig();
+
+    auto assetUpdater = new AssetUpdater(*info.profile, *this, this);
+    if (co_await assetUpdater->update()) {
+        std::optional<LoginAuth> auth;
+        if (info.profile->account()->isSapphire()) {
+            auth = co_await m_sapphireLogin->login(info.profile->account()->lobbyUrl(), info);
+        } else {
+            auth = co_await m_squareEnixLogin->login(&info);
+        }
+
+        if (auth != std::nullopt) {
+            Q_EMIT stageChanged(i18n("Launching game..."));
+
+            if (isSteam()) {
+                m_steamApi->setLauncherMode(false);
+            }
+
+            m_runner->beginGameExecutable(*info.profile, *auth);
+        }
+    }
+
+    assetUpdater->deleteLater();
 }
 
 QCoro::Task<> LauncherCore::fetchNews()
@@ -293,65 +350,4 @@ QCoro::Task<> LauncherCore::fetchNews()
 
     m_headline = headline;
     Q_EMIT newsChanged();
-}
-
-Headline *LauncherCore::headline() const
-{
-    return m_headline;
-}
-
-bool LauncherCore::isSteam() const
-{
-    return m_steamApi != nullptr;
-}
-
-bool LauncherCore::isSteamDeck() const
-{
-    if (m_steamApi != nullptr) {
-        return m_steamApi->isDeck();
-    } else {
-        return false;
-    }
-}
-
-Profile *LauncherCore::currentProfile() const
-{
-    return m_profileManager->getProfile(m_currentProfileIndex);
-}
-
-void LauncherCore::setCurrentProfile(Profile *profile)
-{
-    Q_ASSERT(profile != nullptr);
-
-    const int newIndex = m_profileManager->getProfileIndex(profile->uuid());
-    if (newIndex != m_currentProfileIndex) {
-        m_currentProfileIndex = newIndex;
-        m_settings->config()->setCurrentProfile(profile->uuid());
-        m_settings->config()->save();
-        Q_EMIT currentProfileChanged();
-    }
-}
-
-void LauncherCore::clearAvatarCache()
-{
-    const auto cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + QStringLiteral("/avatars");
-    if (QDir(cacheLocation).exists()) {
-        QDir(cacheLocation).removeRecursively();
-    }
-}
-
-void LauncherCore::initializeSteam()
-{
-    m_steamApi = new SteamAPI(this);
-    m_steamApi->setLauncherMode(true);
-}
-
-LauncherSettings *LauncherCore::settings()
-{
-    return m_settings;
-}
-
-QNetworkAccessManager *LauncherCore::mgr()
-{
-    return m_mgr;
 }
