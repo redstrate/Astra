@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "squarelauncher.h"
+#include "squareenixlogin.h"
 
 #include <KLocalizedString>
 #include <QDesktopServices>
@@ -14,29 +14,117 @@
 #include <qcoronetworkreply.h>
 
 #include "account.h"
+#include "astra_log.h"
 #include "launchercore.h"
 #include "utility.h"
 
-SquareLauncher::SquareLauncher(LauncherCore &window, QObject *parent)
+SquareEnixLogin::SquareEnixLogin(LauncherCore &window, QObject *parent)
     : QObject(parent)
     , m_launcher(window)
 {
 }
 
-QString getFileHash(const QString &file)
+QCoro::Task<std::optional<LoginAuth>> SquareEnixLogin::login(LoginInformation *info)
 {
-    auto f = QFile(file);
-    if (!f.open(QIODevice::ReadOnly))
-        return {};
+    Q_ASSERT(info != nullptr);
+    m_info = info;
 
-    QCryptographicHash hash(QCryptographicHash::Sha1);
-    hash.addData(&f);
+    if (!co_await checkGateStatus()) {
+        co_return std::nullopt;
+    }
 
-    return QStringLiteral("%1/%2").arg(QString::number(f.size()), hash.result().toHex());
+    co_await checkBootUpdates();
+
+    if (!co_await loginOauth()) {
+        co_return std::nullopt;
+    }
+
+    if (!co_await registerSession()) {
+        co_return std::nullopt;
+    }
+
+    co_return m_auth;
 }
 
-QCoro::Task<std::optional<SquareLauncher::StoredInfo>> SquareLauncher::getStored(const LoginInformation &info)
+QCoro::Task<bool> SquareEnixLogin::checkGateStatus()
 {
+    Q_EMIT m_launcher.stageChanged(i18n("Checking gate..."));
+    qInfo(ASTRA_LOG) << "Checking if the gate is open...";
+
+    QUrl url;
+    url.setScheme(m_launcher.settings()->preferredProtocol());
+    url.setHost(QStringLiteral("frontier.%1").arg(m_launcher.settings()->squareEnixServer()));
+    url.setPath(QStringLiteral("/worldStatus/gate_status.json"));
+    url.setQuery(QString::number(QDateTime::currentMSecsSinceEpoch()));
+
+    QNetworkRequest request(url);
+
+    // TODO: really?
+    m_launcher.buildRequest(*m_info->profile, request);
+
+    Utility::printRequest(QStringLiteral("GET"), request);
+
+    const auto reply = m_launcher.mgr()->get(request);
+    m_launcher.setupIgnoreSSL(reply);
+    co_await reply;
+
+    const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
+    const bool isGateOpen = !document.isEmpty() && document.object()[QLatin1String("status")].toInt() != 0;
+
+    if (isGateOpen) {
+        qInfo(ASTRA_LOG) << "Gate is open!";
+        co_return true;
+    } else {
+        qInfo(ASTRA_LOG) << "Gate is closed!";
+        Q_EMIT m_launcher.loginError(i18n("The login gate is closed, the game may be under maintenance.\n\n%1", reply->errorString()));
+        co_return false;
+    }
+}
+
+QCoro::Task<> SquareEnixLogin::checkBootUpdates()
+{
+    Q_EMIT m_launcher.stageChanged(i18n("Checking for launcher updates..."));
+    qInfo(ASTRA_LOG) << "Checking for updates to boot components...";
+
+    const QUrlQuery query{{QStringLiteral("time"), QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH-mm"))}};
+
+    QUrl url;
+    url.setScheme(QStringLiteral("http"));
+    url.setHost(QStringLiteral("patch-bootver.%1").arg(m_launcher.settings()->squareEnixServer()));
+    url.setPath(QStringLiteral("/http/win32/ffxivneo_release_boot/%1").arg(m_info->profile->bootVersion()));
+    url.setQuery(query);
+
+    auto request = QNetworkRequest(url);
+    if (m_info->profile->account()->license() == Account::GameLicense::macOS) {
+        request.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("FFXIV-MAC PATCH CLIENT"));
+    } else {
+        request.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("FFXIV PATCH CLIENT"));
+    }
+
+    request.setRawHeader(QByteArrayLiteral("Host"), QStringLiteral("patch-bootver.%1").arg(m_launcher.settings()->squareEnixServer()).toUtf8());
+    Utility::printRequest(QStringLiteral("GET"), request);
+
+    const auto reply = m_launcher.mgr()->get(request);
+    co_await reply;
+
+    const QString patchList = reply->readAll();
+    if (!patchList.isEmpty()) {
+        m_patcher = new Patcher(m_launcher, m_info->profile->gamePath() + QStringLiteral("/boot"), *m_info->profile->bootData(), this);
+        const bool hasPatched = co_await m_patcher->patch(PatchList(patchList));
+        if (hasPatched) {
+            // update game version information
+            m_info->profile->readGameVersion();
+        }
+        m_patcher->deleteLater();
+    }
+
+    co_return;
+}
+
+QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStoredValue()
+{
+    qInfo(ASTRA_LOG) << "Getting the STORED value...";
+
     Q_EMIT m_launcher.stageChanged(i18n("Logging in..."));
 
     QUrlQuery query;
@@ -44,12 +132,12 @@ QCoro::Task<std::optional<SquareLauncher::StoredInfo>> SquareLauncher::getStored
     query.addQueryItem(QStringLiteral("lng"), QStringLiteral("en"));
     // for some reason, we always use region 3. the actual region is acquired later
     query.addQueryItem(QStringLiteral("rgn"), QStringLiteral("3"));
-    query.addQueryItem(QStringLiteral("isft"), info.profile->account()->isFreeTrial() ? QStringLiteral("1") : QStringLiteral("0"));
+    query.addQueryItem(QStringLiteral("isft"), m_info->profile->account()->isFreeTrial() ? QStringLiteral("1") : QStringLiteral("0"));
     query.addQueryItem(QStringLiteral("cssmode"), QStringLiteral("1"));
     query.addQueryItem(QStringLiteral("isnew"), QStringLiteral("1"));
     query.addQueryItem(QStringLiteral("launchver"), QStringLiteral("3"));
 
-    if (info.profile->account()->license() == Account::GameLicense::WindowsSteam) {
+    if (m_info->profile->account()->license() == Account::GameLicense::WindowsSteam) {
         query.addQueryItem(QStringLiteral("issteam"), QStringLiteral("1"));
 
         // TODO: get steam ticket information from steam api
@@ -64,7 +152,7 @@ QCoro::Task<std::optional<SquareLauncher::StoredInfo>> SquareLauncher::getStored
     url.setQuery(query);
 
     auto request = QNetworkRequest(url);
-    m_launcher.buildRequest(*info.profile, request);
+    m_launcher.buildRequest(*m_info->profile, request);
 
     Utility::printRequest(QStringLiteral("GET"), request);
 
@@ -74,7 +162,7 @@ QCoro::Task<std::optional<SquareLauncher::StoredInfo>> SquareLauncher::getStored
     const QString str = reply->readAll();
 
     // fetches Steam username
-    if (info.profile->account()->license() == Account::GameLicense::WindowsSteam) {
+    if (m_info->profile->account()->license() == Account::GameLicense::WindowsSteam) {
         const QRegularExpression re(QStringLiteral(R"lit(<input name=""sqexid"" type=""hidden"" value=""(?<sqexid>.*)""\/>)lit"));
         const QRegularExpressionMatch match = re.match(str);
 
@@ -84,7 +172,7 @@ QCoro::Task<std::optional<SquareLauncher::StoredInfo>> SquareLauncher::getStored
             Q_EMIT m_launcher.loginError(i18n("Could not get Steam username, have you attached your account?"));
         }
     } else {
-        m_username = info.username;
+        m_username = m_info->username;
     }
 
     const QRegularExpression re(QStringLiteral(R"lit(\t<\s*input .* name="_STORED_" value="(?<stored>.*)">)lit"));
@@ -98,22 +186,22 @@ QCoro::Task<std::optional<SquareLauncher::StoredInfo>> SquareLauncher::getStored
     }
 }
 
-QCoro::Task<> SquareLauncher::login(const LoginInformation &info)
+QCoro::Task<bool> SquareEnixLogin::loginOauth()
 {
-    const auto storedResult = co_await getStored(info);
+    const auto storedResult = co_await getStoredValue();
     if (storedResult == std::nullopt) {
-        co_return;
+        co_return false;
     }
 
     const auto [stored, referer] = *storedResult;
 
-    qInfo() << "Performing oauth...";
+    qInfo(ASTRA_LOG) << "Logging in...";
 
     QUrlQuery postData;
     postData.addQueryItem(QStringLiteral("_STORED_"), stored);
-    postData.addQueryItem(QStringLiteral("sqexid"), info.username);
-    postData.addQueryItem(QStringLiteral("password"), info.password);
-    postData.addQueryItem(QStringLiteral("otppw"), info.oneTimePassword);
+    postData.addQueryItem(QStringLiteral("sqexid"), m_info->username);
+    postData.addQueryItem(QStringLiteral("password"), m_info->password);
+    postData.addQueryItem(QStringLiteral("otppw"), m_info->oneTimePassword);
 
     QUrl url;
     url.setScheme(QStringLiteral("https"));
@@ -121,7 +209,7 @@ QCoro::Task<> SquareLauncher::login(const LoginInformation &info)
     url.setPath(QStringLiteral("/oauth/ffxivarr/login/login.send"));
 
     QNetworkRequest request(url);
-    m_launcher.buildRequest(*info.profile, request);
+    m_launcher.buildRequest(*m_info->profile, request);
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/x-www-form-urlencoded"));
     request.setRawHeader(QByteArrayLiteral("Referer"), referer.toEncoded());
     request.setRawHeader(QByteArrayLiteral("Cache-Control"), QByteArrayLiteral("no-cache"));
@@ -144,34 +232,38 @@ QCoro::Task<> SquareLauncher::login(const LoginInformation &info)
 
         if (!playable) {
             Q_EMIT m_launcher.loginError(i18n("Your account is unplayable. Check that you have the correct license, and a valid subscription."));
-            co_return;
+            co_return false;
         }
 
         if (!terms) {
             Q_EMIT m_launcher.loginError(i18n("Your account is unplayable. You need to accept the terms of service from the official launcher first."));
-            co_return;
+            co_return false;
         }
 
         m_SID = parts[1];
         m_auth.region = parts[5].toInt();
         m_auth.maxExpansion = parts[13].toInt();
 
-        registerSession(info);
+        co_return true;
     } else {
         const QRegularExpression re(QStringLiteral(R"lit(window.external.user\("login=auth,ng,err,(?<launchParams>.*)\);)lit"));
         const QRegularExpressionMatch match = re.match(str);
 
         // there's a stray quote at the end of the error string, so let's remove that
         Q_EMIT m_launcher.loginError(match.captured(1).chopped(1));
+
+        co_return false;
     }
 }
 
-QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
+QCoro::Task<bool> SquareEnixLogin::registerSession()
 {
+    qInfo(ASTRA_LOG) << "Registering the session...";
+
     QUrl url;
     url.setScheme(QStringLiteral("https"));
     url.setHost(QStringLiteral("patch-gamever.%1").arg(m_launcher.settings()->squareEnixServer()));
-    url.setPath(QStringLiteral("/http/win32/ffxivneo_release_game/%1/%2").arg(info.profile->baseGameVersion(), m_SID));
+    url.setPath(QStringLiteral("/http/win32/ffxivneo_release_game/%1/%2").arg(m_info->profile->baseGameVersion(), m_SID));
 
     auto request = QNetworkRequest(url);
     m_launcher.setSSL(request);
@@ -179,10 +271,10 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
     request.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("FFXIV PATCH CLIENT"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/x-www-form-urlencoded"));
 
-    QString report = QStringLiteral("%1=%2").arg(info.profile->bootVersion(), co_await getBootHash(info));
+    QString report = QStringLiteral("%1=%2").arg(m_info->profile->bootVersion(), co_await getBootHash());
     for (int i = 0; i < m_auth.maxExpansion; i++) {
-        if (i < static_cast<int>(info.profile->numInstalledExpansions())) {
-            report += QStringLiteral("\nex%1\t%2").arg(QString::number(i + 1), info.profile->expansionVersion(i));
+        if (i < static_cast<int>(m_info->profile->numInstalledExpansions())) {
+            report += QStringLiteral("\nex%1\t%2").arg(QString::number(i + 1), m_info->profile->expansionVersion(i));
         } else {
             report += QStringLiteral("\nex%1\t2012.01.01.0000.0000").arg(QString::number(i + 1));
         }
@@ -205,18 +297,18 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
             const QString body = reply->readAll();
 
             if (!body.isEmpty()) {
-                m_patcher = new Patcher(m_launcher, info.profile->gamePath() + QStringLiteral("/game"), *info.profile->gameData(), this);
+                m_patcher = new Patcher(m_launcher, m_info->profile->gamePath() + QStringLiteral("/game"), *m_info->profile->gameData(), this);
                 const bool hasPatched = co_await m_patcher->patch(PatchList(body));
                 if (hasPatched) {
                     // re-read game version if it has updated
-                    info.profile->readGameVersion();
+                    m_info->profile->readGameVersion();
                 }
                 m_patcher->deleteLater();
             }
 
             m_auth.SID = patchUniqueId;
 
-            m_launcher.launchGame(*info.profile, m_auth);
+            co_return true;
         } else {
             Q_EMIT m_launcher.loginError(i18n("Fatal error, request was successful but X-Patch-Unique-Id was not recieved."));
         }
@@ -232,9 +324,11 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
             Q_EMIT m_launcher.loginError(i18n("Unknown error when registering the session."));
         }
     }
+
+    co_return false;
 }
 
-QCoro::Task<QString> SquareLauncher::getBootHash(const LoginInformation &info)
+QCoro::Task<QString> SquareEnixLogin::getBootHash()
 {
     const QList<QString> fileList = {QStringLiteral("ffxivboot.exe"),
                                      QStringLiteral("ffxivboot64.exe"),
@@ -243,8 +337,8 @@ QCoro::Task<QString> SquareLauncher::getBootHash(const LoginInformation &info)
                                      QStringLiteral("ffxivupdater.exe"),
                                      QStringLiteral("ffxivupdater64.exe")};
 
-    const auto hashFuture = QtConcurrent::mapped(fileList, [&info](const auto &filename) -> QString {
-        return getFileHash(info.profile->gamePath() + QStringLiteral("/boot/") + filename);
+    const auto hashFuture = QtConcurrent::mapped(fileList, [this](const auto &filename) -> QString {
+        return getFileHash(m_info->profile->gamePath() + QStringLiteral("/boot/") + filename);
     });
 
     co_await hashFuture;
@@ -259,4 +353,16 @@ QCoro::Task<QString> SquareLauncher::getBootHash(const LoginInformation &info)
     }
 
     co_return result;
+}
+
+QString SquareEnixLogin::getFileHash(const QString &file)
+{
+    auto f = QFile(file);
+    if (!f.open(QIODevice::ReadOnly))
+        return {};
+
+    QCryptographicHash hash(QCryptographicHash::Sha1);
+    hash.addData(&f);
+
+    return QStringLiteral("%1/%2").arg(QString::number(f.size()), hash.result().toHex());
 }

@@ -4,12 +4,13 @@
 #pragma once
 
 #include <QObject>
+#include <QtLogging>
 #include <QtQml/qqmlregistration.h>
-
-#include "squareboot.h"
+#include <physis.hpp>
 
 class Account;
 class ProfileConfig;
+class LauncherCore;
 
 class Profile : public QObject
 {

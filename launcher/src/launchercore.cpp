@@ -24,8 +24,8 @@
 #include "encryptedarg.h"
 #include "launchercore.h"
 #include "processlogger.h"
-#include "sapphirelauncher.h"
-#include "squarelauncher.h"
+#include "sapphirelogin.h"
+#include "squareenixlogin.h"
 #include "utility.h"
 
 void LauncherCore::setSSL(QNetworkRequest &request)
@@ -80,10 +80,15 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 
     auto assetUpdater = new AssetUpdater(*info.profile, *this, this);
     if (co_await assetUpdater->update()) {
+        std::optional<LoginAuth> auth;
         if (info.profile->account()->isSapphire()) {
-            m_sapphireLauncher->login(info.profile->account()->lobbyUrl(), info);
+            auth = co_await m_sapphireLogin->login(info.profile->account()->lobbyUrl(), info);
         } else {
-            m_squareBoot->checkGateStatus(info);
+            auth = co_await m_squareEnixLogin->login(&info);
+        }
+
+        if (auth != std::nullopt) {
+            launchGame(*info.profile, *auth);
         }
     }
 
@@ -414,9 +419,8 @@ LauncherCore::LauncherCore()
 {
     m_settings = new LauncherSettings(this);
     m_mgr = new QNetworkAccessManager(this);
-    m_sapphireLauncher = new SapphireLauncher(*this, this);
-    m_squareLauncher = new SquareLauncher(*this, this);
-    m_squareBoot = new SquareBoot(*this, *m_squareLauncher, this);
+    m_sapphireLogin = new SapphireLogin(*this, this);
+    m_squareEnixLogin = new SquareEnixLogin(*this, this);
     m_profileManager = new ProfileManager(*this, this);
     m_accountManager = new AccountManager(*this, this);
 

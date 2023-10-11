@@ -14,11 +14,10 @@
 #include "launchersettings.h"
 #include "profile.h"
 #include "profilemanager.h"
-#include "squareboot.h"
 #include "steamapi.h"
 
-class SapphireLauncher;
-class SquareLauncher;
+class SapphireLogin;
+class SquareEnixLogin;
 class AssetUpdater;
 class GameInstaller;
 class CompatibilityToolInstaller;
@@ -62,7 +61,6 @@ class LauncherCore : public QObject
     Q_PROPERTY(bool isSteam READ isSteam CONSTANT)
     Q_PROPERTY(bool isSteamDeck READ isSteamDeck CONSTANT)
     Q_PROPERTY(LauncherSettings *settings READ settings CONSTANT)
-    Q_PROPERTY(SquareBoot *squareBoot MEMBER m_squareBoot)
     Q_PROPERTY(ProfileManager *profileManager READ profileManager CONSTANT)
     Q_PROPERTY(AccountManager *accountManager READ accountManager CONSTANT)
     Q_PROPERTY(Headline *headline READ headline NOTIFY newsChanged)
@@ -181,9 +179,8 @@ private:
     ProfileManager *m_profileManager = nullptr;
     AccountManager *m_accountManager = nullptr;
 
-    SapphireLauncher *m_sapphireLauncher = nullptr;
-    SquareBoot *m_squareBoot = nullptr;
-    SquareLauncher *m_squareLauncher = nullptr;
+    SapphireLogin *m_sapphireLogin = nullptr;
+    SquareEnixLogin *m_squareEnixLogin = nullptr;
 
     QNetworkAccessManager *m_mgr = nullptr;
     Headline *m_headline = nullptr;

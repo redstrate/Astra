@@ -17,7 +17,7 @@
 #include "launchercore.h"
 #include "logger.h"
 #include "physis_logger.h"
-#include "sapphirelauncher.h"
+#include "sapphirelogin.h"
 
 int main(int argc, char *argv[])
 {

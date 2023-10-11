@@ -55,9 +55,8 @@ target_sources(astra PRIVATE
         include/processlogger.h
         include/profile.h
         include/profilemanager.h
-        include/sapphirelauncher.h
-        include/squareboot.h
-        include/squarelauncher.h
+        include/sapphirelogin.h
+        include/squareenixlogin.h
         include/steamapi.h
         include/utility.h
 
@@ -75,9 +74,8 @@ target_sources(astra PRIVATE
         src/processlogger.cpp
         src/profile.cpp
         src/profilemanager.cpp
-        src/sapphirelauncher.cpp
-        src/squareboot.cpp
-        src/squarelauncher.cpp
+        src/sapphirelogin.cpp
+        src/squareenixlogin.cpp
         src/steamapi.cpp
         src/utility.cpp
 )

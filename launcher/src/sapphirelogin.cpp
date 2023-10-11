@@ -1,21 +1,22 @@
 // SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "sapphirelauncher.h"
+#include "sapphirelogin.h"
 #include "utility.h"
 
 #include <KLocalizedString>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkReply>
+#include <qcoronetwork.h>
 
-SapphireLauncher::SapphireLauncher(LauncherCore &window, QObject *parent)
+SapphireLogin::SapphireLogin(LauncherCore &window, QObject *parent)
     : QObject(parent)
     , m_launcher(window)
 {
 }
 
-void SapphireLauncher::login(const QString &lobbyUrl, const LoginInformation &info)
+QCoro::Task<std::optional<LoginAuth>> SapphireLogin::login(const QString &lobbyUrl, const LoginInformation &info)
 {
     const QJsonObject data{{QStringLiteral("username"), info.username}, {QStringLiteral("pass"), info.password}};
 
@@ -26,29 +27,29 @@ void SapphireLauncher::login(const QString &lobbyUrl, const LoginInformation &in
     Utility::printRequest(QStringLiteral("POST"), request);
 
     const auto reply = m_launcher.mgr()->post(request, QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Compact));
+    co_await reply;
 
-    connect(reply, &QNetworkReply::finished, [this, reply, &info] {
-        if (reply->error() != QNetworkReply::NetworkError::NoError) {
-            Q_EMIT m_launcher.loginError(i18n("Could not contact lobby server.\n\n%1", reply->errorString()));
-            return;
-        }
+    if (reply->error() != QNetworkReply::NetworkError::NoError) {
+        Q_EMIT m_launcher.loginError(i18n("Could not contact lobby server.\n\n%1", reply->errorString()));
+        co_return std::nullopt;
+    }
 
-        const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
-        if (!document.isEmpty()) {
-            LoginAuth auth;
-            auth.SID = document[QLatin1String("sId")].toString();
-            auth.lobbyhost = document[QLatin1String("lobbyHost")].toString();
-            auth.frontierHost = document[QLatin1String("frontierHost")].toString();
-            auth.region = 3;
+    const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
+    if (!document.isEmpty()) {
+        LoginAuth auth;
+        auth.SID = document[QLatin1String("sId")].toString();
+        auth.lobbyhost = document[QLatin1String("lobbyHost")].toString();
+        auth.frontierHost = document[QLatin1String("frontierHost")].toString();
+        auth.region = 3;
 
-            m_launcher.launchGame(*info.profile, auth);
-        } else {
-            Q_EMIT m_launcher.loginError(i18n("Invalid username or password."));
-        }
-    });
+        co_return auth;
+    } else {
+        Q_EMIT m_launcher.loginError(i18n("Invalid username or password."));
+        co_return std::nullopt;
+    }
 }
 
-void SapphireLauncher::registerAccount(const QString &lobbyUrl, const LoginInformation &info)
+void SapphireLogin::registerAccount(const QString &lobbyUrl, const LoginInformation &info)
 {
     const QJsonObject data{{QStringLiteral("username"), info.username}, {QStringLiteral("pass"), info.password}};
     const QUrl url(lobbyUrl + QStringLiteral("/sapphire-api/lobby/createAccount"));
