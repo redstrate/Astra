@@ -46,6 +46,7 @@ target_sources(astra PRIVATE
         include/assetupdater.h
         include/compatibilitytoolinstaller.h
         include/encryptedarg.h
+        include/gamerunner.h
         include/gameinstaller.h
         include/headline.h
         include/launchercore.h
@@ -65,6 +66,7 @@ target_sources(astra PRIVATE
         src/assetupdater.cpp
         src/compatibilitytoolinstaller.cpp
         src/encryptedarg.cpp
+        src/gamerunner.cpp
         src/gameinstaller.cpp
         src/launchercore.cpp
         src/launchersettings.cpp
