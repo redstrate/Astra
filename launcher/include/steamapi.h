@@ -11,12 +11,9 @@ class SteamAPI : public QObject
 {
 public:
     explicit SteamAPI(LauncherCore &core, QObject *parent = nullptr);
-    ~SteamAPI();
+    ~SteamAPI() override;
 
     void setLauncherMode(bool isLauncher);
 
     [[nodiscard]] bool isDeck() const;
-
-private:
-    LauncherCore &core;
 };

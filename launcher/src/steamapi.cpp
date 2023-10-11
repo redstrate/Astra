@@ -7,18 +7,19 @@
 #include <steam/steam_api.h>
 #endif
 
+#include "astra_log.h"
 #include "launchercore.h"
 
 SteamAPI::SteamAPI(LauncherCore &core, QObject *parent)
     : QObject(parent)
-    , core(core)
 {
 #ifdef ENABLE_STEAM
     qputenv("SteamAppId", "39210");
     qputenv("SteamGameId", "39210");
 
-    if (!SteamAPI_Init())
-        qDebug() << "Failed to initialize steam api!";
+    if (!SteamAPI_Init()) {
+        qFatal(ASTRA_LOG) << "Failed to initialize steam api!";
+    }
 #endif
 }
 
