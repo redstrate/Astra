@@ -85,6 +85,8 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudAssetVersion()
 
         co_return co_await installDalamudAssets();
     }
+
+    co_return true;
 }
 
 QCoro::Task<bool> AssetUpdater::checkRemoteDalamudVersion()
@@ -189,13 +191,13 @@ QCoro::Task<bool> AssetUpdater::installDalamud()
 
     qInfo(ASTRA_LOG) << "Finished downloading Dalamud";
 
-    QFile file(tempDir.path() + QStringLiteral("/latest.zip"));
+    QFile file(tempDir.filePath(QStringLiteral("/latest.zip")));
     file.open(QIODevice::WriteOnly);
     file.write(reply->readAll());
     file.close();
 
     const bool success =
-        !JlCompress::extractDir(tempDir.path() + QLatin1String("/latest.zip"), dalamudDir.absoluteFilePath(m_profile.dalamudChannelName())).empty();
+        !JlCompress::extractDir(tempDir.filePath(QStringLiteral("latest.zip")), dalamudDir.absoluteFilePath(m_profile.dalamudChannelName())).empty();
 
     if (!success) {
         qCritical(ASTRA_LOG) << "Failed to install Dalamud";
@@ -222,7 +224,7 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
 
         qInfo(ASTRA_LOG) << "Finished downloading Dotnet-core";
 
-        QFile file(tempDir.path() + QStringLiteral("/dotnet-core.zip"));
+        QFile file(tempDir.filePath(QStringLiteral("dotnet-core.zip")));
         file.open(QIODevice::WriteOnly);
         file.write(reply->readAll());
         file.close();
@@ -238,14 +240,14 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
 
         qInfo(ASTRA_LOG) << "Finished downloading Dotnet-desktop";
 
-        QFile file(tempDir.path() + QStringLiteral("/dotnet-desktop.zip"));
+        QFile file(tempDir.filePath(QStringLiteral("dotnet-desktop.zip")));
         file.open(QIODevice::WriteOnly);
         file.write(reply->readAll());
         file.close();
     }
 
-    bool success = !JlCompress::extractDir(tempDir.path() + QStringLiteral("/dotnet-core.zip"), dalamudRuntimeDir.absolutePath()).empty();
-    success |= !JlCompress::extractDir(tempDir.path() + QStringLiteral("/dotnet-desktop.zip"), dalamudRuntimeDir.absolutePath()).empty();
+    bool success = !JlCompress::extractDir(tempDir.filePath(QStringLiteral("dotnet-core.zip")), dalamudRuntimeDir.absolutePath()).empty();
+    success |= !JlCompress::extractDir(tempDir.filePath(QStringLiteral("dotnet-desktop.zip")), dalamudRuntimeDir.absolutePath()).empty();
 
     if (!success) {
         qCritical(ASTRA_LOG) << "Failed to install dotnet";
