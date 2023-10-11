@@ -7,20 +7,15 @@ plugins!
 
 ![Main Screenshot](misc/screenshot.png)
 
-If you still have questions, please read the [FAQ](https://xiv.zone/astra/faq) first.
-
 ## Features
 
-* Handles running Wine for you, creating a seamless and native-feeling launcher experience!
-    * Can also easily enable several Linux-specific enhancements such as Fsync or configuring Gamescope.
-* Multiple account support!
-    * Can associate a Lodestone character with an account to use as an avatar.
-* Easily install and use Dalamud plugins.
-* Game patching support.
-* Securely login to the official Square Enix lobbies, as well as Sapphire servers.
-    * Game arguments are encrypted by default, providing the same level of security as other launchers.
-    * Saving account usernames and passwords are also supported, and is never stored plaintext.
-* Can install FFXIV on new systems for you, bypassing the normal InstallShield installer.
+* Wine Support - Handles launching Wine for you.
+* Dalamud Support - You can use Dalamud plugins out of the box.
+* Multiple Profiles - Almost all of the settings can be set per-profile.
+* Encrypted Arguments - Game arguments are encrypted out of the box, so it's just as secure as other launchers.
+* Secure Password Storage - Login information is encrypted using your system keychain and is never stored plain-text.
+* Game Patching Support - Can patch the game without the need to boot into the official launcher.
+* Sapphire Login - Can login to 3rd party Sapphire servers.
 
 ## Get It
 
