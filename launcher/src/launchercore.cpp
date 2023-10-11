@@ -681,7 +681,7 @@ void LauncherCore::clearAvatarCache()
 void LauncherCore::initializeSteam()
 {
     m_isSteam = true;
-    m_steamApi = new SteamAPI(*this, this);
+    m_steamApi = new SteamAPI(this);
     m_steamApi->setLauncherMode(true);
 }
 

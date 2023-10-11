@@ -103,18 +103,9 @@ public:
      */
     void launchGame(Profile &settings, const LoginAuth &auth);
 
-    /*
-     * This just wraps it in wine if needed.
-     */
-    void launchExecutable(const Profile &settings, QProcess *process, const QStringList &args, bool isGame, bool needsRegistrySetup);
-
-    void addRegistryKey(const Profile &settings, QString key, QString value, QString data);
-
     void buildRequest(const Profile &settings, QNetworkRequest &request);
     void setSSL(QNetworkRequest &request);
     void setupIgnoreSSL(QNetworkReply *reply);
-
-    void readInitialInformation();
 
     Q_INVOKABLE GameInstaller *createInstaller(Profile *profile);
     Q_INVOKABLE CompatibilityToolInstaller *createCompatInstaller();
@@ -151,6 +142,15 @@ signals:
     void autoLoginProfileChanged();
 
 private:
+    /*
+     * This just wraps it in wine if needed.
+     */
+    void launchExecutable(const Profile &settings, QProcess *process, const QStringList &args, bool isGame, bool needsRegistrySetup);
+
+    void addRegistryKey(const Profile &settings, QString key, QString value, QString data);
+
+    void readInitialInformation();
+
     QCoro::Task<> beginLogin(LoginInformation &info);
 
     /*

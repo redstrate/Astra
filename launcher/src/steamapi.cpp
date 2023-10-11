@@ -10,7 +10,7 @@
 #include "astra_log.h"
 #include "launchercore.h"
 
-SteamAPI::SteamAPI(LauncherCore &core, QObject *parent)
+SteamAPI::SteamAPI(QObject *parent)
     : QObject(parent)
 {
 #ifdef ENABLE_STEAM
