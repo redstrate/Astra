@@ -74,6 +74,7 @@ class LauncherCore : public QObject
     Q_PROPERTY(QString squareEnixLoginServer READ squareEnixLoginServer WRITE setSquareEnixLoginServer NOTIFY squareEnixLoginServerChanged)
     Q_PROPERTY(QString xivApiServer READ xivApiServer WRITE setXivApiServer NOTIFY xivApiServerChanged)
     Q_PROPERTY(QString preferredProtocol READ preferredProtocol WRITE setPreferredProtocol NOTIFY preferredProtocolChanged)
+    Q_PROPERTY(QString screenshotDir READ screenshotDir WRITE setScreenshotDir NOTIFY screenshotDirChanged)
     Q_PROPERTY(bool argumentsEncrypted READ argumentsEncrypted WRITE setArgumentsEncrypted NOTIFY encryptedArgumentsChanged)
     Q_PROPERTY(Headline *headline READ headline NOTIFY newsChanged)
     Q_PROPERTY(Profile *currentProfile READ currentProfile WRITE setCurrentProfile NOTIFY currentProfileChanged)
@@ -151,6 +152,9 @@ public:
     [[nodiscard]] QString preferredProtocol() const;
     void setPreferredProtocol(const QString &value);
 
+    [[nodiscard]] QString screenshotDir() const;
+    void setScreenshotDir(const QString &value);
+
     [[nodiscard]] bool argumentsEncrypted() const;
     void setArgumentsEncrypted(bool value);
 
@@ -190,6 +194,7 @@ signals:
     void squareEnixLoginServerChanged();
     void xivApiServerChanged();
     void preferredProtocolChanged();
+    void screenshotDirChanged();
     void encryptedArgumentsChanged();
     void loginError(QString message);
     void dalamudError(QString message);

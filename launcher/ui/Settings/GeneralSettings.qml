@@ -86,6 +86,20 @@ FormCard.FormCardPage {
             checked: LauncherCore.showDevTools
             onCheckedChanged: LauncherCore.showDevTools = checked
         }
+
+        FormCard.FormDelegateSeparator {
+            above: showDevToolsDelegate
+            below: screenshotsPathDelegate
+        }
+
+        FormFolderDelegate {
+            id: screenshotsPathDelegate
+
+            text: i18n("Screenshots Folder")
+            folder: LauncherCore.screenshotDir
+
+            onAccepted: (folder) => LauncherCore.screenshotDir = folder
+        }
     }
 
     FormCard.FormCard {

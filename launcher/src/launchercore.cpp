@@ -646,6 +646,20 @@ void LauncherCore::setPreferredProtocol(const QString &value)
     }
 }
 
+QString LauncherCore::screenshotDir() const
+{
+    return m_config->screenshotDir();
+}
+
+void LauncherCore::setScreenshotDir(const QString &value)
+{
+    if (value != m_config->screenshotDir()) {
+        m_config->setScreenshotDir(value);
+        m_config->save();
+        Q_EMIT screenshotDirChanged();
+    }
+}
+
 bool LauncherCore::argumentsEncrypted() const
 {
     return m_config->encryptArguments();

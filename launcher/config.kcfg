@@ -8,6 +8,7 @@ SPDX-FileCopyrightText: Joshua Goins <josh@redstrate.com>
 SPDX-License-Identifier: CC0-1.0
 -->
   <kcfgfile arg="true" />
+  <include>QDir</include>
   <group name="General">
     <entry name="CloseWhenLaunched" type="bool">
       <default>true</default>
@@ -23,6 +24,9 @@ SPDX-License-Identifier: CC0-1.0
     <entry name="AutoLoginProfile" type="String">
     </entry>
     <entry name="CurrentProfile" type="String">
+    </entry>
+    <entry name="ScreenshotDir" type="String">
+      <default code="true">QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + QDir::separator() + QStringLiteral("FFXIV")</default>
     </entry>
   </group>
   <group name="Developer">
