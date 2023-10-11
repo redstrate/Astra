@@ -69,6 +69,6 @@ void SapphireLogin::registerAccount(const QString &lobbyUrl, const LoginInformat
         auth.frontierHost = document[QLatin1String("frontierHost")].toString();
         auth.region = 3;
 
-        m_launcher.launchGame(*info.profile, auth);
+        // m_launcher.launchGame(*info.profile, auth);
     });
 }

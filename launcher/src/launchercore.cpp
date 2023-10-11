@@ -57,17 +57,6 @@ void LauncherCore::buildRequest(const Profile &settings, QNetworkRequest &reques
     request.setRawHeader(QByteArrayLiteral("Accept-Language"), QByteArrayLiteral("en-us"));
 }
 
-void LauncherCore::launchGame(Profile &profile, const LoginAuth &auth)
-{
-    Q_EMIT stageChanged(i18n("Launching game..."));
-
-    if (isSteam()) {
-        m_steamApi->setLauncherMode(false);
-    }
-
-    m_runner->beginGameExecutable(profile, auth);
-}
-
 QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 {
     info.profile->account()->updateConfig();
@@ -82,7 +71,13 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
         }
 
         if (auth != std::nullopt) {
-            launchGame(*info.profile, *auth);
+            Q_EMIT stageChanged(i18n("Launching game..."));
+
+            if (isSteam()) {
+                m_steamApi->setLauncherMode(false);
+            }
+
+            m_runner->beginGameExecutable(*info.profile, *auth);
         }
     }
 

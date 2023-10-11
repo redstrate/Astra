@@ -95,11 +95,6 @@ public:
      */
     Q_INVOKABLE bool autoLogin(Profile *profile);
 
-    /*
-     * Launches the game using the provided authentication.
-     */
-    void launchGame(Profile &settings, const LoginAuth &auth);
-
     void buildRequest(const Profile &settings, QNetworkRequest &request);
     void setSSL(QNetworkRequest &request);
     void setupIgnoreSSL(QNetworkReply *reply);
