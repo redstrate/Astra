@@ -238,14 +238,14 @@ void Account::fetchAvatar()
         QNetworkRequest request(url);
         Utility::printRequest(QStringLiteral("GET"), request);
 
-        const auto reply = m_launcher.mgr->get(request);
+        const auto reply = m_launcher.mgr()->get(request);
         connect(reply, &QNetworkReply::finished, [this, filename, reply] {
             auto document = QJsonDocument::fromJson(reply->readAll());
             if (document.isObject()) {
                 const QNetworkRequest avatarRequest(document.object()[QLatin1String("Character")].toObject()[QLatin1String("Avatar")].toString());
                 Utility::printRequest(QStringLiteral("GET"), avatarRequest);
 
-                auto avatarReply = m_launcher.mgr->get(avatarRequest);
+                auto avatarReply = m_launcher.mgr()->get(avatarRequest);
                 QObject::connect(avatarReply, &QNetworkReply::finished, [this, filename, avatarReply] {
                     QFile file(filename);
                     file.open(QIODevice::ReadWrite);

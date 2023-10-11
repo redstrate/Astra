@@ -68,7 +68,7 @@ QCoro::Task<std::optional<SquareLauncher::StoredInfo>> SquareLauncher::getStored
 
     Utility::printRequest(QStringLiteral("GET"), request);
 
-    const auto reply = window.mgr->get(request);
+    const auto reply = window.mgr()->get(request);
     co_await reply;
 
     const QString str = reply->readAll();
@@ -128,7 +128,7 @@ QCoro::Task<> SquareLauncher::login(const LoginInformation &info)
 
     Utility::printRequest(QStringLiteral("POST"), request);
 
-    const auto reply = window.mgr->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
+    const auto reply = window.mgr()->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
     window.setupIgnoreSSL(reply);
     co_await reply;
 
@@ -190,7 +190,7 @@ QCoro::Task<> SquareLauncher::registerSession(const LoginInformation &info)
 
     Utility::printRequest(QStringLiteral("POST"), request);
 
-    const auto reply = window.mgr->post(request, report.toUtf8());
+    const auto reply = window.mgr()->post(request, report.toUtf8());
     co_await reply;
 
     if (reply->error() == QNetworkReply::NoError) {

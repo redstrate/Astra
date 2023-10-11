@@ -73,8 +73,7 @@ class LauncherCore : public QObject
 public:
     LauncherCore();
 
-    QNetworkAccessManager *mgr;
-
+    QNetworkAccessManager *mgr();
     LauncherSettings *settings();
     ProfileManager *profileManager();
     AccountManager *accountManager();
@@ -190,6 +189,7 @@ private:
     SquareBoot *m_squareBoot = nullptr;
     SquareLauncher *m_squareLauncher = nullptr;
 
+    QNetworkAccessManager *m_mgr = nullptr;
     Headline *m_headline = nullptr;
     LauncherSettings *m_settings = nullptr;
 

@@ -63,7 +63,7 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudAssetVersion()
     const QNetworkRequest request(dalamudAssetManifestUrl());
     Utility::printRequest(QStringLiteral("GET"), request);
 
-    const auto reply = launcher.mgr->get(request);
+    const auto reply = launcher.mgr()->get(request);
     co_await reply;
 
     if (reply->error() != QNetworkReply::NetworkError::NoError) {
@@ -102,7 +102,7 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudVersion()
     remoteDalamudVersion.clear();
     remoteRuntimeVersion.clear();
 
-    const auto reply = launcher.mgr->get(request);
+    const auto reply = launcher.mgr()->get(request);
     co_await reply;
 
     if (reply->error() != QNetworkReply::NetworkError::NoError) {
@@ -143,7 +143,7 @@ QCoro::Task<bool> AssetUpdater::installDalamudAssets()
         const QNetworkRequest assetRequest(assetObject.toObject()[QLatin1String("url")].toString());
         Utility::printRequest(QStringLiteral("GET"), assetRequest);
 
-        const auto assetReply = launcher.mgr->get(assetRequest);
+        const auto assetReply = launcher.mgr()->get(assetRequest);
 
         const auto future = QtFuture::connect(assetReply, &QNetworkReply::finished).then([this, assetReply, assetObject] {
             const QString fileName = assetObject.toObject()[QLatin1String("fileName")].toString();
@@ -186,7 +186,7 @@ QCoro::Task<bool> AssetUpdater::installDalamud()
     const QNetworkRequest request(remoteDalamudDownloadUrl);
     Utility::printRequest(QStringLiteral("GET"), request);
 
-    const auto reply = launcher.mgr->get(request);
+    const auto reply = launcher.mgr()->get(request);
     co_await reply;
 
     qInfo(ASTRA_LOG) << "Finished downloading Dalamud";
@@ -219,7 +219,7 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
         const QNetworkRequest request(dotnetRuntimePackageUrl(remoteRuntimeVersion));
         Utility::printRequest(QStringLiteral("GET"), request);
 
-        const auto reply = launcher.mgr->get(request);
+        const auto reply = launcher.mgr()->get(request);
         co_await reply;
 
         qInfo(ASTRA_LOG) << "Finished downloading Dotnet-core";
@@ -235,7 +235,7 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
         const QNetworkRequest request(dotnetDesktopPackageUrl(remoteRuntimeVersion));
         Utility::printRequest(QStringLiteral("GET"), request);
 
-        const auto reply = launcher.mgr->get(request);
+        const auto reply = launcher.mgr()->get(request);
         co_await reply;
 
         qInfo(ASTRA_LOG) << "Finished downloading Dotnet-desktop";

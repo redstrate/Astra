@@ -46,7 +46,7 @@ QCoro::Task<> SquareBoot::bootCheck(const LoginInformation &info)
     request.setRawHeader(QByteArrayLiteral("Host"), QStringLiteral("patch-bootver.%1").arg(window.settings()->squareEnixServer()).toUtf8());
     Utility::printRequest(QStringLiteral("GET"), request);
 
-    const auto reply = window.mgr->get(request);
+    const auto reply = window.mgr()->get(request);
     co_await reply;
 
     const QString patchList = reply->readAll();
@@ -81,7 +81,7 @@ QCoro::Task<> SquareBoot::checkGateStatus(const LoginInformation &info)
 
     Utility::printRequest(QStringLiteral("GET"), request);
 
-    const auto reply = window.mgr->get(request);
+    const auto reply = window.mgr()->get(request);
     window.setupIgnoreSSL(reply);
     co_await reply;
 

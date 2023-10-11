@@ -84,7 +84,7 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
             const auto patchRequest = QNetworkRequest(patch.url);
             Utility::printRequest(QStringLiteral("GET"), patchRequest);
 
-            auto patchReply = m_launcher.mgr->get(patchRequest);
+            auto patchReply = m_launcher.mgr()->get(patchRequest);
 
             connect(patchReply, &QNetworkReply::downloadProgress, this, [this, queuedPatch](int received, int total) {
                 Q_EMIT m_launcher.stageChanged(i18n("Updating %1.\nDownloading %2", getBaseString(), queuedPatch.getVersion()));

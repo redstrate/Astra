@@ -30,7 +30,7 @@ void GameInstaller::installGame()
 
     QNetworkRequest request((QUrl(installerUrl)));
 
-    auto reply = m_launcher.mgr->get(request);
+    auto reply = m_launcher.mgr()->get(request);
     Utility::printRequest(QStringLiteral("GET"), request);
 
     QObject::connect(reply, &QNetworkReply::finished, [this, reply, installDirectory] {

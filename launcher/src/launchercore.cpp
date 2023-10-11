@@ -413,7 +413,7 @@ void LauncherCore::readInitialInformation()
 LauncherCore::LauncherCore()
 {
     m_settings = new LauncherSettings(this);
-    mgr = new QNetworkAccessManager(this);
+    m_mgr = new QNetworkAccessManager(this);
     m_sapphireLauncher = new SapphireLauncher(*this, this);
     m_squareLauncher = new SquareLauncher(*this, this);
     m_squareBoot = new SquareBoot(*this, *m_squareLauncher, this);
@@ -580,7 +580,7 @@ QCoro::Task<> LauncherCore::fetchNews()
                              .toUtf8());
     Utility::printRequest(QStringLiteral("GET"), request);
 
-    auto reply = mgr->get(request);
+    auto reply = mgr()->get(request);
     co_await reply;
 
     auto document = QJsonDocument::fromJson(reply->readAll());
@@ -688,4 +688,9 @@ void LauncherCore::initializeSteam()
 LauncherSettings *LauncherCore::settings()
 {
     return m_settings;
+}
+
+QNetworkAccessManager *LauncherCore::mgr()
+{
+    return m_mgr;
 }

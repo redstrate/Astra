@@ -25,7 +25,7 @@ void SapphireLauncher::login(const QString &lobbyUrl, const LoginInformation &in
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/x-www-form-urlencoded"));
     Utility::printRequest(QStringLiteral("POST"), request);
 
-    const auto reply = window.mgr->post(request, QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Compact));
+    const auto reply = window.mgr()->post(request, QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Compact));
 
     connect(reply, &QNetworkReply::finished, [this, reply, &info] {
         if (reply->error() != QNetworkReply::NetworkError::NoError) {
@@ -58,7 +58,7 @@ void SapphireLauncher::registerAccount(const QString &lobbyUrl, const LoginInfor
 
     Utility::printRequest(QStringLiteral("POST"), request);
 
-    const auto reply = window.mgr->post(request, QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Compact));
+    const auto reply = window.mgr()->post(request, QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Compact));
     connect(reply, &QNetworkReply::finished, [&] {
         const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
 
