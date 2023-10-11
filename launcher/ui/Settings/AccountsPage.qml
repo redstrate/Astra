@@ -31,6 +31,7 @@ FormCard.FormCardPage {
 
                 FormCard.FormButtonDelegate {
                     text: account.name
+                    description: account.isSapphire ? i18n("Sapphire") : i18n("Square Enix")
 
                     leading: Components.Avatar {
                         source: account.avatarUrl
