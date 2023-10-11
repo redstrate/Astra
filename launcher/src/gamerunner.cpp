@@ -1,6 +1,7 @@
-#include "gamerunner.h"
+// SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
+// SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <KLocalizedString>
+#include "gamerunner.h"
 
 #ifdef ENABLE_GAMEMODE
 #include <gamemode_client.h>
