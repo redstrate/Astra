@@ -20,6 +20,8 @@ class AssetUpdater : public QObject
 public:
     explicit AssetUpdater(Profile &profile, LauncherCore &launcher, QObject *parent = nullptr);
 
+    /// Checks for any asset updates. (This currently only means Dalamud.)
+    /// \return False if the asset update failed, which should be considered fatal and Dalamud should not be used.
     QCoro::Task<bool> update();
 
 private:

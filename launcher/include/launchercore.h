@@ -76,23 +76,17 @@ public:
     ProfileManager *profileManager();
     AccountManager *accountManager();
 
+    /// Initializes the Steamworks API.
     void initializeSteam();
 
-    /*
-     * Begins the login process, and may call SquareBoot or SapphireLauncher depending on the profile type.
-     * It's designed to be opaque as possible to the caller.
-     *
-     * The login process is asynchronous.
-     */
+    /// Begins the login process, and may call SquareBoot or SapphireLauncher depending on the profile type.
+    /// It's designed to be opaque as possible to the caller.
+    /// \note The login process is asynchronous.
     Q_INVOKABLE void login(Profile *profile, const QString &username, const QString &password, const QString &oneTimePassword);
 
-    /*
-     * Attempts to log into a profile without LoginInformation, which may or may not work depending on a combination of
-     * the password failing, OTP not being available to auto-generate, among other things.
-     *
-     * The launcher will still warn the user about any possible errors, however the call site will need to check the
-     * result to see whether they need to "reset" or show a failed state or not.
-     */
+    /// Attempts to log into a profile without LoginInformation, which may or may not work depending on a combination of the password failing, OTP not being
+    /// available to auto-generate, among other things. The launcher will still warn the user about any possible errors, however the call site will need to
+    /// check the result to see whether they need to "reset" or show a failed state or not. \note The login process is asynchronous.
     Q_INVOKABLE bool autoLogin(Profile *profile);
 
     void buildRequest(const Profile &settings, QNetworkRequest &request);

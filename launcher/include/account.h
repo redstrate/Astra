@@ -76,8 +76,10 @@ public:
     Q_INVOKABLE QString getOTP();
     Q_INVOKABLE void setOTPSecret(const QString &secret);
 
+    /// Returns the path to the FFXIV config folder
     [[nodiscard]] QDir getConfigDir() const;
 
+    /// Updates FFXIV.cfg with some recommended options like turning the opening cutscene movie off
     void updateConfig();
 
 Q_SIGNALS:
