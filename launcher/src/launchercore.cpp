@@ -224,6 +224,11 @@ bool LauncherCore::isSteamDeck() const
     }
 }
 
+bool LauncherCore::isPatching() const
+{
+    return m_isPatching;
+}
+
 QNetworkAccessManager *LauncherCore::mgr()
 {
     return m_mgr;

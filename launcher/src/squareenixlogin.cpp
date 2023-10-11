@@ -86,12 +86,15 @@ QCoro::Task<> SquareEnixLogin::checkBootUpdates()
     Q_EMIT m_launcher.stageChanged(i18n("Checking for launcher updates..."));
     qInfo(ASTRA_LOG) << "Checking for updates to boot components...";
 
-    const QUrlQuery query{{QStringLiteral("time"), QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH-mm"))}};
+    QString formattedDate = QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH-mm"));
+    formattedDate[15] = '0';
+
+    const QUrlQuery query{{QStringLiteral("time"), formattedDate}};
 
     QUrl url;
     url.setScheme(QStringLiteral("http"));
     url.setHost(QStringLiteral("patch-bootver.%1").arg(m_launcher.settings()->squareEnixServer()));
-    url.setPath(QStringLiteral("/http/win32/ffxivneo_release_boot/%1").arg(m_info->profile->bootVersion()));
+    url.setPath(QStringLiteral("/http/win32/ffxivneo_release_boot/%1/").arg(m_info->profile->bootVersion()));
     url.setQuery(query);
 
     auto request = QNetworkRequest(url);

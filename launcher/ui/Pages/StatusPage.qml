@@ -12,6 +12,14 @@ Kirigami.Page {
 
     title: i18n("Logging in...")
 
+    onBackRequested: (event) => {
+        if (LauncherCore.isPatching()) {
+            // Prevent going back
+            applicationWindow().showPassiveNotification(i18n("Please do not quit while patching!"));
+            event.accepted = true;
+        }
+    }
+
     Kirigami.LoadingPlaceholder {
         id: placeholder
 
@@ -48,8 +56,9 @@ Kirigami.Page {
     Connections {
         target: LauncherCore
 
-        function onStageChanged(message) {
+        function onStageChanged(message, explanation) {
             placeholder.text = message
+            placeholder.explanation = explanation
         }
 
         function onStageIndeterminate() {

@@ -105,6 +105,7 @@ public:
     [[nodiscard]] bool isLoadingFinished() const;
     [[nodiscard]] bool isSteam() const;
     [[nodiscard]] bool isSteamDeck() const;
+    [[nodiscard]] Q_INVOKABLE bool isPatching() const;
 
     [[nodiscard]] QNetworkAccessManager *mgr();
     [[nodiscard]] LauncherSettings *settings();
@@ -112,18 +113,23 @@ public:
     [[nodiscard]] AccountManager *accountManager();
     [[nodiscard]] Headline *headline() const;
 
-signals:
+Q_SIGNALS:
     void loadingFinished();
     void successfulLaunch();
     void gameClosed();
     void loginError(QString message);
     void dalamudError(QString message);
-    void stageChanged(QString message);
+    void stageChanged(QString message, QString explanation = {});
     void stageIndeterminate();
     void stageDeterminate(int min, int max, int value);
     void newsChanged();
     void currentProfileChanged();
     void autoLoginProfileChanged();
+
+protected:
+    friend class Patcher;
+
+    bool m_isPatching = false;
 
 private:
     QCoro::Task<> beginLogin(LoginInformation &info);

@@ -5,6 +5,7 @@
 
 #include "patchlist.h"
 #include <QDir>
+#include <QMutex>
 #include <QNetworkAccessManager>
 #include <QString>
 #include <physis.hpp>
@@ -21,6 +22,7 @@ class Patcher : public QObject
 public:
     Patcher(LauncherCore &launcher, const QString &baseDirectory, GameData &gameData, QObject *parent = nullptr);
     Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData &bootData, QObject *parent = nullptr);
+    ~Patcher() override;
 
     QCoro::Task<bool> patch(const PatchList &patchList);
 
@@ -39,6 +41,9 @@ private:
         long hashBlockSize;
         long length;
         bool isBoot;
+
+        long bytesDownloaded;
+        bool downloaded = false;
 
         [[nodiscard]] QString getVersion() const
         {
@@ -62,4 +67,10 @@ private:
     int m_remainingPatches = -1;
 
     LauncherCore &m_launcher;
+
+    QMutex m_finishedPatchesMutex;
+    int m_finishedPatches = 0;
+
+    void updateDownloadProgress(int index, int received);
+    void updateMessage();
 };

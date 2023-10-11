@@ -24,9 +24,11 @@ Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData 
     , m_bootData(&bootData)
     , m_launcher(launcher)
 {
+    m_launcher.m_isPatching = true;
+
     setupDirectories();
 
-    Q_EMIT m_launcher.stageChanged(i18n("Checking %1 version.", getBaseString()));
+    Q_EMIT m_launcher.stageChanged(i18n("Checking %1 version", getBaseString()));
 }
 
 Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, GameData &gameData, QObject *parent)
@@ -35,9 +37,16 @@ Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, GameData 
     , m_gameData(&gameData)
     , m_launcher(launcher)
 {
+    m_launcher.m_isPatching = true;
+
     setupDirectories();
 
-    Q_EMIT m_launcher.stageChanged(i18n("Checking %1 version.", getBaseString()));
+    Q_EMIT m_launcher.stageChanged(i18n("Checking %1 version", getBaseString()));
+}
+
+Patcher::~Patcher()
+{
+    m_launcher.m_isPatching = false;
 }
 
 QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
@@ -47,7 +56,7 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
     }
 
     Q_EMIT m_launcher.stageIndeterminate();
-    Q_EMIT m_launcher.stageChanged(i18n("Checking %1 version.", getBaseString()));
+    Q_EMIT m_launcher.stageChanged(i18n("Updating %1", getBaseString()));
 
     m_remainingPatches = patchList.patches().size();
     m_patchQueue.resize(m_remainingPatches);
@@ -86,18 +95,27 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
 
             auto patchReply = m_launcher.mgr()->get(patchRequest);
 
-            connect(patchReply, &QNetworkReply::downloadProgress, this, [this, queuedPatch](int received, int total) {
-                Q_EMIT m_launcher.stageChanged(i18n("Updating %1.\nDownloading %2", getBaseString(), queuedPatch.getVersion()));
-                Q_EMIT m_launcher.stageDeterminate(0, total, received);
+            connect(patchReply, &QNetworkReply::downloadProgress, this, [this, ourIndex, queuedPatch](int received, int total) {
+                updateDownloadProgress(ourIndex, received);
             });
 
-            synchronizer.addFuture(QtFuture::connect(patchReply, &QNetworkReply::finished).then([patchPath, patchReply] {
+            synchronizer.addFuture(QtFuture::connect(patchReply, &QNetworkReply::finished).then([this, ourIndex, patchPath, patchReply] {
+                qDebug(ASTRA_PATCHER) << "Downloaded to" << patchPath;
+
                 QFile file(patchPath);
                 file.open(QIODevice::WriteOnly);
                 file.write(patchReply->readAll());
                 file.close();
+
+                QMutexLocker locker(&m_finishedPatchesMutex);
+                m_finishedPatches++;
+                m_patchQueue[ourIndex].downloaded = true;
+
+                updateMessage();
             }));
         } else {
+            m_patchQueue[ourIndex].downloaded = true;
+            m_finishedPatches++;
             qDebug(ASTRA_PATCHER) << "Found existing patch: " << patch.name;
         }
     }
@@ -109,10 +127,17 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
     // This must happen synchronously
     size_t i = 0;
     for (const auto &patch : m_patchQueue) {
-        Q_EMIT m_launcher.stageChanged(i18n("Updating %1.\nInstalling %2", getBaseString(), patch.getVersion()));
+        QString repositoryName = patch.repository;
+        if (repositoryName == QStringLiteral("game")) {
+            repositoryName = QStringLiteral("ffxiv");
+        }
+
+        Q_EMIT m_launcher.stageChanged(i18n("Installing %1 - %2 [%3/%4]", repositoryName, patch.version, i++, m_remainingPatches));
         Q_EMIT m_launcher.stageDeterminate(0, m_patchQueue.size(), i++);
 
-        processPatch(patch);
+        co_await QtConcurrent::run([this, patch] {
+            processPatch(patch);
+        });
     }
 
     co_return true;
@@ -189,5 +214,35 @@ QString Patcher::getBaseString() const
         return i18n("FINAL FANTASY XIV Update/Launcher");
     } else {
         return i18n("FINAL FANTASY XIV Game");
+    }
+}
+
+void Patcher::updateDownloadProgress(const int index, int received)
+{
+    QMutexLocker locker(&m_finishedPatchesMutex);
+
+    m_patchQueue[index].bytesDownloaded = received;
+
+    updateMessage();
+}
+
+void Patcher::updateMessage()
+{
+    // Find first not-downloaded patch
+    for (const auto &patch : m_patchQueue) {
+        if (!patch.downloaded) {
+            QString repositoryName = patch.repository;
+            if (repositoryName == QStringLiteral("game")) {
+                repositoryName = QStringLiteral("ffxiv");
+            }
+
+            const float progress = ((float)patch.bytesDownloaded / (float)patch.length) * 100.0f;
+            const QString progressStr = QStringLiteral("%1").arg(progress, 1, 'f', 1, '0');
+
+            Q_EMIT m_launcher.stageChanged(i18n("Downloading %1 - %2 [%3/%4]", repositoryName, patch.version, m_finishedPatches, m_remainingPatches),
+                                           i18n("%1%", progressStr));
+            Q_EMIT m_launcher.stageDeterminate(0, patch.length, patch.bytesDownloaded);
+            return;
+        }
     }
 }

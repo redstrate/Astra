@@ -29,6 +29,13 @@ Kirigami.ApplicationWindow {
         }
     }
 
+    onClosing: (close) => {
+        if (LauncherCore.isPatching()) {
+            applicationWindow().showPassiveNotification(i18n("Please do not quit while patching!"));
+        }
+        close.accepted = !LauncherCore.isPatching();
+    }
+
     function checkSetup() {
         if (!LauncherCore.loadingFinished) {
             return
