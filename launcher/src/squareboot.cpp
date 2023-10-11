@@ -18,21 +18,21 @@
 
 SquareBoot::SquareBoot(LauncherCore &window, SquareLauncher &launcher, QObject *parent)
     : QObject(parent)
-    , window(window)
-    , launcher(launcher)
+    , m_launcher(window)
+    , m_squareLauncher(launcher)
 {
 }
 
 QCoro::Task<> SquareBoot::bootCheck(const LoginInformation &info)
 {
-    Q_EMIT window.stageChanged(i18n("Checking for launcher updates..."));
+    Q_EMIT m_launcher.stageChanged(i18n("Checking for launcher updates..."));
     qDebug() << "Performing boot check...";
 
     const QUrlQuery query{{QStringLiteral("time"), QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH-mm"))}};
 
     QUrl url;
     url.setScheme(QStringLiteral("http"));
-    url.setHost(QStringLiteral("patch-bootver.%1").arg(window.settings()->squareEnixServer()));
+    url.setHost(QStringLiteral("patch-bootver.%1").arg(m_launcher.settings()->squareEnixServer()));
     url.setPath(QStringLiteral("/http/win32/ffxivneo_release_boot/%1").arg(info.profile->bootVersion()));
     url.setQuery(query);
 
@@ -43,46 +43,46 @@ QCoro::Task<> SquareBoot::bootCheck(const LoginInformation &info)
         request.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("FFXIV PATCH CLIENT"));
     }
 
-    request.setRawHeader(QByteArrayLiteral("Host"), QStringLiteral("patch-bootver.%1").arg(window.settings()->squareEnixServer()).toUtf8());
+    request.setRawHeader(QByteArrayLiteral("Host"), QStringLiteral("patch-bootver.%1").arg(m_launcher.settings()->squareEnixServer()).toUtf8());
     Utility::printRequest(QStringLiteral("GET"), request);
 
-    const auto reply = window.mgr()->get(request);
+    const auto reply = m_launcher.mgr()->get(request);
     co_await reply;
 
     const QString patchList = reply->readAll();
     if (!patchList.isEmpty()) {
-        patcher = new Patcher(window, info.profile->gamePath() + QStringLiteral("/boot"), *info.profile->bootData(), this);
-        const bool hasPatched = co_await patcher->patch(PatchList(patchList));
+        m_patcher = new Patcher(m_launcher, info.profile->gamePath() + QStringLiteral("/boot"), *info.profile->bootData(), this);
+        const bool hasPatched = co_await m_patcher->patch(PatchList(patchList));
         if (hasPatched) {
             // update game version information
             info.profile->readGameVersion();
         }
-        patcher->deleteLater();
+        m_patcher->deleteLater();
     }
 
-    launcher.login(info);
+    m_squareLauncher.login(info);
 }
 
 QCoro::Task<> SquareBoot::checkGateStatus(const LoginInformation &info)
 {
-    Q_EMIT window.stageChanged(i18n("Checking gate..."));
+    Q_EMIT m_launcher.stageChanged(i18n("Checking gate..."));
     qDebug() << "Checking gate...";
 
     QUrl url;
-    url.setScheme(window.settings()->preferredProtocol());
-    url.setHost(QStringLiteral("frontier.%1").arg(window.settings()->squareEnixServer()));
+    url.setScheme(m_launcher.settings()->preferredProtocol());
+    url.setHost(QStringLiteral("frontier.%1").arg(m_launcher.settings()->squareEnixServer()));
     url.setPath(QStringLiteral("/worldStatus/gate_status.json"));
     url.setQuery(QString::number(QDateTime::currentMSecsSinceEpoch()));
 
     QNetworkRequest request(url);
 
     // TODO: really?
-    window.buildRequest(*info.profile, request);
+    m_launcher.buildRequest(*info.profile, request);
 
     Utility::printRequest(QStringLiteral("GET"), request);
 
-    const auto reply = window.mgr()->get(request);
-    window.setupIgnoreSSL(reply);
+    const auto reply = m_launcher.mgr()->get(request);
+    m_launcher.setupIgnoreSSL(reply);
     co_await reply;
 
     const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
@@ -91,6 +91,6 @@ QCoro::Task<> SquareBoot::checkGateStatus(const LoginInformation &info)
     if (isGateOpen) {
         bootCheck(info);
     } else {
-        Q_EMIT window.loginError(i18n("The login gate is closed, the game may be under maintenance.\n\n%1", reply->errorString()));
+        Q_EMIT m_launcher.loginError(i18n("The login gate is closed, the game may be under maintenance.\n\n%1", reply->errorString()));
     }
 }

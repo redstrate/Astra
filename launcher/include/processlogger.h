@@ -13,5 +13,5 @@ public:
     explicit ProcessLogger(QProcess *process);
 
 private:
-    QFile file;
+    QFile m_file;
 };

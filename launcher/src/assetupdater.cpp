@@ -19,7 +19,6 @@
 AssetUpdater::AssetUpdater(Profile &profile, LauncherCore &launcher, QObject *parent)
     : QObject(parent)
     , launcher(launcher)
-    , chosenChannel(profile.dalamudChannel())
     , m_profile(profile)
 {
 }
@@ -32,19 +31,19 @@ QCoro::Task<bool> AssetUpdater::update()
 
     qInfo(ASTRA_LOG) << "Checking for asset updates...";
 
-    dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    dalamudDir = dataDir.absoluteFilePath(QStringLiteral("dalamud"));
-    dalamudAssetDir = dalamudDir.absoluteFilePath(QStringLiteral("assets"));
-    dalamudRuntimeDir = dalamudDir.absoluteFilePath(QStringLiteral("runtime"));
+    m_dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    m_dalamudDir = m_dataDir.absoluteFilePath(QStringLiteral("dalamud"));
+    m_dalamudAssetDir = m_dalamudDir.absoluteFilePath(QStringLiteral("assets"));
+    m_dalamudRuntimeDir = m_dalamudDir.absoluteFilePath(QStringLiteral("runtime"));
 
     const auto createIfNeeded = [](const QDir &dir) {
         if (!QDir().exists(dir.absolutePath()))
             QDir().mkpath(dir.absolutePath());
     };
 
-    createIfNeeded(dalamudDir);
-    createIfNeeded(dalamudAssetDir);
-    createIfNeeded(dalamudRuntimeDir);
+    createIfNeeded(m_dalamudDir);
+    createIfNeeded(m_dalamudAssetDir);
+    createIfNeeded(m_dalamudRuntimeDir);
 
     if (!co_await checkRemoteDalamudAssetVersion()) {
         co_return false;
@@ -73,14 +72,14 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudAssetVersion()
 
     const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
 
-    remoteDalamudAssetVersion = doc.object()[QLatin1String("version")].toInt();
-    remoteDalamudAssetArray = doc.object()[QLatin1String("assets")].toArray();
+    m_remoteDalamudAssetVersion = doc.object()[QLatin1String("version")].toInt();
+    m_remoteDalamudAssetArray = doc.object()[QLatin1String("assets")].toArray();
 
-    qInfo(ASTRA_LOG) << "Dalamud asset remote version" << remoteDalamudAssetVersion;
+    qInfo(ASTRA_LOG) << "Dalamud asset remote version" << m_remoteDalamudAssetVersion;
     qInfo(ASTRA_LOG) << "Dalamud asset local version" << m_profile.dalamudAssetVersion();
 
     // dalamud assets
-    if (remoteDalamudAssetVersion != m_profile.dalamudAssetVersion()) {
+    if (m_remoteDalamudAssetVersion != m_profile.dalamudAssetVersion()) {
         qInfo(ASTRA_LOG) << "Dalamud assets out of date";
 
         co_return co_await installDalamudAssets();
@@ -99,8 +98,8 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudVersion()
     const QNetworkRequest request(url);
     Utility::printRequest(QStringLiteral("GET"), request);
 
-    remoteDalamudVersion.clear();
-    remoteRuntimeVersion.clear();
+    m_remoteDalamudVersion.clear();
+    m_remoteRuntimeVersion.clear();
 
     const auto reply = launcher.mgr()->get(request);
     co_await reply;
@@ -111,20 +110,20 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudVersion()
     }
 
     const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
-    remoteDalamudVersion = doc[QLatin1String("assemblyVersion")].toString();
-    remoteRuntimeVersion = doc[QLatin1String("runtimeVersion")].toString();
-    remoteDalamudDownloadUrl = doc[QLatin1String("downloadUrl")].toString();
+    m_remoteDalamudVersion = doc[QLatin1String("assemblyVersion")].toString();
+    m_remoteRuntimeVersion = doc[QLatin1String("runtimeVersion")].toString();
+    m_remoteDalamudDownloadUrl = doc[QLatin1String("downloadUrl")].toString();
 
-    qInfo(ASTRA_LOG) << "Latest available Dalamud version:" << remoteDalamudVersion << "local:" << m_profile.dalamudVersion();
-    qInfo(ASTRA_LOG) << "Latest available NET runtime:" << remoteRuntimeVersion;
+    qInfo(ASTRA_LOG) << "Latest available Dalamud version:" << m_remoteDalamudVersion << "local:" << m_profile.dalamudVersion();
+    qInfo(ASTRA_LOG) << "Latest available NET runtime:" << m_remoteRuntimeVersion;
 
-    if (remoteDalamudVersion != m_profile.dalamudVersion()) {
+    if (m_remoteDalamudVersion != m_profile.dalamudVersion()) {
         if (!co_await installDalamud()) {
             co_return false;
         }
     }
 
-    if (m_profile.runtimeVersion() != remoteRuntimeVersion) {
+    if (m_profile.runtimeVersion() != m_remoteRuntimeVersion) {
         if (!co_await installRuntime()) {
             co_return false;
         }
@@ -139,7 +138,7 @@ QCoro::Task<bool> AssetUpdater::installDalamudAssets()
 
     QFutureSynchronizer<void> synchronizer;
 
-    for (const auto &assetObject : remoteDalamudAssetArray) {
+    for (const auto &assetObject : m_remoteDalamudAssetArray) {
         const QNetworkRequest assetRequest(assetObject.toObject()[QLatin1String("url")].toString());
         Utility::printRequest(QStringLiteral("GET"), assetRequest);
 
@@ -149,12 +148,12 @@ QCoro::Task<bool> AssetUpdater::installDalamudAssets()
             const QString fileName = assetObject.toObject()[QLatin1String("fileName")].toString();
             const QString dirPath = fileName.left(fileName.lastIndexOf(QLatin1Char('/')));
 
-            const QString path = dalamudAssetDir.absoluteFilePath(dirPath);
+            const QString path = m_dalamudAssetDir.absoluteFilePath(dirPath);
 
             if (!QDir().exists(path))
                 QDir().mkpath(path);
 
-            QFile file(dalamudAssetDir.absoluteFilePath(assetObject.toObject()[QLatin1String("fileName")].toString()));
+            QFile file(m_dalamudAssetDir.absoluteFilePath(assetObject.toObject()[QLatin1String("fileName")].toString()));
             file.open(QIODevice::WriteOnly);
             file.write(assetReply->readAll());
             file.close();
@@ -169,11 +168,11 @@ QCoro::Task<bool> AssetUpdater::installDalamudAssets()
 
     qInfo(ASTRA_LOG) << "Finished downloading Dalamud assets";
 
-    m_profile.setDalamudAssetVersion(remoteDalamudAssetVersion);
+    m_profile.setDalamudAssetVersion(m_remoteDalamudAssetVersion);
 
-    QFile file(dalamudAssetDir.absoluteFilePath(QStringLiteral("asset.ver")));
+    QFile file(m_dalamudAssetDir.absoluteFilePath(QStringLiteral("asset.ver")));
     file.open(QIODevice::WriteOnly | QIODevice::Text);
-    file.write(QString::number(remoteDalamudAssetVersion).toUtf8());
+    file.write(QString::number(m_remoteDalamudAssetVersion).toUtf8());
     file.close();
 
     co_return true;
@@ -183,7 +182,7 @@ QCoro::Task<bool> AssetUpdater::installDalamud()
 {
     Q_EMIT launcher.stageChanged(i18n("Updating Dalamud..."));
 
-    const QNetworkRequest request(remoteDalamudDownloadUrl);
+    const QNetworkRequest request(m_remoteDalamudDownloadUrl);
     Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = launcher.mgr()->get(request);
@@ -191,13 +190,13 @@ QCoro::Task<bool> AssetUpdater::installDalamud()
 
     qInfo(ASTRA_LOG) << "Finished downloading Dalamud";
 
-    QFile file(tempDir.filePath(QStringLiteral("/latest.zip")));
+    QFile file(m_tempDir.filePath(QStringLiteral("/latest.zip")));
     file.open(QIODevice::WriteOnly);
     file.write(reply->readAll());
     file.close();
 
     const bool success =
-        !JlCompress::extractDir(tempDir.filePath(QStringLiteral("latest.zip")), dalamudDir.absoluteFilePath(m_profile.dalamudChannelName())).empty();
+        !JlCompress::extractDir(m_tempDir.filePath(QStringLiteral("latest.zip")), m_dalamudDir.absoluteFilePath(m_profile.dalamudChannelName())).empty();
 
     if (!success) {
         qCritical(ASTRA_LOG) << "Failed to install Dalamud";
@@ -205,7 +204,7 @@ QCoro::Task<bool> AssetUpdater::installDalamud()
         co_return false;
     }
 
-    m_profile.setDalamudVersion(remoteDalamudVersion);
+    m_profile.setDalamudVersion(m_remoteDalamudVersion);
 
     co_return true;
 }
@@ -216,7 +215,7 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
 
     // core
     {
-        const QNetworkRequest request(dotnetRuntimePackageUrl(remoteRuntimeVersion));
+        const QNetworkRequest request(dotnetRuntimePackageUrl(m_remoteRuntimeVersion));
         Utility::printRequest(QStringLiteral("GET"), request);
 
         const auto reply = launcher.mgr()->get(request);
@@ -224,7 +223,7 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
 
         qInfo(ASTRA_LOG) << "Finished downloading Dotnet-core";
 
-        QFile file(tempDir.filePath(QStringLiteral("dotnet-core.zip")));
+        QFile file(m_tempDir.filePath(QStringLiteral("dotnet-core.zip")));
         file.open(QIODevice::WriteOnly);
         file.write(reply->readAll());
         file.close();
@@ -232,7 +231,7 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
 
     // desktop
     {
-        const QNetworkRequest request(dotnetDesktopPackageUrl(remoteRuntimeVersion));
+        const QNetworkRequest request(dotnetDesktopPackageUrl(m_remoteRuntimeVersion));
         Utility::printRequest(QStringLiteral("GET"), request);
 
         const auto reply = launcher.mgr()->get(request);
@@ -240,14 +239,14 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
 
         qInfo(ASTRA_LOG) << "Finished downloading Dotnet-desktop";
 
-        QFile file(tempDir.filePath(QStringLiteral("dotnet-desktop.zip")));
+        QFile file(m_tempDir.filePath(QStringLiteral("dotnet-desktop.zip")));
         file.open(QIODevice::WriteOnly);
         file.write(reply->readAll());
         file.close();
     }
 
-    bool success = !JlCompress::extractDir(tempDir.filePath(QStringLiteral("dotnet-core.zip")), dalamudRuntimeDir.absolutePath()).empty();
-    success |= !JlCompress::extractDir(tempDir.filePath(QStringLiteral("dotnet-desktop.zip")), dalamudRuntimeDir.absolutePath()).empty();
+    bool success = !JlCompress::extractDir(m_tempDir.filePath(QStringLiteral("dotnet-core.zip")), m_dalamudRuntimeDir.absolutePath()).empty();
+    success |= !JlCompress::extractDir(m_tempDir.filePath(QStringLiteral("dotnet-desktop.zip")), m_dalamudRuntimeDir.absolutePath()).empty();
 
     if (!success) {
         qCritical(ASTRA_LOG) << "Failed to install dotnet";
@@ -255,9 +254,9 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
 
         co_return false;
     } else {
-        QFile file(dalamudRuntimeDir.absoluteFilePath(QStringLiteral("runtime.ver")));
+        QFile file(m_dalamudRuntimeDir.absoluteFilePath(QStringLiteral("runtime.ver")));
         file.open(QIODevice::WriteOnly | QIODevice::Text);
-        file.write(remoteRuntimeVersion.toUtf8());
+        file.write(m_remoteRuntimeVersion.toUtf8());
         file.close();
 
         co_return true;

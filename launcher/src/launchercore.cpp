@@ -303,7 +303,7 @@ void LauncherCore::launchExecutable(const Profile &profile, QProcess *process, c
 #endif
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
-    if (m_isSteam) {
+    if (isSteam()) {
         const QDir steamDirectory = QProcessEnvironment::systemEnvironment().value(QStringLiteral("STEAM_COMPAT_CLIENT_INSTALL_PATH"));
         const QDir compatData =
             QProcessEnvironment::systemEnvironment().value(QStringLiteral("STEAM_COMPAT_DATA_PATH")); // TODO: do these have to exist on the root steam folder?
@@ -640,7 +640,7 @@ Headline *LauncherCore::headline() const
 
 bool LauncherCore::isSteam() const
 {
-    return m_isSteam;
+    return m_steamApi != nullptr;
 }
 
 bool LauncherCore::isSteamDeck() const
@@ -680,7 +680,6 @@ void LauncherCore::clearAvatarCache()
 
 void LauncherCore::initializeSteam()
 {
-    m_isSteam = true;
     m_steamApi = new SteamAPI(this);
     m_steamApi->setLauncherMode(true);
 }

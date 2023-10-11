@@ -23,8 +23,8 @@ public:
 private:
     QCoro::Task<> bootCheck(const LoginInformation &info);
 
-    Patcher *patcher = nullptr;
+    Patcher *m_patcher = nullptr;
 
-    LauncherCore &window;
-    SquareLauncher &launcher;
+    LauncherCore &m_launcher;
+    SquareLauncher &m_squareLauncher;
 };

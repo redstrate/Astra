@@ -177,7 +177,6 @@ private:
 
     QCoro::Task<> fetchNews();
 
-    bool m_isSteam = false;
     SteamAPI *m_steamApi = nullptr;
 
     bool m_loadingFinished = false;

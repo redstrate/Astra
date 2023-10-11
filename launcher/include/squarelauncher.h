@@ -25,10 +25,10 @@ public:
 private:
     static QCoro::Task<QString> getBootHash(const LoginInformation &info);
 
-    Patcher *patcher = nullptr;
+    Patcher *m_patcher = nullptr;
 
-    QString SID, username;
-    LoginAuth auth;
+    QString m_SID, m_username;
+    LoginAuth m_auth;
 
-    LauncherCore &window;
+    LauncherCore &m_launcher;
 };

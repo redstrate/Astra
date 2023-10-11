@@ -16,5 +16,5 @@ public:
     void registerAccount(const QString &lobbyUrl, const LoginInformation &info);
 
 private:
-    LauncherCore &window;
+    LauncherCore &m_launcher;
 };

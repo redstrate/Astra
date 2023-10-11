@@ -11,7 +11,7 @@
 
 SapphireLauncher::SapphireLauncher(LauncherCore &window, QObject *parent)
     : QObject(parent)
-    , window(window)
+    , m_launcher(window)
 {
 }
 
@@ -25,11 +25,11 @@ void SapphireLauncher::login(const QString &lobbyUrl, const LoginInformation &in
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/x-www-form-urlencoded"));
     Utility::printRequest(QStringLiteral("POST"), request);
 
-    const auto reply = window.mgr()->post(request, QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Compact));
+    const auto reply = m_launcher.mgr()->post(request, QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Compact));
 
     connect(reply, &QNetworkReply::finished, [this, reply, &info] {
         if (reply->error() != QNetworkReply::NetworkError::NoError) {
-            Q_EMIT window.loginError(i18n("Could not contact lobby server.\n\n%1", reply->errorString()));
+            Q_EMIT m_launcher.loginError(i18n("Could not contact lobby server.\n\n%1", reply->errorString()));
             return;
         }
 
@@ -41,9 +41,9 @@ void SapphireLauncher::login(const QString &lobbyUrl, const LoginInformation &in
             auth.frontierHost = document[QLatin1String("frontierHost")].toString();
             auth.region = 3;
 
-            window.launchGame(*info.profile, auth);
+            m_launcher.launchGame(*info.profile, auth);
         } else {
-            Q_EMIT window.loginError(i18n("Invalid username or password."));
+            Q_EMIT m_launcher.loginError(i18n("Invalid username or password."));
         }
     });
 }
@@ -58,7 +58,7 @@ void SapphireLauncher::registerAccount(const QString &lobbyUrl, const LoginInfor
 
     Utility::printRequest(QStringLiteral("POST"), request);
 
-    const auto reply = window.mgr()->post(request, QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Compact));
+    const auto reply = m_launcher.mgr()->post(request, QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Compact));
     connect(reply, &QNetworkReply::finished, [&] {
         const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
 
@@ -68,6 +68,6 @@ void SapphireLauncher::registerAccount(const QString &lobbyUrl, const LoginInfor
         auth.frontierHost = document[QLatin1String("frontierHost")].toString();
         auth.region = 3;
 
-        window.launchGame(*info.profile, auth);
+        m_launcher.launchGame(*info.profile, auth);
     });
 }

@@ -37,21 +37,19 @@ private:
 
     LauncherCore &launcher;
 
-    Profile::DalamudChannel chosenChannel;
+    QString m_remoteDalamudVersion;
+    QString m_remoteRuntimeVersion;
 
-    QString remoteDalamudVersion;
-    QString remoteRuntimeVersion;
+    QTemporaryDir m_tempDir;
+    QDir m_dataDir;
+    QDir m_appDataDir;
+    QDir m_dalamudDir;
+    QDir m_dalamudAssetDir;
+    QDir m_dalamudRuntimeDir;
 
-    QTemporaryDir tempDir;
-    QDir dataDir;
-    QDir appDataDir;
-    QDir dalamudDir;
-    QDir dalamudAssetDir;
-    QDir dalamudRuntimeDir;
-
-    int remoteDalamudAssetVersion = -1;
-    QJsonArray remoteDalamudAssetArray;
-    QString remoteDalamudDownloadUrl;
+    int m_remoteDalamudAssetVersion = -1;
+    QJsonArray m_remoteDalamudAssetArray;
+    QString m_remoteDalamudDownloadUrl;
 
     Profile &m_profile;
 };
