@@ -213,7 +213,7 @@ QQC2.Control {
 
             FormCard.FormDelegateSeparator {
                 above: passwordField
-                below: otpField
+                below: LauncherCore.currentProfile.account.useOTP ? otpField : loginButton
             }
 
             FormCard.FormTextFieldDelegate {
@@ -228,8 +228,9 @@ QQC2.Control {
             }
 
             FormCard.FormDelegateSeparator {
-                above: otpField
+                above: LauncherCore.currentProfile.account.useOTP ? otpField : passwordField
                 below: loginButton
+                visible: LauncherCore.currentProfile.account.useOTP
             }
 
             FormCard.FormButtonDelegate {
@@ -274,6 +275,8 @@ QQC2.Control {
             }
 
             FormCard.FormDelegateSeparator {
+                above: serverStatusButton
+                below: settingsButton
             }
 
             FormCard.FormButtonDelegate {
