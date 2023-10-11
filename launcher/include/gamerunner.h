@@ -28,6 +28,11 @@ private:
     /// This wraps it in wine if needed.
     void launchExecutable(const Profile &settings, QProcess *process, const QStringList &args, bool isGame, bool needsRegistrySetup);
 
+    /// Set a Wine registry key
+    /// \param settings The profile that's being launched
+    /// \param key The path to the registry key, such as HKEY_CURRENT_USER\\Software\\Wine
+    /// \param value The registry key name, like "HideWineExports"
+    /// \param data What to set the value as, like "1" or "0"
     void addRegistryKey(const Profile &settings, QString key, QString value, QString data);
 
     LauncherCore &m_launcher;
