@@ -507,11 +507,6 @@ bool LauncherCore::isLoadingFinished() const
     return m_loadingFinished;
 }
 
-bool LauncherCore::hasAccount() const
-{
-    return false;
-}
-
 ProfileManager *LauncherCore::profileManager()
 {
     return m_profileManager;

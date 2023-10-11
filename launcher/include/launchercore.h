@@ -59,7 +59,6 @@ class LauncherCore : public QObject
     QML_SINGLETON
 
     Q_PROPERTY(bool loadingFinished READ isLoadingFinished NOTIFY loadingFinished)
-    Q_PROPERTY(bool hasAccount READ hasAccount NOTIFY accountChanged)
     Q_PROPERTY(bool isSteam READ isSteam CONSTANT)
     Q_PROPERTY(bool isSteamDeck READ isSteamDeck CONSTANT)
     Q_PROPERTY(LauncherSettings *settings READ settings CONSTANT)
@@ -110,7 +109,6 @@ public:
     Q_INVOKABLE CompatibilityToolInstaller *createCompatInstaller();
 
     [[nodiscard]] bool isLoadingFinished() const;
-    [[nodiscard]] bool hasAccount() const;
     [[nodiscard]] bool isSteam() const;
     [[nodiscard]] bool isSteamDeck() const;
 
@@ -128,7 +126,6 @@ public:
 
 signals:
     void loadingFinished();
-    void accountChanged();
     void successfulLaunch();
     void gameClosed();
     void loginError(QString message);
