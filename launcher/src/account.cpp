@@ -10,6 +10,7 @@
 #include <qcorocore.h>
 #include <qt6keychain/keychain.h>
 
+#include "astra_log.h"
 #include "launchercore.h"
 #include "utility.h"
 
@@ -289,4 +290,41 @@ QCoro::Task<QString> Account::getKeychainValue(const QString &key)
     co_await qCoro(job, &QKeychain::ReadPasswordJob::finished);
 
     co_return job->textData();
+}
+
+void Account::updateConfig()
+{
+    auto configDir = getConfigDir().absoluteFilePath("FFXIV.cfg");
+
+    if (!QFile::exists(configDir)) {
+        return;
+    }
+
+    qInfo(ASTRA_LOG) << "Updating FFXIV.cfg...";
+
+    auto configDirStd = configDir.toStdString();
+
+    auto cfgFileBuffer = physis_read_file(configDirStd.c_str());
+    auto cfgFile = physis_cfg_parse(cfgFileBuffer);
+
+    // Ensure that the opening cutscene movie never plays, since it's broken in most versions of Wine
+    physis_cfg_set_value(cfgFile, "CutsceneMovieOpening", "1");
+
+    auto screenshotDir = m_launcher.screenshotDir();
+
+    if (!QDir().exists(screenshotDir))
+        QDir().mkpath(screenshotDir);
+
+    auto screenshotDirWin = Utility::toWindowsPath(screenshotDir);
+    auto screenshotDirWinStd = screenshotDirWin.toStdString();
+
+    // Set the screenshot path
+    physis_cfg_set_value(cfgFile, "ScreenShotDir", screenshotDirWinStd.c_str());
+
+    auto buffer = physis_cfg_write(cfgFile);
+
+    QFile file(configDir);
+    file.open(QIODevice::WriteOnly);
+    file.write(reinterpret_cast<const char *>(buffer.data), buffer.size);
+    file.close();
 }

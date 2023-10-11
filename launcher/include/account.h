@@ -78,6 +78,8 @@ public:
 
     [[nodiscard]] QDir getConfigDir() const;
 
+    void updateConfig();
+
 Q_SIGNALS:
     void nameChanged();
     void languageChanged();

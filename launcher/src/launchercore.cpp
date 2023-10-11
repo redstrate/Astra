@@ -76,6 +76,8 @@ void LauncherCore::launchGame(Profile &profile, const LoginAuth &auth)
 
 QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 {
+    info.profile->account()->updateConfig();
+
     auto assetUpdater = new AssetUpdater(*info.profile, *this, this);
     if (co_await assetUpdater->update()) {
         if (info.profile->account()->isSapphire()) {
