@@ -74,7 +74,8 @@ void Profile::readDalamudInfo()
 
 void Profile::readGameData()
 {
-    physis_EXH *exh = physis_gamedata_read_excel_sheet_header(m_gameData, "ExVersion");
+    auto header = physis_gamedata_extract_file(m_gameData, "exd/exversion.exh");
+    physis_EXH *exh = physis_parse_excel_sheet_header(header);
     if (exh != nullptr) {
         physis_EXD exd = physis_gamedata_read_excel_sheet(m_gameData, "ExVersion", exh, Language::English, 0);
 
