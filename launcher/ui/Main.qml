@@ -109,14 +109,18 @@ Kirigami.ApplicationWindow {
             }
         }
 
-        function onShowNewsChanged() {
-            // workaround annoying Qt layout bug
-            // TODO: see if this changed in Qt6
-            pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
-        }
-
         function onCurrentProfileChanged() {
             checkSetup();
+        }
+    }
+
+    Connections {
+        target: LauncherCore.settings
+
+        function onShowNewsChanged() {
+            // workaround annoying Qt layout bug
+            // TODO: see if this changed in Qt7
+            pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
         }
     }
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import QtQuick
+import QtQuick.Window
 import QtQuick.Controls as QQC2
 import QtQuick.Layouts
 
@@ -71,7 +72,10 @@ FormCard.FormCardPage {
 
             text: i18n("Enable and show news")
             checked: LauncherCore.settings.showNews
-            onCheckedChanged: LauncherCore.settings.showNews = checked
+            onCheckedChanged: {
+                LauncherCore.settings.showNews = checked;
+                Window.window.close(); // if we don't close the dialog it crashes!
+            }
         }
 
         FormCard.FormDelegateSeparator {
