@@ -5,9 +5,9 @@ packages:
   - qt6-quickcontrols2
   - qt6-webengine
   - kirigami2
-  - kcoreaddons
-  - ki18n
-  - kconfig
+  - kcoreaddons5
+  - ki18n5
+  - kconfig5
   - qtkeychain-qt6
   - quazip-qt6
   - rust
