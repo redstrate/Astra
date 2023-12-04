@@ -190,7 +190,7 @@ QCoro::Task<bool> AssetUpdater::installDalamud()
 
     qInfo(ASTRA_LOG) << "Finished downloading Dalamud";
 
-    QFile file(m_tempDir.filePath(QStringLiteral("/latest.zip")));
+    QFile file(m_tempDir.filePath(QStringLiteral("latest.zip")));
     file.open(QIODevice::WriteOnly);
     file.write(reply->readAll());
     file.close();
