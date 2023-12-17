@@ -290,11 +290,11 @@ QCoro::Task<bool> SquareEnixLogin::loginOAuth()
 
         co_return true;
     } else {
-        const QRegularExpression re(QStringLiteral(R"lit(window.external.user\("login=auth,ng,err,(?<launchParams>.*)\);)lit"));
-        const QRegularExpressionMatch match = re.match(str);
+        const QRegularExpression errorRe(QStringLiteral(R"lit(window.external.user\("login=auth,ng,err,(?<launchParams>.*)\);)lit"));
+        const QRegularExpressionMatch errorMatch = errorRe.match(str);
 
         // there's a stray quote at the end of the error string, so let's remove that
-        Q_EMIT m_launcher.loginError(match.captured(1).chopped(1));
+        Q_EMIT m_launcher.loginError(errorMatch.captured(1).chopped(1));
 
         co_return false;
     }
