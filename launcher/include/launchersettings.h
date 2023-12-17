@@ -63,6 +63,9 @@ public:
     [[nodiscard]] bool argumentsEncrypted() const;
     void setArgumentsEncrypted(bool value);
 
+    [[nodiscard]] QString currentProfile() const;
+    void setCurrentProfile(const QString &value);
+
     Config *config();
 
 Q_SIGNALS:

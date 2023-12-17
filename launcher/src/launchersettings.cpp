@@ -163,6 +163,18 @@ void LauncherSettings::setArgumentsEncrypted(const bool value)
     }
 }
 
+QString LauncherSettings::currentProfile() const
+{
+    return KSharedConfig::openStateConfig()->group(QStringLiteral("General")).readEntry(QStringLiteral("CurrentProfile"));
+}
+
+void LauncherSettings::setCurrentProfile(const QString &value)
+{
+    auto stateConfig = KSharedConfig::openStateConfig();
+    stateConfig->group(QStringLiteral("General")).writeEntry(QStringLiteral("CurrentProfile"), value);
+    stateConfig->sync();
+}
+
 Config *LauncherSettings::config()
 {
     return m_config;

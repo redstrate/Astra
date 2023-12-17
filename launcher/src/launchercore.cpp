@@ -42,7 +42,7 @@ LauncherCore::LauncherCore()
     }
 
     // set default profile, if found
-    if (auto profile = m_profileManager->getProfileByUUID(m_settings->config()->currentProfile()); profile != nullptr) {
+    if (auto profile = m_profileManager->getProfileByUUID(m_settings->currentProfile()); profile != nullptr) {
         setCurrentProfile(profile);
     }
 
@@ -132,7 +132,7 @@ void LauncherCore::setCurrentProfile(Profile *profile)
     const int newIndex = m_profileManager->getProfileIndex(profile->uuid());
     if (newIndex != m_currentProfileIndex) {
         m_currentProfileIndex = newIndex;
-        m_settings->config()->setCurrentProfile(profile->uuid());
+        m_settings->setCurrentProfile(profile->uuid());
         m_settings->config()->save();
         Q_EMIT currentProfileChanged();
     }
