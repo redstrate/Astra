@@ -90,7 +90,7 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
         m_patchQueue[ourIndex] = queuedPatch;
 
         if (!QFile::exists(patchPath)) {
-            const auto patchRequest = QNetworkRequest(patch.url);
+            const auto patchRequest = QNetworkRequest(QUrl(patch.url));
             Utility::printRequest(QStringLiteral("GET"), patchRequest);
 
             auto patchReply = m_launcher.mgr()->get(patchRequest);
@@ -167,7 +167,7 @@ void Patcher::processPatch(const QueuedPatch &patch)
             QCryptographicHash hash(QCryptographicHash::Sha1);
             hash.addData(block);
 
-            Q_ASSERT(hash.result().toHex() == patch.hashes[i]);
+            Q_ASSERT(QString::fromUtf8(hash.result().toHex()) == patch.hashes[i]);
         }
     }
 
@@ -237,7 +237,7 @@ void Patcher::updateMessage()
             }
 
             const float progress = ((float)patch.bytesDownloaded / (float)patch.length) * 100.0f;
-            const QString progressStr = QStringLiteral("%1").arg(progress, 1, 'f', 1, '0');
+            const QString progressStr = QStringLiteral("%1").arg(progress, 1, 'f', 1, QLatin1Char('0'));
 
             Q_EMIT m_launcher.stageChanged(i18n("Downloading %1 - %2 [%3/%4]", repositoryName, patch.version, m_finishedPatches, m_remainingPatches),
                                            i18n("%1%", progressStr));

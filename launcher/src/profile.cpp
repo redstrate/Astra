@@ -57,7 +57,7 @@ void Profile::readDalamudInfo()
             QFile assetJson(dalamudAssetsVer);
             assetJson.open(QFile::ReadOnly | QFile::Text);
 
-            m_dalamudAssetVersion = QString(assetJson.readAll()).toInt();
+            m_dalamudAssetVersion = QString::fromUtf8(assetJson.readAll()).toInt();
             qInfo(ASTRA_LOG) << "Dalamud asset version:" << m_dalamudVersion;
         }
 
@@ -66,7 +66,7 @@ void Profile::readDalamudInfo()
             QFile runtimeVer(dalamudRuntimeVer);
             runtimeVer.open(QFile::ReadOnly | QFile::Text);
 
-            m_runtimeVersion = QString(runtimeVer.readAll());
+            m_runtimeVersion = QString::fromUtf8(runtimeVer.readAll());
             qInfo(ASTRA_LOG) << "Dalamud runtime version:" << m_dalamudVersion;
         }
     }
@@ -84,7 +84,7 @@ void Profile::readGameData()
         physis_EXD exd = physis_gamedata_read_excel_sheet(m_gameData, "ExVersion", exh, Language::English, 0);
 
         for (unsigned int i = 0; i < exd.row_count; i++) {
-            m_expansionNames.push_back(exd.row_data[i].column_data[0].string._0);
+            m_expansionNames.push_back(QString::fromLatin1(exd.row_data[i].column_data[0].string._0));
         }
 
         physis_gamedata_free_sheet(exd);
@@ -98,7 +98,7 @@ void Profile::readWineInfo()
     auto wineProcess = new QProcess(this);
 
     connect(wineProcess, &QProcess::readyReadStandardOutput, this, [wineProcess, this] {
-        m_wineVersion = wineProcess->readAllStandardOutput().trimmed();
+        m_wineVersion = QString::fromUtf8(wineProcess->readAllStandardOutput().trimmed());
         Q_EMIT wineChanged();
     });
 
@@ -409,8 +409,8 @@ void Profile::readGameVersion()
         return;
     }
 
-    m_gameData = physis_gamedata_initialize((gamePath() + QStringLiteral("/game")).toStdString().c_str());
-    m_bootData = physis_bootdata_initialize((gamePath() + QStringLiteral("/boot")).toStdString().c_str());
+    m_gameData = physis_gamedata_initialize(QString(gamePath() + QStringLiteral("/game")).toStdString().c_str());
+    m_bootData = physis_bootdata_initialize(QString(gamePath() + QStringLiteral("/boot")).toStdString().c_str());
 
     if (m_bootData != nullptr) {
         m_bootVersion = physis_bootdata_get_version(m_bootData);
@@ -437,7 +437,7 @@ QString Profile::expansionVersionText() const
         QString expacString;
 
         expacString += QStringLiteral("Boot");
-        expacString += QStringLiteral(" (%1)").arg(m_bootVersion);
+        expacString += QStringLiteral(" (%1)").arg(QString::fromLatin1(m_bootVersion));
 
         for (unsigned int i = 0; i < m_repositories.repositories_count; i++) {
             QString expansionName = i18n("Unknown Expansion");
@@ -445,7 +445,7 @@ QString Profile::expansionVersionText() const
                 expansionName = m_expansionNames[i];
             }
 
-            expacString += QStringLiteral("\n%1 (%2)").arg(expansionName, m_repositories.repositories[i].version);
+            expacString += QStringLiteral("\n%1 (%2)").arg(expansionName, QString::fromLatin1(m_repositories.repositories[i].version));
         }
 
         return expacString;
@@ -510,13 +510,13 @@ QString Profile::dalamudChannelName() const
 
 QString Profile::bootVersion() const
 {
-    return m_bootVersion;
+    return QString::fromLatin1(m_bootVersion);
 }
 
 QString Profile::baseGameVersion() const
 {
     Q_ASSERT(m_repositories.repositories_count >= 1);
-    return m_repositories.repositories[0].version;
+    return QString::fromLatin1(m_repositories.repositories[0].version);
 }
 
 int Profile::numInstalledExpansions() const
@@ -528,7 +528,7 @@ int Profile::numInstalledExpansions() const
 QString Profile::expansionVersion(const int index) const
 {
     Q_ASSERT(index <= numInstalledExpansions());
-    return m_repositories.repositories[index + 1].version;
+    return QString::fromLatin1(m_repositories.repositories[index + 1].version);
 }
 
 int Profile::dalamudAssetVersion() const

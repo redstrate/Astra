@@ -38,7 +38,7 @@ public:
     {
         const QString filename{QStringLiteral("astra.log")};
 
-        const QDir logDirectory = Utility::stateDirectory().absoluteFilePath("log");
+        const QDir logDirectory = Utility::stateDirectory().absoluteFilePath(QStringLiteral("log"));
 
         if (!logDirectory.exists()) {
             QDir().mkpath(logDirectory.absolutePath());

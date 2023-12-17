@@ -50,16 +50,16 @@ int main(int argc, char *argv[])
                     i18n("Maintainer"),
                     QStringLiteral("josh@redstrate.com"),
                     QStringLiteral("https://redstrate.com/"),
-                    QUrl("https://redstrate.com/rss-image.png"));
+                    QUrl(QStringLiteral("https://redstrate.com/rss-image.png")));
     about.setHomepage(QStringLiteral("https://xiv.zone/astra"));
     about.addComponent(QStringLiteral("physis"),
                        QStringLiteral("Library to access FFXIV data"),
-                       physis_get_physis_version(),
+                       QString::fromLatin1(physis_get_physis_version()),
                        QStringLiteral("https://xiv.zone/physis"),
                        KAboutLicense::GPL_V3);
     about.addComponent(QStringLiteral("libphysis"),
                        QStringLiteral("C bindings for physis"),
-                       physis_get_libphysis_version(),
+                       QString::fromLatin1(physis_get_libphysis_version()),
                        QStringLiteral("https://git.sr.ht/~redstrate/libphysis"),
                        KAboutLicense::GPL_V3);
     about.setDesktopFileName(QStringLiteral("zone.xiv.astra"));
@@ -81,11 +81,11 @@ int main(int argc, char *argv[])
     about.processCommandLine(&parser);
 
     // We must handle these manually, since we use parse() and not process()
-    if (parser.isSet("help")) {
+    if (parser.isSet(QStringLiteral("help"))) {
         parser.showHelp();
     }
 
-    if (parser.isSet("version")) {
+    if (parser.isSet(QStringLiteral("version"))) {
         parser.showVersion();
     }
 

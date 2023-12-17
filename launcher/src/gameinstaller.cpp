@@ -48,7 +48,7 @@ void GameInstaller::installGame()
         // TODO: turn into a proper error
         Q_ASSERT(hash.result() == installerSha256);
 
-        QFile file(dataDir.absoluteFilePath("ffxivsetup.exe"));
+        QFile file(dataDir.absoluteFilePath(QStringLiteral("ffxivsetup.exe")));
         file.open(QIODevice::WriteOnly);
         file.write(data);
         file.close();

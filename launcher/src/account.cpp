@@ -195,7 +195,7 @@ QString Account::getOTP()
     char *totp = get_totp(otpSecret.toStdString().c_str(), 6, 30, SHA1, &err);
 
     if (err == NO_ERROR) {
-        QString totpStr(totp);
+        QString totpStr = QString::fromLatin1(totp);
         free(totp);
         return totpStr;
     } else {
@@ -242,7 +242,7 @@ void Account::fetchAvatar()
         connect(reply, &QNetworkReply::finished, [this, filename, reply] {
             auto document = QJsonDocument::fromJson(reply->readAll());
             if (document.isObject()) {
-                const QNetworkRequest avatarRequest(document.object()[QLatin1String("Character")].toObject()[QLatin1String("Avatar")].toString());
+                const QNetworkRequest avatarRequest(QUrl(document.object()[QLatin1String("Character")].toObject()[QLatin1String("Avatar")].toString()));
                 Utility::printRequest(QStringLiteral("GET"), avatarRequest);
 
                 auto avatarReply = m_launcher.mgr()->get(avatarRequest);
@@ -252,13 +252,13 @@ void Account::fetchAvatar()
                     file.write(avatarReply->readAll());
                     file.close();
 
-                    m_url = QStringLiteral("file:///%1").arg(filename);
+                    m_url = QUrl(QStringLiteral("file:///%1").arg(filename));
                     Q_EMIT avatarUrlChanged();
                 });
             }
         });
     } else {
-        m_url = QStringLiteral("file:///%1").arg(filename);
+        m_url = QUrl(QStringLiteral("file:///%1").arg(filename));
         Q_EMIT avatarUrlChanged();
     }
 }
@@ -294,7 +294,7 @@ QCoro::Task<QString> Account::getKeychainValue(const QString &key)
 
 void Account::updateConfig()
 {
-    auto configDir = getConfigDir().absoluteFilePath("FFXIV.cfg");
+    auto configDir = getConfigDir().absoluteFilePath(QStringLiteral("FFXIV.cfg"));
 
     if (!QFile::exists(configDir)) {
         return;

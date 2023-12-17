@@ -256,9 +256,9 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
                 } else {
                     QString version = dirName.remove(QLatin1String("Proton "));
                     // Exclude "BattlEye Runtime" and other unrelated things
-                    if (version.contains('.')) {
+                    if (version.contains(QLatin1Char('.'))) {
                         // TODO: better error handling (they might never be invalid, but better safe than sorry)
-                        QStringList parts = version.split('.');
+                        QStringList parts = version.split(QLatin1Char('.'));
                         int versionNum = parts[0].toInt();
 
                         // TODO: doesn't handle minor versions, not like they really exist anymore anyway

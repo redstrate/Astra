@@ -6,7 +6,7 @@
 LauncherSettings::LauncherSettings(QObject *parent)
     : QObject(parent)
 {
-    m_config = new Config(KSharedConfig::openConfig("astrarc", KConfig::SimpleConfig, QStandardPaths::AppConfigLocation));
+    m_config = new Config(KSharedConfig::openConfig(QStringLiteral("astrarc"), KConfig::SimpleConfig, QStandardPaths::AppConfigLocation));
 }
 
 bool LauncherSettings::closeWhenLaunched() const

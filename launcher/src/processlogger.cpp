@@ -7,7 +7,7 @@
 
 ProcessLogger::ProcessLogger(QProcess *process)
 {
-    const QDir logDirectory = Utility::stateDirectory().absoluteFilePath("log");
+    const QDir logDirectory = Utility::stateDirectory().absoluteFilePath(QStringLiteral("log"));
 
     m_file.setFileName(logDirectory.absoluteFilePath(QStringLiteral("ffxiv.log")));
     m_file.open(QIODevice::WriteOnly | QIODevice::Unbuffered);

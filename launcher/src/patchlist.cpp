@@ -8,7 +8,7 @@
 
 PatchList::PatchList(const QString &patchList)
 {
-    const QStringList parts = patchList.split("\r\n");
+    const QStringList parts = patchList.split(QStringLiteral("\r\n"));
 
     for (int i = 5; i < parts.size() - 2; i++) {
         const QStringList patchParts = parts[i].split(QLatin1Char('\t'));

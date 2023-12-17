@@ -139,7 +139,7 @@ QCoro::Task<bool> AssetUpdater::installDalamudAssets()
     QFutureSynchronizer<void> synchronizer;
 
     for (const auto &assetObject : m_remoteDalamudAssetArray) {
-        const QNetworkRequest assetRequest(assetObject.toObject()[QLatin1String("url")].toString());
+        const QNetworkRequest assetRequest(QUrl(assetObject.toObject()[QLatin1String("url")].toString()));
         Utility::printRequest(QStringLiteral("GET"), assetRequest);
 
         const auto assetReply = launcher.mgr()->get(assetRequest);
@@ -182,7 +182,7 @@ QCoro::Task<bool> AssetUpdater::installDalamud()
 {
     Q_EMIT launcher.stageChanged(i18n("Updating Dalamud..."));
 
-    const QNetworkRequest request(m_remoteDalamudDownloadUrl);
+    const QNetworkRequest request = QNetworkRequest(QUrl(m_remoteDalamudDownloadUrl));
     Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = launcher.mgr()->get(request);

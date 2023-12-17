@@ -175,7 +175,8 @@ void LauncherCore::buildRequest(const Profile &settings, QNetworkRequest &reques
     if (settings.account()->license() == Account::GameLicense::macOS) {
         request.setHeader(QNetworkRequest::UserAgentHeader, QByteArrayLiteral("macSQEXAuthor/2.0.0(MacOSX; ja-jp)"));
     } else {
-        request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("SQEXAuthor/2.0.0(Windows 6.2; ja-jp; %1)").arg(QString(QSysInfo::bootUniqueId())));
+        request.setHeader(QNetworkRequest::UserAgentHeader,
+                          QStringLiteral("SQEXAuthor/2.0.0(Windows 6.2; ja-jp; %1)").arg(QString::fromUtf8(QSysInfo::bootUniqueId())));
     }
 
     request.setRawHeader(QByteArrayLiteral("Accept"),
@@ -295,12 +296,12 @@ QCoro::Task<> LauncherCore::fetchNews()
     url.setPath(QStringLiteral("/news/headline.json"));
     url.setQuery(query);
 
-    QNetworkRequest request(QStringLiteral("%1&%2").arg(url.toString(), QString::number(QDateTime::currentMSecsSinceEpoch())));
+    QNetworkRequest request(QUrl(QStringLiteral("%1&%2").arg(url.toString(), QString::number(QDateTime::currentMSecsSinceEpoch()))));
     request.setRawHeader(QByteArrayLiteral("Accept"), QByteArrayLiteral("application/json, text/plain, */*"));
     request.setRawHeader(QByteArrayLiteral("Origin"), QByteArrayLiteral("https://launcher.finalfantasyxiv.com"));
     request.setRawHeader(QByteArrayLiteral("Referer"),
                          QStringLiteral("https://launcher.finalfantasyxiv.com/v600/index.html?rc_lang=%1&time=%2")
-                             .arg("en-us", QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd-HH"))
+                             .arg(QStringLiteral("en-us"), QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH")))
                              .toUtf8());
     Utility::printRequest(QStringLiteral("GET"), request);
 

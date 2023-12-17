@@ -87,7 +87,7 @@ QCoro::Task<> SquareEnixLogin::checkBootUpdates()
     qInfo(ASTRA_LOG) << "Checking for updates to boot components...";
 
     QString formattedDate = QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH-mm"));
-    formattedDate[15] = '0';
+    formattedDate[15] = QLatin1Char('0');
 
     const QUrlQuery query{{QStringLiteral("time"), formattedDate}};
 
@@ -110,7 +110,7 @@ QCoro::Task<> SquareEnixLogin::checkBootUpdates()
     const auto reply = m_launcher.mgr()->get(request);
     co_await reply;
 
-    const QString patchList = reply->readAll();
+    const QString patchList = QString::fromUtf8(reply->readAll());
     if (!patchList.isEmpty()) {
         m_patcher = new Patcher(m_launcher, m_info->profile->gamePath() + QStringLiteral("/boot"), *m_info->profile->bootData(), this);
         const bool hasPatched = co_await m_patcher->patch(PatchList(patchList));
@@ -162,7 +162,7 @@ QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStor
     const auto reply = m_launcher.mgr()->get(request);
     co_await reply;
 
-    const QString str = reply->readAll();
+    const QString str = QString::fromUtf8(reply->readAll());
 
     // fetches Steam username
     if (m_info->profile->account()->license() == Account::GameLicense::WindowsSteam) {
@@ -223,7 +223,7 @@ QCoro::Task<bool> SquareEnixLogin::loginOAuth()
     m_launcher.setupIgnoreSSL(reply);
     co_await reply;
 
-    const QString str = reply->readAll();
+    const QString str = QString::fromUtf8(reply->readAll());
 
     const QRegularExpression re(QStringLiteral(R"lit(window.external.user\("login=auth,ok,(?<launchParams>.*)\);)lit"));
     const QRegularExpressionMatch match = re.match(str);
@@ -291,13 +291,13 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
     if (reply->error() == QNetworkReply::NoError) {
         QString patchUniqueId;
         if (reply->rawHeaderList().contains(QByteArrayLiteral("X-Patch-Unique-Id"))) {
-            patchUniqueId = reply->rawHeader(QByteArrayLiteral("X-Patch-Unique-Id"));
+            patchUniqueId = QString::fromUtf8(reply->rawHeader(QByteArrayLiteral("X-Patch-Unique-Id")));
         } else if (reply->rawHeaderList().contains(QByteArrayLiteral("x-patch-unique-id"))) {
-            patchUniqueId = reply->rawHeader(QByteArrayLiteral("x-patch-unique-id"));
+            patchUniqueId = QString::fromUtf8(reply->rawHeader(QByteArrayLiteral("x-patch-unique-id")));
         }
 
         if (!patchUniqueId.isEmpty()) {
-            const QString body = reply->readAll();
+            const QString body = QString::fromUtf8(reply->readAll());
 
             if (!body.isEmpty()) {
                 m_patcher = new Patcher(m_launcher, m_info->profile->gamePath() + QStringLiteral("/game"), *m_info->profile->gameData(), this);
@@ -367,5 +367,5 @@ QString SquareEnixLogin::getFileHash(const QString &file)
     QCryptographicHash hash(QCryptographicHash::Sha1);
     hash.addData(&f);
 
-    return QStringLiteral("%1/%2").arg(QString::number(f.size()), hash.result().toHex());
+    return QStringLiteral("%1/%2").arg(QString::number(f.size()), QString::fromUtf8(hash.result().toHex()));
 }
