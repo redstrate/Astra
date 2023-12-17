@@ -161,7 +161,7 @@ if (ENABLE_GAMEMODE)
     target_compile_definitions(astra PRIVATE ENABLE_GAMEMODE)
 endif ()
 
-install(TARGETS astra ${KF${QT_MAJOR_VERSION}_INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS astra ${KF6_INSTALL_TARGETS_DEFAULT_ARGS})
 
 if (WIN32)
     get_target_property(QMAKE_EXE Qt6::qmake IMPORTED_LOCATION)
