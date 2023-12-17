@@ -4,6 +4,7 @@
 #include "utility.h"
 #include "astra_http_log.h"
 
+#include <QSslConfiguration>
 #include <QStandardPaths>
 
 using namespace Qt::StringLiterals;
@@ -35,4 +36,13 @@ void Utility::createPathIfNeeded(const QDir &dir)
     if (!QDir().exists(dir.absolutePath())) {
         QDir().mkpath(dir.absolutePath());
     }
+}
+
+void Utility::setSSL(QNetworkRequest &request)
+{
+    QSslConfiguration config;
+    config.setProtocol(QSsl::AnyProtocol);
+    config.setPeerVerifyMode(QSslSocket::VerifyNone);
+
+    request.setSslConfiguration(config);
 }

@@ -99,7 +99,6 @@ public:
 
     // Networking misc.
     void buildRequest(const Profile &settings, QNetworkRequest &request);
-    void setSSL(QNetworkRequest &request);
     void setupIgnoreSSL(QNetworkReply *reply);
 
     [[nodiscard]] bool isLoadingFinished() const;

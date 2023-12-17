@@ -170,7 +170,7 @@ void LauncherCore::setAutoLoginProfile(Profile *profile)
 
 void LauncherCore::buildRequest(const Profile &settings, QNetworkRequest &request)
 {
-    setSSL(request);
+    Utility::setSSL(request);
 
     if (settings.account()->license() == Account::GameLicense::macOS) {
         request.setHeader(QNetworkRequest::UserAgentHeader, QByteArrayLiteral("macSQEXAuthor/2.0.0(MacOSX; ja-jp)"));
@@ -184,15 +184,6 @@ void LauncherCore::buildRequest(const Profile &settings, QNetworkRequest &reques
                                            "application/x-ms-xbap, */*"));
     request.setRawHeader(QByteArrayLiteral("Accept-Encoding"), QByteArrayLiteral("gzip, deflate"));
     request.setRawHeader(QByteArrayLiteral("Accept-Language"), QByteArrayLiteral("en-us"));
-}
-
-void LauncherCore::setSSL(QNetworkRequest &request)
-{
-    QSslConfiguration config;
-    config.setProtocol(QSsl::AnyProtocol);
-    config.setPeerVerifyMode(QSslSocket::VerifyNone);
-
-    request.setSslConfiguration(config);
 }
 
 void LauncherCore::setupIgnoreSSL(QNetworkReply *reply)

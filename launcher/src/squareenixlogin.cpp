@@ -271,7 +271,7 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
     url.setPath(QStringLiteral("/http/win32/ffxivneo_release_game/%1/%2").arg(m_info->profile->baseGameVersion(), m_SID));
 
     auto request = QNetworkRequest(url);
-    m_launcher.setSSL(request);
+    Utility::setSSL(request);
     request.setRawHeader(QByteArrayLiteral("X-Hash-Check"), QByteArrayLiteral("enabled"));
     request.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("FFXIV PATCH CLIENT"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/x-www-form-urlencoded"));
