@@ -524,7 +524,7 @@ QString Profile::baseGameVersion() const
 int Profile::numInstalledExpansions() const
 {
     Q_ASSERT(m_repositories.repositories_count >= 1);
-    return m_repositories.repositories_count - 1;
+    return static_cast<int>(m_repositories.repositories_count) - 1;
 }
 
 QString Profile::expansionVersion(const int index) const

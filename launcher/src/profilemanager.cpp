@@ -152,18 +152,14 @@ bool ProfileManager::canDelete(Profile *account) const
 
 bool ProfileManager::hasAnyExistingInstallations() const
 {
-    for (auto &profile : m_profiles) {
-        if (profile->isGameInstalled()) {
-            return true;
-        }
-    }
-
-    return false;
+    return std::ranges::any_of(m_profiles, [](const auto &profile) {
+        return profile->isGameInstalled();
+    });
 }
 
 int ProfileManager::numProfiles() const
 {
-    return m_profiles.count();
+    return static_cast<int>(m_profiles.count());
 }
 
 #include "moc_profilemanager.cpp"

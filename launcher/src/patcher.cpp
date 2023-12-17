@@ -60,7 +60,7 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
     Q_EMIT m_launcher.stageIndeterminate();
     Q_EMIT m_launcher.stageChanged(i18n("Updating %1", getBaseString()));
 
-    m_remainingPatches = patchList.patches().size();
+    m_remainingPatches = static_cast<int>(patchList.patches().size());
     m_patchQueue.resize(m_remainingPatches);
 
     QFutureSynchronizer<void> synchronizer;
@@ -133,7 +133,7 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
     });
 
     // This must happen synchronously
-    size_t i = 0;
+    int i = 0;
     for (const auto &patch : m_patchQueue) {
         QString repositoryName = patch.repository;
         if (repositoryName == QStringLiteral("game")) {
@@ -141,7 +141,7 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
         }
 
         Q_EMIT m_launcher.stageChanged(i18n("Installing %1 - %2 [%3/%4]", repositoryName, patch.version, i++, m_remainingPatches));
-        Q_EMIT m_launcher.stageDeterminate(0, m_patchQueue.size(), i++);
+        Q_EMIT m_launcher.stageDeterminate(0, static_cast<int>(m_patchQueue.size()), i++);
 
         co_await QtConcurrent::run([this, patch] {
             processPatch(patch);
@@ -249,7 +249,7 @@ void Patcher::updateMessage()
 
             Q_EMIT m_launcher.stageChanged(i18n("Downloading %1 - %2 [%3/%4]", repositoryName, patch.version, m_finishedPatches, m_remainingPatches),
                                            i18n("%1%", progressStr));
-            Q_EMIT m_launcher.stageDeterminate(0, patch.length, patch.bytesDownloaded);
+            Q_EMIT m_launcher.stageDeterminate(0, static_cast<int>(patch.length), static_cast<int>(patch.bytesDownloaded));
             return;
         }
     }
