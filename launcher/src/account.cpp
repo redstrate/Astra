@@ -228,7 +228,7 @@ void Account::fetchAvatar()
 
     const QString filename = QStringLiteral("%1/%2.jpg").arg(cacheLocation, lodestoneId());
     if (!QFile(filename).exists()) {
-        qDebug() << "Did not find lodestone character " << lodestoneId() << " in cache, fetching from xivapi.";
+        qDebug(ASTRA_LOG) << "Did not find lodestone character " << lodestoneId() << " in cache, fetching from xivapi.";
 
         QUrl url;
         url.setScheme(m_launcher.settings()->preferredProtocol());
