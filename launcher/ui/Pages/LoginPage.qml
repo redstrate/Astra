@@ -147,6 +147,7 @@ QQC2.Control {
                 description: LauncherCore.currentProfile.account.name
 
                 leading: Components.Avatar {
+                    name: LauncherCore.currentProfile.account.name
                     source: LauncherCore.currentProfile.account.avatarUrl
                 }
 

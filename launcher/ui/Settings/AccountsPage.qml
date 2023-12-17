@@ -34,6 +34,7 @@ FormCard.FormCardPage {
                     description: account.isSapphire ? i18n("Sapphire") : i18n("Square Enix")
 
                     leading: Components.Avatar {
+                        name: account.name
                         source: account.avatarUrl
                     }
 
