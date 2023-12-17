@@ -41,7 +41,7 @@ Kirigami.Page {
         onTriggered: {
             autoLoginTimer.stop();
             if (LauncherCore.autoLogin(LauncherCore.autoLoginProfile)) {
-                pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "StatusPage"));
+                root.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "StatusPage"));
             }
         }
     }

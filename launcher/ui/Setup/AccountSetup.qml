@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 
@@ -72,7 +74,7 @@ FormCard.FormCardPage {
 
             text: i18n("Add Square Enix Account")
             icon.name: "list-add-symbolic"
-            onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"), {
+            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"), {
                 profile: page.profile
             })
         }
@@ -87,7 +89,7 @@ FormCard.FormCardPage {
 
             text: i18n("Add Sapphire Account")
             icon.name: "list-add-symbolic"
-            onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSapphire"), {
+            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSapphire"), {
                 profile: page.profile
             })
         }

@@ -75,8 +75,8 @@ FormCard.FormCardPage {
         }
 
         function onError(message) {
-            errorDialog.subtitle = message
-            errorDialog.open()
+            page.errorDialog.subtitle = message;
+            page.errorDialog.open();
         }
     }
 }

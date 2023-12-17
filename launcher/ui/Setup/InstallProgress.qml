@@ -9,6 +9,8 @@ import org.kde.kirigami as Kirigami
 import zone.xiv.astra
 
 Kirigami.Page {
+    id: page
+
     property var gameInstaller
 
     title: i18n("Game Installation")
@@ -33,7 +35,7 @@ Kirigami.Page {
     Component.onCompleted: gameInstaller.installGame()
 
     Connections {
-        target: gameInstaller
+        target: page.gameInstaller
 
         function onInstallFinished() {
             applicationWindow().checkSetup();

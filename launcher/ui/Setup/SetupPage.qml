@@ -32,7 +32,7 @@ FormCard.FormCardPage {
 
         FormCard.FormTextDelegate {
             text: {
-                if (isInitialSetup) {
+                if (page.isInitialSetup) {
                     return i18n("You must have a legitimate installation of the FFXIV to continue.");
                 } else {
                     return i18n("You must select a legitimate installation of FFXIV for '%1'", page.profile.name);
@@ -88,7 +88,7 @@ FormCard.FormCardPage {
 
             text: i18n("Find Existing Installation")
             icon.name: "edit-find"
-            onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ExistingSetup"), {
+            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ExistingSetup"), {
                 profile: page.profile
             })
         }
@@ -103,7 +103,7 @@ FormCard.FormCardPage {
 
             text: i18n("Download Game")
             icon.name: "cloud-download"
-            onClicked: pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "DownloadSetup"), {
+            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "DownloadSetup"), {
                 profile: page.profile
             })
         }

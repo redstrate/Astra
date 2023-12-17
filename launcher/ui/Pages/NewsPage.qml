@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls as QQC2
 import QtQuick.Layouts
@@ -118,6 +120,8 @@ QQC2.Control {
                 model: LauncherCore.headline !== null ? LauncherCore.headline.news : undefined
 
                 FormCard.FormButtonDelegate {
+                    required property var modelData
+
                     text: modelData.title
                     description: Qt.formatDate(modelData.date)
 
@@ -156,6 +160,8 @@ QQC2.Control {
                 model: LauncherCore.headline !== null ? LauncherCore.headline.topics : undefined
 
                 FormCard.FormButtonDelegate {
+                    required property var modelData
+
                     text: modelData.title
                     description: Qt.formatDate(modelData.date)
 

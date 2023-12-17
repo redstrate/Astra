@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Window
@@ -23,6 +25,8 @@ FormCard.FormCardPage {
             model: LauncherCore.profileManager
 
             ColumnLayout {
+                id: layout
+
                 required property var profile
                 required property int index
 
@@ -31,14 +35,14 @@ FormCard.FormCardPage {
                 FormCard.FormButtonDelegate {
                     id: buttonDelegate
 
-                    text: profile.name
+                    text: layout.profile.name
                     onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ProfileSettings"), {
-                        profile: profile
+                        profile: layout.profile
                     })
                 }
 
                 FormCard.FormDelegateSeparator {
-                    visible: index + 1 < LauncherCore.profileManager.numProfiles()
+                    visible: layout.index + 1 < LauncherCore.profileManager.numProfiles()
                 }
             }
         }

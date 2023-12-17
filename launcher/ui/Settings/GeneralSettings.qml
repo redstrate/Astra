@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Window
 import QtQuick.Controls as QQC2
@@ -12,6 +14,8 @@ import org.kde.kirigamiaddons.formcard as FormCard
 import zone.xiv.astra
 
 FormCard.FormCardPage {
+    id: page
+
     title: i18nc("@title:window", "General")
 
     FormCard.FormCard {
@@ -74,7 +78,9 @@ FormCard.FormCardPage {
             checked: LauncherCore.settings.showNews
             onCheckedChanged: {
                 LauncherCore.settings.showNews = checked;
-                Window.window.close(); // if we don't close the dialog it crashes!
+                if (page.Window.window !== null) {
+                    page.Window.window.close(); // if we don't close the dialog it crashes!
+                }
             }
         }
 

@@ -8,8 +8,6 @@ import org.kde.kirigami as Kirigami
 
 import zone.xiv.astra
 
-import "Pages"
-
 Kirigami.ApplicationWindow {
     id: appWindow
 
@@ -78,7 +76,7 @@ Kirigami.ApplicationWindow {
 
     function openUrl(url) {
         if (LauncherCore.isSteamDeck) {
-            pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "BrowserPage"), {
+            appWindow.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "BrowserPage"), {
                 url: url
             })
         } else {
@@ -90,14 +88,14 @@ Kirigami.ApplicationWindow {
         target: LauncherCore
 
         function onLoadingFinished() {
-            checkSetup();
+            appWindow.checkSetup();
         }
 
         function onSuccessfulLaunch() {
             if (LauncherCore.settings.closeWhenLaunched) {
-                hide();
+                appWindow.hide();
             } else {
-                checkSetup();
+                appWindow.checkSetup();
             }
         }
 
@@ -105,12 +103,12 @@ Kirigami.ApplicationWindow {
             if (LauncherCore.settings.closeWhenLaunched) {
                 Qt.callLater(Qt.quit);
             } else {
-                checkSetup();
+                appWindow.checkSetup();
             }
         }
 
         function onCurrentProfileChanged() {
-            checkSetup();
+            appWindow.checkSetup();
         }
     }
 
@@ -120,14 +118,14 @@ Kirigami.ApplicationWindow {
         function onShowNewsChanged() {
             // workaround annoying Qt layout bug
             // TODO: see if this changed in Qt7
-            pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
+            appWindow.pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
         }
     }
 
     Component.onCompleted: checkSetup()
 
     property Item hoverLinkIndicator: QQC2.Control {
-        parent: overlay.parent
+        parent: appWindow.overlay.parent
         property alias text: linkText.text
         opacity: text.length > 0 ? 1 : 0
 

@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls as QQC2
 import QtQuick.Layouts
@@ -72,7 +74,7 @@ QQC2.Control {
         target: LauncherCore
 
         function onCurrentProfileChanged() {
-            updateFields();
+            page.updateFields();
         }
     }
 
@@ -80,7 +82,7 @@ QQC2.Control {
         target: LauncherCore.currentProfile
 
         function onAccountChanged() {
-            updateFields();
+            page.updateFields();
 
             if (!LauncherCore.currentProfile.account.rememberPassword) {
                 passwordField.forceActiveFocus();
@@ -117,14 +119,16 @@ QQC2.Control {
                         model: LauncherCore.profileManager
 
                         QQC2.MenuItem {
+                            id: profileMenuItem
+
                             required property var profile
 
                             QQC2.MenuItem {
-                                text: profile.name
+                                text: profileMenuItem.profile.name
 
                                 onClicked: {
-                                    LauncherCore.currentProfile = profile
-                                    profileMenu.close()
+                                    LauncherCore.currentProfile = profileMenuItem.profile;
+                                    profileMenu.close();
                                 }
                             }
                         }
@@ -160,16 +164,18 @@ QQC2.Control {
                         model: LauncherCore.accountManager
 
                         QQC2.MenuItem {
+                            id: menuItem
+
                             required property var account
 
                             QQC2.MenuItem {
-                                text: account.name
-                                icon.name: account.avatarUrl.length === 0 ? "actor" : ""
-                                icon.source: account.avatarUrl
+                                text: menuItem.account.name
+                                icon.name: menuItem.account.avatarUrl.length === 0 ? "actor" : ""
+                                icon.source: menuItem.account.avatarUrl
 
                                 onClicked: {
-                                    LauncherCore.currentProfile.account = account
-                                    accountMenu.close()
+                                    LauncherCore.currentProfile.account = menuItem.account;
+                                    accountMenu.close();
                                 }
                             }
                         }
@@ -238,7 +244,7 @@ QQC2.Control {
                 id: loginButton
 
                 text: i18n("Log In")
-                description: invalidLoginReason
+                description: page.invalidLoginReason
                 icon.name: "unlock"
                 enabled: page.isLoginValid
                 onClicked: {
