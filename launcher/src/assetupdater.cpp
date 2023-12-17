@@ -302,3 +302,5 @@ QUrl AssetUpdater::dotnetDesktopPackageUrl(const QString &version) const
 
     return url;
 }
+
+#include "moc_assetupdater.cpp"

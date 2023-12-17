@@ -121,3 +121,5 @@ int AccountManager::numAccounts() const
 {
     return m_accounts.count();
 }
+
+#include "moc_accountmanager.cpp"

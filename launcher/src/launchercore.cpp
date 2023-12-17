@@ -357,3 +357,5 @@ QCoro::Task<> LauncherCore::fetchNews()
     m_headline = headline;
     Q_EMIT newsChanged();
 }
+
+#include "moc_launchercore.cpp"

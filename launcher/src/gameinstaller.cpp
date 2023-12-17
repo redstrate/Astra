@@ -64,3 +64,5 @@ void GameInstaller::installGame()
         qInfo(ASTRA_LOG) << "Installed game in" << installDirectory;
     });
 }
+
+#include "moc_gameinstaller.cpp"

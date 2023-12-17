@@ -578,3 +578,5 @@ void Profile::setLoggedIn(const bool value)
         Q_EMIT loggedInChanged();
     }
 }
+
+#include "moc_profile.cpp"

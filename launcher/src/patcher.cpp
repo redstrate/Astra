@@ -254,3 +254,5 @@ void Patcher::updateMessage()
         }
     }
 }
+
+#include "moc_patcher.cpp"

@@ -328,3 +328,5 @@ void Account::updateConfig()
     file.write(reinterpret_cast<const char *>(buffer.data), buffer.size);
     file.close();
 }
+
+#include "moc_account.cpp"

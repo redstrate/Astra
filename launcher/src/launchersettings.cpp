@@ -167,3 +167,5 @@ Config *LauncherSettings::config()
 {
     return m_config;
 }
+
+#include "moc_launchersettings.cpp"

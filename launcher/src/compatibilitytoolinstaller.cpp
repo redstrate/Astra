@@ -91,3 +91,5 @@ void CompatibilityToolInstaller::removeCompatibilityTool()
 
     Q_EMIT installFinished();
 }
+
+#include "moc_compatibilitytoolinstaller.cpp"

@@ -67,6 +67,7 @@ target_sources(astra PRIVATE
         src/compatibilitytoolinstaller.cpp
         src/encryptedarg.cpp
         src/gamerunner.cpp
+        src/headline.cpp
         src/gameinstaller.cpp
         src/launchercore.cpp
         src/launchersettings.cpp

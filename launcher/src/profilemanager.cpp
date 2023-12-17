@@ -163,3 +163,5 @@ int ProfileManager::numProfiles() const
 {
     return m_profiles.count();
 }
+
+#include "moc_profilemanager.cpp"

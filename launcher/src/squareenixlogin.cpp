@@ -369,3 +369,5 @@ QString SquareEnixLogin::getFileHash(const QString &file)
 
     return QStringLiteral("%1/%2").arg(QString::number(f.size()), QString::fromUtf8(hash.result().toHex()));
 }
+
+#include "moc_squareenixlogin.cpp"
