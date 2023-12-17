@@ -4,8 +4,6 @@
 #include "patchlist.h"
 #include "astra_patcher_log.h"
 
-#include <QDebug>
-
 PatchList::PatchList(const QString &patchList)
 {
     const QStringList parts = patchList.split(QStringLiteral("\r\n"));

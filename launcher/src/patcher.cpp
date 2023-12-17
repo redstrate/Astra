@@ -76,7 +76,14 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
 
         const QString patchPath = repositoryDir.absoluteFilePath(filename);
 
-        const QueuedPatch queuedPatch{patch.name, patch.repository, patch.version, patchPath, patch.hashes, patch.hashBlockSize, patch.length, isBoot()};
+        const QueuedPatch queuedPatch{.name = patch.name,
+                                      .repository = patch.repository,
+                                      .version = patch.version,
+                                      .path = patchPath,
+                                      .hashes = patch.hashes,
+                                      .hashBlockSize = patch.hashBlockSize,
+                                      .length = patch.length,
+                                      .isBoot = isBoot()};
 
         qDebug(ASTRA_PATCHER) << "Adding a queued patch:";
         qDebug(ASTRA_PATCHER) << "- Name:" << patch.name;
@@ -96,6 +103,7 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
             auto patchReply = m_launcher.mgr()->get(patchRequest);
 
             connect(patchReply, &QNetworkReply::downloadProgress, this, [this, ourIndex, queuedPatch](int received, int total) {
+                Q_UNUSED(total)
                 updateDownloadProgress(ourIndex, received);
             });
 

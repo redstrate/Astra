@@ -107,7 +107,7 @@ void ProfileManager::load()
 
 int ProfileManager::rowCount(const QModelIndex &index) const
 {
-    Q_UNUSED(index);
+    Q_UNUSED(index)
     return static_cast<int>(m_profiles.size());
 }
 

@@ -42,7 +42,7 @@ private:
         long length;
         bool isBoot;
 
-        long bytesDownloaded;
+        long bytesDownloaded = 0;
         bool downloaded = false;
 
         [[nodiscard]] QString getVersion() const
