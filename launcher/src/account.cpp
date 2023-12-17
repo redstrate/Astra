@@ -73,7 +73,7 @@ void Account::setLodestoneId(const QString &id)
 
 QString Account::avatarUrl() const
 {
-    return m_url.toString();
+    return m_avatarUrl;
 }
 
 bool Account::isSapphire() const
@@ -221,12 +221,12 @@ void Account::fetchAvatar()
         return;
     }
 
-    const auto cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + QStringLiteral("/avatars");
+    const QString cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + QStringLiteral("/avatars");
     if (!QDir().exists(cacheLocation)) {
         QDir().mkpath(cacheLocation);
     }
 
-    const QString filename(QStringLiteral("%1/%2.jpg").arg(cacheLocation, lodestoneId()));
+    const QString filename = QStringLiteral("%1/%2.jpg").arg(cacheLocation, lodestoneId());
     if (!QFile(filename).exists()) {
         qDebug() << "Did not find lodestone character " << lodestoneId() << " in cache, fetching from xivapi.";
 
@@ -252,13 +252,13 @@ void Account::fetchAvatar()
                     file.write(avatarReply->readAll());
                     file.close();
 
-                    m_url = QUrl(QStringLiteral("file:///%1").arg(filename));
+                    m_avatarUrl = QStringLiteral("file:///%1").arg(filename);
                     Q_EMIT avatarUrlChanged();
                 });
             }
         });
     } else {
-        m_url = QUrl(QStringLiteral("file:///%1").arg(filename));
+        m_avatarUrl = QStringLiteral("file:///%1").arg(filename);
         Q_EMIT avatarUrlChanged();
     }
 }

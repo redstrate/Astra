@@ -110,6 +110,6 @@ private:
 
     AccountConfig m_config;
     QString m_key;
-    QUrl m_url;
+    QString m_avatarUrl;
     LauncherCore &m_launcher;
 };
