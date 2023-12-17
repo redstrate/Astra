@@ -10,6 +10,8 @@
 #include <QNetworkReply>
 #include <qcoronetwork.h>
 
+using namespace Qt::StringLiterals;
+
 SapphireLogin::SapphireLogin(LauncherCore &window, QObject *parent)
     : QObject(parent)
     , m_launcher(window)
@@ -37,9 +39,9 @@ QCoro::Task<std::optional<LoginAuth>> SapphireLogin::login(const QString &lobbyU
     const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
     if (!document.isEmpty()) {
         LoginAuth auth;
-        auth.SID = document[QLatin1String("sId")].toString();
-        auth.lobbyhost = document[QLatin1String("lobbyHost")].toString();
-        auth.frontierHost = document[QLatin1String("frontierHost")].toString();
+        auth.SID = document["sId"_L1].toString();
+        auth.lobbyhost = document["lobbyHost"_L1].toString();
+        auth.frontierHost = document["frontierHost"_L1].toString();
         auth.region = 3;
 
         co_return auth;
@@ -64,9 +66,9 @@ void SapphireLogin::registerAccount(const QString &lobbyUrl, const LoginInformat
         const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
 
         LoginAuth auth;
-        auth.SID = document[QLatin1String("sId")].toString();
-        auth.lobbyhost = document[QLatin1String("lobbyHost")].toString();
-        auth.frontierHost = document[QLatin1String("frontierHost")].toString();
+        auth.SID = document["sId"_L1].toString();
+        auth.lobbyhost = document["lobbyHost"_L1].toString();
+        auth.frontierHost = document["frontierHost"_L1].toString();
         auth.region = 3;
 
         // m_launcher.launchGame(*info.profile, auth);

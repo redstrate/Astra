@@ -19,6 +19,8 @@
 #include "physis_logger.h"
 #include "sapphirelogin.h"
 
+using namespace Qt::StringLiterals;
+
 int main(int argc, char *argv[])
 {
     initializeLogging();
@@ -98,7 +100,7 @@ int main(int argc, char *argv[])
 
         const QStringList args = parser.positionalArguments();
         // Steam tries to use as a compatibility tool, running installation scripts (like DirectX), so try to ignore it.
-        if (!args.empty() && !args[0].contains(QLatin1String("ffxivboot.exe"))) {
+        if (!args.empty() && !args[0].contains("ffxivboot.exe"_L1)) {
             return 0;
         }
     }

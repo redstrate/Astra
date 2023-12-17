@@ -6,6 +6,8 @@
 
 #include <KSharedConfig>
 
+using namespace Qt::StringLiterals;
+
 AccountManager::AccountManager(LauncherCore &launcher, QObject *parent)
     : QAbstractListModel(parent)
     , m_launcher(launcher)
@@ -16,8 +18,8 @@ void AccountManager::load()
 {
     auto config = KSharedConfig::openStateConfig();
     for (const auto &id : config->groupList()) {
-        if (id.contains(QLatin1String("account-"))) {
-            const QString uuid = QString(id).remove(QLatin1String("account-"));
+        if (id.contains("account-"_L1)) {
+            const QString uuid = QString(id).remove("account-"_L1);
             qInfo(ASTRA_LOG) << "Loading account" << uuid;
 
             auto account = new Account(m_launcher, uuid, this);

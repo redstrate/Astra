@@ -8,6 +8,8 @@
 #include <QDir>
 #include <QUuid>
 
+using namespace Qt::StringLiterals;
+
 ProfileManager::ProfileManager(LauncherCore &launcher, QObject *parent)
     : QAbstractListModel(parent)
     , m_launcher(launcher)
@@ -91,8 +93,8 @@ void ProfileManager::load()
 {
     auto config = KSharedConfig::openStateConfig();
     for (const auto &id : config->groupList()) {
-        if (id.contains(QLatin1String("profile-"))) {
-            const QString uuid = QString(id).remove(QLatin1String("profile-"));
+        if (id.contains("profile-"_L1)) {
+            const QString uuid = QString(id).remove("profile-"_L1);
             qInfo(ASTRA_LOG) << "Loading profile" << uuid;
             auto profile = new Profile(m_launcher, uuid, this);
             insertProfile(profile);

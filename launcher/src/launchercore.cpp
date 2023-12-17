@@ -20,6 +20,8 @@
 #include "squareenixlogin.h"
 #include "utility.h"
 
+using namespace Qt::StringLiterals;
+
 LauncherCore::LauncherCore()
     : QObject()
 {
@@ -42,7 +44,7 @@ LauncherCore::LauncherCore()
     }
 
     // set default profile, if found
-    if (auto profile = m_profileManager->getProfileByUUID(m_settings->currentProfile()); profile != nullptr) {
+    if (auto profile = m_profileManager->getProfileByUUID(m_settings->currentProfile())) {
         setCurrentProfile(profile);
     }
 
@@ -109,7 +111,7 @@ CompatibilityToolInstaller *LauncherCore::createCompatInstaller()
 
 void LauncherCore::clearAvatarCache()
 {
-    const auto cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + QStringLiteral("/avatars");
+    const QString cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + QStringLiteral("/avatars");
     if (QDir(cacheLocation).exists()) {
         QDir(cacheLocation).removeRecursively();
     }
@@ -153,19 +155,17 @@ void LauncherCore::setCurrentProfile(Profile *profile)
 
 void LauncherCore::setAutoLoginProfile(Profile *profile)
 {
-    if (profile == nullptr) {
+    if (profile != nullptr) {
+        auto uuid = profile->uuid();
+        if (uuid != m_settings->config()->autoLoginProfile()) {
+            m_settings->config()->setAutoLoginProfile(uuid);
+        }
+    } else {
         m_settings->config()->setAutoLoginProfile({});
-        m_settings->config()->save();
-        Q_EMIT autoLoginProfileChanged();
-        return;
     }
 
-    auto uuid = profile->uuid();
-    if (uuid != m_settings->config()->autoLoginProfile()) {
-        m_settings->config()->setAutoLoginProfile(uuid);
-        m_settings->config()->save();
-        Q_EMIT autoLoginProfileChanged();
-    }
+    m_settings->config()->save();
+    Q_EMIT autoLoginProfileChanged();
 }
 
 void LauncherCore::buildRequest(const Profile &settings, QNetworkRequest &request)
@@ -317,41 +317,35 @@ QCoro::Task<> LauncherCore::fetchNews()
 
     const auto parseNews = [](QJsonObject object) -> News {
         News news;
-        news.date = QDateTime::fromString(object[QLatin1String("date")].toString(), Qt::DateFormat::ISODate);
-        news.id = object[QLatin1String("id")].toString();
-        news.tag = object[QLatin1String("tag")].toString();
-        news.title = object[QLatin1String("title")].toString();
+        news.date = QDateTime::fromString(object["date"_L1].toString(), Qt::DateFormat::ISODate);
+        news.id = object["id"_L1].toString();
+        news.tag = object["tag"_L1].toString();
+        news.title = object["title"_L1].toString();
 
-        if (object[QLatin1String("url")].toString().isEmpty()) {
+        if (object["url"_L1].toString().isEmpty()) {
             news.url = QUrl(QStringLiteral("https://na.finalfantasyxiv.com/lodestone/news/detail/%1").arg(news.id));
         } else {
-            news.url = QUrl(object[QLatin1String("url")].toString());
+            news.url = QUrl(object["url"_L1].toString());
         }
 
         return news;
     };
 
-    for (auto bannerObject : document.object()[QLatin1String("banner")].toArray()) {
-        auto banner = Banner();
-        banner.link = QUrl(bannerObject.toObject()[QLatin1String("link")].toString());
-        banner.bannerImage = QUrl(bannerObject.toObject()[QLatin1String("lsb_banner")].toString());
-
-        headline->banners.push_back(banner);
+    for (const auto bannerObject : document.object()["banner"_L1].toArray()) {
+        headline->banners.push_back(
+            {.link = QUrl(bannerObject.toObject()["link"_L1].toString()), .bannerImage = QUrl(bannerObject.toObject()["lsb_banner"_L1].toString())});
     }
 
-    for (auto newsObject : document.object()[QLatin1String("news")].toArray()) {
-        auto news = parseNews(newsObject.toObject());
-        headline->news.push_back(news);
+    for (const auto newsObject : document.object()["news"_L1].toArray()) {
+        headline->news.push_back(parseNews(newsObject.toObject()));
     }
 
-    for (auto pinnedObject : document.object()[QLatin1String("pinned")].toArray()) {
-        auto pinned = parseNews(pinnedObject.toObject());
-        headline->pinned.push_back(pinned);
+    for (const auto pinnedObject : document.object()["pinned"_L1].toArray()) {
+        headline->pinned.push_back(parseNews(pinnedObject.toObject()));
     }
 
-    for (auto pinnedObject : document.object()[QLatin1String("topics")].toArray()) {
-        auto pinned = parseNews(pinnedObject.toObject());
-        headline->topics.push_back(pinned);
+    for (const auto pinnedObject : document.object()["topics"_L1].toArray()) {
+        headline->topics.push_back(parseNews(pinnedObject.toObject()));
     }
 
     m_headline = headline;

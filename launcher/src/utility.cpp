@@ -6,6 +6,8 @@
 
 #include <QStandardPaths>
 
+using namespace Qt::StringLiterals;
+
 QDir Utility::stateDirectory()
 {
     if (qEnvironmentVariableIsSet("XDG_STATE_HOME")) {
@@ -20,10 +22,17 @@ QDir Utility::stateDirectory()
 
 QString Utility::toWindowsPath(const QDir &dir)
 {
-    return QStringLiteral("Z:") + dir.absolutePath().replace(QLatin1Char('/'), QLatin1Char('\\'));
+    return QStringLiteral("Z:") + dir.absolutePath().replace('/'_L1, '\\'_L1);
 }
 
 void Utility::printRequest(const QString &type, const QNetworkRequest &request)
 {
     qDebug(ASTRA_HTTP) << type.toUtf8().constData() << request.url().toDisplayString();
+}
+
+void Utility::createPathIfNeeded(const QDir &dir)
+{
+    if (!QDir().exists(dir.absolutePath())) {
+        QDir().mkpath(dir.absolutePath());
+    }
 }

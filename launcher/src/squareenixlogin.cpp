@@ -18,6 +18,8 @@
 #include "launchercore.h"
 #include "utility.h"
 
+using namespace Qt::StringLiterals;
+
 SquareEnixLogin::SquareEnixLogin(LauncherCore &window, QObject *parent)
     : QObject(parent)
     , m_launcher(window)
@@ -69,7 +71,7 @@ QCoro::Task<bool> SquareEnixLogin::checkGateStatus()
     co_await reply;
 
     const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
-    const bool isGateOpen = !document.isEmpty() && document.object()[QLatin1String("status")].toInt() != 0;
+    const bool isGateOpen = !document.isEmpty() && document.object()["status"_L1].toInt() != 0;
 
     if (isGateOpen) {
         qInfo(ASTRA_LOG) << "Gate is open!";
@@ -87,7 +89,7 @@ QCoro::Task<> SquareEnixLogin::checkBootUpdates()
     qInfo(ASTRA_LOG) << "Checking for updates to boot components...";
 
     QString formattedDate = QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH-mm"));
-    formattedDate[15] = QLatin1Char('0');
+    formattedDate[15] = '0'_L1;
 
     const QUrlQuery query{{QStringLiteral("time"), formattedDate}};
 
@@ -134,18 +136,18 @@ QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStor
     // en is always used to the top url
     query.addQueryItem(QStringLiteral("lng"), QStringLiteral("en"));
     // for some reason, we always use region 3. the actual region is acquired later
-    query.addQueryItem(QStringLiteral("rgn"), QStringLiteral("3"));
-    query.addQueryItem(QStringLiteral("isft"), m_info->profile->account()->isFreeTrial() ? QStringLiteral("1") : QStringLiteral("0"));
-    query.addQueryItem(QStringLiteral("cssmode"), QStringLiteral("1"));
-    query.addQueryItem(QStringLiteral("isnew"), QStringLiteral("1"));
-    query.addQueryItem(QStringLiteral("launchver"), QStringLiteral("3"));
+    query.addQueryItem(QStringLiteral("rgn"), QString::number(3));
+    query.addQueryItem(QStringLiteral("isft"), QString::number(m_info->profile->account()->isFreeTrial() ? 1 : 0));
+    query.addQueryItem(QStringLiteral("cssmode"), QString::number(1));
+    query.addQueryItem(QStringLiteral("isnew"), QString::number(1));
+    query.addQueryItem(QStringLiteral("launchver"), QString::number(3));
 
     if (m_info->profile->account()->license() == Account::GameLicense::WindowsSteam) {
-        query.addQueryItem(QStringLiteral("issteam"), QStringLiteral("1"));
+        query.addQueryItem(QStringLiteral("issteam"), QString::number(1));
 
         // TODO: get steam ticket information from steam api
-        query.addQueryItem(QStringLiteral("session_ticket"), QStringLiteral("1"));
-        query.addQueryItem(QStringLiteral("ticket_size"), QStringLiteral("1"));
+        query.addQueryItem(QStringLiteral("session_ticket"), QString::number(1));
+        query.addQueryItem(QStringLiteral("ticket_size"), QString::number(1));
     }
 
     QUrl url;
@@ -228,10 +230,10 @@ QCoro::Task<bool> SquareEnixLogin::loginOAuth()
     const QRegularExpression re(QStringLiteral(R"lit(window.external.user\("login=auth,ok,(?<launchParams>.*)\);)lit"));
     const QRegularExpressionMatch match = re.match(str);
     if (match.hasMatch()) {
-        const auto parts = match.captured(1).split(QLatin1Char(','));
+        const auto parts = match.captured(1).split(','_L1);
 
-        const bool terms = parts[3] == QLatin1String("1");
-        const bool playable = parts[9] == QLatin1String("1");
+        const bool terms = parts[3] == "1"_L1;
+        const bool playable = parts[9] == "1"_L1;
 
         if (!playable) {
             Q_EMIT m_launcher.loginError(i18n("Your account is unplayable. Check that you have the correct license, and a valid subscription."));

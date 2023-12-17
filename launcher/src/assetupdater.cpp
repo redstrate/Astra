@@ -16,6 +16,8 @@
 #include <JlCompress.h>
 #include <QtConcurrentRun>
 
+using namespace Qt::StringLiterals;
+
 AssetUpdater::AssetUpdater(Profile &profile, LauncherCore &launcher, QObject *parent)
     : QObject(parent)
     , launcher(launcher)
@@ -36,14 +38,9 @@ QCoro::Task<bool> AssetUpdater::update()
     m_dalamudAssetDir = m_dalamudDir.absoluteFilePath(QStringLiteral("assets"));
     m_dalamudRuntimeDir = m_dalamudDir.absoluteFilePath(QStringLiteral("runtime"));
 
-    const auto createIfNeeded = [](const QDir &dir) {
-        if (!QDir().exists(dir.absolutePath()))
-            QDir().mkpath(dir.absolutePath());
-    };
-
-    createIfNeeded(m_dalamudDir);
-    createIfNeeded(m_dalamudAssetDir);
-    createIfNeeded(m_dalamudRuntimeDir);
+    Utility::createPathIfNeeded(m_dalamudDir);
+    Utility::createPathIfNeeded(m_dalamudAssetDir);
+    Utility::createPathIfNeeded(m_dalamudRuntimeDir);
 
     if (!co_await checkRemoteDalamudAssetVersion()) {
         co_return false;
@@ -72,8 +69,8 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudAssetVersion()
 
     const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
 
-    m_remoteDalamudAssetVersion = doc.object()[QLatin1String("version")].toInt();
-    m_remoteDalamudAssetArray = doc.object()[QLatin1String("assets")].toArray();
+    m_remoteDalamudAssetVersion = doc.object()["version"_L1].toInt();
+    m_remoteDalamudAssetArray = doc.object()["assets"_L1].toArray();
 
     qInfo(ASTRA_LOG) << "Dalamud asset remote version" << m_remoteDalamudAssetVersion;
     qInfo(ASTRA_LOG) << "Dalamud asset local version" << m_profile.dalamudAssetVersion();
@@ -110,9 +107,9 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudVersion()
     }
 
     const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
-    m_remoteDalamudVersion = doc[QLatin1String("assemblyVersion")].toString();
-    m_remoteRuntimeVersion = doc[QLatin1String("runtimeVersion")].toString();
-    m_remoteDalamudDownloadUrl = doc[QLatin1String("downloadUrl")].toString();
+    m_remoteDalamudVersion = doc["assemblyVersion"_L1].toString();
+    m_remoteRuntimeVersion = doc["runtimeVersion"_L1].toString();
+    m_remoteDalamudDownloadUrl = doc["downloadUrl"_L1].toString();
 
     qInfo(ASTRA_LOG) << "Latest available Dalamud version:" << m_remoteDalamudVersion << "local:" << m_profile.dalamudVersion();
     qInfo(ASTRA_LOG) << "Latest available NET runtime:" << m_remoteRuntimeVersion;
@@ -139,21 +136,19 @@ QCoro::Task<bool> AssetUpdater::installDalamudAssets()
     QFutureSynchronizer<void> synchronizer;
 
     for (const auto &assetObject : m_remoteDalamudAssetArray) {
-        const QNetworkRequest assetRequest(QUrl(assetObject.toObject()[QLatin1String("url")].toString()));
+        const QNetworkRequest assetRequest(QUrl(assetObject.toObject()["url"_L1].toString()));
         Utility::printRequest(QStringLiteral("GET"), assetRequest);
 
         const auto assetReply = launcher.mgr()->get(assetRequest);
 
         const auto future = QtFuture::connect(assetReply, &QNetworkReply::finished).then([this, assetReply, assetObject] {
-            const QString fileName = assetObject.toObject()[QLatin1String("fileName")].toString();
-            const QString dirPath = fileName.left(fileName.lastIndexOf(QLatin1Char('/')));
+            const QString fileName = assetObject.toObject()["fileName"_L1].toString();
+            const QString dirPath = fileName.left(fileName.lastIndexOf('/'_L1));
 
             const QString path = m_dalamudAssetDir.absoluteFilePath(dirPath);
+            Utility::createPathIfNeeded(path);
 
-            if (!QDir().exists(path))
-                QDir().mkpath(path);
-
-            QFile file(m_dalamudAssetDir.absoluteFilePath(assetObject.toObject()[QLatin1String("fileName")].toString()));
+            QFile file(m_dalamudAssetDir.absoluteFilePath(assetObject.toObject()["fileName"_L1].toString()));
             file.open(QIODevice::WriteOnly);
             file.write(assetReply->readAll());
             file.close();

@@ -13,6 +13,8 @@
 #include "launchercore.h"
 #include "profileconfig.h"
 
+using namespace Qt::StringLiterals;
+
 Profile::Profile(LauncherCore &launcher, const QString &key, QObject *parent)
     : QObject(parent)
     , m_uuid(key)
@@ -42,13 +44,13 @@ void Profile::readDalamudInfo()
             QJsonDocument doc = QJsonDocument::fromJson(depsJson.readAll());
 
             QString versionString;
-            for (const auto &target : doc[QLatin1String("targets")].toObject().keys()) {
-                if (target.contains(QLatin1String(".NETCoreApp"))) {
-                    versionString = doc[QLatin1String("targets")].toObject()[target].toObject().keys().filter(QStringLiteral("Dalamud/"))[0];
+            for (const auto &target : doc["targets"_L1].toObject().keys()) {
+                if (target.contains(".NETCoreApp"_L1)) {
+                    versionString = doc["targets"_L1].toObject()[target].toObject().keys().filter(QStringLiteral("Dalamud/"))[0];
                 }
             }
 
-            m_dalamudVersion = versionString.remove(QLatin1String("Dalamud/"));
+            m_dalamudVersion = versionString.remove("Dalamud/"_L1);
             qInfo(ASTRA_LOG) << "Dalamud version:" << m_dalamudVersion;
         }
 

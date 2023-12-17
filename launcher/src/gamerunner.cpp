@@ -12,6 +12,8 @@
 #include "processlogger.h"
 #include "utility.h"
 
+using namespace Qt::StringLiterals;
+
 GameRunner::GameRunner(LauncherCore &launcher, QObject *parent)
     : QObject(parent)
     , m_launcher(launcher)
@@ -75,9 +77,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
     const QDir dalamudPluginDir = dalamudUserPluginDir.absoluteFilePath(QStringLiteral("installedPlugins"));
 
     const QString logDir = stateDir.absoluteFilePath(QStringLiteral("log"));
-
-    if (!QDir().exists(logDir))
-        QDir().mkpath(logDir);
+    Utility::createPathIfNeeded(logDir);
 
     const QDir dalamudRuntimeDir = dalamudDir.absoluteFilePath(QStringLiteral("runtime"));
     const QDir dalamudAssetDir = dalamudDir.absoluteFilePath(QStringLiteral("assets"));
@@ -126,11 +126,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
 
 QString GameRunner::getGameArgs(const Profile &profile, const LoginAuth &auth)
 {
-    struct Argument {
-        QString key, value;
-    };
-
-    QList<Argument> gameArgs;
+    QList<std::pair<QString, QString>> gameArgs;
     gameArgs.push_back({QStringLiteral("DEV.DataPathType"), QString::number(1)});
     gameArgs.push_back({QStringLiteral("DEV.UseSqPack"), QString::number(1)});
 
@@ -142,13 +138,8 @@ QString GameRunner::getGameArgs(const Profile &profile, const LoginAuth &auth)
     gameArgs.push_back({QStringLiteral("UserPath"), Utility::toWindowsPath(profile.account()->getConfigDir().absolutePath())});
 
     // FIXME: this should belong somewhere else...
-    if (!QDir().exists(profile.account()->getConfigDir().absolutePath())) {
-        QDir().mkpath(profile.account()->getConfigDir().absolutePath());
-    }
-
-    if (!QDir().exists(profile.winePrefixPath())) {
-        QDir().mkpath(profile.winePrefixPath());
-    }
+    Utility::createPathIfNeeded(profile.account()->getConfigDir().absolutePath());
+    Utility::createPathIfNeeded(profile.winePrefixPath());
 
     if (!auth.lobbyhost.isEmpty()) {
         gameArgs.push_back({QStringLiteral("DEV.GMServerHost"), auth.frontierHost});
@@ -159,14 +150,14 @@ QString GameRunner::getGameArgs(const Profile &profile, const LoginAuth &auth)
     }
 
     if (profile.account()->license() == Account::GameLicense::WindowsSteam) {
-        gameArgs.push_back({QStringLiteral("IsSteam"), QStringLiteral("1")});
+        gameArgs.push_back({QStringLiteral("IsSteam"), QString::number(1)});
     }
 
     const QString argFormat = m_launcher.settings()->argumentsEncrypted() ? QStringLiteral(" /%1 =%2") : QStringLiteral(" %1=%2");
 
     QString argJoined;
-    for (const auto &arg : gameArgs) {
-        argJoined += argFormat.arg(arg.key, arg.value);
+    for (const auto &[key, value] : gameArgs) {
+        argJoined += argFormat.arg(key, value);
     }
 
     return m_launcher.settings()->argumentsEncrypted() ? encryptGameArg(argJoined) : argJoined;
@@ -179,11 +170,9 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
     if (needsRegistrySetup) {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-        if (profile.account()->license() == Account::GameLicense::macOS) {
-            addRegistryKey(profile, QStringLiteral("HKEY_CURRENT_USER\\Software\\Wine"), QStringLiteral("HideWineExports"), QStringLiteral("0"));
-        } else {
-            addRegistryKey(profile, QStringLiteral("HKEY_CURRENT_USER\\Software\\Wine"), QStringLiteral("HideWineExports"), QStringLiteral("1"));
-        }
+        // FFXIV detects this as a "macOS" build by checking if Wine shows up
+        const int value = profile.account()->license() == Account::GameLicense::macOS ? 0 : 1;
+        addRegistryKey(profile, QStringLiteral("HKEY_CURRENT_USER\\Software\\Wine"), QStringLiteral("HideWineExports"), QString::number(value));
 #endif
     }
 
@@ -249,16 +238,16 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
             }
 
             QString dirName = fileInfo.fileName();
-            if (dirName.contains(QLatin1String("Proton"))) {
-                if (dirName == QLatin1String("Proton - Experimental")) {
+            if (dirName.contains("Proton"_L1)) {
+                if (dirName == "Proton - Experimental"_L1) {
                     highestVersion.setPath(dir);
                     break;
                 } else {
-                    QString version = dirName.remove(QLatin1String("Proton "));
+                    QString version = dirName.remove("Proton "_L1);
                     // Exclude "BattlEye Runtime" and other unrelated things
-                    if (version.contains(QLatin1Char('.'))) {
+                    if (version.contains('.'_L1)) {
                         // TODO: better error handling (they might never be invalid, but better safe than sorry)
-                        QStringList parts = version.split(QLatin1Char('.'));
+                        QStringList parts = version.split('.'_L1);
                         int versionNum = parts[0].toInt();
 
                         // TODO: doesn't handle minor versions, not like they really exist anymore anyway
@@ -288,10 +277,10 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
             env.insert(QStringLiteral("DYLD_FALLBACK_LIBRARY_PATH"), xivLibPath);
             env.insert(QStringLiteral("DYLD_VERSIONED_LIBRARY_PATH"), xivLibPath);
-            env.insert(QStringLiteral("MVK_CONFIG_FULL_IMAGE_VIEW_SWIZZLE"), QStringLiteral("1"));
-            env.insert(QStringLiteral("MVK_CONFIG_RESUME_LOST_DEVICE"), QStringLiteral("1"));
-            env.insert(QStringLiteral("MVK_ALLOW_METAL_FENCES"), QStringLiteral("1"));
-            env.insert(QStringLiteral("MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS"), QStringLiteral("1"));
+            env.insert(QStringLiteral("MVK_CONFIG_FULL_IMAGE_VIEW_SWIZZLE"), QString::number(1));
+            env.insert(QStringLiteral("MVK_CONFIG_RESUME_LOST_DEVICE"), QString::number(1));
+            env.insert(QStringLiteral("MVK_ALLOW_METAL_FENCES"), QString::number(1));
+            env.insert(QStringLiteral("MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS"), QString::number(1));
         }
 
 #if defined(FLATPAK)

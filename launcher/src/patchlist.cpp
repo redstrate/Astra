@@ -4,12 +4,14 @@
 #include "patchlist.h"
 #include "astra_patcher_log.h"
 
+using namespace Qt::StringLiterals;
+
 PatchList::PatchList(const QString &patchList)
 {
     const QStringList parts = patchList.split(QStringLiteral("\r\n"));
 
     for (int i = 5; i < parts.size() - 2; i++) {
-        const QStringList patchParts = parts[i].split(QLatin1Char('\t'));
+        const QStringList patchParts = parts[i].split('\t'_L1);
 
         const int length = patchParts[0].toInt();
 
@@ -17,10 +19,10 @@ PatchList::PatchList(const QString &patchList)
         const long hashBlockSize = patchParts.size() == 9 ? patchParts[6].toLong() : 0;
 
         const QString &name = version;
-        const QStringList hashes = patchParts.size() == 9 ? (patchParts[7].split(QLatin1Char(','))) : QStringList();
+        const QStringList hashes = patchParts.size() == 9 ? (patchParts[7].split(','_L1)) : QStringList();
         const QString &url = patchParts[patchParts.size() == 9 ? 8 : 5];
 
-        auto url_parts = url.split(QLatin1Char('/'));
+        auto url_parts = url.split('/'_L1);
         const QString repository = url_parts[url_parts.size() - 3];
 
         m_patches.push_back(

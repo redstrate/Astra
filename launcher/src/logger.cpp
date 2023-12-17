@@ -39,10 +39,7 @@ public:
         const QString filename{QStringLiteral("astra.log")};
 
         const QDir logDirectory = Utility::stateDirectory().absoluteFilePath(QStringLiteral("log"));
-
-        if (!logDirectory.exists()) {
-            QDir().mkpath(logDirectory.absolutePath());
-        }
+        Utility::createPathIfNeeded(logDirectory);
 
         // Sort them from highest to lowest (4, 3, 2, 1, 0)
         auto existingLogEntries = logDirectory.entryList({filename + QStringLiteral(".*")});

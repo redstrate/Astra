@@ -18,6 +18,8 @@
 #include "patchlist.h"
 #include "utility.h"
 
+using namespace Qt::StringLiterals;
+
 Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData &bootData, QObject *parent)
     : QObject(parent)
     , m_baseDirectory(baseDirectory)
@@ -70,9 +72,7 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
 
         const QString filename = QStringLiteral("%1.patch").arg(patch.name);
         const QDir repositoryDir = m_patchesDir.absoluteFilePath(patch.repository);
-
-        if (!QDir().exists(repositoryDir.absolutePath()))
-            QDir().mkpath(repositoryDir.absolutePath());
+        Utility::createPathIfNeeded(repositoryDir);
 
         const QString patchPath = repositoryDir.absoluteFilePath(filename);
 
@@ -191,7 +191,7 @@ void Patcher::processPatch(const QueuedPatch &patch)
     if (isBoot()) {
         verFilePath = m_baseDirectory + QStringLiteral("/ffxivboot.ver");
     } else {
-        if (patch.repository == QLatin1String("game")) {
+        if (patch.repository == "game"_L1) {
             verFilePath = m_baseDirectory + QStringLiteral("/ffxivgame.ver");
         } else {
             verFilePath = m_baseDirectory + QStringLiteral("/sqpack/") + patch.repository + QStringLiteral("/") + patch.repository + QStringLiteral(".ver");

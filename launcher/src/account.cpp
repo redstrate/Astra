@@ -14,6 +14,8 @@
 #include "launchercore.h"
 #include "utility.h"
 
+using namespace Qt::StringLiterals;
+
 Account::Account(LauncherCore &launcher, const QString &key, QObject *parent)
     : QObject(parent)
     , m_config(key)
@@ -222,9 +224,7 @@ void Account::fetchAvatar()
     }
 
     const QString cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + QStringLiteral("/avatars");
-    if (!QDir().exists(cacheLocation)) {
-        QDir().mkpath(cacheLocation);
-    }
+    Utility::createPathIfNeeded(cacheLocation);
 
     const QString filename = QStringLiteral("%1/%2.jpg").arg(cacheLocation, lodestoneId());
     if (!QFile(filename).exists()) {
@@ -242,7 +242,7 @@ void Account::fetchAvatar()
         connect(reply, &QNetworkReply::finished, [this, filename, reply] {
             auto document = QJsonDocument::fromJson(reply->readAll());
             if (document.isObject()) {
-                const QNetworkRequest avatarRequest(QUrl(document.object()[QLatin1String("Character")].toObject()[QLatin1String("Avatar")].toString()));
+                const QNetworkRequest avatarRequest(QUrl(document.object()["Character"_L1].toObject()["Avatar"_L1].toString()));
                 Utility::printRequest(QStringLiteral("GET"), avatarRequest);
 
                 auto avatarReply = m_launcher.mgr()->get(avatarRequest);
@@ -311,9 +311,7 @@ void Account::updateConfig()
     physis_cfg_set_value(cfgFile, "CutsceneMovieOpening", "1");
 
     auto screenshotDir = m_launcher.settings()->screenshotDir();
-
-    if (!QDir().exists(screenshotDir))
-        QDir().mkpath(screenshotDir);
+    Utility::createPathIfNeeded(screenshotDir);
 
     auto screenshotDirWin = Utility::toWindowsPath(screenshotDir);
     auto screenshotDirWinStd = screenshotDirWin.toStdString();
