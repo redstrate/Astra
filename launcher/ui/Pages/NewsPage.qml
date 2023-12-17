@@ -83,8 +83,6 @@ QQC2.Control {
                 hoverEnabled: true
 
                 onClicked: applicationWindow().openUrl(LauncherCore.headline.banners[page.currentBannerIndex].link)
-                onEntered: applicationWindow().hoverLinkIndicator.text = LauncherCore.headline.banners[page.currentBannerIndex].link
-                onExited: applicationWindow().hoverLinkIndicator.text = ""
             }
 
             layer.enabled: true
@@ -126,13 +124,6 @@ QQC2.Control {
                     description: Qt.formatDate(modelData.date)
 
                     onClicked: applicationWindow().openUrl(modelData.url)
-                    onHoveredChanged: {
-                        if (hovered) {
-                            applicationWindow().hoverLinkIndicator.text = modelData.url;
-                        } else {
-                            applicationWindow().hoverLinkIndicator.text = "";
-                        }
-                    }
                 }
             }
 
@@ -167,13 +158,6 @@ QQC2.Control {
 
                     hoverEnabled: true
                     onClicked: applicationWindow().openUrl(modelData.url)
-                    onHoveredChanged: {
-                        if (hovered) {
-                            applicationWindow().hoverLinkIndicator.text = modelData.url;
-                        } else {
-                            applicationWindow().hoverLinkIndicator.text = "";
-                        }
-                    }
                 }
             }
 
