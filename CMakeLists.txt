@@ -11,26 +11,19 @@ option(BUILD_FLATPAK "Build for Flatpak." OFF)
 option(ENABLE_STEAM "Build with Steam support, requires supplying the Steam SDK yourself." OFF)
 option(ENABLE_GAMEMODE "Build with Feral GameMode support, requires the daemon to be installed." ON)
 
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(QT_MIN_VERSION 6.5)
+set(QT_MIN_VERSION 6.6)
 set(KF_MIN_VERSION 5.240)
 
 find_package(ECM ${KF_MIN_VERSION} REQUIRED NO_MODULE)
 list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 include(KDEInstallDirs)
-include(ECMFindQmlModule)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 include(ECMSetupVersion)
-include(ECMGenerateHeaders)
-include(ECMPoQmTools)
 include(KDEGitCommitHooks)
 include(KDEClangFormat)
 include(ECMAddTests)
