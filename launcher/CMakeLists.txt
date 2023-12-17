@@ -176,7 +176,3 @@ if (WIN32)
             COMMAND "${WINDEPLOYQT_ENV_SETUP}" && "${WINDEPLOYQT_EXECUTABLE}" \"$<TARGET_FILE:astra>\"
             )
 endif ()
-
-if (BUILD_TESTING)
-    add_subdirectory(autotests)
-endif()
