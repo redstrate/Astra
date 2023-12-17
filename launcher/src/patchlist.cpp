@@ -34,7 +34,7 @@ PatchList::PatchList(const QString &patchList)
     qDebug(ASTRA_PATCHER) << "Finished parsing patch list. # of patches:" << m_patches.size();
 }
 
-QVector<Patch> PatchList::patches() const
+QList<Patch> PatchList::patches() const
 {
     return m_patches;
 }

@@ -3,14 +3,14 @@
 
 #pragma once
 
+#include <QList>
 #include <QString>
-#include <QVector>
 
 class Patch
 {
 public:
     QString name, url, repository, version;
-    QVector<QString> hashes;
+    QList<QString> hashes;
     long hashBlockSize = 0;
     long length = 0;
 };
@@ -20,10 +20,10 @@ class PatchList
 public:
     explicit PatchList(const QString &patchList);
 
-    [[nodiscard]] QVector<Patch> patches() const;
+    [[nodiscard]] QList<Patch> patches() const;
 
     [[nodiscard]] bool isEmpty() const;
 
 private:
-    QVector<Patch> m_patches;
+    QList<Patch> m_patches;
 };

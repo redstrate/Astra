@@ -43,7 +43,7 @@ public:
 private:
     void insertAccount(Account *account);
 
-    QVector<Account *> m_accounts;
+    QList<Account *> m_accounts;
 
     LauncherCore &m_launcher;
 };

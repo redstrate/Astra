@@ -184,7 +184,7 @@ private:
     ProfileConfig *m_config = nullptr;
     Account *m_account = nullptr;
 
-    QVector<QString> m_expansionNames;
+    QList<QString> m_expansionNames;
 
     BootData *m_bootData = nullptr;
     GameData *m_gameData = nullptr;

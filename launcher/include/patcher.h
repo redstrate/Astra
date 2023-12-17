@@ -57,7 +57,7 @@ private:
 
     void processPatch(const QueuedPatch &patch);
 
-    QVector<QueuedPatch> m_patchQueue;
+    QList<QueuedPatch> m_patchQueue;
 
     QDir m_patchesDir;
     QString m_baseDirectory;

@@ -137,7 +137,7 @@ void ProfileManager::insertProfile(Profile *profile)
     endInsertRows();
 }
 
-QVector<Profile *> ProfileManager::profiles() const
+QList<Profile *> ProfileManager::profiles() const
 {
     return m_profiles;
 }
