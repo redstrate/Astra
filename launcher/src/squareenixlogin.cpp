@@ -37,6 +37,10 @@ QCoro::Task<std::optional<LoginAuth>> SquareEnixLogin::login(LoginInformation *i
 
     co_await checkBootUpdates();
 
+    if (!co_await checkLoginStatus()) {
+        co_return std::nullopt;
+    }
+
     if (!co_await loginOAuth()) {
         co_return std::nullopt;
     }
@@ -78,6 +82,41 @@ QCoro::Task<bool> SquareEnixLogin::checkGateStatus()
         co_return true;
     } else {
         qInfo(ASTRA_LOG) << "Gate is closed!";
+        Q_EMIT m_launcher.loginError(i18n("The login gate is closed, the game may be under maintenance.\n\n%1", reply->errorString()));
+        co_return false;
+    }
+}
+
+QCoro::Task<bool> SquareEnixLogin::checkLoginStatus()
+{
+    Q_EMIT m_launcher.stageChanged(i18n("Checking login..."));
+    qInfo(ASTRA_LOG) << "Checking if login is open...";
+
+    QUrl url;
+    url.setScheme(m_launcher.settings()->preferredProtocol());
+    url.setHost(QStringLiteral("frontier.%1").arg(m_launcher.settings()->squareEnixServer()));
+    url.setPath(QStringLiteral("/worldStatus/login_status.json"));
+    url.setQuery(QString::number(QDateTime::currentMSecsSinceEpoch()));
+
+    QNetworkRequest request(url);
+
+    // TODO: really?
+    m_launcher.buildRequest(*m_info->profile, request);
+
+    Utility::printRequest(QStringLiteral("GET"), request);
+
+    const auto reply = m_launcher.mgr()->get(request);
+    m_launcher.setupIgnoreSSL(reply);
+    co_await reply;
+
+    const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
+    const bool isGateOpen = !document.isEmpty() && document.object()["status"_L1].toInt() != 0;
+
+    if (isGateOpen) {
+        qInfo(ASTRA_LOG) << "Login is open!";
+        co_return true;
+    } else {
+        qInfo(ASTRA_LOG) << "Lgoin is closed!";
         Q_EMIT m_launcher.loginError(i18n("The login gate is closed, the game may be under maintenance.\n\n%1", reply->errorString()));
         co_return false;
     }

@@ -25,6 +25,10 @@ private:
     /// \return False if the gate is closed, true if open.
     QCoro::Task<bool> checkGateStatus();
 
+    /// Checks the login status to see if the servers are closed for maintenance
+    /// \return False if logging in is disabled, true if open.
+    QCoro::Task<bool> checkLoginStatus();
+
     /// Check for updates to the boot components. Even though we don't use these, it's checked by later login steps.
     QCoro::Task<> checkBootUpdates();
 
