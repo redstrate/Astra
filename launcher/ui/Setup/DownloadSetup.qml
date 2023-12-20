@@ -37,7 +37,7 @@ FormCard.FormCardPage {
 
             text: i18n("Begin installation")
             icon.name: "cloud-download"
-            onClicked: page.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "InstallProgress"), {
+            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "InstallProgress"), {
                 gameInstaller: LauncherCore.createInstaller(page.profile)
             })
         }
