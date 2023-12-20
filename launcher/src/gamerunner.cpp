@@ -176,28 +176,24 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 #endif
     }
 
-#if defined(Q_OS_LINUX)
-    if (isGame) {
-        if (profile.gamescopeEnabled()) {
-            arguments.push_back(QStringLiteral("gamescope"));
+    if (isGame && profile.gamescopeEnabled()) {
+        arguments.push_back(QStringLiteral("gamescope"));
 
-            if (profile.gamescopeFullscreen())
-                arguments.push_back(QStringLiteral("-f"));
+        if (profile.gamescopeFullscreen())
+            arguments.push_back(QStringLiteral("-f"));
 
-            if (profile.gamescopeBorderless())
-                arguments.push_back(QStringLiteral("-b"));
+        if (profile.gamescopeBorderless())
+            arguments.push_back(QStringLiteral("-b"));
 
-            if (profile.gamescopeWidth() > 0)
-                arguments.push_back(QStringLiteral("-w ") + QString::number(profile.gamescopeWidth()));
+        if (profile.gamescopeWidth() > 0)
+            arguments.push_back(QStringLiteral("-w ") + QString::number(profile.gamescopeWidth()));
 
-            if (profile.gamescopeHeight() > 0)
-                arguments.push_back(QStringLiteral("-h ") + QString::number(profile.gamescopeHeight()));
+        if (profile.gamescopeHeight() > 0)
+            arguments.push_back(QStringLiteral("-h ") + QString::number(profile.gamescopeHeight()));
 
-            if (profile.gamescopeRefreshRate() > 0)
-                arguments.push_back(QStringLiteral("-r ") + QString::number(profile.gamescopeRefreshRate()));
-        }
+        if (profile.gamescopeRefreshRate() > 0)
+            arguments.push_back(QStringLiteral("-r ") + QString::number(profile.gamescopeRefreshRate()));
     }
-#endif
 
 #ifdef ENABLE_GAMEMODE
     if (isGame && profile.gamemodeEnabled()) {
@@ -219,58 +215,9 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 #endif
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
-    if (m_launcher.isSteam()) {
-        const QDir steamDirectory = QProcessEnvironment::systemEnvironment().value(QStringLiteral("STEAM_COMPAT_CLIENT_INSTALL_PATH"));
-        const QDir compatData =
-            QProcessEnvironment::systemEnvironment().value(QStringLiteral("STEAM_COMPAT_DATA_PATH")); // TODO: do these have to exist on the root steam folder?
+    env.insert(QStringLiteral("WINEPREFIX"), profile.winePrefixPath());
 
-        const QString steamAppsPath = steamDirectory.absoluteFilePath(QStringLiteral("steamapps/common"));
-
-        // Find the highest Proton version
-        QDirIterator it(steamAppsPath);
-        QDir highestVersion;
-        int highestVersionNum = 1;
-        while (it.hasNext()) {
-            QString dir = it.next();
-
-            QFileInfo fileInfo(dir);
-            if (!fileInfo.isDir()) {
-                continue;
-            }
-
-            QString dirName = fileInfo.fileName();
-            if (dirName.contains("Proton"_L1)) {
-                if (dirName == "Proton - Experimental"_L1) {
-                    highestVersion.setPath(dir);
-                    break;
-                } else {
-                    QString version = dirName.remove("Proton "_L1);
-                    // Exclude "BattlEye Runtime" and other unrelated things
-                    if (version.contains('.'_L1)) {
-                        // TODO: better error handling (they might never be invalid, but better safe than sorry)
-                        QStringList parts = version.split('.'_L1);
-                        int versionNum = parts[0].toInt();
-
-                        // TODO: doesn't handle minor versions, not like they really exist anymore anyway
-                        if (versionNum > highestVersionNum) {
-                            highestVersionNum = versionNum;
-                            highestVersion.setPath(dir);
-                        }
-                    }
-                }
-            }
-        }
-
-        env.insert(QStringLiteral("STEAM_COMPAT_CLIENT_INSTALL_PATH"), steamDirectory.absolutePath());
-        env.insert(QStringLiteral("STEAM_COMPAT_DATA_PATH"), compatData.absolutePath());
-
-        arguments.push_back(highestVersion.absoluteFilePath(QStringLiteral("proton")));
-        arguments.push_back(QStringLiteral("run"));
-    } else {
-        env.insert(QStringLiteral("WINEPREFIX"), profile.winePrefixPath());
-
-        arguments.push_back(profile.winePath());
-    }
+    arguments.push_back(profile.winePath());
 #endif
 
     arguments.append(args);
