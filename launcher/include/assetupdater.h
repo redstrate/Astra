@@ -25,9 +25,12 @@ public:
     QCoro::Task<bool> update();
 
 private:
+    QCoro::Task<bool> checkRemoteCompatibilityToolVersion();
+
     QCoro::Task<bool> checkRemoteDalamudAssetVersion();
     QCoro::Task<bool> checkRemoteDalamudVersion();
 
+    QCoro::Task<bool> installCompatibilityTool();
     QCoro::Task<bool> installDalamudAssets();
     QCoro::Task<bool> installDalamud();
     QCoro::Task<bool> installRuntime();
@@ -37,12 +40,15 @@ private:
     [[nodiscard]] QUrl dotnetRuntimePackageUrl(const QString &version) const;
     [[nodiscard]] QUrl dotnetDesktopPackageUrl(const QString &version) const;
 
+    bool extractZip(const QString &filePath, const QString &directory);
+
     LauncherCore &launcher;
 
     QString m_remoteDalamudVersion;
     QString m_remoteRuntimeVersion;
 
     QTemporaryDir m_tempDir;
+    QDir m_wineDir;
     QDir m_dataDir;
     QDir m_appDataDir;
     QDir m_dalamudDir;
@@ -52,6 +58,10 @@ private:
     int m_remoteDalamudAssetVersion = -1;
     QJsonArray m_remoteDalamudAssetArray;
     QString m_remoteDalamudDownloadUrl;
+    QString m_remoteCompatibilityToolVersion;
+    // TODO: hardcoded
+    QString m_remoteCompatibilityToolUrl =
+        QStringLiteral("https://github.com/goatcorp/wine-xiv-git/releases/download/8.5.r4.g4211bac7/wine-xiv-staging-fsync-git-ubuntu-8.5.r4.g4211bac7.tar.xz");
 
     Profile &m_profile;
 };

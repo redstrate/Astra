@@ -26,19 +26,12 @@ SPDX-License-Identifier: CC0-1.0
       </entry>
       <entry key="WineType" type="Enum">
         <choices>
-          <choice name="System">
+          <choice name="BuiltIn">
           </choice>
           <choice name="Custom">
           </choice>
-          <choice name="BuiltIn">
-          </choice>
-          <choice name="XIVOnMac">
-          </choice>
         </choices>
-        <default>System</default>
-      </entry>
-      <entry key="UseESync" type="bool">
-        <default>false</default>
+        <default>BuiltIn</default>
       </entry>
       <entry key="UseGamescope" type="bool">
         <default>false</default>

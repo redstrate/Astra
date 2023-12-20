@@ -23,7 +23,6 @@ class Profile : public QObject
     Q_PROPERTY(QString winePath READ winePath WRITE setWinePath NOTIFY winePathChanged)
     Q_PROPERTY(QString winePrefixPath READ winePrefixPath WRITE setWinePrefixPath NOTIFY winePrefixPathChanged)
     Q_PROPERTY(WineType wineType READ wineType WRITE setWineType NOTIFY wineTypeChanged)
-    Q_PROPERTY(bool esyncEnabled READ esyncEnabled WRITE setESyncEnabled NOTIFY useESyncChanged)
     Q_PROPERTY(bool gamescopeEnabled READ gamescopeEnabled WRITE setGamescopeEnabled NOTIFY useGamescopeChanged)
     Q_PROPERTY(bool gamemodeEnabled READ gamemodeEnabled WRITE setGamemodeEnabled NOTIFY useGamemodeChanged)
     Q_PROPERTY(bool directx9Enabled READ directx9Enabled WRITE setDirectX9Enabled NOTIFY useDX9Changed)
@@ -46,12 +45,7 @@ class Profile : public QObject
 public:
     explicit Profile(LauncherCore &launcher, const QString &key, QObject *parent = nullptr);
 
-    enum class WineType {
-        System,
-        Custom,
-        Builtin, // macOS only
-        XIVOnMac // macOS only
-    };
+    enum class WineType { BuiltIn, Custom };
     Q_ENUM(WineType)
 
     enum class DalamudChannel { Stable, Staging };
@@ -76,9 +70,6 @@ public:
 
     [[nodiscard]] WineType wineType() const;
     void setWineType(WineType type);
-
-    [[nodiscard]] bool esyncEnabled() const;
-    void setESyncEnabled(bool value);
 
     [[nodiscard]] bool gamescopeEnabled() const;
     void setGamescopeEnabled(bool value);
@@ -144,6 +135,9 @@ public:
     [[nodiscard]] QString dalamudVersion() const;
     void setDalamudVersion(const QString &version);
 
+    [[nodiscard]] QString compatibilityToolVersion() const;
+    void setCompatibilityToolVersion(const QString &version);
+
     BootData *bootData();
     GameData *gameData();
 
@@ -157,7 +151,6 @@ Q_SIGNALS:
     void winePathChanged();
     void winePrefixPathChanged();
     void wineTypeChanged();
-    void useESyncChanged();
     void useGamescopeChanged();
     void useGamemodeChanged();
     void useDX9Changed();
@@ -195,6 +188,7 @@ private:
     QString m_dalamudVersion;
     int m_dalamudAssetVersion = -1;
     QString m_runtimeVersion;
+    QString m_compatibilityToolVersion;
 
     bool m_loggedIn = false;
 

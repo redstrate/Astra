@@ -6,6 +6,8 @@
 #include "utility.h"
 
 #include <KLocalizedString>
+#include <KTar>
+#include <KZip>
 #include <QFile>
 #include <QJsonDocument>
 #include <QNetworkReply>
@@ -13,7 +15,6 @@
 #include <qcorofuture.h>
 #include <qcoronetworkreply.h>
 
-#include <JlCompress.h>
 #include <QtConcurrentRun>
 
 using namespace Qt::StringLiterals;
@@ -27,6 +28,18 @@ AssetUpdater::AssetUpdater(Profile &profile, LauncherCore &launcher, QObject *pa
 
 QCoro::Task<bool> AssetUpdater::update()
 {
+    qInfo(ASTRA_LOG) << "Checking for compatibility tool updates...";
+
+    m_dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    const QDir compatibilityToolDir = m_dataDir.absoluteFilePath(QStringLiteral("tools"));
+    m_wineDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("wine"));
+
+    Utility::createPathIfNeeded(m_wineDir);
+
+    if (!co_await checkRemoteCompatibilityToolVersion()) {
+        co_return false;
+    }
+
     if (!m_profile.dalamudEnabled()) {
         co_return true;
     }
@@ -48,6 +61,23 @@ QCoro::Task<bool> AssetUpdater::update()
 
     if (!co_await checkRemoteDalamudVersion()) {
         co_return false;
+    }
+
+    co_return true;
+}
+
+QCoro::Task<bool> AssetUpdater::checkRemoteCompatibilityToolVersion()
+{
+    // TODO: hardcoded for now
+    m_remoteCompatibilityToolVersion = QStringLiteral("wine-xiv-staging-fsync-git-8.5.r4.g4211bac7");
+
+    qInfo(ASTRA_LOG) << "Compatibility tool remote version" << m_remoteCompatibilityToolVersion;
+
+    // TODO: this version should not be profile specific
+    if (m_remoteCompatibilityToolVersion != m_profile.compatibilityToolVersion()) {
+        qInfo(ASTRA_LOG) << "Compatibility tool out of date";
+
+        co_return co_await installCompatibilityTool();
     }
 
     co_return true;
@@ -129,6 +159,46 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudVersion()
     co_return true;
 }
 
+QCoro::Task<bool> AssetUpdater::installCompatibilityTool()
+{
+    Q_EMIT launcher.stageChanged(i18n("Updating compatibility tool..."));
+
+    const QNetworkRequest request = QNetworkRequest(QUrl(m_remoteCompatibilityToolUrl));
+    Utility::printRequest(QStringLiteral("GET"), request);
+
+    const auto reply = launcher.mgr()->get(request);
+    co_await reply;
+
+    qInfo(ASTRA_LOG) << "Finished downloading compatibility tool";
+
+    QFile file(m_tempDir.filePath(QStringLiteral("latest.tar.xz")));
+    file.open(QIODevice::WriteOnly);
+    file.write(reply->readAll());
+    file.close();
+
+    KTar archive(m_tempDir.filePath(QStringLiteral("latest.tar.xz")));
+    if (!archive.open(QIODevice::ReadOnly)) {
+        qCritical(ASTRA_LOG) << "Failed to install compatibility tool";
+        Q_EMIT launcher.dalamudError(i18n("Failed to install compatibility tool."));
+        co_return false;
+    }
+
+    // the first directory is the same as the version we download
+    const KArchiveDirectory *root = dynamic_cast<const KArchiveDirectory *>(archive.directory()->entry(m_remoteCompatibilityToolVersion));
+    root->copyTo(m_wineDir.absolutePath(), true);
+
+    archive.close();
+
+    QFile verFile(m_wineDir.absoluteFilePath(QStringLiteral("wine.ver")));
+    verFile.open(QIODevice::WriteOnly | QIODevice::Text);
+    verFile.write(m_remoteCompatibilityToolVersion.toUtf8());
+    verFile.close();
+
+    m_profile.setCompatibilityToolVersion(m_remoteCompatibilityToolVersion);
+
+    co_return true;
+}
+
 QCoro::Task<bool> AssetUpdater::installDalamudAssets()
 {
     Q_EMIT launcher.stageChanged(i18n("Updating Dalamud assets..."));
@@ -190,10 +260,7 @@ QCoro::Task<bool> AssetUpdater::installDalamud()
     file.write(reply->readAll());
     file.close();
 
-    const bool success =
-        !JlCompress::extractDir(m_tempDir.filePath(QStringLiteral("latest.zip")), m_dalamudDir.absoluteFilePath(m_profile.dalamudChannelName())).empty();
-
-    if (!success) {
+    if (!extractZip(m_tempDir.filePath(QStringLiteral("latest.zip")), m_dalamudDir.absoluteFilePath(m_profile.dalamudChannelName()))) {
         qCritical(ASTRA_LOG) << "Failed to install Dalamud";
         Q_EMIT launcher.dalamudError(i18n("Failed to install Dalamud."));
         co_return false;
@@ -240,8 +307,8 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
         file.close();
     }
 
-    bool success = !JlCompress::extractDir(m_tempDir.filePath(QStringLiteral("dotnet-core.zip")), m_dalamudRuntimeDir.absolutePath()).empty();
-    success |= !JlCompress::extractDir(m_tempDir.filePath(QStringLiteral("dotnet-desktop.zip")), m_dalamudRuntimeDir.absolutePath()).empty();
+    bool success = extractZip(m_tempDir.filePath(QStringLiteral("dotnet-core.zip")), m_dalamudRuntimeDir.absolutePath());
+    success |= extractZip(m_tempDir.filePath(QStringLiteral("dotnet-desktop.zip")), m_dalamudRuntimeDir.absolutePath());
 
     if (!success) {
         qCritical(ASTRA_LOG) << "Failed to install dotnet";
@@ -296,6 +363,24 @@ QUrl AssetUpdater::dotnetDesktopPackageUrl(const QString &version) const
     url.setPath(QStringLiteral("/Dalamud/Release/Runtime/WindowsDesktop/%1").arg(version));
 
     return url;
+}
+
+bool AssetUpdater::extractZip(const QString &filePath, const QString &directory)
+{
+    KZip archive(filePath);
+    if (!archive.open(QIODevice::ReadOnly)) {
+        return false;
+    }
+
+    const KArchiveDirectory *root = archive.directory();
+    if (!root->copyTo(directory, true)) {
+        archive.close();
+        return false;
+    }
+
+    archive.close();
+
+    return true;
 }
 
 #include "moc_assetupdater.cpp"

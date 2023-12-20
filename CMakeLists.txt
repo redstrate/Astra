@@ -42,7 +42,7 @@ find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
         WebView
         Concurrent
         Test)
-find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS Kirigami I18n Config CoreAddons)
+find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS Kirigami I18n Config CoreAddons Archive)
 find_package(PkgConfig REQUIRED)
 find_package(QCoro6 REQUIRED COMPONENTS Core Network Qml)
 qcoro_enable_coroutines()
@@ -65,7 +65,6 @@ if (ENABLE_STEAM)
 endif ()
 
 find_package(Qt6Keychain REQUIRED)
-find_package(QuaZip-Qt6 REQUIRED)
 
 add_subdirectory(external)
 add_subdirectory(launcher)

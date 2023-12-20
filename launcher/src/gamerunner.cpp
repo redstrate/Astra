@@ -206,11 +206,12 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 #endif
 
 #if defined(Q_OS_LINUX)
-    if (profile.esyncEnabled()) {
-        env.insert(QStringLiteral("WINEESYNC"), QString::number(1));
-        env.insert(QStringLiteral("WINEFSYNC"), QString::number(1));
-        env.insert(QStringLiteral("WINEFSYNC_FUTEX2"), QString::number(1));
-    }
+    env.insert(QStringLiteral("WINEESYNC"), QString::number(1));
+    env.insert(QStringLiteral("WINEFSYNC"), QString::number(1));
+    env.insert(QStringLiteral("WINEFSYNC_FUTEX2"), QString::number(1));
+
+    // env.insert(QStringLiteral("VK_LAYER_RENDERDOC_Capture"), QStringLiteral("VK_LAYER_RENDERDOC_Capture"));
+    // env.insert(QStringLiteral("ENABLE_VULKAN_RENDERDOC_CAPTURE"), QString::number(1));
 
     const QString logDir = Utility::stateDirectory().absoluteFilePath(QStringLiteral("log"));
 
@@ -268,25 +269,6 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     } else {
         env.insert(QStringLiteral("WINEPREFIX"), profile.winePrefixPath());
 
-        // XIV on Mac bundle their own Wine install directory, complete with libs etc
-        if (profile.wineType() == Profile::WineType::XIVOnMac) {
-            // TODO: don't hardcode this
-            QString xivLibPath = QStringLiteral(
-                "/Applications/XIV on Mac.app/Contents/Resources/wine/lib:/Applications/XIV on "
-                "Mac.app/Contents/Resources/MoltenVK/modern");
-
-            env.insert(QStringLiteral("DYLD_FALLBACK_LIBRARY_PATH"), xivLibPath);
-            env.insert(QStringLiteral("DYLD_VERSIONED_LIBRARY_PATH"), xivLibPath);
-            env.insert(QStringLiteral("MVK_CONFIG_FULL_IMAGE_VIEW_SWIZZLE"), QString::number(1));
-            env.insert(QStringLiteral("MVK_CONFIG_RESUME_LOST_DEVICE"), QString::number(1));
-            env.insert(QStringLiteral("MVK_ALLOW_METAL_FENCES"), QString::number(1));
-            env.insert(QStringLiteral("MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS"), QString::number(1));
-        }
-
-#if defined(FLATPAK)
-        arguments.push_back(QStringLiteral("flatpak-spawn"));
-        arguments.push_back(QStringLiteral("--host"));
-#endif
         arguments.push_back(profile.winePath());
     }
 #endif

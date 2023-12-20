@@ -83,10 +83,9 @@ FormCard.FormCardPage {
             id: wineTypeDelegate
 
             text: i18n("Wine Type")
-            model: ["System", "Custom"]
+            model: [i18n("Built-in"), i18n("Custom")]
             currentIndex: page.profile.wineType
             onCurrentIndexChanged: page.profile.wineType = currentIndex
-            enabled: !LauncherCore.isSteam
         }
 
         FormCard.FormDelegateSeparator {
@@ -99,7 +98,7 @@ FormCard.FormCardPage {
 
             text: i18n("Wine Executable")
             file: page.profile.winePath
-            enabled: !LauncherCore.isSteam && page.profile.wineType !== Profile.System
+            enabled: page.profile.wineType !== Profile.BuiltIn
         }
 
         FormCard.FormDelegateSeparator {
@@ -112,7 +111,6 @@ FormCard.FormCardPage {
 
             text: i18n("Wine Prefix Path")
             folder: page.profile.winePrefixPath
-            enabled: !LauncherCore.isSteam
         }
 
         FormCard.FormDelegateSeparator {
@@ -130,20 +128,6 @@ FormCard.FormCardPage {
 
     FormCard.FormCard {
         Layout.fillWidth: true
-
-        FormCard.FormCheckDelegate {
-            id: esyncDelegate
-
-            text: i18n("Enable ESync")
-            description: i18n("Could improve game performance, but requires a patched Wine and kernel.")
-            checked: page.profile.esyncEnabled
-            onCheckedChanged: page.profile.esyncEnabled = checked
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: esyncDelegate
-            below: gamemodeDelegate
-        }
 
         FormCard.FormCheckDelegate {
             text: i18n("Enable Gamescope")

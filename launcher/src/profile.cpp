@@ -30,6 +30,19 @@ void Profile::readDalamudInfo()
 {
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
+    const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tools"));
+    const QDir wineDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("wine"));
+    if (wineDir.exists()) {
+        const QString wineVer = wineDir.absoluteFilePath(QStringLiteral("wine.ver"));
+        if (QFile::exists(wineVer)) {
+            QFile wineJson(wineVer);
+            wineJson.open(QFile::ReadOnly | QFile::Text);
+
+            m_compatibilityToolVersion = QString::fromUtf8(wineJson.readAll());
+            qInfo(ASTRA_LOG) << "Compatibility tool version:" << m_compatibilityToolVersion;
+        }
+    }
+
     const QDir dalamudDir = dataDir.absoluteFilePath(QStringLiteral("dalamud"));
 
     if (dalamudDir.exists()) {
@@ -96,7 +109,6 @@ void Profile::readGameData()
 
 void Profile::readWineInfo()
 {
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
     auto wineProcess = new QProcess(this);
 
     connect(wineProcess, &QProcess::readyReadStandardOutput, this, [wineProcess, this] {
@@ -106,7 +118,6 @@ void Profile::readWineInfo()
 
     wineProcess->start(winePath(), {QStringLiteral("--version")});
     wineProcess->waitForFinished();
-#endif
 }
 
 QString Profile::name() const
@@ -140,32 +151,20 @@ void Profile::setGamePath(const QString &path)
 
 QString Profile::winePath() const
 {
-#if defined(Q_OS_MAC)
     switch (wineType()) {
-    case WineType::System: // system wine
-        return "/usr/local/bin/wine64";
-    case WineType::Custom: // custom path
-        return m_config->winePath();
-    case WineType::Builtin: // ffxiv built-in (for mac users)
-        return "/Applications/FINAL FANTASY XIV "
-               "ONLINE.app/Contents/SharedSupport/finalfantasyxiv/FINAL FANTASY XIV ONLINE/wine";
-    case WineType::XIVOnMac:
-        return "/Applications/XIV on Mac.app/Contents/Resources/wine/bin/wine64";
-    }
-#endif
+    case WineType::BuiltIn: {
+        const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tools"));
+        const QDir wineDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("wine"));
+        const QDir wineBinDir = wineDir.absoluteFilePath(QStringLiteral("bin"));
 
-#if defined(Q_OS_LINUX)
-    switch (wineType()) {
-    case WineType::System: // system wine (should be in $PATH)
-        return QStringLiteral("wine");
+        return wineBinDir.absoluteFilePath(QStringLiteral("wine64"));
+    }
     case WineType::Custom: // custom pth
         return m_config->winePath();
     default:
         return {};
     }
-#endif
-
-    return {};
 }
 
 void Profile::setWinePath(const QString &path)
@@ -203,20 +202,6 @@ void Profile::setWineType(const WineType type)
         m_config->save();
         Q_EMIT wineTypeChanged();
         readWineInfo();
-    }
-}
-
-bool Profile::esyncEnabled() const
-{
-    return m_config->useESync();
-}
-
-void Profile::setESyncEnabled(const bool value)
-{
-    if (m_config->useESync() != value) {
-        m_config->setUseESync(value);
-        m_config->save();
-        Q_EMIT useESyncChanged();
     }
 }
 
@@ -477,10 +462,6 @@ QString Profile::uuid() const
 
 QString Profile::wineVersionText() const
 {
-    if (m_launcher.isSteam()) {
-        return i18n("Wine is being managed by Steam.");
-    }
-
     if (!isWineInstalled()) {
         return i18n("Wine is not installed.");
     } else {
@@ -556,6 +537,16 @@ QString Profile::dalamudVersion() const
 void Profile::setDalamudVersion(const QString &version)
 {
     m_dalamudVersion = version;
+}
+
+QString Profile::compatibilityToolVersion() const
+{
+    return m_compatibilityToolVersion;
+}
+
+void Profile::setCompatibilityToolVersion(const QString &version)
+{
+    m_compatibilityToolVersion = version;
 }
 
 BootData *Profile::bootData()
