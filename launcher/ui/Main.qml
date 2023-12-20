@@ -12,7 +12,7 @@ Kirigami.ApplicationWindow {
     id: appWindow
 
     width: 1280
-    height: 720
+    height: 800
 
     minimumWidth: 800
     minimumHeight: 500
