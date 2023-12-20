@@ -3,8 +3,6 @@
 
 #include "gamerunner.h"
 
-#include <KSandbox>
-
 #ifdef ENABLE_GAMEMODE
 #include <gamemode_client.h>
 #endif
@@ -285,6 +283,10 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
             env.insert(QStringLiteral("MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS"), QString::number(1));
         }
 
+#if defined(FLATPAK)
+        arguments.push_back(QStringLiteral("flatpak-spawn"));
+        arguments.push_back(QStringLiteral("--host"));
+#endif
         arguments.push_back(profile.winePath());
     }
 #endif
@@ -299,13 +301,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
     process->setProcessEnvironment(env);
 
-    // Wrap in flatpak host spawn if needed
-    if (KSandbox::isInside()) {
-        const auto context = KSandbox::makeHostContext(*process);
-        process->start(context.program, context.arguments);
-    } else {
-        process->start(executable, arguments);
-    }
+    process->start(executable, arguments);
 }
 
 void GameRunner::addRegistryKey(const Profile &settings, QString key, QString value, QString data)
