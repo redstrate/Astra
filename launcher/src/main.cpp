@@ -30,11 +30,6 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
-    // Default to org.kde.desktop style unless the user forces another style
-    if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE")) {
-        QQuickStyle::setStyle(QStringLiteral("org.kde.desktop"));
-    }
-
     // Default to a sensible message pattern
     if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
         qputenv("QT_MESSAGE_PATTERN", "[%{time yyyy-MM-dd h:mm:ss.zzz}] %{if-category}[%{category}] %{endif}[%{type}] %{message}");
@@ -91,6 +86,7 @@ int main(int argc, char *argv[])
         parser.showVersion();
     }
 
+    bool isSteamDeck = false;
     if (parser.isSet(steamOption)) {
         const QStringList args = parser.positionalArguments();
         // Steam tries to use as a compatibility tool, running installation scripts (like DirectX), so try to ignore it.
@@ -98,11 +94,18 @@ int main(int argc, char *argv[])
             return 0;
         }
 
-#ifndef ENABLE_STEAM
-        QMessageBox::warning(nullptr,
-                             i18n("Warning"),
-                             i18n("You somehow launched Astra through Steam, despite it not being compiled with Steam support. Some features may not work!"));
-#endif
+        if (qEnvironmentVariable("XDG_CURRENT_DESKTOP") == QStringLiteral("gamescope")) {
+            isSteamDeck = true;
+        }
+    }
+
+    // Default to org.kde.desktop style unless the user forces another style
+    if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE")) {
+        if (isSteamDeck) {
+            QQuickStyle::setStyle(QStringLiteral("org.kde.breeze"));
+        } else {
+            QQuickStyle::setStyle(QStringLiteral("org.kde.desktop"));
+        }
     }
 
     QCoro::Qml::registerTypes();

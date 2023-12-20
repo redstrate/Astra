@@ -210,7 +210,7 @@ bool LauncherCore::isSteam() const
 bool LauncherCore::isSteamDeck() const
 {
     if (m_steamApi != nullptr) {
-        return m_steamApi->isDeck();
+        return m_steamApi->isDeck() || qEnvironmentVariable("XDG_CURRENT_DESKTOP") == QStringLiteral("gamescope");
     } else {
         return false;
     }
