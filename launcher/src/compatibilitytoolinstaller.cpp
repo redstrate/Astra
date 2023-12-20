@@ -4,6 +4,7 @@
 #include "compatibilitytoolinstaller.h"
 
 #include <KLocalizedString>
+#include <KSandbox>
 
 #include "launchercore.h"
 
@@ -15,14 +16,15 @@ CompatibilityToolInstaller::CompatibilityToolInstaller(LauncherCore &launcher, Q
 
 void CompatibilityToolInstaller::installCompatibilityTool()
 {
-    const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::GenericDataLocation)[0];
-    const QDir steamDir = appDataDir.absoluteFilePath(QStringLiteral("Steam"));
-    if (!steamDir.exists()) {
+    const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::HomeLocation)[0];
+    const QDir steamDir = appDataDir.absoluteFilePath(QStringLiteral(".steam"));
+    const QDir steamSteamDir = steamDir.absoluteFilePath(QStringLiteral("steam"));
+    if (!steamSteamDir.exists()) {
         Q_EMIT error(i18n("Could not find a Steam installation."));
         return;
     }
 
-    const QDir compatToolDir = steamDir.absoluteFilePath(QStringLiteral("compatibilitytools.d"));
+    const QDir compatToolDir = steamSteamDir.absoluteFilePath(QStringLiteral("compatibilitytools.d"));
     const QDir astraToolDir = compatToolDir.absoluteFilePath(QStringLiteral("astra"));
     if (astraToolDir.exists()) {
         Q_EMIT error(i18n("The compatibility tool is already installed."));
@@ -31,16 +33,31 @@ void CompatibilityToolInstaller::installCompatibilityTool()
         QDir().mkpath(astraToolDir.absolutePath());
     }
 
-    const QString appPath = QCoreApplication::applicationFilePath();
-    QFile appFile(appPath);
-    appFile.link(astraToolDir.absoluteFilePath(QStringLiteral("astra")));
+    QString command;
+    if (KSandbox::isFlatpak()) {
+        QFile wrapperFile(astraToolDir.absoluteFilePath(QStringLiteral("launch.sh")));
+        wrapperFile.open(QIODevice::WriteOnly);
+        wrapperFile.write(
+            QByteArrayLiteral("#!/bin/bash\n"
+                              "LD_LIBRARY_PATH= exec \"${@:1}\""));
+        QProcess::execute(QStringLiteral("chmod"), {QStringLiteral("+x"), astraToolDir.absoluteFilePath(QStringLiteral("launch.sh"))});
+
+        command = QStringLiteral("/launch.sh /usr/bin/flatpak run zone.xiv.astra");
+    } else {
+        const QString appPath = QCoreApplication::applicationFilePath();
+        QFile appFile(appPath);
+        appFile.link(astraToolDir.absoluteFilePath(QStringLiteral("astra")));
+
+        command = QStringLiteral("/astra");
+    }
 
     const QString toolManifestContents = QStringLiteral(
-        "\"manifest\"\n"
-        "{\n"
-        "  \"version\" \"2\"\n"
-        "  \"commandline\" \"/astra --steam %verb%\"\n"
-        "}");
+                                             "\"manifest\"\n"
+                                             "{\n"
+                                             "  \"version\" \"2\"\n"
+                                             "  \"commandline\" \"%1 --steam %verb%\"\n"
+                                             "}")
+                                             .arg(command);
 
     QFile toolManifestFile(astraToolDir.absoluteFilePath(QStringLiteral("toolmanifest.vdf")));
     toolManifestFile.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -73,14 +90,15 @@ void CompatibilityToolInstaller::installCompatibilityTool()
 
 void CompatibilityToolInstaller::removeCompatibilityTool()
 {
-    const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::GenericDataLocation)[0];
-    const QDir steamDir = appDataDir.absoluteFilePath(QStringLiteral("Steam"));
-    if (!steamDir.exists()) {
+    const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::HomeLocation)[0];
+    const QDir steamDir = appDataDir.absoluteFilePath(QStringLiteral(".steam"));
+    const QDir steamSteamDir = steamDir.absoluteFilePath(QStringLiteral("steam"));
+    if (!steamSteamDir.exists()) {
         Q_EMIT error(i18n("Could not find a Steam installation."));
         return;
     }
 
-    const QDir compatToolDir = steamDir.absoluteFilePath(QStringLiteral("compatibilitytools.d"));
+    const QDir compatToolDir = steamSteamDir.absoluteFilePath(QStringLiteral("compatibilitytools.d"));
     QDir astraToolDir = compatToolDir.absoluteFilePath(QStringLiteral("astra"));
     if (!astraToolDir.exists()) {
         Q_EMIT error(i18n("The compatibility tool is not installed."));
