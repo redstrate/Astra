@@ -92,17 +92,17 @@ int main(int argc, char *argv[])
     }
 
     if (parser.isSet(steamOption)) {
+        const QStringList args = parser.positionalArguments();
+        // Steam tries to use as a compatibility tool, running installation scripts (like DirectX), so try to ignore it.
+        if (!args.empty() && !args.join(QLatin1Char(';')).contains("ffxivboot.exe"_L1)) {
+            return 0;
+        }
+
 #ifndef ENABLE_STEAM
         QMessageBox::warning(nullptr,
                              i18n("Warning"),
                              i18n("You somehow launched Astra through Steam, despite it not being compiled with Steam support. Some features may not work!"));
 #endif
-
-        const QStringList args = parser.positionalArguments();
-        // Steam tries to use as a compatibility tool, running installation scripts (like DirectX), so try to ignore it.
-        if (!args.empty() && !args[0].contains("ffxivboot.exe"_L1)) {
-            return 0;
-        }
     }
 
     QCoro::Qml::registerTypes();
