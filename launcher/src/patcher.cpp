@@ -141,7 +141,7 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
         }
 
         Q_EMIT m_launcher.stageChanged(i18n("Installing %1 - %2 [%3/%4]", repositoryName, patch.version, i++, m_remainingPatches));
-        Q_EMIT m_launcher.stageDeterminate(0, static_cast<int>(m_patchQueue.size()), i++);
+        Q_EMIT m_launcher.stageDeterminate(0, static_cast<int>(m_patchQueue.size()), i);
 
         co_await QtConcurrent::run([this, patch] {
             processPatch(patch);
@@ -158,7 +158,9 @@ void Patcher::processPatch(const QueuedPatch &patch)
         auto f = QFile(patch.path);
         f.open(QIODevice::ReadOnly);
 
-        Q_ASSERT(patch.length == f.size());
+        qDebug(ASTRA_PATCHER) << "Installing" << patch.path;
+
+        Q_ASSERT_X(patch.length == f.size(), "Patcher", "Patch length does not match sizeQ!");
 
         const int parts = std::ceil(static_cast<double>(patch.length) / static_cast<double>(patch.hashBlockSize));
 
@@ -175,7 +177,7 @@ void Patcher::processPatch(const QueuedPatch &patch)
             QCryptographicHash hash(QCryptographicHash::Sha1);
             hash.addData(block);
 
-            Q_ASSERT(QString::fromUtf8(hash.result().toHex()) == patch.hashes[i]);
+            Q_ASSERT_X(QString::fromUtf8(hash.result().toHex()) == patch.hashes[i], "Patcher", "Patch hash does not match!");
         }
     }
 
