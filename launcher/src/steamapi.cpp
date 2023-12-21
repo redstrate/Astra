@@ -3,47 +3,23 @@
 
 #include "steamapi.h"
 
-#ifdef ENABLE_STEAM
-#include <steam/steam_api.h>
-#endif
-
 #include "astra_log.h"
 #include "launchercore.h"
 
 SteamAPI::SteamAPI(QObject *parent)
     : QObject(parent)
 {
-#ifdef ENABLE_STEAM
-    qputenv("SteamAppId", "39210");
-    qputenv("SteamGameId", "39210");
-
-    if (!SteamAPI_Init()) {
-        qFatal(ASTRA_LOG) << "Failed to initialize steam api!";
-    }
-#endif
-}
-
-SteamAPI::~SteamAPI()
-{
-#ifdef ENABLE_STEAM
-    SteamAPI_Shutdown();
-#endif
+    // TODO: stub
 }
 
 void SteamAPI::setLauncherMode(bool isLauncher)
 {
-#ifdef ENABLE_STEAM
-    SteamUtils()->SetGameLauncherMode(isLauncher);
-#else
     Q_UNUSED(isLauncher)
-#endif
+    // TODO: stub
 }
 
 bool SteamAPI::isDeck() const
 {
-#ifdef ENABLE_STEAM
-    return SteamUtils()->IsSteamRunningOnSteamDeck();
-#else
+    // TODO: stub
     return false;
-#endif
 }

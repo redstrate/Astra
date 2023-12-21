@@ -8,7 +8,6 @@ project(Astra VERSION 0.5.0 LANGUAGES CXX)
 option(BUILD_FLATPAK "Build for Flatpak." OFF)
 
 # options for features you may want or need
-option(ENABLE_STEAM "Build with Steam support, requires supplying the Steam SDK yourself." OFF)
 option(ENABLE_GAMEMODE "Build with Feral GameMode support, requires the daemon to be installed." ON)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -51,17 +50,6 @@ qt_policy(SET QTP0001 NEW)
 
 if (ENABLE_GAMEMODE)
     pkg_search_module(GAMEMODE REQUIRED gamemode)
-endif ()
-
-if (ENABLE_STEAM)
-    add_library(Steamworks IMPORTED SHARED)
-    set_target_properties(Steamworks PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES ${STEAMWORKS_INCLUDE_DIR}
-            IMPORTED_LOCATION ${STEAMWORKS_LIBRARIES})
-
-    if (BUILD_FLATPAK)
-        install(IMPORTED_RUNTIME_ARTIFACTS Steamworks)
-    endif ()
 endif ()
 
 find_package(Qt6Keychain REQUIRED)

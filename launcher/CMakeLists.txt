@@ -152,11 +152,6 @@ if (BUILD_FLATPAK)
     target_compile_definitions(astra PRIVATE FLATPAK)
 endif ()
 
-if (ENABLE_STEAM)
-    target_link_libraries(astra PRIVATE Steamworks)
-    target_compile_definitions(astra PRIVATE ENABLE_STEAM)
-endif ()
-
 if (ENABLE_GAMEMODE)
     target_link_libraries(astra PRIVATE ${GAMEMODE_LIBRARIES})
     target_compile_definitions(astra PRIVATE ENABLE_GAMEMODE)

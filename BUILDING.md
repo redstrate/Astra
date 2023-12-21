@@ -52,7 +52,6 @@ Remember that unless you're running in a kdesrc-build session you need to set so
 
 When configuring Astra, there are several optional features you may want to enable or disable:
 
-* `ENABLE_STEAM`: Steam integration, requires the Steamworks SDK.
 * `ENABLE_GAMEMODE`: Gamemode integration, requires Gamemode.
 
 To configure, run `cmake` in the source directory:
@@ -65,7 +64,7 @@ $ cmake -S . -B build
 This command will create a new build directory and configure the source directory (`.`). If you want to enable more options, pass them now:
 
 ```bash
-$ cmake -S . -B build -DENABLE_STEAM=ON
+$ cmake -S . -B build -DENABLE_GAMEMODE=ON
 ```
 
 ## Building

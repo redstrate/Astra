@@ -11,7 +11,6 @@ class SteamAPI : public QObject
 {
 public:
     explicit SteamAPI(QObject *parent = nullptr);
-    ~SteamAPI() override;
 
     void setLauncherMode(bool isLauncher);
 
