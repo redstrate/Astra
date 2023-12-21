@@ -271,41 +271,51 @@ void Account::fetchAvatar()
 
 void Account::setKeychainValue(const QString &key, const QString &value)
 {
-    auto job = new QKeychain::WritePasswordJob(QStringLiteral("Astra"), this);
-    job->setTextData(value);
-#ifdef FLATPAK
-    job->setKey(QStringLiteral("flatpak-") + m_key + QStringLiteral("-") + key);
-#else
-    job->setKey(m_key + QStringLiteral("-") + key);
-#endif
-    job->setInsecureFallback(m_launcher.isSteamDeck()); // The Steam Deck does not have secrets provider in Game Mode
-    job->start();
+    if (m_launcher.isSteamDeck()) {
+        auto stateConfig = KSharedConfig::openStateConfig();
 
-    connect(job, &QKeychain::WritePasswordJob::finished, this, [job] {
-        if (job->error() != QKeychain::NoError) {
-            qWarning(ASTRA_LOG) << "Error when writing" << job->errorString();
-        }
-    });
+        stateConfig->group(QStringLiteral("Passwords")).writeEntry(m_key + QStringLiteral("-") + key, value);
+        stateConfig->sync();
+    } else {
+        auto job = new QKeychain::WritePasswordJob(QStringLiteral("Astra"), this);
+        job->setTextData(value);
+#ifdef FLATPAK
+        job->setKey(QStringLiteral("flatpak-") + m_key + QStringLiteral("-") + key);
+#else
+        job->setKey(m_key + QStringLiteral("-") + key);
+#endif
+        job->setInsecureFallback(m_launcher.isSteamDeck()); // The Steam Deck does not have secrets provider in Game Mode
+        job->start();
+
+        connect(job, &QKeychain::WritePasswordJob::finished, this, [job] {
+            if (job->error() != QKeychain::NoError) {
+                qWarning(ASTRA_LOG) << "Error when writing" << job->errorString();
+            }
+        });
+    }
 }
 
 QCoro::Task<QString> Account::getKeychainValue(const QString &key)
 {
-    auto job = new QKeychain::ReadPasswordJob(QStringLiteral("Astra"), this);
+    if (m_launcher.isSteamDeck()) {
+        co_return KSharedConfig::openStateConfig()->group(QStringLiteral("Passwords")).readEntry(m_key + QStringLiteral("-") + key);
+    } else {
+        auto job = new QKeychain::ReadPasswordJob(QStringLiteral("Astra"), this);
 #ifdef FLATPAK
-    job->setKey(QStringLiteral("flatpak-") + m_key + QStringLiteral("-") + key);
+        job->setKey(QStringLiteral("flatpak-") + m_key + QStringLiteral("-") + key);
 #else
-    job->setKey(m_key + QStringLiteral("-") + key);
+        job->setKey(m_key + QStringLiteral("-") + key);
 #endif
-    job->setInsecureFallback(m_launcher.isSteamDeck());
-    job->start();
+        job->start();
 
-    co_await qCoro(job, &QKeychain::ReadPasswordJob::finished);
+        co_await qCoro(job, &QKeychain::ReadPasswordJob::finished);
 
-    if (job->error() != QKeychain::NoError) {
-        qWarning(ASTRA_LOG) << "Error when reading" << key << job->errorString();
+        if (job->error() != QKeychain::NoError) {
+            qWarning(ASTRA_LOG) << "Error when reading" << key << job->errorString();
+        }
+
+        co_return job->textData();
     }
-
-    co_return job->textData();
 }
 
 void Account::updateConfig()
