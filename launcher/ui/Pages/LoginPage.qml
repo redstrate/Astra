@@ -206,7 +206,7 @@ QQC2.Control {
                 id: passwordField
                 label: LauncherCore.currentProfile.account.isSapphire ? i18n("Password") : i18n("Square Enix Password")
                 echoMode: TextInput.Password
-                enabled: LauncherCore.currentProfile.account.needsPassword
+                enabled: LauncherCore.currentProfile.account.rememberPassword ? LauncherCore.currentProfile.account.needsPassword : true
                 focus: true
                 onAccepted: {
                     if (otpField.visible) {
