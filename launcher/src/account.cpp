@@ -269,7 +269,7 @@ void Account::fetchAvatar()
     }
 }
 
-QCoro::Task<> Account::setKeychainValue(const QString &key, const QString &value)
+void Account::setKeychainValue(const QString &key, const QString &value)
 {
     auto job = new QKeychain::WritePasswordJob(QStringLiteral("Astra"), this);
     job->setTextData(value);
@@ -281,13 +281,11 @@ QCoro::Task<> Account::setKeychainValue(const QString &key, const QString &value
     job->setInsecureFallback(m_launcher.isSteamDeck()); // The Steam Deck does not have secrets provider in Game Mode
     job->start();
 
-    co_await qCoro(job, &QKeychain::WritePasswordJob::finished);
-
-    if (job->error() != QKeychain::NoError) {
-        qWarning(ASTRA_LOG) << "Error when writing" << key << job->errorString();
-    }
-
-    co_return;
+    connect(job, &QKeychain::WritePasswordJob::finished, this, [job] {
+        if (job->error() != QKeychain::NoError) {
+            qWarning(ASTRA_LOG) << "Error when writing" << job->errorString();
+        }
+    });
 }
 
 QCoro::Task<QString> Account::getKeychainValue(const QString &key)

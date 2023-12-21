@@ -106,7 +106,7 @@ private:
     /*
      * Sets a value in the keychain. This function is asynchronous.
      */
-    QCoro::Task<> setKeychainValue(const QString &key, const QString &value);
+    void setKeychainValue(const QString &key, const QString &value);
 
     /*
      * Retrieves a value from the keychain. This function is synchronous.
