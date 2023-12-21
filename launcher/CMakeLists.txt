@@ -145,8 +145,7 @@ target_link_libraries(astra PRIVATE
         KF6::Archive
         QCoro::Core
         QCoro::Network
-        QCoro::Qml
-        z)
+        QCoro::Qml)
 target_compile_options(astra PRIVATE -fexceptions)
 
 if (BUILD_FLATPAK)

@@ -17,5 +17,5 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(UNSHIELD REQUIRED IMPORTED_TARGET libunshield)
 
 target_include_directories(physis INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/libphysis/target/public)
-target_link_libraries(physis INTERFACE ${UNSHIELD_LIBRARIES})
+target_link_libraries(physis INTERFACE ${UNSHIELD_LIBRARIES} z)
 target_link_directories(physis INTERFACE ${UNSHIELD_LIBRARY_DIRS})
