@@ -16,7 +16,12 @@ finish-args:
   - --filesystem=home
   - --socket=pulseaudio
   - --talk-name=org.freedesktop.secrets
-  - --system-talk-name=org.freedesktop.UDisks2
+  # Allow access to the GNOME secret service API and to talk to the GNOME keyring daemon
+  - --talk-name=org.freedesktop.secrets
+  - --talk-name=org.gnome.keyring
+  # Allow to talk to the KDE kwallet daemon
+  - --talk-name=org.kde.kwalletd5
+  - --talk-name=org.kde.kwalletd6
   - --device=all
   - --allow=devel
 modules:
