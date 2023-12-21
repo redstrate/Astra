@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
             return 0;
         }
 
-        if (qEnvironmentVariable("XDG_CURRENT_DESKTOP") == QStringLiteral("gamescope")) {
+        if (qEnvironmentVariable("SteamDeck") == QStringLiteral("1")) {
             isSteamDeck = true;
         }
     }

@@ -23,6 +23,7 @@ Account::Account(LauncherCore &launcher, const QString &key, QObject *parent)
     , m_launcher(launcher)
 {
     fetchAvatar();
+    fetchPassword();
 }
 
 QString Account::uuid() const
@@ -184,6 +185,11 @@ QString Account::getPassword()
 void Account::setPassword(const QString &password)
 {
     setKeychainValue(QStringLiteral("password"), password);
+
+    if (m_needsPassword) {
+        m_needsPassword = false;
+        Q_EMIT needsPasswordChanged();
+    }
 }
 
 QString Account::getOTP()
@@ -325,6 +331,20 @@ void Account::updateConfig()
     file.open(QIODevice::WriteOnly);
     file.write(reinterpret_cast<const char *>(buffer.data), buffer.size);
     file.close();
+}
+
+bool Account::needsPassword() const
+{
+    return m_needsPassword;
+}
+
+QCoro::Task<> Account::fetchPassword()
+{
+    const QString password = co_await getKeychainValue(QStringLiteral("password"));
+    m_needsPassword = password.isEmpty();
+    Q_EMIT needsPasswordChanged();
+
+    co_return;
 }
 
 #include "moc_account.cpp"

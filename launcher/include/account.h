@@ -29,6 +29,7 @@ class Account : public QObject
     Q_PROPERTY(bool useOTP READ useOTP WRITE setUseOTP NOTIFY useOTPChanged)
     Q_PROPERTY(GameLicense license READ license WRITE setLicense NOTIFY licenseChanged)
     Q_PROPERTY(bool isFreeTrial READ isFreeTrial WRITE setIsFreeTrial NOTIFY isFreeTrialChanged)
+    Q_PROPERTY(bool needsPassword READ needsPassword NOTIFY needsPasswordChanged)
 
 public:
     explicit Account(LauncherCore &launcher, const QString &key, QObject *parent = nullptr);
@@ -82,6 +83,8 @@ public:
     /// Updates FFXIV.cfg with some recommended options like turning the opening cutscene movie off
     void updateConfig();
 
+    [[nodiscard]] bool needsPassword() const;
+
 Q_SIGNALS:
     void nameChanged();
     void languageChanged();
@@ -94,9 +97,11 @@ Q_SIGNALS:
     void useOTPChanged();
     void licenseChanged();
     void isFreeTrialChanged();
+    bool needsPasswordChanged();
 
 private:
     void fetchAvatar();
+    QCoro::Task<> fetchPassword();
 
     /*
      * Sets a value in the keychain. This function is asynchronous.
@@ -112,4 +117,5 @@ private:
     QString m_key;
     QString m_avatarUrl;
     LauncherCore &m_launcher;
+    bool m_needsPassword = false;
 };

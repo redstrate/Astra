@@ -25,7 +25,7 @@ QQC2.Control {
             return i18n("Username is required.");
         }
 
-        if (!LauncherCore.currentProfile.account.rememberPassword && passwordField.text.length === 0) {
+        if (LauncherCore.currentProfile.account.needsPassword && passwordField.text.length === 0) {
             return i18n("Password is required.");
         }
 
@@ -49,7 +49,7 @@ QQC2.Control {
             return false;
         }
 
-        if (!LauncherCore.currentProfile.account.rememberPassword && passwordField.text.length === 0) {
+        if (LauncherCore.currentProfile.account.needsPassword && passwordField.text.length === 0) {
             return false;
         }
 
@@ -66,7 +66,7 @@ QQC2.Control {
 
     function updateFields() {
         usernameField.text = LauncherCore.currentProfile.account.name;
-        passwordField.text = LauncherCore.currentProfile.account.rememberPassword ? LauncherCore.currentProfile.account.getPassword() : "";
+        passwordField.text = !LauncherCore.currentProfile.account.needsPassword && LauncherCore.currentProfile.account.rememberPassword ? LauncherCore.currentProfile.account.getPassword() : "";
         otpField.text = "";
     }
 
@@ -84,7 +84,7 @@ QQC2.Control {
         function onAccountChanged() {
             page.updateFields();
 
-            if (!LauncherCore.currentProfile.account.rememberPassword) {
+            if (LauncherCore.currentProfile.account.needsPassword) {
                 passwordField.forceActiveFocus();
                 return;
             }
@@ -206,7 +206,7 @@ QQC2.Control {
                 id: passwordField
                 label: LauncherCore.currentProfile.account.isSapphire ? i18n("Password") : i18n("Square Enix Password")
                 echoMode: TextInput.Password
-                enabled: !LauncherCore.currentProfile.account.rememberPassword
+                enabled: LauncherCore.currentProfile.account.needsPassword
                 focus: true
                 onAccepted: {
                     if (otpField.visible) {
@@ -215,7 +215,7 @@ QQC2.Control {
                         loginButton.clicked();
                     }
                 }
-                text: LauncherCore.currentProfile.account.rememberPassword ? LauncherCore.currentProfile.account.getPassword() : ""
+                text: (!LauncherCore.currentProfile.account.needsPassword && LauncherCore.currentProfile.account.rememberPassword) ? LauncherCore.currentProfile.account.getPassword() : ""
             }
 
             FormCard.FormDelegateSeparator {
