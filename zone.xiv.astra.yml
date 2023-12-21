@@ -11,12 +11,14 @@ build-options:
     - --share=network
 finish-args:
   - --share=ipc
-  - --socket=x11
-  - --socket=wayland
-  - --filesystem=host
-  - --device=dri
+  - --socket=fallback-x11
   - --share=network
+  - --filesystem=home
   - --socket=pulseaudio
+  - --talk-name=org.freedesktop.secrets
+  - --system-talk-name=org.freedesktop.UDisks2
+  - --device=all
+  - --allow=devel
 modules:
   - flatpak/kf6.json
   - flatpak/kirigami-addons.json
@@ -58,11 +60,22 @@ modules:
     sources:
       - type: git
         url: https://github.com/stachenov/quazip.git
-  #- name: icon
-  #  buildsystem: simple
-  #  build-commands:
-  #    - mkdir -p /app/share/icons/hicolor/32x32/apps/
-  #    - install -D /usr/share/icons/breeze/mimetypes/64/none.svg /app/share/icons/hicolor/32x32/apps/zone.xiv.astra.svg
+  - name: steamwrap
+    buildsystem: simple
+    build-commands:
+        - install -D steamwrap /app/bin/steamwrap
+    sources:
+      - type: file
+        url: https://xiv.zone/distrib/steamwrap/steamwrap
+        sha256: b6c8a398fdf88787000df5de133c748b896b1ba3a2a9892f2e10e0f8e02627af
+  - name: steamapi
+    buildsystem: simple
+    build-commands:
+        - install -D libsteam_api.so /app/bin/libsteam_api.so
+    sources:
+      - type: file
+        url: https://xiv.zone/distrib/steamwrap/libsteam_api.so
+        sha256: b50b9d313eb554792216762f5cc0b972cfae14149f720440e0f0d6c4563c951f
   - name: qcoro
     buildsystem: cmake-ninja
     config-optios:
@@ -109,7 +122,6 @@ modules:
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
       - -DRust_COMPILER=/usr/lib/sdk/rust-stable/bin/rustc
       - -DENABLE_GAMEMODE=OFF
-      - -DENABLE_CLI=OFF
       - -DBUILD_FLATPAK=ON
     build-options:
       build-args:

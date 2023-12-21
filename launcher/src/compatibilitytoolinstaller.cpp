@@ -35,14 +35,12 @@ void CompatibilityToolInstaller::installCompatibilityTool()
 
     QString command;
     if (KSandbox::isFlatpak()) {
-        QFile wrapperFile(astraToolDir.absoluteFilePath(QStringLiteral("launch.sh")));
-        wrapperFile.open(QIODevice::WriteOnly);
-        wrapperFile.write(
-            QByteArrayLiteral("#!/bin/bash\n"
-                              "LD_LIBRARY_PATH= exec \"${@:1}\""));
-        QProcess::execute(QStringLiteral("chmod"), {QStringLiteral("+x"), astraToolDir.absoluteFilePath(QStringLiteral("launch.sh"))});
+        QFile().copy(QStringLiteral("/app/bin/steamwrap"), astraToolDir.absoluteFilePath(QStringLiteral("steamwrap")));
+        QFile().copy(QStringLiteral("/app/bin/libsteam_api.so"), astraToolDir.absoluteFilePath(QStringLiteral("libsteam_api.so")));
 
-        command = QStringLiteral("/launch.sh /usr/bin/flatpak run zone.xiv.astra");
+        QProcess::execute(QStringLiteral("chmod"), {QStringLiteral("+x"), astraToolDir.absoluteFilePath(QStringLiteral("steamwrap"))});
+
+        command = QStringLiteral("/steamwrap /usr/bin/flatpak run zone.xiv.astra");
     } else {
         const QString appPath = QCoreApplication::applicationFilePath();
         QFile appFile(appPath);

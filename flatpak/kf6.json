@@ -610,6 +610,38 @@
                "url" : "https://invent.kde.org/plasma/plasma-integration.git"
             }
          ]
+      },
+      {
+         "builddir" : true,
+         "buildsystem" : "cmake-ninja",
+         "config-opts" : [
+            "-DBUILD_TESTING=OFF",
+            "-DBUILD_QT5=OFF"
+         ],
+         "name" : "kquickcharts",
+         "sources" : [
+            {
+               "branch" : "master",
+               "type" : "git",
+               "url" : "https://invent.kde.org/frameworks/kquickcharts.git"
+            }
+         ]
+      },
+      {
+         "builddir" : true,
+         "buildsystem" : "cmake-ninja",
+         "config-opts" : [
+            "-DBUILD_TESTING=OFF",
+            "-DBUILD_QT5=OFF"
+         ],
+         "name" : "qqc2-breeze-style",
+         "sources" : [
+            {
+               "branch" : "master",
+               "type" : "git",
+               "url" : "https://invent.kde.org/plasma/qqc2-breeze-style.git"
+            }
+         ]
       }
    ]
 }
