@@ -185,7 +185,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
         const QDir windows = driveC.absoluteFilePath(QStringLiteral("windows"));
         const QDir system32 = windows.absoluteFilePath(QStringLiteral("system32"));
 
-        for (const auto &entry : dxvk64Dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+        for (const auto &entry : dxvk64Dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot)) {
             QFile::copy(entry.absoluteFilePath(), system32.absoluteFilePath(entry.fileName()));
         }
 #endif
@@ -227,13 +227,14 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     const QString logDir = Utility::stateDirectory().absoluteFilePath(QStringLiteral("log"));
 
     env.insert(QStringLiteral("DXVK_LOG_PATH"), logDir);
+    env.insert(QStringLiteral("DXVK_HUD"), QStringLiteral("full"));
 #endif
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     env.insert(QStringLiteral("WINEPREFIX"), profile.winePrefixPath());
 
     if (profile.wineType() == Profile::WineType::BuiltIn) {
-        env.insert(QStringLiteral("WINEDLLOVERRIDES"), QStringLiteral("d3d9,d3d11,d3d10core,dxgi=n"));
+        env.insert(QStringLiteral("WINEDLLOVERRIDES"), QStringLiteral("msquic=,mscoree=n,b;d3d9,d3d11,d3d10core,dxgi=n,b"));
     }
 
     arguments.push_back(profile.winePath());
@@ -248,6 +249,9 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
         process->setWorkingDirectory(profile.gamePath() + QStringLiteral("/game/"));
 
     process->setProcessEnvironment(env);
+
+    qInfo() << env.toStringList();
+    qInfo() << executable << arguments;
 
     process->start(executable, arguments);
 }
