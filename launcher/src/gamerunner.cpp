@@ -173,6 +173,21 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
         // FFXIV detects this as a "macOS" build by checking if Wine shows up
         const int value = profile.account()->license() == Account::GameLicense::macOS ? 0 : 1;
         addRegistryKey(profile, QStringLiteral("HKEY_CURRENT_USER\\Software\\Wine"), QStringLiteral("HideWineExports"), QString::number(value));
+
+        // copy DXVK
+        const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tools"));
+        const QDir dxvkDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("dxvk"));
+        const QDir dxvk64Dir = dxvkDir.absoluteFilePath(QStringLiteral("x64"));
+
+        const QDir winePrefix = profile.winePrefixPath();
+        const QDir driveC = winePrefix.absoluteFilePath(QStringLiteral("drive_c"));
+        const QDir windows = driveC.absoluteFilePath(QStringLiteral("windows"));
+        const QDir system32 = windows.absoluteFilePath(QStringLiteral("system32"));
+
+        for (const auto &entry : dxvk64Dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+            QFile::copy(entry.absoluteFilePath(), system32.absoluteFilePath(entry.fileName()));
+        }
 #endif
     }
 
@@ -216,6 +231,10 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     env.insert(QStringLiteral("WINEPREFIX"), profile.winePrefixPath());
+
+    if (profile.wineType() == Profile::WineType::BuiltIn) {
+        env.insert(QStringLiteral("WINEDLLOVERRIDES"), QStringLiteral("d3d9,d3d11,d3d10core,dxgi=n"));
+    }
 
     arguments.push_back(profile.winePath());
 #endif

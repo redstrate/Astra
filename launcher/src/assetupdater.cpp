@@ -33,10 +33,16 @@ QCoro::Task<bool> AssetUpdater::update()
     m_dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     const QDir compatibilityToolDir = m_dataDir.absoluteFilePath(QStringLiteral("tools"));
     m_wineDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("wine"));
+    m_dxvkDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("dxvk"));
 
     Utility::createPathIfNeeded(m_wineDir);
+    Utility::createPathIfNeeded(m_dxvkDir);
 
     if (!co_await checkRemoteCompatibilityToolVersion()) {
+        co_return false;
+    }
+
+    if (!co_await checkRemoteDxvkVersion()) {
         co_return false;
     }
 
@@ -78,6 +84,33 @@ QCoro::Task<bool> AssetUpdater::checkRemoteCompatibilityToolVersion()
         qInfo(ASTRA_LOG) << "Compatibility tool out of date";
 
         co_return co_await installCompatibilityTool();
+    }
+
+    co_return true;
+}
+
+QCoro::Task<bool> AssetUpdater::checkRemoteDxvkVersion()
+{
+    // TODO: hardcoded for now
+    m_remoteDxvkToolVersion = QStringLiteral("dxvk-2.3");
+
+    qInfo(ASTRA_LOG) << "DXVK remote version" << m_remoteDxvkToolVersion;
+
+    QString localDxvkVersion;
+    const QString dxvkVer = m_dxvkDir.absoluteFilePath(QStringLiteral("dxvk.ver"));
+    if (QFile::exists(dxvkVer)) {
+        QFile wineJson(dxvkVer);
+        wineJson.open(QFile::ReadOnly | QFile::Text);
+
+        localDxvkVersion = QString::fromUtf8(wineJson.readAll());
+        qInfo(ASTRA_LOG) << "Local DXVK version:" << localDxvkVersion;
+    }
+
+    // TODO: this version should not be profile specific
+    if (m_remoteDxvkToolVersion != localDxvkVersion) {
+        qInfo(ASTRA_LOG) << "DXVK tool out of date";
+
+        co_return co_await installDxvkTool();
     }
 
     co_return true;
@@ -171,12 +204,12 @@ QCoro::Task<bool> AssetUpdater::installCompatibilityTool()
 
     qInfo(ASTRA_LOG) << "Finished downloading compatibility tool";
 
-    QFile file(m_tempDir.filePath(QStringLiteral("latest.tar.xz")));
+    QFile file(m_tempDir.filePath(QStringLiteral("wine.tar.xz")));
     file.open(QIODevice::WriteOnly);
     file.write(reply->readAll());
     file.close();
 
-    KTar archive(m_tempDir.filePath(QStringLiteral("latest.tar.xz")));
+    KTar archive(m_tempDir.filePath(QStringLiteral("wine.tar.xz")));
     if (!archive.open(QIODevice::ReadOnly)) {
         qCritical(ASTRA_LOG) << "Failed to install compatibility tool";
         Q_EMIT launcher.dalamudError(i18n("Failed to install compatibility tool."));
@@ -195,6 +228,44 @@ QCoro::Task<bool> AssetUpdater::installCompatibilityTool()
     verFile.close();
 
     m_profile.setCompatibilityToolVersion(m_remoteCompatibilityToolVersion);
+
+    co_return true;
+}
+
+QCoro::Task<bool> AssetUpdater::installDxvkTool()
+{
+    Q_EMIT launcher.stageChanged(i18n("Updating DXVK..."));
+
+    const QNetworkRequest request = QNetworkRequest(QUrl(m_remoteDxvkToolUrl));
+    Utility::printRequest(QStringLiteral("GET"), request);
+
+    const auto reply = launcher.mgr()->get(request);
+    co_await reply;
+
+    qInfo(ASTRA_LOG) << "Finished downloading DXVK";
+
+    QFile file(m_tempDir.filePath(QStringLiteral("dxvk.tar.xz")));
+    file.open(QIODevice::WriteOnly);
+    file.write(reply->readAll());
+    file.close();
+
+    KTar archive(m_tempDir.filePath(QStringLiteral("dxvk.tar.xz")));
+    if (!archive.open(QIODevice::ReadOnly)) {
+        qCritical(ASTRA_LOG) << "Failed to install DXVK";
+        Q_EMIT launcher.dalamudError(i18n("Failed to install DXVK."));
+        co_return false;
+    }
+
+    // the first directory is the same as the version we download
+    const KArchiveDirectory *root = dynamic_cast<const KArchiveDirectory *>(archive.directory()->entry(m_remoteDxvkToolVersion));
+    root->copyTo(m_dxvkDir.absolutePath(), true);
+
+    archive.close();
+
+    QFile verFile(m_dxvkDir.absoluteFilePath(QStringLiteral("dxvk.ver")));
+    verFile.open(QIODevice::WriteOnly | QIODevice::Text);
+    verFile.write(m_remoteDxvkToolVersion.toUtf8());
+    verFile.close();
 
     co_return true;
 }
