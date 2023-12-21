@@ -176,7 +176,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
         // copy DXVK
         const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-        const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tools"));
+        const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
         const QDir dxvkDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("dxvk"));
         const QDir dxvk64Dir = dxvkDir.absoluteFilePath(QStringLiteral("x64"));
 

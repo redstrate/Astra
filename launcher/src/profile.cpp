@@ -30,7 +30,7 @@ void Profile::readDalamudInfo()
 {
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
-    const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tools"));
+    const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
     const QDir wineDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("wine"));
     if (wineDir.exists()) {
         const QString wineVer = wineDir.absoluteFilePath(QStringLiteral("wine.ver"));
@@ -154,7 +154,7 @@ QString Profile::winePath() const
     switch (wineType()) {
     case WineType::BuiltIn: {
         const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-        const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tools"));
+        const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
         const QDir wineDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("wine"));
         const QDir wineBinDir = wineDir.absoluteFilePath(QStringLiteral("bin"));
 

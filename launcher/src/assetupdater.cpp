@@ -31,7 +31,7 @@ QCoro::Task<bool> AssetUpdater::update()
     qInfo(ASTRA_LOG) << "Checking for compatibility tool updates...";
 
     m_dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    const QDir compatibilityToolDir = m_dataDir.absoluteFilePath(QStringLiteral("tools"));
+    const QDir compatibilityToolDir = m_dataDir.absoluteFilePath(QStringLiteral("tool"));
     m_wineDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("wine"));
     m_dxvkDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("dxvk"));
 
