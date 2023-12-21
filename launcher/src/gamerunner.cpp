@@ -186,6 +186,9 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
         const QDir system32 = windows.absoluteFilePath(QStringLiteral("system32"));
 
         for (const auto &entry : dxvk64Dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot)) {
+            if (QFile::exists(system32.absoluteFilePath(entry.fileName()))) {
+                QFile::remove(system32.absoluteFilePath(entry.fileName()));
+            }
             QFile::copy(entry.absoluteFilePath(), system32.absoluteFilePath(entry.fileName()));
         }
 #endif
