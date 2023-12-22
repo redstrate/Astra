@@ -124,7 +124,6 @@ modules:
   - name: astra
     buildsystem: cmake-ninja
     config-opts:
-      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
       - -DRust_COMPILER=/usr/lib/sdk/rust-stable/bin/rustc
       - -DENABLE_GAMEMODE=OFF
       - -DBUILD_FLATPAK=ON
