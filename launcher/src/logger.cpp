@@ -36,23 +36,21 @@ public:
 
     void initialize()
     {
-        const QString filename{QStringLiteral("astra.log")};
-
         const QDir logDirectory = Utility::stateDirectory().absoluteFilePath(QStringLiteral("log"));
         Utility::createPathIfNeeded(logDirectory);
 
         // Sort them from highest to lowest (4, 3, 2, 1, 0)
-        auto existingLogEntries = logDirectory.entryList({filename + QStringLiteral(".*")});
+        auto existingLogEntries = logDirectory.entryList({QStringLiteral("astra.*.log")});
         std::sort(existingLogEntries.begin(), existingLogEntries.end(), [](const auto &left, const auto &right) {
-            auto leftIndex = left.split(QStringLiteral(".")).last().toInt();
-            auto rightIndex = right.split(QStringLiteral(".")).last().toInt();
+            auto leftIndex = left.split(QStringLiteral("."))[1].toInt();
+            auto rightIndex = right.split(QStringLiteral("."))[1].toInt();
             return leftIndex > rightIndex;
         });
 
         // Iterate through the existing logs, prune them and move the oldest up
         for (const auto &entry : existingLogEntries) {
             bool valid = false;
-            const auto index = entry.split(QStringLiteral(".")).last().toInt(&valid);
+            const auto index = entry.split(QStringLiteral("."))[1].toInt(&valid);
             if (!valid) {
                 continue;
             }
@@ -65,7 +63,7 @@ public:
                     existingFile.remove();
                     continue;
                 }
-                const auto &newName = logDirectory.absoluteFilePath(QStringLiteral("%1.%2").arg(filename, QString::number(index + 1)));
+                const auto &newName = logDirectory.absoluteFilePath(QStringLiteral("astra.%1.log").arg(QString::number(index + 1)));
                 const auto success = existingFile.copy(newName);
                 if (success) {
                     existingFile.remove();
@@ -78,7 +76,7 @@ public:
             }
         }
 
-        file.setFileName(logDirectory.absoluteFilePath(filename + QStringLiteral(".0")));
+        file.setFileName(logDirectory.absoluteFilePath(QStringLiteral("astra.0.log")));
         file.open(QIODevice::WriteOnly | QIODevice::Unbuffered);
     }
 
