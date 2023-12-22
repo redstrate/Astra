@@ -230,7 +230,6 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     const QString logDir = Utility::stateDirectory().absoluteFilePath(QStringLiteral("log"));
 
     env.insert(QStringLiteral("DXVK_LOG_PATH"), logDir);
-    env.insert(QStringLiteral("DXVK_HUD"), QStringLiteral("full"));
 #endif
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
@@ -252,9 +251,6 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
         process->setWorkingDirectory(profile.gamePath() + QStringLiteral("/game/"));
 
     process->setProcessEnvironment(env);
-
-    qInfo() << env.toStringList();
-    qInfo() << executable << arguments;
 
     process->start(executable, arguments);
 }
