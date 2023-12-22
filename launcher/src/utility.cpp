@@ -46,3 +46,19 @@ void Utility::setSSL(QNetworkRequest &request)
 
     request.setSslConfiguration(config);
 }
+
+QString Utility::readVersion(const QString &path)
+{
+    QFile file(path);
+    file.open(QFile::ReadOnly | QFile::Text);
+
+    return QString::fromUtf8(file.readAll());
+}
+
+void Utility::writeVersion(const QString &path, const QString &version)
+{
+    QFile verFile(path);
+    verFile.open(QIODevice::WriteOnly | QIODevice::Text);
+    verFile.write(version.toUtf8());
+    verFile.close();
+}

@@ -99,10 +99,7 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDxvkVersion()
     QString localDxvkVersion;
     const QString dxvkVer = m_dxvkDir.absoluteFilePath(QStringLiteral("dxvk.ver"));
     if (QFile::exists(dxvkVer)) {
-        QFile wineJson(dxvkVer);
-        wineJson.open(QFile::ReadOnly | QFile::Text);
-
-        localDxvkVersion = QString::fromUtf8(wineJson.readAll());
+        localDxvkVersion = Utility::readVersion(dxvkVer);
         qInfo(ASTRA_LOG) << "Local DXVK version:" << localDxvkVersion;
     }
 
@@ -222,10 +219,7 @@ QCoro::Task<bool> AssetUpdater::installCompatibilityTool()
 
     archive.close();
 
-    QFile verFile(m_wineDir.absoluteFilePath(QStringLiteral("wine.ver")));
-    verFile.open(QIODevice::WriteOnly | QIODevice::Text);
-    verFile.write(m_remoteCompatibilityToolVersion.toUtf8());
-    verFile.close();
+    Utility::writeVersion(m_wineDir.absoluteFilePath(QStringLiteral("wine.ver")), m_remoteCompatibilityToolVersion);
 
     m_profile.setCompatibilityToolVersion(m_remoteCompatibilityToolVersion);
 
@@ -262,10 +256,7 @@ QCoro::Task<bool> AssetUpdater::installDxvkTool()
 
     archive.close();
 
-    QFile verFile(m_dxvkDir.absoluteFilePath(QStringLiteral("dxvk.ver")));
-    verFile.open(QIODevice::WriteOnly | QIODevice::Text);
-    verFile.write(m_remoteDxvkToolVersion.toUtf8());
-    verFile.close();
+    Utility::writeVersion(m_dxvkDir.absoluteFilePath(QStringLiteral("dxvk.ver")), m_remoteDxvkToolVersion);
 
     co_return true;
 }
@@ -306,10 +297,7 @@ QCoro::Task<bool> AssetUpdater::installDalamudAssets()
 
     m_profile.setDalamudAssetVersion(m_remoteDalamudAssetVersion);
 
-    QFile file(m_dalamudAssetDir.absoluteFilePath(QStringLiteral("asset.ver")));
-    file.open(QIODevice::WriteOnly | QIODevice::Text);
-    file.write(QString::number(m_remoteDalamudAssetVersion).toUtf8());
-    file.close();
+    Utility::writeVersion(m_dalamudAssetDir.absoluteFilePath(QStringLiteral("asset.ver")), QString::number(m_remoteDalamudAssetVersion));
 
     co_return true;
 }
@@ -387,10 +375,7 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
 
         co_return false;
     } else {
-        QFile file(m_dalamudRuntimeDir.absoluteFilePath(QStringLiteral("runtime.ver")));
-        file.open(QIODevice::WriteOnly | QIODevice::Text);
-        file.write(m_remoteRuntimeVersion.toUtf8());
-        file.close();
+        Utility::writeVersion(m_dalamudRuntimeDir.absoluteFilePath(QStringLiteral("runtime.ver")), m_remoteRuntimeVersion);
 
         co_return true;
     }

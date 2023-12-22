@@ -12,6 +12,7 @@
 #include "astra_log.h"
 #include "launchercore.h"
 #include "profileconfig.h"
+#include "utility.h"
 
 using namespace Qt::StringLiterals;
 
@@ -35,10 +36,7 @@ void Profile::readDalamudInfo()
     if (wineDir.exists()) {
         const QString wineVer = wineDir.absoluteFilePath(QStringLiteral("wine.ver"));
         if (QFile::exists(wineVer)) {
-            QFile wineJson(wineVer);
-            wineJson.open(QFile::ReadOnly | QFile::Text);
-
-            m_compatibilityToolVersion = QString::fromUtf8(wineJson.readAll());
+            m_compatibilityToolVersion = Utility::readVersion(wineVer);
             qInfo(ASTRA_LOG) << "Compatibility tool version:" << m_compatibilityToolVersion;
         }
     }
@@ -69,19 +67,13 @@ void Profile::readDalamudInfo()
 
         const QString dalamudAssetsVer = dalamudAssetsDir.absoluteFilePath(QStringLiteral("asset.ver"));
         if (QFile::exists(dalamudAssetsVer)) {
-            QFile assetJson(dalamudAssetsVer);
-            assetJson.open(QFile::ReadOnly | QFile::Text);
-
-            m_dalamudAssetVersion = QString::fromUtf8(assetJson.readAll()).toInt();
+            m_dalamudAssetVersion = Utility::readVersion(dalamudAssetsVer).toInt();
             qInfo(ASTRA_LOG) << "Dalamud asset version:" << m_dalamudVersion;
         }
 
         const QString dalamudRuntimeVer = dalamudRuntimeDir.absoluteFilePath(QStringLiteral("runtime.ver"));
         if (QFile::exists(dalamudRuntimeVer)) {
-            QFile runtimeVer(dalamudRuntimeVer);
-            runtimeVer.open(QFile::ReadOnly | QFile::Text);
-
-            m_runtimeVersion = QString::fromUtf8(runtimeVer.readAll());
+            m_runtimeVersion = Utility::readVersion(dalamudRuntimeVer);
             qInfo(ASTRA_LOG) << "Dalamud runtime version:" << m_dalamudVersion;
         }
     }

@@ -200,10 +200,7 @@ void Patcher::processPatch(const QueuedPatch &patch)
         }
     }
 
-    QFile verFile(verFilePath);
-    verFile.open(QIODevice::WriteOnly | QIODevice::Text);
-    verFile.write(patch.version.toUtf8());
-    verFile.close();
+    Utility::writeVersion(verFilePath, patch.version);
 }
 
 void Patcher::setupDirectories()
