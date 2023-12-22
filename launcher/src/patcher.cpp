@@ -212,7 +212,7 @@ void Patcher::setupDirectories()
         dataDir.setPath(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
     }
 
-    m_patchesDir.setPath(dataDir.absoluteFilePath(QStringLiteral("patches")));
+    m_patchesDir.setPath(dataDir.absoluteFilePath(QStringLiteral("patch")));
 }
 
 QString Patcher::getBaseString() const
