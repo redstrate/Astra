@@ -235,6 +235,9 @@
             "-DBUILD_TESTING=OFF"
          ],
          "name" : "breeze-icons",
+         "cleanup": [
+            "/share/icons/breeze-dark"
+         ],
          "sources" : [
             {
                "branch" : "master",
@@ -521,7 +524,9 @@
          "config-opts" : [
             "-DBUILD_TESTING=OFF",
             "-DBUILD_QT6=ON",
-            "-DBUILD_QT5=OFF"
+            "-DBUILD_QT5=OFF",
+            "-DWITH_DECORATIONS=OFF",
+            "-DWITH_WALLPAPERS=OFF"
          ],
          "name" : "breeze",
          "sources" : [
