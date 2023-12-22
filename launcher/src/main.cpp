@@ -63,6 +63,7 @@ int main(int argc, char *argv[])
     about.setBugAddress(QByteArrayLiteral("https://lists.sr.ht/~redstrate/public-inbox"));
     about.setComponentName(QStringLiteral("astra"));
     about.setProgramLogo(QStringLiteral("zone.xiv.astra"));
+    about.setOrganizationDomain(QByteArrayLiteral("xiv.zone"));
 
     KAboutData::setApplicationData(about);
 
