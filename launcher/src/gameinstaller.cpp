@@ -29,9 +29,9 @@ void GameInstaller::installGame()
     const QDir installDirectory = m_profile.gamePath();
 
     const QNetworkRequest request = QNetworkRequest(QUrl(installerUrl));
+    Utility::printRequest(QStringLiteral("GET"), request);
 
     auto reply = m_launcher.mgr()->get(request);
-    Utility::printRequest(QStringLiteral("GET"), request);
 
     QObject::connect(reply, &QNetworkReply::finished, [this, reply, installDirectory] {
         if (reply->error() != QNetworkReply::NetworkError::NoError) {
