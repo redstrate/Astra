@@ -243,6 +243,10 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     arguments.push_back(profile.winePath());
 #endif
 
+    if (profile.account()->license() == Account::GameLicense::WindowsSteam) {
+        env.insert(QStringLiteral("IS_FFXIV_LAUNCH_FROM_STEAM"), QStringLiteral("1"));
+    }
+
     arguments.append(args);
 
     auto executable = arguments[0];
