@@ -68,18 +68,17 @@ int main(int argc, char *argv[])
     KAboutData::setApplicationData(about);
 
     QCommandLineParser parser;
-    parser.setApplicationDescription(i18n("Linux FFXIV Launcher"));
+    about.setupCommandLine(&parser);
 
     QCommandLineOption steamOption(QStringLiteral("steam"), QStringLiteral("Used for booting the launcher from Steam."), QStringLiteral("verb"));
     steamOption.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(steamOption);
 
-    about.setupCommandLine(&parser);
     parser.parse(QCoreApplication::arguments());
     about.processCommandLine(&parser);
 
     // We must handle these manually, since we use parse() and not process()
-    if (parser.isSet(QStringLiteral("help"))) {
+    if (parser.isSet(QStringLiteral("help")) || parser.isSet(QStringLiteral("help-all"))) {
         parser.showHelp();
     }
 
