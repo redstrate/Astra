@@ -15,7 +15,6 @@ finish-args:
   - --share=network
   - --filesystem=home
   - --socket=pulseaudio
-  - --talk-name=org.freedesktop.secrets
   # Allow access to the GNOME secret service API and to talk to the GNOME keyring daemon
   - --talk-name=org.freedesktop.secrets
   - --talk-name=org.gnome.keyring
