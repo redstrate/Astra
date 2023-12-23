@@ -136,6 +136,7 @@ QString GameRunner::getGameArgs(const Profile &profile, const LoginAuth &auth)
     gameArgs.push_back({QStringLiteral("language"), QString::number(profile.account()->language())});
     gameArgs.push_back({QStringLiteral("ver"), profile.baseGameVersion()});
     gameArgs.push_back({QStringLiteral("UserPath"), Utility::toWindowsPath(profile.account()->getConfigDir().absolutePath())});
+    gameArgs.push_back({QStringLiteral("resetconfig"), QStringLiteral("0")});
 
     // FIXME: this should belong somewhere else...
     Utility::createPathIfNeeded(profile.account()->getConfigDir().absolutePath());
