@@ -50,12 +50,12 @@ int main(int argc, char *argv[])
                     QUrl(QStringLiteral("https://redstrate.com/rss-image.png")));
     about.setHomepage(QStringLiteral("https://xiv.zone/astra"));
     about.addComponent(QStringLiteral("physis"),
-                       QStringLiteral("Library to access FFXIV data"),
+                       i18n("Library to access FFXIV data"),
                        QString::fromLatin1(physis_get_physis_version()),
                        QStringLiteral("https://xiv.zone/physis"),
                        KAboutLicense::GPL_V3);
     about.addComponent(QStringLiteral("libphysis"),
-                       QStringLiteral("C bindings for physis"),
+                       i18n("C bindings for physis"),
                        QString::fromLatin1(physis_get_libphysis_version()),
                        QStringLiteral("https://git.sr.ht/~redstrate/libphysis"),
                        KAboutLicense::GPL_V3);
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
     QCommandLineParser parser;
     about.setupCommandLine(&parser);
 
-    QCommandLineOption steamOption(QStringLiteral("steam"), QStringLiteral("Used for booting the launcher from Steam."), QStringLiteral("verb"));
+    QCommandLineOption steamOption(QStringLiteral("steam"), QString(), QStringLiteral("verb"));
     steamOption.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(steamOption);
 
