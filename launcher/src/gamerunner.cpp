@@ -251,8 +251,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
     arguments.append(args);
 
-    auto executable = arguments[0];
-    arguments.removeFirst();
+    const QString executable = arguments.takeFirst();
 
     if (isGame)
         process->setWorkingDirectory(profile.gamePath() + QStringLiteral("/game/"));
