@@ -225,7 +225,7 @@ FormCard.FormCardPage {
             id: dalamudChannelDelegate
 
             text: i18n("Update Channel")
-            model: ["Stable", "Staging", ".NET 5"]
+            model: [i18n("Stable"), i18n("Staging")]
             currentIndex: page.profile.dalamudChannel
             onCurrentIndexChanged: page.profile.dalamudChannel = currentIndex
             enabled: page.profile.dalamudEnabled
