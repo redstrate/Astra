@@ -175,6 +175,8 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
         const int value = profile.account()->license() == Account::GameLicense::macOS ? 0 : 1;
         addRegistryKey(profile, QStringLiteral("HKEY_CURRENT_USER\\Software\\Wine"), QStringLiteral("HideWineExports"), QString::number(value));
 
+        setWindowsVersion(profile, QStringLiteral("win7"));
+
         // copy DXVK
         const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
         const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
@@ -257,23 +259,25 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
     process->setProcessEnvironment(env);
 
+    qInfo() << executable << arguments;
+
     process->start(executable, arguments);
 }
 
-void GameRunner::addRegistryKey(const Profile &settings, QString key, QString value, QString data)
+void GameRunner::addRegistryKey(const Profile &settings, const QString &key, const QString &value, const QString &data)
 {
     auto process = new QProcess(this);
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     launchExecutable(settings,
                      process,
-                     {QStringLiteral("reg"),
-                      QStringLiteral("add"),
-                      std::move(key),
-                      QStringLiteral("/v"),
-                      std::move(value),
-                      QStringLiteral("/d"),
-                      std::move(data),
-                      QStringLiteral("/f")},
+                     {QStringLiteral("reg"), QStringLiteral("add"), key, QStringLiteral("/v"), value, QStringLiteral("/d"), data, QStringLiteral("/f")},
                      false,
                      false);
+}
+
+void GameRunner::setWindowsVersion(const Profile &settings, const QString &version)
+{
+    auto process = new QProcess(this);
+    process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    launchExecutable(settings, process, {QStringLiteral("winecfg"), QStringLiteral("/v"), version}, false, false);
 }
