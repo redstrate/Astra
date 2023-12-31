@@ -61,6 +61,7 @@ void ProfileManager::deleteProfile(Profile *profile)
     beginRemoveRows(QModelIndex(), row, row);
     m_profiles.removeAll(profile);
     endRemoveRows();
+    Q_EMIT profilesChanged();
 }
 
 QString ProfileManager::getDefaultGamePath(const QString &uuid)
@@ -137,6 +138,7 @@ void ProfileManager::insertProfile(Profile *profile)
     beginInsertRows(QModelIndex(), static_cast<int>(m_profiles.size()), static_cast<int>(m_profiles.size()));
     m_profiles.append(profile);
     endInsertRows();
+    Q_EMIT profilesChanged();
 }
 
 QList<Profile *> ProfileManager::profiles() const

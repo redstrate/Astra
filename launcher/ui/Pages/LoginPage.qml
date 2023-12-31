@@ -105,6 +105,7 @@ QQC2.Control {
 
         FormCard.FormCard {
             maximumWidth: Kirigami.Units.gridUnit * 25
+            visible: LauncherCore.profileManager.numProfiles > 1
 
             Layout.fillWidth: true
 

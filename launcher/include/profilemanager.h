@@ -14,6 +14,8 @@ class ProfileManager : public QAbstractListModel
     QML_ELEMENT
     QML_UNCREATABLE("Use LauncherCore.profileManager")
 
+    Q_PROPERTY(int numProfiles READ numProfiles NOTIFY profilesChanged)
+
 public:
     explicit ProfileManager(LauncherCore &launcher, QObject *parent = nullptr);
 
@@ -45,6 +47,9 @@ public:
 
     static QString getDefaultGamePath(const QString &uuid);
     static QString getDefaultWinePrefixPath(const QString &uuid);
+
+Q_SIGNALS:
+    void profilesChanged();
 
 private:
     void insertProfile(Profile *profile);
