@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QQuickStyle>
 #include <QtWebView>
+#include <kdsingleapplication.h>
 #include <qcoroqml.h>
 
 #include "astra-version.h"
@@ -26,6 +27,11 @@ int main(int argc, char *argv[])
     QtWebView::initialize();
 
     QApplication app(argc, argv);
+
+    KDSingleApplication singleApplication;
+    if (!singleApplication.isPrimaryInstance()) {
+        return 0;
+    }
 
     // Default to a sensible message pattern
     if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {

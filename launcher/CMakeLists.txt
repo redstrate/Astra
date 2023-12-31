@@ -129,6 +129,7 @@ target_link_libraries(astra PRIVATE
         physis
         physis-logger
         cotp
+        KDAB::kdsingleapplication
         Qt6Keychain::Qt6Keychain
         Qt6::Core
         Qt6::Network
