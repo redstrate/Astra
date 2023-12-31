@@ -134,19 +134,13 @@ FormCard.FormCardPage {
             description: i18n("A micro-compositor that uses Wayland to create a nested session.\nIf you use fullscreen mode, it may improve input handling.")
             checked: page.profile.gamescopeEnabled
             onCheckedChanged: page.profile.gamescopeEnabled = checked
-            visible: false
-            enabled: false
         }
 
-        FormCard.FormDelegateSeparator {
-            visible: false
-        }
+        FormCard.FormDelegateSeparator {}
 
         FormCard.FormButtonDelegate {
             text: i18n("Configure Gamescope...")
             icon.name: "configure"
-            enabled: false
-            visible: false
             Kirigami.PromptDialog {
                 id: gamescopeSettingsDialog
                 title: i18n("Configure Gamescope")
@@ -186,9 +180,7 @@ FormCard.FormCardPage {
             onClicked: gamescopeSettingsDialog.open()
         }
 
-        FormCard.FormDelegateSeparator {
-            visible: false
-        }
+        FormCard.FormDelegateSeparator {}
 
         FormCard.FormCheckDelegate {
             id: gamemodeDelegate

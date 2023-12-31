@@ -177,6 +177,9 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
         setWindowsVersion(profile, QStringLiteral("win7"));
 
+        // TODO: band-aid fix to wait for wine to exit, otherwise gamescope will collide
+        QThread::sleep(2);
+
         // copy DXVK
         const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
         const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
@@ -206,14 +209,22 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
         if (profile.gamescopeBorderless())
             arguments.push_back(QStringLiteral("-b"));
 
-        if (profile.gamescopeWidth() > 0)
-            arguments.push_back(QStringLiteral("-w ") + QString::number(profile.gamescopeWidth()));
+        if (profile.gamescopeWidth() > 0) {
+            arguments.push_back(QStringLiteral("-w"));
+            arguments.push_back(QString::number(profile.gamescopeWidth()));
+        }
 
-        if (profile.gamescopeHeight() > 0)
-            arguments.push_back(QStringLiteral("-h ") + QString::number(profile.gamescopeHeight()));
+        if (profile.gamescopeHeight() > 0) {
+            arguments.push_back(QStringLiteral("-h"));
+            arguments.push_back(QString::number(profile.gamescopeHeight()));
+        }
 
-        if (profile.gamescopeRefreshRate() > 0)
-            arguments.push_back(QStringLiteral("-r ") + QString::number(profile.gamescopeRefreshRate()));
+        if (profile.gamescopeRefreshRate() > 0) {
+            arguments.push_back(QStringLiteral("-r"));
+            arguments.push_back(QString::number(profile.gamescopeRefreshRate()));
+        }
+
+        arguments.push_back(QStringLiteral("--"));
     }
 
 #ifdef ENABLE_GAMEMODE
@@ -258,9 +269,10 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
     process->setProcessEnvironment(env);
 
-    qInfo() << executable << arguments;
+    process->setProgram(executable);
+    process->setArguments(arguments);
 
-    process->start(executable, arguments);
+    process->start();
 }
 
 void GameRunner::addRegistryKey(const Profile &settings, const QString &key, const QString &value, const QString &data)
@@ -272,6 +284,7 @@ void GameRunner::addRegistryKey(const Profile &settings, const QString &key, con
                      {QStringLiteral("reg"), QStringLiteral("add"), key, QStringLiteral("/v"), value, QStringLiteral("/d"), data, QStringLiteral("/f")},
                      false,
                      false);
+    process->waitForFinished();
 }
 
 void GameRunner::setWindowsVersion(const Profile &settings, const QString &version)
@@ -279,4 +292,5 @@ void GameRunner::setWindowsVersion(const Profile &settings, const QString &versi
     auto process = new QProcess(this);
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     launchExecutable(settings, process, {QStringLiteral("winecfg"), QStringLiteral("/v"), version}, false, false);
+    process->waitForFinished();
 }
