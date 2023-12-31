@@ -8,6 +8,6 @@ Exec=astra %u
 Terminal=false
 Icon=zone.xiv.astra
 Type=Application
-Categories=X-Games;
+Categories=Game;
 X-KDE-FormFactor=desktop;tablet;
 SingleMainWindow=true
