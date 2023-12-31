@@ -8,7 +8,6 @@
 
 namespace Utility
 {
-QDir stateDirectory();
 QString toWindowsPath(const QDir &dir);
 void printRequest(const QString &type, const QNetworkRequest &request);
 void createPathIfNeeded(const QDir &dir);

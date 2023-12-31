@@ -1,6 +1,6 @@
 app-id: zone.xiv.astra
 runtime: org.kde.Platform
-runtime-version: '6.6'
+cruntime-version: '6.6-kf6preview'
 sdk: org.kde.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
@@ -24,7 +24,7 @@ finish-args:
   - --device=all
   - --allow=devel
 modules:
-  - flatpak/kf6.json
+  #- flatpak/kf6.json
   - flatpak/kirigami-addons.json
   - name: unshield
     buildsystem: cmake-ninja
@@ -33,7 +33,8 @@ modules:
         url: https://github.com/twogood/unshield.git
         branch: main
   - name: unshield
-    buildsystem: meson
+    cleanup:
+      - /bin
     config-opts:
       - -Dmanpage=false
       - -Dvapi=false
@@ -49,6 +50,8 @@ modules:
         - name: libsecret
         - stable-only: true
   - name: qtkeychain
+    cleanup:
+      - /bin
     buildsystem: cmake-ninja
     config-opts:
       - -DBUILD_WITH_QT6=ON
@@ -59,11 +62,6 @@ modules:
       - type: git
         url: https://github.com/frankosterfeld/qtkeychain.git
         branch: main
-  - name: quazip
-    buildsystem: cmake-ninja
-    sources:
-      - type: git
-        url: https://github.com/stachenov/quazip.git
   - name: steamwrap
     buildsystem: simple
     build-commands:
@@ -80,20 +78,6 @@ modules:
       - type: file
         url: https://xiv.zone/distrib/steamwrap/libsteam_api.so
         sha256: b50b9d313eb554792216762f5cc0b972cfae14149f720440e0f0d6c4563c951f
-  - name: qcoro
-    buildsystem: cmake-ninja
-    config-optios:
-      - -DQCORO_BUILD_EXAMPLES=OFF
-      - -DBUILD_TESTING=OFF
-    sources:
-      - type: archive
-        url: https://github.com/danvratil/qcoro/archive/refs/tags/v0.7.0.tar.gz
-        sha256: 23ef0217926e67c8d2eb861cf91617da2f7d8d5a9ae6c62321b21448b1669210
-        x-checker-data:
-          - type: anitya
-            project-id: 236236
-            stable-only: true
-            url-template: https://github.com/danvratil/qcoro/archive/refs/tags/v$version.tar.gz
   - name: qt6-qtwebview
     buildsystem: cmake-ninja
     cleanup-platform:

@@ -23,9 +23,6 @@ using namespace Qt::StringLiterals;
 
 int main(int argc, char *argv[])
 {
-    initializeLogging();
-    setup_physis_logging();
-
     QtWebView::initialize();
 
     QApplication app(argc, argv);
@@ -66,6 +63,9 @@ int main(int argc, char *argv[])
     about.setOrganizationDomain(QByteArrayLiteral("xiv.zone"));
 
     KAboutData::setApplicationData(about);
+
+    initializeLogging();
+    setup_physis_logging();
 
     QCommandLineParser parser;
     about.setupCommandLine(&parser);

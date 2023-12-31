@@ -36,7 +36,8 @@ public:
 
     void initialize()
     {
-        const QDir logDirectory = Utility::stateDirectory().absoluteFilePath(QStringLiteral("log"));
+        const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        const QDir logDirectory = dataDir.absoluteFilePath(QStringLiteral("log"));
         Utility::createPathIfNeeded(logDirectory);
 
         // Sort them from highest to lowest (4, 3, 2, 1, 0)

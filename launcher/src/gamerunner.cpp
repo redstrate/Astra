@@ -63,7 +63,6 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
 
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     const QDir configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-    const QDir stateDir = Utility::stateDirectory();
     const QDir dalamudDir = dataDir.absoluteFilePath(QStringLiteral("dalamud"));
 
     const QDir dalamudConfigDir = configDir.absoluteFilePath(QStringLiteral("dalamud"));
@@ -76,7 +75,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
     // so we need to match typical XIVQuickLauncher behavior here. Why? I have no clue.
     const QDir dalamudPluginDir = dalamudUserPluginDir.absoluteFilePath(QStringLiteral("installedPlugins"));
 
-    const QString logDir = stateDir.absoluteFilePath(QStringLiteral("log"));
+    const QString logDir = dataDir.absoluteFilePath(QStringLiteral("log"));
     Utility::createPathIfNeeded(logDir);
 
     const QDir dalamudRuntimeDir = dalamudDir.absoluteFilePath(QStringLiteral("runtime"));
@@ -241,7 +240,8 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     // env.insert(QStringLiteral("VK_LAYER_RENDERDOC_Capture"), QStringLiteral("VK_LAYER_RENDERDOC_Capture"));
     // env.insert(QStringLiteral("ENABLE_VULKAN_RENDERDOC_CAPTURE"), QString::number(1));
 
-    const QString logDir = Utility::stateDirectory().absoluteFilePath(QStringLiteral("log"));
+    const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    const QString logDir = dataDir.absoluteFilePath(QStringLiteral("log"));
 
     env.insert(QStringLiteral("DXVK_LOG_PATH"), logDir);
 #endif

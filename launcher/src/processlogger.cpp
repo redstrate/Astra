@@ -4,10 +4,12 @@
 #include "processlogger.h"
 #include "astra_log.h"
 #include "utility.h"
+#include <QStandardPaths>
 
 ProcessLogger::ProcessLogger(QProcess *process)
 {
-    const QDir logDirectory = Utility::stateDirectory().absoluteFilePath(QStringLiteral("log"));
+    const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    const QDir logDirectory = dataDir.absoluteFilePath(QStringLiteral("log"));
 
     m_file.setFileName(logDirectory.absoluteFilePath(QStringLiteral("ffxiv.log")));
     m_file.open(QIODevice::WriteOnly | QIODevice::Unbuffered);
