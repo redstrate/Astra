@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 # SPDX-License-Identifier: CC0-1.0
 
+# See https://gitlab.kitware.com/cmake/cmake/-/issues/20312
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+
 set(BUILD_SHARED_LIBS OFF)
 set(BUILD_TESTS OFF)
 
