@@ -99,6 +99,8 @@ FormCard.FormCardPage {
             text: i18n("Wine Executable")
             file: page.profile.winePath
             enabled: page.profile.wineType !== Profile.BuiltIn
+
+            onAccepted: (path) => page.profile.winePath = path
         }
 
         FormCard.FormDelegateSeparator {

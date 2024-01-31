@@ -11,6 +11,8 @@ FormCard.FormButtonDelegate {
 
     property string file
 
+    signal accepted(string path)
+
     icon.name: "document-open"
     description: file
 
@@ -20,5 +22,7 @@ FormCard.FormButtonDelegate {
         id: dialog
 
         currentFolder: StandardPaths.standardLocations(StandardPaths.HomeLocation)[0]
+
+        onAccepted: control.accepted(decodeURIComponent(selectedFile.toString().replace("file://", "")))
     }
 }
