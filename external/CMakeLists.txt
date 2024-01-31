@@ -21,4 +21,5 @@ target_link_libraries(physis INTERFACE ${UNSHIELD_LIBRARIES} z)
 target_link_directories(physis INTERFACE ${UNSHIELD_LIBRARY_DIRS})
 
 set(KDSingleApplication_QT6 ON)
+set(KDSingleApplication_STATIC ON)
 add_subdirectory(kdsingleapplication EXCLUDE_FROM_ALL)
