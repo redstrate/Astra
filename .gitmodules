@@ -6,4 +6,4 @@
 	url = https://git.sr.ht/~redstrate/libphysis
 [submodule "external/kdsingleapplication"]
 	path = external/kdsingleapplication
-	url = git@github.com:KDAB/KDSingleApplication.git
+	url = https://github.com/KDAB/KDSingleApplication.git
