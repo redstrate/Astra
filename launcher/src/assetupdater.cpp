@@ -130,6 +130,7 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudAssetVersion()
     const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
 
     m_remoteDalamudAssetVersion = doc.object()["version"_L1].toInt();
+    m_remoteDalamudAssetPackageUrl = doc.object()["packageUrl"_L1].toString();
     m_remoteDalamudAssetArray = doc.object()["assets"_L1].toArray();
 
     qInfo(ASTRA_LOG) << "Dalamud asset remote version" << m_remoteDalamudAssetVersion;
@@ -265,35 +266,26 @@ QCoro::Task<bool> AssetUpdater::installDalamudAssets()
 {
     Q_EMIT launcher.stageChanged(i18n("Updating Dalamud assets..."));
 
-    QFutureSynchronizer<void> synchronizer;
+    const QNetworkRequest request = QNetworkRequest(QUrl(m_remoteDalamudAssetPackageUrl));
+    Utility::printRequest(QStringLiteral("GET"), request);
 
-    for (const auto &assetObject : m_remoteDalamudAssetArray) {
-        const QNetworkRequest assetRequest(QUrl(assetObject.toObject()["url"_L1].toString()));
-        Utility::printRequest(QStringLiteral("GET"), assetRequest);
-
-        const auto assetReply = launcher.mgr()->get(assetRequest);
-
-        const auto future = QtFuture::connect(assetReply, &QNetworkReply::finished).then([this, assetReply, assetObject] {
-            const QString fileName = assetObject.toObject()["fileName"_L1].toString();
-            const QString dirPath = fileName.left(fileName.lastIndexOf('/'_L1));
-
-            const QString path = m_dalamudAssetDir.absoluteFilePath(dirPath);
-            Utility::createPathIfNeeded(path);
-
-            QFile file(m_dalamudAssetDir.absoluteFilePath(assetObject.toObject()["fileName"_L1].toString()));
-            file.open(QIODevice::WriteOnly);
-            file.write(assetReply->readAll());
-            file.close();
-        });
-
-        synchronizer.addFuture(future);
-    }
-
-    co_await QtConcurrent::run([&synchronizer] {
-        synchronizer.waitForFinished();
-    });
+    const auto reply = launcher.mgr()->get(request);
+    co_await reply;
 
     qInfo(ASTRA_LOG) << "Finished downloading Dalamud assets";
+
+    QFile file(m_tempDir.filePath(QStringLiteral("dalamud-assets.zip")));
+    file.open(QIODevice::WriteOnly);
+    file.write(reply->readAll());
+    file.close();
+
+    if (!extractZip(m_tempDir.filePath(QStringLiteral("dalamud-assets.zip")), m_dalamudAssetDir.absolutePath())) {
+        qCritical(ASTRA_LOG) << "Failed to install Dalamud assets";
+        Q_EMIT launcher.dalamudError(i18n("Failed to install Dalamud assets."));
+        co_return false;
+    }
+
+    // TODO: check for file hashes
 
     m_profile.setDalamudAssetVersion(m_remoteDalamudAssetVersion);
 

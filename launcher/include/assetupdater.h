@@ -61,6 +61,7 @@ private:
     int m_remoteDalamudAssetVersion = -1;
     QJsonArray m_remoteDalamudAssetArray;
     QString m_remoteDalamudDownloadUrl;
+    QString m_remoteDalamudAssetPackageUrl;
     QString m_remoteCompatibilityToolVersion;
     QString m_remoteDxvkToolVersion;
     // TODO: hardcoded
