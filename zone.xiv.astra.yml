@@ -1,6 +1,6 @@
 app-id: zone.xiv.astra
 runtime: org.kde.Platform
-cruntime-version: '6.6-kf6preview'
+runtime-version: '6.6'
 sdk: org.kde.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
@@ -24,7 +24,6 @@ finish-args:
   - --device=all
   - --allow=devel
 modules:
-  #- flatpak/kf6.json
   - flatpak/kirigami-addons.json
   - name: unshield
     buildsystem: cmake-ninja
@@ -32,7 +31,7 @@ modules:
       - type: git
         url: https://github.com/twogood/unshield.git
         branch: main
-  - name: unshield
+  - name: libsecret
     cleanup:
       - /bin
     config-opts:
@@ -41,6 +40,7 @@ modules:
       - -Dgtk_doc=false
       - -Dintrospection=false
       - -Dgcrypt=false
+    buildsystem: meson
     sources:
       - type: archive
         url: https://download.gnome.org/sources/libsecret/0.20/libsecret-0.20.5.tar.xz
