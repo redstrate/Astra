@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
                      QStringLiteral(ASTRA_VERSION_STRING),
                      i18n("FFXIV Launcher"),
                      KAboutLicense::GPL_V3,
-                     i18n("© 2023 Joshua Goins"));
+                     i18n("© 2024 Joshua Goins"));
     about.addAuthor(i18n("Joshua Goins"),
                     i18n("Maintainer"),
                     QStringLiteral("josh@redstrate.com"),
