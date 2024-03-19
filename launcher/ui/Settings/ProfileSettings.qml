@@ -143,6 +143,7 @@ FormCard.FormCardPage {
         FormCard.FormButtonDelegate {
             text: i18n("Configure Gamescope...")
             icon.name: "configure"
+            enabled: page.profile.gamescopeEnabled
             Kirigami.PromptDialog {
                 id: gamescopeSettingsDialog
                 title: i18n("Configure Gamescope")
