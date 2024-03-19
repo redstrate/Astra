@@ -274,32 +274,5 @@ QQC2.Control {
                 onClicked: applicationWindow().openUrl('https://secure.square-enix.com/account/app/svc/reminder')
             }
         }
-
-        FormCard.FormCard {
-            maximumWidth: Kirigami.Units.gridUnit * 25
-
-            Layout.fillWidth: true
-
-            FormCard.FormButtonDelegate {
-                id: serverStatusButton
-
-                text: i18n("Server Status")
-                icon.name: "cloudstatus"
-                onClicked: applicationWindow().openUrl('https://na.finalfantasyxiv.com/lodestone/worldstatus/')
-            }
-
-            FormCard.FormDelegateSeparator {
-                above: serverStatusButton
-                below: settingsButton
-            }
-
-            FormCard.FormButtonDelegate {
-                id: settingsButton
-
-                text: i18n("Settings")
-                icon.name: "configure"
-                onClicked: applicationWindow().pushDialogLayer(Qt.createComponent("zone.xiv.astra", "SettingsPage"))
-            }
-        }
     }
 }

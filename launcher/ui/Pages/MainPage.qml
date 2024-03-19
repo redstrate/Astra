@@ -14,17 +14,36 @@ Kirigami.Page {
 
     title: i18n("Home")
 
-    globalToolBarStyle: Kirigami.ApplicationHeaderStyle.None
-
-    topPadding: Kirigami.Units.largeSpacing
-    leftPadding: Kirigami.Units.largeSpacing
-    rightPadding: Kirigami.Units.largeSpacing
+    topPadding: 0
+    leftPadding: 0
+    rightPadding: 0
     bottomPadding: 0
+
+    actions: [
+        Kirigami.Action {
+            text: i18nc("@action:button", "Server Status")
+            icon.name: "cloudstatus"
+            onTriggered: applicationWindow().openUrl('https://na.finalfantasyxiv.com/lodestone/worldstatus/')
+        },
+        Kirigami.Action {
+            text: i18nc("@action:button", "Settings")
+            icon.name: "configure"
+            onTriggered: applicationWindow().pushDialogLayer(Qt.createComponent("zone.xiv.astra", "SettingsPage"))
+        }
+    ]
 
     RowLayout {
         anchors.fill: parent
 
         spacing: Kirigami.Units.largeSpacing
+
+        LoginPage {
+            id: loginPage
+
+            Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
+            Layout.minimumWidth: LauncherCore.settings.showNews ? Kirigami.Units.gridUnit * 26 : 0
+            Layout.fillWidth: !LauncherCore.settings.showNews
+        }
 
         Loader {
             active: LauncherCore.settings.showNews
@@ -40,14 +59,6 @@ Kirigami.Page {
                     height: scrollView.availableHeight
                 }
             }
-        }
-
-        LoginPage {
-            id: loginPage
-
-            Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-            Layout.minimumWidth: LauncherCore.settings.showNews ? Kirigami.Units.gridUnit * 26 : 0
-            Layout.fillWidth: !LauncherCore.settings.showNews
         }
     }
 }

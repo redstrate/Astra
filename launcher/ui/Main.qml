@@ -21,9 +21,11 @@ Kirigami.ApplicationWindow {
 
     property bool checkedAutoLogin: false
 
-    pageStack.initialPage: Kirigami.Page {
-        Kirigami.LoadingPlaceholder {
-            anchors.centerIn: parent
+    pageStack {
+        initialPage: Kirigami.Page {
+            Kirigami.LoadingPlaceholder {
+                anchors.centerIn: parent
+            }
         }
     }
 
@@ -56,7 +58,7 @@ Kirigami.ApplicationWindow {
                 pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "AutoLoginPage"))
                 checkedAutoLogin = true;
             } else {
-                pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
+                pageStack.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
             }
         }
     }
