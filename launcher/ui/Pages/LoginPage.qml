@@ -110,11 +110,15 @@ QQC2.Control {
             Layout.fillWidth: true
 
             FormCard.FormButtonDelegate {
+                id: currentProfileDelegate
+
                 text: i18n("Current Profile")
                 description: LauncherCore.currentProfile.name
 
                 QQC2.Menu {
                     id: profileMenu
+
+                    modal: true
 
                     Repeater {
                         model: LauncherCore.profileManager
@@ -136,7 +140,7 @@ QQC2.Control {
                     }
                 }
 
-                onClicked: profileMenu.popup()
+                onClicked: profileMenu.popup(currentProfileDelegate, currentProfileDelegate.width, currentProfileDelegate.height)
             }
         }
 
@@ -161,6 +165,8 @@ QQC2.Control {
                 QQC2.Menu {
                     id: accountMenu
 
+                    modal: true
+
                     Repeater {
                         model: LauncherCore.accountManager
 
@@ -183,7 +189,7 @@ QQC2.Control {
                     }
                 }
 
-                onClicked: accountMenu.popup()
+                onClicked: accountMenu.popup(currentAccountDelegate, currentAccountDelegate.width, currentAccountDelegate.height)
             }
 
             FormCard.FormDelegateSeparator {
