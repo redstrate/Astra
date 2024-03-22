@@ -2,11 +2,30 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import org.kde.kirigamiaddons.settings as KirigamiSettings
+import org.kde.kirigami as Kirigami
+import org.kde.kirigamiaddons.components as KirigamiComponents
 
 import zone.xiv.astra
 
 KirigamiSettings.CategorizedSettings {
     id: settingsPage
+
+    KirigamiComponents.FloatingButton {
+        anchors {
+            right: parent.right
+            bottom: parent.bottom
+        }
+
+        z: 100
+        margins: Kirigami.Units.largeSpacing
+        visible: LauncherCore.isSteamDeck
+
+        action: Kirigami.Action {
+            text: i18nc("@action:button Close Settings")
+            icon.name: "dialog-close-symbolic"
+            onTriggered: pageStack.layers.pop()
+        }
+    }
 
     actions: [
         KirigamiSettings.SettingAction {
