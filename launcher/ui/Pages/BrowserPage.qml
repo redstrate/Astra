@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import QtQuick
 import QtWebView
 
 import org.kde.kirigami as Kirigami
@@ -18,5 +19,7 @@ Kirigami.Page {
         anchors.fill: parent
 
         url: page.url
+
+        Component.onCompleted: setCookie("finalfantasyxiv.com", "ldst_bypass_browser", "1")
     }
 }
