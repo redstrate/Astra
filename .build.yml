@@ -38,6 +38,7 @@ tasks:
   #    cmake --build build-cmake
   - flatpak: |
       cd astra
+      cargo install cargo-vendor-filterer
       ./scripts/build-flatpak.sh
 artifacts:
   - astra-source.tar.gz

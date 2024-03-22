@@ -6,10 +6,7 @@ git submodule update
 
 # begin vendoring cargo dependencies
 cd external/libphysis
-cargo vendor ../../cargo-vendored
-# workaround for https://github.com/rust-lang/cargo/issues/7058, winapi libraries take up a ton of space
-rm -fr ../../cargo-vendored/winapi*gnu*
-rm -fr ../../cargo-vendored/windows*
+cargo vendor-filterer --platform=x86_64-unknown-linux-gnu ../../cargo-vendored
 mkdir .cargo
 cp ../../scripts/config.toml .cargo/config.toml
 cd ../../
