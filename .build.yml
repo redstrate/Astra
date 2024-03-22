@@ -21,6 +21,8 @@ sources:
 secrets:
   - b748582a-5d31-4fe8-94d6-4a63035e97aa
 tasks:
+  - setup: |
+      cargo install cargo-vendor-filterer
   - reuse: |
       cd astra
       reuse lint
@@ -30,17 +32,9 @@ tasks:
   - upload-tarball: |
       echo "StrictHostKeyChecking=no" >> ~/.ssh/config
       rsync -e 'ssh -p 38901' -Wvr astra-source.tar.gz deploy@ryne.moe:/srv/http/astra-distrib/astra/git/
-  #- configure: |
-  #    cd astra
-  #    cmake -S . -B build-cmake
-  #- build: |
-  #    cd astra
-  #    cmake --build build-cmake
   - flatpak: |
       cd astra
-      cargo install cargo-vendor-filterer
       ./scripts/build-flatpak.sh
 artifacts:
   - astra-source.tar.gz
-#  - astra/build-cmake/bin/astra
   - astra/astra.flatpak
