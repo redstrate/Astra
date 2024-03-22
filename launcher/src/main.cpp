@@ -26,6 +26,11 @@ int main(int argc, char *argv[])
 {
     QtWebView::initialize();
 
+    if (qEnvironmentVariable("SteamDeck") == QStringLiteral("1")) {
+        qputenv("QT_SCALE_FACTOR", "2");
+        qputenv("QT_QUICK_CONTROLS_MOBILE", "1");
+    }
+
     QApplication app(argc, argv);
 
     KDSingleApplication singleApplication;
