@@ -38,7 +38,7 @@ tasks:
   #    cmake --build build-cmake
   - flatpak: |
       cd astra
-      ./build-flatpak.sh
+      ./scripts/build-flatpak.sh
 artifacts:
   - astra-source.tar.gz
 #  - astra/build-cmake/bin/astra
