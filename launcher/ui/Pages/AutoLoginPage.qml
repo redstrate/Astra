@@ -23,7 +23,7 @@ Kirigami.Page {
         text: i18n("Logging in...")
 
         helpfulAction: Kirigami.Action {
-            icon.name: "Cancel"
+            icon.name: "dialog-cancel"
             text: "Cancel"
             enabled: autoLoginTimer.running
             onTriggered: {
