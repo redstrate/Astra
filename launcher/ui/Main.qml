@@ -21,9 +21,14 @@ Kirigami.ApplicationWindow {
 
     property bool checkedAutoLogin: false
 
-    pageStack.initialPage: Kirigami.Page {
-        Kirigami.LoadingPlaceholder {
-            anchors.centerIn: parent
+    pageStack {
+        globalToolBar {
+            style: Kirigami.ApplicationHeaderStyle.ToolBar
+        }
+        initialPage: Kirigami.Page {
+            Kirigami.LoadingPlaceholder {
+                anchors.centerIn: parent
+            }
         }
     }
 
