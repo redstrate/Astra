@@ -1,6 +1,6 @@
 app-id: zone.xiv.astra
 runtime: org.kde.Platform
-cruntime-version: '6.6-kf6preview'
+runtime-version: '6.6'
 sdk: org.kde.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
@@ -24,7 +24,6 @@ finish-args:
   - --device=all
   - --allow=devel
 modules:
-  #- flatpak/kf6.json
   - flatpak/kirigami-addons.json
   - name: unshield
     buildsystem: cmake-ninja
@@ -32,7 +31,7 @@ modules:
       - type: git
         url: https://github.com/twogood/unshield.git
         branch: main
-  - name: unshield
+  - name: libsecret
     cleanup:
       - /bin
     config-opts:
@@ -41,14 +40,15 @@ modules:
       - -Dgtk_doc=false
       - -Dintrospection=false
       - -Dgcrypt=false
+    buildsystem: meson
     sources:
       - type: archive
         url: https://download.gnome.org/sources/libsecret/0.20/libsecret-0.20.5.tar.xz
         sha256: 3fb3ce340fcd7db54d87c893e69bfc2b1f6e4d4b279065ffe66dac9f0fd12b4d
         x-checker-data:
-        - type: gnome
-        - name: libsecret
-        - stable-only: true
+          - type: gnome
+          - name: libsecret
+          - stable-only: true
   - name: qtkeychain
     cleanup:
       - /bin
@@ -65,7 +65,7 @@ modules:
   - name: steamwrap
     buildsystem: simple
     build-commands:
-        - install -D steamwrap /app/bin/steamwrap
+      - install -D steamwrap /app/bin/steamwrap
     sources:
       - type: file
         url: https://xiv.zone/distrib/steamwrap/steamwrap
@@ -73,7 +73,7 @@ modules:
   - name: steamapi
     buildsystem: simple
     build-commands:
-        - install -D libsteam_api.so /app/bin/libsteam_api.so
+      - install -D libsteam_api.so /app/bin/libsteam_api.so
     sources:
       - type: file
         url: https://xiv.zone/distrib/steamwrap/libsteam_api.so
@@ -97,7 +97,7 @@ modules:
       - DCORROSION_BUILD_TESTS=OFF
     build-options:
       - env:
-        - CARGO_HOME: /run/build/corrosion/cargo
+          - CARGO_HOME: /run/build/corrosion/cargo
     cleanup:
       - /app
     sources:
@@ -112,7 +112,7 @@ modules:
       - -DBUILD_FLATPAK=ON
     build-options:
       build-args:
-            - --share=network # needed for cargo unfortunately, flatpak has no native support (yet)
+        - --share=network # needed for cargo unfortunately, flatpak has no native support (yet)
     sources:
       - type: dir
         path: .
