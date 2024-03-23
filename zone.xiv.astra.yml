@@ -24,7 +24,18 @@ finish-args:
   - --device=all
   - --allow=devel
 modules:
-  - flatpak/kirigami-addons.json
+  - name: kirigami-addons
+    config-opts:
+      - -DBUILD_TESTING=OFF
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DQT_MAJOR_VERSION=6
+    buildsystem: cmake-ninja
+    sources:
+      - type: git
+        url: https://invent.kde.org/libraries/kirigami-addons.git
+        branch: master
+    cleanup:
+      - /lib/debug
   - name: unshield
     buildsystem: cmake-ninja
     sources:
@@ -94,9 +105,9 @@ modules:
   - name: corrosion
     buildsystem: cmake-ninja
     config-opts:
-      - DCORROSION_BUILD_TESTS=OFF
+      - -DCORROSION_BUILD_TESTS=OFF
     build-options:
-      - env:
+      env:
         - CARGO_HOME: /run/build/corrosion/cargo
     cleanup:
       - /app
@@ -112,7 +123,7 @@ modules:
       - -DBUILD_FLATPAK=ON
     build-options:
       build-args:
-            - --share=network # needed for cargo unfortunately, flatpak has no native support (yet)
+        - --share=network # needed for cargo unfortunately, flatpak has no native support (yet)
     sources:
       - type: dir
         path: .
