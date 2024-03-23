@@ -18,7 +18,7 @@ The backend code is written in C++, and we're currently requiring C++20 to build
 
 ### Frontend
 
-The user interface is written in QML, using technologies such as Kirigami. Please see the [KDE API Documentation](https://api.kde.org/) for more information. The frontend files are located in [/launcher/ui](/launcher/ui).
+The user interface is written in QML, using technologies such as Kirigami. Please see the [KDE API Documentation](https://api.kde.org/) for more information. The frontend files are located in [/launcher/ui](launcher/ui).
 
 ## Conventions
 
