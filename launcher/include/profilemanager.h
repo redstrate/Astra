@@ -39,7 +39,7 @@ public:
     Q_INVOKABLE void deleteProfile(Profile *profile);
 
     [[nodiscard]] QList<Profile *> profiles() const;
-    [[nodiscard]] Q_INVOKABLE int numProfiles() const;
+    [[nodiscard]] int numProfiles() const;
 
     Q_INVOKABLE bool canDelete(Profile *account) const;
 
