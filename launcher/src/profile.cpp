@@ -239,6 +239,12 @@ void Profile::setDirectX9Enabled(const bool value)
     }
 }
 
+bool Profile::hasDirectx9() const
+{
+    const QDir gameDir(gamePath());
+    return QFileInfo::exists(gameDir.absoluteFilePath(QStringLiteral("game/ffxiv.exe")));
+}
+
 bool Profile::gamescopeFullscreen() const
 {
     return m_config->gamescopeFullscreen();

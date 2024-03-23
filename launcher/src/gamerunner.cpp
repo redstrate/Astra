@@ -23,7 +23,7 @@ GameRunner::GameRunner(LauncherCore &launcher, QObject *parent)
 void GameRunner::beginGameExecutable(Profile &profile, const LoginAuth &auth)
 {
     QString gameExectuable;
-    if (profile.directx9Enabled()) {
+    if (profile.directx9Enabled() && profile.hasDirectx9()) {
         gameExectuable = profile.gamePath() + QStringLiteral("/game/ffxiv.exe");
     } else {
         gameExectuable = profile.gamePath() + QStringLiteral("/game/ffxiv_dx11.exe");

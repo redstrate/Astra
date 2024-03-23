@@ -26,6 +26,7 @@ class Profile : public QObject
     Q_PROPERTY(bool gamescopeEnabled READ gamescopeEnabled WRITE setGamescopeEnabled NOTIFY useGamescopeChanged)
     Q_PROPERTY(bool gamemodeEnabled READ gamemodeEnabled WRITE setGamemodeEnabled NOTIFY useGamemodeChanged)
     Q_PROPERTY(bool directx9Enabled READ directx9Enabled WRITE setDirectX9Enabled NOTIFY useDX9Changed)
+    Q_PROPERTY(bool hasDirectx9 READ hasDirectx9 NOTIFY gamePathChanged)
     Q_PROPERTY(bool gamescopeFullscreen READ gamescopeFullscreen WRITE setGamescopeFullscreen NOTIFY gamescopeFullscreenChanged)
     Q_PROPERTY(bool gamescopeBorderless READ gamescopeBorderless WRITE setGamescopeBorderless NOTIFY gamescopeBorderlessChanged)
     Q_PROPERTY(int gamescopeWidth READ gamescopeWidth WRITE setGamescopeWidth NOTIFY gamescopeWidthChanged)
@@ -79,6 +80,8 @@ public:
 
     [[nodiscard]] bool directx9Enabled() const;
     void setDirectX9Enabled(bool value);
+
+    [[nodiscard]] bool hasDirectx9() const;
 
     [[nodiscard]] bool gamescopeFullscreen() const;
     void setGamescopeFullscreen(bool value);
