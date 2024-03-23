@@ -116,3 +116,5 @@ modules:
     sources:
       - type: dir
         path: .
+    cleanup:
+      - /lib/debug/source/astra/launcher/.rcc # debug symbols for the auto-gen C++ source for QML is useless

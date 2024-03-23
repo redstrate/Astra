@@ -8,5 +8,8 @@
     "buildsystem": "cmake-ninja",
     "sources": [
         { "type": "git", "url": "https://invent.kde.org/libraries/kirigami-addons.git", "branch": "master" }
+    ],
+    "cleanup": [
+        "/lib/debug"
     ]
 }
