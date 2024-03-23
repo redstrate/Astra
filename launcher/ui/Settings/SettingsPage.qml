@@ -21,7 +21,7 @@ KirigamiSettings.CategorizedSettings {
         visible: LauncherCore.isSteamDeck
 
         action: Kirigami.Action {
-            text: i18nc("@action:button Close Settings")
+            text: i18nc("@action:button", "Close Settings")
             icon.name: "dialog-close-symbolic"
             onTriggered: pageStack.layers.pop()
         }
