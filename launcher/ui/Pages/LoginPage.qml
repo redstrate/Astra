@@ -122,7 +122,6 @@ QQC2.Control {
             visible: LauncherCore.profileManager.numProfiles > 1
 
             Layout.fillWidth: true
-            Layout.fillHeight: true
 
             FormCard.FormButtonDelegate {
                 id: currentProfileDelegate
@@ -288,6 +287,33 @@ QQC2.Control {
                 icon.name: "dialog-password"
                 visible: !LauncherCore.currentProfile.account.isSapphire
                 onClicked: applicationWindow().openUrl('https://secure.square-enix.com/account/app/svc/reminder')
+            }
+        }
+
+        Item {
+            Layout.fillHeight: true
+        }
+
+        FormCard.FormCard {
+            maximumWidth: Kirigami.Units.gridUnit * 25
+
+            Layout.alignment: Qt.AlignBottom
+
+            FormCard.FormButtonDelegate {
+                text: i18nc("@action:button", "The Lodestone")
+                icon.name: "internet-services-symbolic"
+                visible: !LauncherCore.currentProfile.account.isSapphire
+                // TODO: how do we link to a "worldwide" lodestone, if that even exists?
+                onClicked: applicationWindow().openUrl('https://na.finalfantasyxiv.com/lodestone/')
+            }
+
+            FormCard.FormDelegateSeparator {}
+
+            FormCard.FormButtonDelegate {
+                text: i18nc("@action:button", "Mog Station")
+                icon.name: "internet-services-symbolic"
+                visible: !LauncherCore.currentProfile.account.isSapphire
+                onClicked: applicationWindow().openUrl('https://secure.square-enix.com/account/app/svc/mogstation/')
             }
         }
     }
