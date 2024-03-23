@@ -48,17 +48,17 @@ Kirigami.ApplicationWindow {
 
         if (!LauncherCore.currentProfile.isGameInstalled) {
             // User must set up the profile
-            pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "SetupPage"), {
+            pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "SetupPage"), {
                 profile: LauncherCore.currentProfile
             })
         } else if (!LauncherCore.currentProfile.account) {
             // User must select an account for the profile
-            pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "AccountSetup"), {
+            pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AccountSetup"), {
                 profile: LauncherCore.currentProfile
             })
         } else {
             if (LauncherCore.autoLoginProfile && !checkedAutoLogin) {
-                pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "AutoLoginPage"))
+                pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AutoLoginPage"))
                 checkedAutoLogin = true;
             } else {
                 pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
