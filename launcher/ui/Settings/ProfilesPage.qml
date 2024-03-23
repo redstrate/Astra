@@ -42,7 +42,7 @@ FormCard.FormCardPage {
                 }
 
                 FormCard.FormDelegateSeparator {
-                    visible: layout.index + 1 < LauncherCore.profileManager.numProfiles()
+                    visible: layout.index + 1 < LauncherCore.profileManager.numProfiles
                 }
             }
         }
