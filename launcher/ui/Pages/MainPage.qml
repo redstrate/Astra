@@ -35,7 +35,7 @@ Kirigami.Page {
     RowLayout {
         anchors.fill: parent
 
-        spacing: Kirigami.Units.largeSpacing
+        spacing: 0
 
         LoginPage {
             id: loginPage
@@ -43,6 +43,11 @@ Kirigami.Page {
             Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
             Layout.minimumWidth: LauncherCore.settings.showNews ? Kirigami.Units.gridUnit * 26 : 0
             Layout.fillWidth: !LauncherCore.settings.showNews
+            Layout.topMargin: Kirigami.Units.largeSpacing
+        }
+
+        Kirigami.Separator {
+            Layout.fillHeight: true
         }
 
         Loader {
@@ -56,7 +61,7 @@ Kirigami.Page {
 
                 NewsPage {
                     width: scrollView.availableWidth
-                    height: scrollView.availableHeight
+                    height: Math.max(scrollView.availableHeight, page.height, implicitHeight)
                 }
             }
         }

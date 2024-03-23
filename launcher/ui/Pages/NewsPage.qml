@@ -16,10 +16,10 @@ import zone.xiv.astra
 QQC2.Control {
     id: page
 
-    Component.onCompleted: LauncherCore.refreshNews()
-
     property int currentBannerIndex: 0
     property int numBannerImages: 0
+
+    Component.onCompleted: LauncherCore.refreshNews()
 
     Connections {
         target: LauncherCore
@@ -47,6 +47,15 @@ QQC2.Control {
         }
     }
 
+    background: Rectangle {
+        anchors.fill: parent
+
+        color: Kirigami.Theme.backgroundColor
+
+        Kirigami.Theme.inherit: false
+        Kirigami.Theme.colorSet: Kirigami.Theme.View
+    }
+
     contentItem: ColumnLayout {
         id: layout
 
@@ -63,6 +72,7 @@ QQC2.Control {
             Layout.fillWidth: true
             Layout.preferredHeight: aspectRatio * width
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+            Layout.topMargin: Kirigami.Units.largeSpacing
 
             source: {
                 if (LauncherCore.headline === null) {
@@ -131,6 +141,8 @@ QQC2.Control {
                 description: i18n("No news.")
                 visible: LauncherCore.headline !== null ? LauncherCore.headline.failedToLoad : false
             }
+
+            Kirigami.Theme.colorSet: Kirigami.Theme.Window
         }
 
         FormCard.FormHeader {
@@ -165,6 +177,8 @@ QQC2.Control {
                 description: i18n("No topics.")
                 visible: LauncherCore.headline !== null ? LauncherCore.headline.failedToLoad : false
             }
+
+            Kirigami.Theme.colorSet: Kirigami.Theme.Window
         }
 
         Item {
