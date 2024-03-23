@@ -18,10 +18,6 @@
 #include "launchercore.h"
 #include "utility.h"
 
-// Support for the 32-bit DX9 client was removed in March 2024
-// TODO: we should probably detect this automatically
-#define SUPPORT_32BIT 0
-
 using namespace Qt::StringLiterals;
 
 SquareEnixLogin::SquareEnixLogin(LauncherCore &window, QObject *parent)
@@ -336,8 +332,6 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
         }
     }
 
-    qInfo() << report;
-
     Utility::printRequest(QStringLiteral("POST"), request);
 
     const auto reply = m_launcher.mgr()->post(request, report.toUtf8());
@@ -390,19 +384,12 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
 
 QCoro::Task<QString> SquareEnixLogin::getBootHash()
 {
-#if SUPPORT_32BIT
     const QList<QString> fileList = {QStringLiteral("ffxivboot.exe"),
                                      QStringLiteral("ffxivboot64.exe"),
                                      QStringLiteral("ffxivlauncher.exe"),
                                      QStringLiteral("ffxivlauncher64.exe"),
                                      QStringLiteral("ffxivupdater.exe"),
                                      QStringLiteral("ffxivupdater64.exe")};
-#else
-    const QList<QString> fileList = {QStringLiteral("ffxivboot.exe"),
-                                     QStringLiteral("ffxivboot64.exe"),
-                                     QStringLiteral("ffxivlauncher64.exe"),
-                                     QStringLiteral("ffxivupdater64.exe")};
-#endif
 
     const auto hashFuture = QtConcurrent::mapped(fileList, [this](const auto &filename) -> QString {
         return getFileHash(m_info->profile->gamePath() + QStringLiteral("/boot/") + filename);
@@ -413,10 +400,12 @@ QCoro::Task<QString> SquareEnixLogin::getBootHash()
 
     QString result;
     for (int i = 0; i < fileList.count(); i++) {
-        result += fileList[i] + QStringLiteral("/") + hashes[i];
+        if (!hashes[i].isEmpty()) {
+            result += fileList[i] + QStringLiteral("/") + hashes[i];
 
-        if (i != fileList.length() - 1)
-            result += QStringLiteral(",");
+            if (i != fileList.length() - 1)
+                result += QStringLiteral(",");
+        }
     }
 
     co_return result;
