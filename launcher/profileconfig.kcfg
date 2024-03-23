@@ -78,7 +78,7 @@ SPDX-License-Identifier: CC0-1.0
           <choice name="DLLInject">
           </choice>
         </choices>
-        <default>DLLInject</default>
+        <default>Entrypoint</default>
       </entry>
       <entry key="DalamudInjectDelay" type="int">
         <default>0</default>
