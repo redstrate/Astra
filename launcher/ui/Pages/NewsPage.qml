@@ -19,6 +19,11 @@ QQC2.Control {
     property int currentBannerIndex: 0
     property int numBannerImages: 0
 
+    leftPadding: 0
+    rightPadding: 0
+    topPadding: 0
+    bottomPadding: 0
+
     Component.onCompleted: LauncherCore.refreshNews()
 
     Connections {
