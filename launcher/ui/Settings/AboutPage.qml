@@ -7,4 +7,6 @@ import org.kde.coreaddons
 
 FormCard.AboutPage {
     aboutData: AboutData
+    donateUrl: "https://redstrate.com/fund"
+    getInvolvedUrl: "https://sr.ht/~redstrate/astra"
 }
