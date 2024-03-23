@@ -5,6 +5,7 @@
 
 #include <KLocalizedString>
 #include <QDir>
+#include <QImage>
 #include <QNetworkAccessManager>
 #include <QStandardPaths>
 #include <algorithm>
@@ -120,6 +121,34 @@ void LauncherCore::clearAvatarCache()
 void LauncherCore::refreshNews()
 {
     fetchNews();
+}
+
+void LauncherCore::refreshLogoImage()
+{
+    const QDir cacheDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::CacheLocation).last();
+
+    QFileInfo logoImageFile(cacheDir.absoluteFilePath(QStringLiteral("logo.png")));
+    if (logoImageFile.exists()) {
+        m_cachedLogoImage = logoImageFile.absoluteFilePath();
+        Q_EMIT cachedLogoImageChanged();
+        return;
+    }
+
+    for (int i = 0; i < m_profileManager->numProfiles(); i++) {
+        auto profile = m_profileManager->getProfile(i);
+        if (profile->isGameInstalled() && profile->gameData()) {
+            auto file = physis_gamedata_extract_file(profile->gameData(), "ui/uld/Title_Logo.tex");
+            auto tex = physis_texture_parse(file);
+
+            QImage image(tex.rgba, tex.width, tex.height, QImage::Format_RGBA8888);
+            image.save(logoImageFile.absoluteFilePath());
+
+            m_cachedLogoImage = logoImageFile.absoluteFilePath();
+            Q_EMIT cachedLogoImageChanged();
+
+            return;
+        }
+    }
 }
 
 Profile *LauncherCore::currentProfile() const
@@ -244,6 +273,11 @@ AccountManager *LauncherCore::accountManager()
 Headline *LauncherCore::headline() const
 {
     return m_headline;
+}
+
+QString LauncherCore::cachedLogoImage() const
+{
+    return m_cachedLogoImage;
 }
 
 QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)

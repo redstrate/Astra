@@ -75,6 +75,7 @@ QQC2.Control {
 
         function onCurrentProfileChanged() {
             page.updateFields();
+            LauncherCore.refreshLogoImage();
         }
     }
 
@@ -103,11 +104,25 @@ QQC2.Control {
 
         spacing: Kirigami.Units.largeSpacing
 
+        Image {
+            readonly property real aspectRatio: sourceSize.height / sourceSize.width
+
+            fillMode: Image.PreserveAspectFit
+            source: "file://" + LauncherCore.cachedLogoImage
+            verticalAlignment: Image.AlignTop
+            sourceClipRect: Qt.rect(0, sourceSize.height / 2, sourceSize.width, sourceSize.height / 2)
+
+            Component.onCompleted: LauncherCore.refreshLogoImage()
+            Layout.preferredWidth: parent.width
+            Layout.preferredHeight: width * aspectRatio
+        }
+
         FormCard.FormCard {
             maximumWidth: Kirigami.Units.gridUnit * 25
             visible: LauncherCore.profileManager.numProfiles > 1
 
             Layout.fillWidth: true
+            Layout.fillHeight: true
 
             FormCard.FormButtonDelegate {
                 id: currentProfileDelegate
@@ -263,6 +278,7 @@ QQC2.Control {
             FormCard.FormDelegateSeparator {
                 above: loginButton
                 below: forgotPasswordButton
+                visible: !LauncherCore.currentProfile.account.isSapphire
             }
 
             FormCard.FormButtonDelegate {

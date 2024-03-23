@@ -13,7 +13,7 @@ find_package(Corrosion REQUIRED)
 
 corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/libphysis/Cargo.toml
         NO_DEFAULT_FEATURES
-        FEATURES game_install)
+        FEATURES game_install visual_data) # FIXME: split visual_data? we only need texture decompression
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libphysis/logger EXCLUDE_FROM_ALL)
 
 find_package(PkgConfig REQUIRED)

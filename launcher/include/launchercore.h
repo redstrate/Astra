@@ -67,6 +67,7 @@ class LauncherCore : public QObject
     Q_PROPERTY(Headline *headline READ headline NOTIFY newsChanged)
     Q_PROPERTY(Profile *currentProfile READ currentProfile WRITE setCurrentProfile NOTIFY currentProfileChanged)
     Q_PROPERTY(Profile *autoLoginProfile READ autoLoginProfile WRITE setAutoLoginProfile NOTIFY autoLoginProfileChanged)
+    Q_PROPERTY(QString cachedLogoImage READ cachedLogoImage NOTIFY cachedLogoImageChanged)
 
 public:
     LauncherCore();
@@ -89,6 +90,7 @@ public:
 
     Q_INVOKABLE void clearAvatarCache();
     Q_INVOKABLE void refreshNews();
+    Q_INVOKABLE void refreshLogoImage();
 
     [[nodiscard]] Profile *currentProfile() const;
     void setCurrentProfile(Profile *profile);
@@ -111,6 +113,7 @@ public:
     [[nodiscard]] ProfileManager *profileManager();
     [[nodiscard]] AccountManager *accountManager();
     [[nodiscard]] Headline *headline() const;
+    [[nodiscard]] QString cachedLogoImage() const;
 
 Q_SIGNALS:
     void loadingFinished();
@@ -124,6 +127,7 @@ Q_SIGNALS:
     void newsChanged();
     void currentProfileChanged();
     void autoLoginProfileChanged();
+    void cachedLogoImageChanged();
 
 protected:
     friend class Patcher;
@@ -149,6 +153,7 @@ private:
     Headline *m_headline = nullptr;
     LauncherSettings *m_settings = nullptr;
     GameRunner *m_runner = nullptr;
+    QString m_cachedLogoImage;
 
     int m_currentProfileIndex = 0;
 };
