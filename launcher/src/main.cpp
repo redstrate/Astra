@@ -50,7 +50,11 @@ int main(int argc, char *argv[])
                      QStringLiteral(ASTRA_VERSION_STRING),
                      i18n("FFXIV Launcher"),
                      KAboutLicense::GPL_V3,
-                     i18n("© 2023 Joshua Goins"));
+                     i18n("© 2021-2024 Joshua Goins"));
+    about.setOtherText(
+        i18n("This software requires that you have a legitimate and active subscription to FINAL FANTASY XIV. By using this software, you may be in violation "
+             "of your User Agreement.\n\nFINAL FANTASY, FINAL FANTASY XIV, FFXIV, SQUARE ENIX, and the SQUARE ENIX logo are registered trademarks or "
+             "trademarks of Square Enix Holdings Co., Ltd.\n"));
     about.addAuthor(i18n("Joshua Goins"),
                     i18n("Maintainer"),
                     QStringLiteral("josh@redstrate.com"),
@@ -67,6 +71,16 @@ int main(int argc, char *argv[])
                        QString::fromLatin1(physis_get_libphysis_version()),
                        QStringLiteral("https://git.sr.ht/~redstrate/libphysis"),
                        KAboutLicense::GPL_V3);
+    about.addComponent(QStringLiteral("KDSingleApplication"),
+                       i18n("Helper class for single-instance policy applications "),
+                       QStringLiteral("1.1.1"),
+                       QStringLiteral("https://github.com/KDAB/KDSingleApplication"),
+                       KAboutLicense::MIT);
+    about.addComponent(QStringLiteral("libcotp"),
+                       i18n(" C library that generates TOTP and HOTP "),
+                       QStringLiteral("3.0.0"),
+                       QStringLiteral("https://github.com/paolostivanin/libcotp"),
+                       KAboutLicense::Unknown);
     about.setDesktopFileName(QStringLiteral("zone.xiv.astra"));
     about.setBugAddress(QByteArrayLiteral("https://lists.sr.ht/~redstrate/public-inbox"));
     about.setComponentName(QStringLiteral("astra"));
