@@ -61,10 +61,12 @@ FormCard.FormCardPage {
             model: ["DirectX 11", "DirectX 9"]
             currentIndex: page.profile.directx9Enabled ? 1 : 0
             onCurrentIndexChanged: page.profile.directx9Enabled = (currentIndex === 1)
+            visible: page.profile.hasDirectx9
         }
 
         FormCard.FormDelegateSeparator {
             above: directXDelegate
+            visible: page.profile.hasDirectx9
         }
 
         FormCard.FormTextDelegate {
