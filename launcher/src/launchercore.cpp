@@ -126,28 +126,59 @@ void LauncherCore::refreshNews()
 void LauncherCore::refreshLogoImage()
 {
     const QDir cacheDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::CacheLocation).last();
+    const QDir logoDir = cacheDir.absoluteFilePath(QStringLiteral("logos"));
 
-    QFileInfo logoImageFile(cacheDir.absoluteFilePath(QStringLiteral("logo.png")));
-    if (logoImageFile.exists()) {
-        m_cachedLogoImage = logoImageFile.absoluteFilePath();
-        Q_EMIT cachedLogoImageChanged();
-        return;
+    if (!logoDir.exists()) {
+        QDir().mkpath(logoDir.absolutePath());
     }
 
-    for (int i = 0; i < m_profileManager->numProfiles(); i++) {
-        auto profile = m_profileManager->getProfile(i);
-        if (profile->isGameInstalled() && profile->gameData()) {
-            auto file = physis_gamedata_extract_file(profile->gameData(), "ui/uld/Title_Logo.tex");
+    const auto saveTexture = [](GameData *data, const QString &path, const QString &name) {
+        if (QFile::exists(name)) {
+            return;
+        }
+
+        auto file = physis_gamedata_extract_file(data, path.toStdString().c_str());
+        if (file.data != nullptr) {
             auto tex = physis_texture_parse(file);
 
             QImage image(tex.rgba, tex.width, tex.height, QImage::Format_RGBA8888);
-            image.save(logoImageFile.absoluteFilePath());
-
-            m_cachedLogoImage = logoImageFile.absoluteFilePath();
-            Q_EMIT cachedLogoImageChanged();
-
-            return;
+            image.save(name);
         }
+    };
+
+    // TODO: this finds the first profile that has a valid image, but this could probably be cached per-profile
+    for (int i = 0; i < m_profileManager->numProfiles(); i++) {
+        auto profile = m_profileManager->getProfile(i);
+        if (profile->isGameInstalled() && profile->gameData()) {
+            // A Realm Reborn
+            saveTexture(profile->gameData(), QStringLiteral("ui/uld/Title_Logo.tex"), logoDir.absoluteFilePath(QStringLiteral("ffxiv.png")));
+
+            for (int j = 0; j < profile->numInstalledExpansions(); j++) {
+                const int expansionNumber = 100 * (j + 3); // logo number starts at 300 for ex1
+
+                saveTexture(profile->gameData(),
+                            QStringLiteral("ui/uld/Title_Logo%1_hr1.tex").arg(expansionNumber),
+                            logoDir.absoluteFilePath(QStringLiteral("ex%1.png").arg(j + 1)));
+            }
+        }
+    }
+
+    QList<QString> imageFiles;
+
+    // TODO: sort
+    QDirIterator it(logoDir.absolutePath());
+    while (it.hasNext()) {
+        const QFileInfo logoFile(it.next());
+        if (logoFile.completeSuffix() != QStringLiteral("png")) {
+            continue;
+        }
+
+        imageFiles.push_back(logoFile.absoluteFilePath());
+    }
+
+    if (!imageFiles.isEmpty()) {
+        m_cachedLogoImage = imageFiles.last();
+        Q_EMIT cachedLogoImageChanged();
     }
 }
 
