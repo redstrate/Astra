@@ -2,7 +2,7 @@
 
 There are two methods to build Astra, either via [Flatpak](https://flatpak.org/) or manually using your system libraries. It's highly recommended to prefer the Flatpak, especially if you don't have experience with CMake, C++ and such.
 
-# Flatpak
+## Flatpak
 
 Building the Flatpak version is easy, and there's a helper script to speed up the process. You must run it from the repository root:
 
