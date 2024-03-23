@@ -56,6 +56,7 @@ private:
     QString m_SID, m_username;
     LoginAuth m_auth;
     LoginInformation *m_info = nullptr;
+    bool m_lastRunHasPatched = true;
 
     LauncherCore &m_launcher;
 };

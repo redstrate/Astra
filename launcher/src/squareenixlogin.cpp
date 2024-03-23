@@ -39,7 +39,12 @@ QCoro::Task<std::optional<LoginAuth>> SquareEnixLogin::login(LoginInformation *i
         co_return std::nullopt;
     }
 
-    co_await checkBootUpdates();
+    // There seems to be a limitation in their boot patching system.
+    // Their server can only give one patch a time, so the boot process must keep trying to patch until
+    // there is no patches left.
+    while (m_lastRunHasPatched) {
+        co_await checkBootUpdates();
+    }
 
     if (!co_await checkLoginStatus()) {
         co_return std::nullopt;
@@ -128,6 +133,8 @@ QCoro::Task<bool> SquareEnixLogin::checkLoginStatus()
 
 QCoro::Task<> SquareEnixLogin::checkBootUpdates()
 {
+    m_lastRunHasPatched = false;
+
     Q_EMIT m_launcher.stageChanged(i18n("Checking for launcher updates..."));
     qInfo(ASTRA_LOG) << "Checking for updates to boot components...";
 
@@ -164,6 +171,7 @@ QCoro::Task<> SquareEnixLogin::checkBootUpdates()
             m_info->profile->readGameVersion();
         }
         m_patcher->deleteLater();
+        m_lastRunHasPatched = true;
     }
 
     co_return;
@@ -319,14 +327,16 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
     request.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("FFXIV PATCH CLIENT"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/x-www-form-urlencoded"));
 
-    QString report = QStringLiteral("%1=%2").arg(m_info->profile->bootVersion(), co_await getBootHash());
+    QString report = QStringLiteral("%1=%2\n").arg(m_info->profile->bootVersion(), co_await getBootHash());
     for (int i = 0; i < m_auth.maxExpansion; i++) {
         if (i < static_cast<int>(m_info->profile->numInstalledExpansions())) {
-            report += QStringLiteral("\nex%1\t%2").arg(QString::number(i + 1), m_info->profile->expansionVersion(i));
+            report += QStringLiteral("ex%1\t%2\n").arg(QString::number(i + 1), m_info->profile->expansionVersion(i));
         } else {
-            report += QStringLiteral("\nex%1\t2012.01.01.0000.0000").arg(QString::number(i + 1));
+            report += QStringLiteral("ex%1\t2012.01.01.0000.0000\n").arg(QString::number(i + 1));
         }
     }
+
+    qInfo() << report;
 
     Utility::printRequest(QStringLiteral("POST"), request);
 
@@ -364,6 +374,8 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
         if (reply->error() == QNetworkReply::SslHandshakeFailedError) {
             Q_EMIT m_launcher.loginError(
                 i18n("SSL handshake error detected. If you are using OpenSUSE or Fedora, try running `update-crypto-policies --set LEGACY`."));
+        } else if (reply->error() == QNetworkReply::ContentConflictError) {
+            Q_EMIT m_launcher.loginError(i18n("The boot files are outdated, please login in again to update them."));
         } else if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 405) {
             Q_EMIT m_launcher.loginError(i18n("The game failed the anti-tamper check. Restore the game to the original state and try updating again."));
         } else if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 410) {
