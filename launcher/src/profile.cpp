@@ -416,7 +416,12 @@ QString Profile::expansionVersionText() const
         QString expacString;
 
         expacString += QStringLiteral("Boot");
-        expacString += QStringLiteral(" (%1)").arg(QString::fromLatin1(m_bootVersion));
+
+        if (!m_bootVersion) {
+            expacString += i18n(" (Not Installed)");
+        } else {
+            expacString += QStringLiteral(" (%1)").arg(QString::fromLatin1(m_bootVersion));
+        }
 
         for (unsigned int i = 0; i < m_repositories.repositories_count; i++) {
             QString expansionName = i18n("Unknown Expansion");
