@@ -17,6 +17,17 @@ FormCard.FormCardPage {
 
     title: i18nc("@title:window", "Profiles")
 
+    actions: [
+        Kirigami.Action {
+            text: i18n("Add Profile…")
+            icon.name: "list-add"
+            onTriggered: {
+                page.Window.window.close();
+                LauncherCore.currentProfile = LauncherCore.profileManager.addProfile();
+            }
+        }
+    ]
+
     FormCard.FormCard {
         Layout.fillWidth: true
         Layout.topMargin: Kirigami.Units.largeSpacing
@@ -44,22 +55,6 @@ FormCard.FormCardPage {
                 FormCard.FormDelegateSeparator {
                     visible: layout.index + 1 < LauncherCore.profileManager.numProfiles
                 }
-            }
-        }
-    }
-
-    FormCard.FormCard {
-        Layout.fillWidth: true
-        Layout.topMargin: Kirigami.Units.largeSpacing
-
-        FormCard.FormButtonDelegate {
-            id: addProfileButton
-
-            text: i18n("Add Profile")
-            icon.name: "list-add"
-            onClicked: {
-                page.Window.window.close();
-                LauncherCore.currentProfile = LauncherCore.profileManager.addProfile();
             }
         }
     }

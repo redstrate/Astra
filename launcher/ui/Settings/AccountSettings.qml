@@ -18,6 +18,17 @@ FormCard.FormCardPage {
 
     title: i18nc("@title:window", "Edit Account")
 
+    actions: [
+        Kirigami.Action {
+            text: i18n("Delete Account")
+            tooltip: !enabled ? i18n("Cannot delete the only account.") : ""
+            icon.name: "delete"
+            enabled: LauncherCore.accountManager.canDelete(page.account)
+
+            onTriggered: deletePrompt.open()
+        }
+    ]
+
     FormCard.FormHeader {
         title: i18n("General")
     }
@@ -226,31 +237,17 @@ FormCard.FormCardPage {
         }
     }
 
-    FormCard.FormCard {
-        Layout.topMargin: Kirigami.Units.largeSpacing
-        Layout.fillWidth: true
+    Kirigami.PromptDialog {
+        id: deletePrompt
 
-        FormCard.FormButtonDelegate {
-            text: i18n("Delete Account")
-            description: !enabled ? i18n("Cannot delete the only account.") : ""
-            icon.name: "delete"
-            enabled: LauncherCore.accountManager.canDelete(page.account)
+        title: i18nc("@title", "Delete Account")
+        subtitle: i18nc("@label", "Are you sure you want to delete this account?")
+        standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
+        showCloseButton: false
 
-            Kirigami.PromptDialog {
-                id: deletePrompt
-
-                title: i18nc("@title", "Delete Account")
-                subtitle: i18nc("@label", "Are you sure you want to delete this account?")
-                standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
-                showCloseButton: false
-
-                onAccepted: {
-                    LauncherCore.accountManager.deleteAccount(page.account);
-                    page.Window.window.pageStack.layers.pop();
-                }
-            }
-
-            onClicked: deletePrompt.open()
+        onAccepted: {
+            LauncherCore.accountManager.deleteAccount(page.account);
+            page.Window.window.pageStack.layers.pop();
         }
     }
 }

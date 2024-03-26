@@ -20,6 +20,17 @@ FormCard.FormCardPage {
 
     title: i18nc("@window:title", "Edit Profile")
 
+    actions: [
+        Kirigami.Action {
+            text: i18n("Delete Profile")
+            icon.name: "delete"
+            enabled: LauncherCore.profileManager.canDelete(page.profile)
+            tooltip: !enabled ? i18n("Cannot delete the only profile.") : ""
+
+            onTriggered: deletePrompt.open()
+        }
+    ]
+
     FormCard.FormHeader {
         title: i18n("General")
     }
@@ -267,31 +278,17 @@ FormCard.FormCardPage {
         }
     }
 
-    FormCard.FormCard {
-        Layout.topMargin: Kirigami.Units.largeSpacing
-        Layout.fillWidth: true
+    Kirigami.PromptDialog {
+        id: deletePrompt
 
-        FormCard.FormButtonDelegate {
-            text: i18n("Delete Profile")
-            description: !enabled ? i18n("Cannot delete the only profile.") : ""
-            icon.name: "delete"
-            enabled: LauncherCore.profileManager.canDelete(page.profile)
+        title: i18nc("@title", "Delete Profile")
+        subtitle: i18nc("@label", "Are you sure you want to delete this profile?")
+        standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
+        showCloseButton: false
 
-            Kirigami.PromptDialog {
-                id: deletePrompt
-
-                title: i18nc("@title", "Delete Profile")
-                subtitle: i18nc("@label", "Are you sure you want to delete this profile?")
-                standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
-                showCloseButton: false
-
-                onAccepted: {
-                    LauncherCore.profileManager.deleteProfile(page.profile);
-                    page.Window.window.pageStack.layers.pop();
-                }
-            }
-
-            onClicked: deletePrompt.open()
+        onAccepted: {
+            LauncherCore.profileManager.deleteProfile(page.profile);
+            page.Window.window.pageStack.layers.pop();
         }
     }
 }

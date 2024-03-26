@@ -18,6 +18,22 @@ FormCard.FormCardPage {
 
     title: i18nc("@title:window", "Accounts")
 
+    actions: [
+        Kirigami.Action {
+            text: i18n("Add Account…")
+            icon.name: "list-add-symbolic"
+
+            Kirigami.Action {
+                text: i18n("Square Enix")
+                onTriggered: root.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"))
+            }
+            Kirigami.Action {
+                text: i18n("Sapphire")
+                onTriggered: root.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSapphire"))
+            }
+        }
+    ]
+
     FormCard.FormCard {
         Layout.fillWidth: true
         Layout.topMargin: Kirigami.Units.largeSpacing
@@ -53,32 +69,6 @@ FormCard.FormCardPage {
                     visible: layout.index + 1 < LauncherCore.accountManager.numAccounts()
                 }
             }
-        }
-    }
-
-    FormCard.FormCard {
-        Layout.fillWidth: true
-        Layout.topMargin: Kirigami.Units.largeSpacing
-
-        FormCard.FormButtonDelegate {
-            id: addSquareEnixButton
-
-            text: i18n("Add Square Enix Account")
-            icon.name: "list-add-symbolic"
-            onClicked: root.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"))
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: addSquareEnixButton
-            below: addSapphireButton
-        }
-
-        FormCard.FormButtonDelegate {
-            id: addSapphireButton
-
-            text: i18n("Add Sapphire Account")
-            icon.name: "list-add-symbolic"
-            onClicked: root.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSapphire"))
         }
     }
 }
