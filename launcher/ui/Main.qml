@@ -17,7 +17,7 @@ Kirigami.ApplicationWindow {
     minimumWidth: 800
     minimumHeight: 500
 
-    title: "Astra"
+    title: pageStack.currentItem?.title
 
     property bool checkedAutoLogin: false
 
@@ -44,16 +44,17 @@ Kirigami.ApplicationWindow {
             return
         }
 
-        pageStack.layers.clear()
+        pageStack.clear()
+        pageStack.layers.clear();
 
         if (!LauncherCore.currentProfile.isGameInstalled) {
             // User must set up the profile
-            pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "SetupPage"), {
+            pageStack.push(Qt.createComponent("zone.xiv.astra", "SetupPage"), {
                 profile: LauncherCore.currentProfile
             })
         } else if (!LauncherCore.currentProfile.account) {
             // User must select an account for the profile
-            pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AccountSetup"), {
+            pageStack.push(Qt.createComponent("zone.xiv.astra", "AccountSetup"), {
                 profile: LauncherCore.currentProfile
             })
         } else {
@@ -61,14 +62,15 @@ Kirigami.ApplicationWindow {
                 pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AutoLoginPage"))
                 checkedAutoLogin = true;
             } else {
-                pageStack.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
+                pageStack.push(Qt.createComponent("zone.xiv.astra", "MainPage"))
             }
         }
     }
 
     function cancelAutoLogin() {
+        pageStack.clear();
         pageStack.layers.clear();
-        pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"));
+        pageStack.push(Qt.createComponent("zone.xiv.astra", "MainPage"));
     }
 
     function pushDialogLayer(url) {
