@@ -17,13 +17,19 @@ Kirigami.ApplicationWindow {
     minimumWidth: 800
     minimumHeight: 500
 
-    title: pageStack.currentItem?.title
+    title: pageStack.currentItem !== undefined ? pageStack.currentItem.title : ""
 
     property bool checkedAutoLogin: false
 
     pageStack {
         globalToolBar {
             style: Kirigami.ApplicationHeaderStyle.ToolBar
+            // TODO: they should really do this check in kirigami
+            showNavigationButtons: if (pageStack.currentItem?.globalToolBarStyle === Kirigami.ApplicationHeaderStyle.ToolBar) {
+                Kirigami.ApplicationHeaderStyle.ShowBackButton
+            } else {
+                Kirigami.ApplicationHeaderStyle.NoNavigationButtons
+            }
         }
         initialPage: Kirigami.Page {
             Kirigami.LoadingPlaceholder {
