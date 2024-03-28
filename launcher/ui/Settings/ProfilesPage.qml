@@ -6,6 +6,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Window
+import QtQuick.Controls as QQC2
 
 import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.formcard as FormCard
@@ -27,6 +28,46 @@ FormCard.FormCardPage {
             }
         }
     ]
+
+    FormCard.FormCard {
+        Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
+
+        FormCard.FormButtonDelegate {
+            text: i18n("Auto-login Profile")
+            description: LauncherCore.autoLoginProfile ? LauncherCore.autoLoginProfile.name : i18n("Disabled")
+
+            QQC2.Menu {
+                id: profileMenu
+
+                QQC2.MenuItem {
+                    text: "Disabled"
+
+                    onClicked: {
+                        LauncherCore.autoLoginProfile = null;
+                        profileMenu.close();
+                    }
+                }
+
+                Repeater {
+                    model: LauncherCore.profileManager
+
+                    QQC2.MenuItem {
+                        required property var profile
+
+                        text: profile.name
+
+                        onClicked: {
+                            LauncherCore.autoLoginProfile = profile;
+                            profileMenu.close();
+                        }
+                    }
+                }
+            }
+
+            onClicked: profileMenu.popup()
+        }
+    }
 
     FormCard.FormCard {
         Layout.fillWidth: true

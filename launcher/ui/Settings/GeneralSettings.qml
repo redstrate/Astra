@@ -21,43 +21,6 @@ FormCard.FormCardPage {
     FormCard.FormCard {
         Layout.topMargin: Kirigami.Units.largeSpacing
 
-        FormCard.FormButtonDelegate {
-            text: i18n("Auto-login Profile")
-            description: LauncherCore.autoLoginProfile ? LauncherCore.autoLoginProfile.name : i18n("Disabled")
-
-            QQC2.Menu {
-                id: profileMenu
-
-                QQC2.MenuItem {
-                    text: "Disabled"
-
-                    onClicked: {
-                        LauncherCore.autoLoginProfile = null;
-                        profileMenu.close();
-                    }
-                }
-
-                Repeater {
-                    model: LauncherCore.profileManager
-
-                    QQC2.MenuItem {
-                        required property var profile
-
-                        text: profile.name
-
-                        onClicked: {
-                            LauncherCore.autoLoginProfile = profile;
-                            profileMenu.close();
-                        }
-                    }
-                }
-            }
-
-            onClicked: profileMenu.popup()
-        }
-
-        FormCard.FormDelegateSeparator {}
-
         FormCard.FormCheckDelegate {
             id: closeAstraDelegate
 
