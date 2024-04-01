@@ -24,6 +24,7 @@ void AccountManager::load()
 
             auto account = new Account(m_launcher, uuid, this);
             m_accounts.append(account);
+            Q_EMIT accountsChanged();
         }
     }
 }
@@ -105,6 +106,7 @@ void AccountManager::deleteAccount(Account *account)
     beginRemoveRows(QModelIndex(), row, row);
     m_accounts.removeAll(account);
     endRemoveRows();
+    Q_EMIT accountsChanged();
 }
 
 void AccountManager::insertAccount(Account *account)
@@ -112,6 +114,7 @@ void AccountManager::insertAccount(Account *account)
     beginInsertRows(QModelIndex(), static_cast<int>(m_accounts.size()), static_cast<int>(m_accounts.size()));
     m_accounts.append(account);
     endInsertRows();
+    Q_EMIT accountsChanged();
 }
 
 bool AccountManager::hasAnyAccounts() const

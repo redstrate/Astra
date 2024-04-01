@@ -165,6 +165,7 @@ QQC2.Control {
             FormCard.FormButtonDelegate {
                 id: currentAccountDelegate
 
+                enabled: LauncherCore.accountManager.numAccounts > 1
                 text: LauncherCore.currentProfile.account.name
 
                 leading: Components.Avatar {

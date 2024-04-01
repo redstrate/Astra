@@ -14,6 +14,8 @@ class AccountManager : public QAbstractListModel
     QML_ELEMENT
     QML_UNCREATABLE("Use LauncherCore.accountManager")
 
+    Q_PROPERTY(int numAccounts READ numAccounts NOTIFY accountsChanged)
+
 public:
     explicit AccountManager(LauncherCore &launcher, QObject *parent = nullptr);
 
@@ -39,6 +41,9 @@ public:
 
     Q_INVOKABLE [[nodiscard]] bool hasAnyAccounts() const;
     Q_INVOKABLE [[nodiscard]] int numAccounts() const;
+
+Q_SIGNALS:
+    void accountsChanged();
 
 private:
     void insertAccount(Account *account);
