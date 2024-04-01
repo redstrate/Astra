@@ -38,11 +38,12 @@ QCoro::Task<bool> AssetUpdater::update()
     Utility::createPathIfNeeded(m_wineDir);
     Utility::createPathIfNeeded(m_dxvkDir);
 
-    if (!co_await checkRemoteCompatibilityToolVersion()) {
+    if (m_profile.wineType() == Profile::WineType::BuiltIn && !co_await checkRemoteCompatibilityToolVersion()) {
         co_return false;
     }
 
-    if (!co_await checkRemoteDxvkVersion()) {
+    // TODO: should DXVK be tied to this setting...?
+    if (m_profile.wineType() == Profile::WineType::BuiltIn && !co_await checkRemoteDxvkVersion()) {
         co_return false;
     }
 
