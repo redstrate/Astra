@@ -126,8 +126,7 @@ QQC2.Control {
             FormCard.FormButtonDelegate {
                 id: currentProfileDelegate
 
-                text: i18n("Current Profile")
-                description: LauncherCore.currentProfile.name
+                text: LauncherCore.currentProfile.name
 
                 QQC2.Menu {
                     id: profileMenu
@@ -154,7 +153,7 @@ QQC2.Control {
                     }
                 }
 
-                onClicked: profileMenu.popup(currentProfileDelegate, currentProfileDelegate.width, currentProfileDelegate.height)
+                onClicked: profileMenu.popup(currentProfileDelegate, currentProfileDelegate.width - profileMenu.width, currentProfileDelegate.height)
             }
         }
 
@@ -166,10 +165,12 @@ QQC2.Control {
             FormCard.FormButtonDelegate {
                 id: currentAccountDelegate
 
-                text: i18n("Current Account")
-                description: LauncherCore.currentProfile.account.name
+                text: LauncherCore.currentProfile.account.name
 
                 leading: Components.Avatar {
+                    implicitWidth: Kirigami.Units.iconSizes.medium
+                    implicitHeight: Kirigami.Units.iconSizes.medium
+
                     name: LauncherCore.currentProfile.account.name
                     source: LauncherCore.currentProfile.account.avatarUrl
                 }
@@ -203,7 +204,7 @@ QQC2.Control {
                     }
                 }
 
-                onClicked: accountMenu.popup(currentAccountDelegate, currentAccountDelegate.width, currentAccountDelegate.height)
+                onClicked: accountMenu.popup(currentAccountDelegate, currentAccountDelegate.width - accountMenu.width, currentAccountDelegate.height)
             }
 
             FormCard.FormDelegateSeparator {
@@ -216,6 +217,10 @@ QQC2.Control {
                 label: LauncherCore.currentProfile.account.isSapphire ? i18n("Username") : i18n("Square Enix ID")
                 text: LauncherCore.currentProfile.account.name
                 enabled: false
+
+                QQC2.ToolTip.text: i18n("The username can only be changed under account settings.")
+                QQC2.ToolTip.delay: Kirigami.Units.toolTipDelay
+                QQC2.ToolTip.visible: hovered
             }
 
             FormCard.FormDelegateSeparator {
