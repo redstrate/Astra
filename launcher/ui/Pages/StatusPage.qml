@@ -30,7 +30,6 @@ Kirigami.Page {
 
     Kirigami.PromptDialog {
         id: errorDialog
-        title: i18n("Login Error")
 
         showCloseButton: false
         standardButtons: Kirigami.Dialog.Ok
@@ -73,8 +72,15 @@ Kirigami.Page {
         }
 
         function onLoginError(message) {
-            errorDialog.subtitle = message
-            errorDialog.open()
+            errorDialog.title = i18n("Login Error");
+            errorDialog.subtitle = message;
+            errorDialog.open();
+        }
+
+        function onMiscError(message) {
+            errorDialog.title = i18n("Error");
+            errorDialog.subtitle = message;
+            errorDialog.open();
         }
 
         function onDalamudError(message) {

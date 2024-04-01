@@ -201,6 +201,11 @@ QCoro::Task<bool> AssetUpdater::installCompatibilityTool()
     const auto reply = launcher.mgr()->get(request);
     co_await reply;
 
+    if (reply->error() != QNetworkReply::NetworkError::NoError) {
+        Q_EMIT launcher.miscError(i18n("Could not update compatibility tool:\n\n%1", reply->errorString()));
+        co_return false;
+    }
+
     qInfo(ASTRA_LOG) << "Finished downloading compatibility tool";
 
     QFile file(m_tempDir.filePath(QStringLiteral("wine.tar.xz")));
@@ -211,7 +216,7 @@ QCoro::Task<bool> AssetUpdater::installCompatibilityTool()
     KTar archive(m_tempDir.filePath(QStringLiteral("wine.tar.xz")));
     if (!archive.open(QIODevice::ReadOnly)) {
         qCritical(ASTRA_LOG) << "Failed to install compatibility tool";
-        Q_EMIT launcher.dalamudError(i18n("Failed to install compatibility tool."));
+        Q_EMIT launcher.miscError(i18n("Failed to install compatibility tool."));
         co_return false;
     }
 
@@ -240,6 +245,11 @@ QCoro::Task<bool> AssetUpdater::installDxvkTool()
 
     qInfo(ASTRA_LOG) << "Finished downloading DXVK";
 
+    if (reply->error() != QNetworkReply::NetworkError::NoError) {
+        Q_EMIT launcher.miscError(i18n("Could not update DXVK:\n\n%1", reply->errorString()));
+        co_return false;
+    }
+
     QFile file(m_tempDir.filePath(QStringLiteral("dxvk.tar.xz")));
     file.open(QIODevice::WriteOnly);
     file.write(reply->readAll());
@@ -248,7 +258,7 @@ QCoro::Task<bool> AssetUpdater::installDxvkTool()
     KTar archive(m_tempDir.filePath(QStringLiteral("dxvk.tar.xz")));
     if (!archive.open(QIODevice::ReadOnly)) {
         qCritical(ASTRA_LOG) << "Failed to install DXVK";
-        Q_EMIT launcher.dalamudError(i18n("Failed to install DXVK."));
+        Q_EMIT launcher.miscError(i18n("Failed to install DXVK."));
         co_return false;
     }
 
