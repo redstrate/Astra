@@ -22,7 +22,7 @@ FormCard.FormCardPage {
 
     actions: [
         Kirigami.Action {
-            text: i18n("Delete Profile")
+            text: i18n("Delete Profile…")
             icon.name: "delete"
             enabled: LauncherCore.profileManager.canDelete(page.profile)
             tooltip: !enabled ? i18n("Cannot delete the only profile.") : ""

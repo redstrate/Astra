@@ -66,7 +66,7 @@ FormCard.FormCardPage {
                 }
 
                 FormCard.FormDelegateSeparator {
-                    visible: layout.index + 1 < LauncherCore.accountManager.numAccounts()
+                    visible: layout.index + 1 < LauncherCore.accountManager.numAccounts
                 }
             }
         }
