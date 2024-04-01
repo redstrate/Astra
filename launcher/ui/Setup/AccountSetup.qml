@@ -25,7 +25,7 @@ FormCard.FormCardPage {
         FormCard.FormTextDelegate {
             id: helpTextDelegate
 
-            text: i18n("Select an account to use for '%1'", LauncherCore.currentProfile.name)
+            text: i18n("Select an account to use for '%1'.", LauncherCore.currentProfile.name)
         }
     }
 
@@ -38,16 +38,6 @@ FormCard.FormCardPage {
         visible: LauncherCore.accountManager.hasAnyAccounts()
 
         Layout.fillWidth: true
-
-        FormCard.FormTextDelegate {
-            id: existingHelpDelegate
-
-            text: i18n("You can select an existing account.")
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: existingHelpDelegate
-        }
 
         Repeater {
             model: LauncherCore.accountManager
@@ -65,6 +55,11 @@ FormCard.FormCardPage {
         }
     }
 
+    FormCard.FormHeader {
+        title: i18n("Create New Account")
+        visible: LauncherCore.accountManager.hasAnyAccounts()
+    }
+
     FormCard.FormCard {
         Layout.topMargin: Kirigami.Units.largeSpacing
         Layout.fillWidth: true
@@ -72,7 +67,8 @@ FormCard.FormCardPage {
         FormCard.FormButtonDelegate {
             id: addSquareEnixButton
 
-            text: i18n("Add Square Enix Account")
+            text: i18n("Add Square Enix Account…")
+            description: i18n("Used for logging into the official game servers.")
             icon.name: "list-add-symbolic"
             onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"), {
                 profile: page.profile
@@ -87,7 +83,8 @@ FormCard.FormCardPage {
         FormCard.FormButtonDelegate {
             id: addSapphireButton
 
-            text: i18n("Add Sapphire Account")
+            text: i18n("Add Sapphire Account…")
+            description: i18n("Only used for Sapphire servers, don't select this if unless you plan to connect to one.")
             icon.name: "list-add-symbolic"
             onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSapphire"), {
                 profile: page.profile

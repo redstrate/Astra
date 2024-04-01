@@ -24,45 +24,63 @@ GameInstaller::GameInstaller(LauncherCore &launcher, Profile &profile, QObject *
 {
 }
 
+GameInstaller::GameInstaller(LauncherCore &launcher, Profile &profile, const QString &filePath, QObject *parent)
+    : GameInstaller(launcher, profile, parent)
+{
+    m_localInstallerPath = filePath;
+}
+
+void GameInstaller::start()
+{
+    if (m_localInstallerPath.isEmpty()) {
+        const QNetworkRequest request = QNetworkRequest(QUrl(installerUrl));
+        Utility::printRequest(QStringLiteral("GET"), request);
+
+        auto reply = m_launcher.mgr()->get(request);
+
+        QObject::connect(reply, &QNetworkReply::finished, [this, reply] {
+            if (reply->error() != QNetworkReply::NetworkError::NoError) {
+                Q_EMIT error(reply->errorString());
+                return;
+            }
+
+            const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+
+            const QByteArray data = reply->readAll();
+            QCryptographicHash hash(QCryptographicHash::Sha256);
+            hash.addData(data);
+
+            if (hash.result() != installerSha256) {
+                Q_EMIT error(i18n("The installer failed the integrity check!"));
+                return;
+            }
+
+            QFile file(dataDir.absoluteFilePath(QStringLiteral("ffxivsetup.exe")));
+            file.open(QIODevice::WriteOnly);
+            file.write(data);
+            file.close();
+
+            m_localInstallerPath = file.fileName();
+            installGame();
+        });
+    } else {
+        installGame();
+    }
+}
+
 void GameInstaller::installGame()
 {
     const QDir installDirectory = m_profile.gamePath();
 
-    const QNetworkRequest request = QNetworkRequest(QUrl(installerUrl));
-    Utility::printRequest(QStringLiteral("GET"), request);
+    const std::string installDirectoryStd = installDirectory.absolutePath().toStdString();
+    const std::string fileNameStd = m_localInstallerPath.toStdString();
 
-    auto reply = m_launcher.mgr()->get(request);
+    physis_install_game(fileNameStd.c_str(), installDirectoryStd.c_str());
 
-    QObject::connect(reply, &QNetworkReply::finished, [this, reply, installDirectory] {
-        if (reply->error() != QNetworkReply::NetworkError::NoError) {
-            Q_EMIT error(i18n("An error has occurred when downloading the installer.\n\n%1", reply->errorString()));
-            return;
-        }
+    m_profile.readGameVersion();
 
-        const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-
-        const QByteArray data = reply->readAll();
-        QCryptographicHash hash(QCryptographicHash::Sha256);
-        hash.addData(data);
-
-        // TODO: turn into a proper error
-        Q_ASSERT(hash.result() == installerSha256);
-
-        QFile file(dataDir.absoluteFilePath(QStringLiteral("ffxivsetup.exe")));
-        file.open(QIODevice::WriteOnly);
-        file.write(data);
-        file.close();
-
-        const std::string installDirectoryStd = installDirectory.absolutePath().toStdString();
-        const std::string fileNameStd = file.fileName().toStdString();
-
-        physis_install_game(fileNameStd.c_str(), installDirectoryStd.c_str());
-
-        m_profile.readGameVersion();
-
-        Q_EMIT installFinished();
-        qInfo(ASTRA_LOG) << "Installed game in" << installDirectory;
-    });
+    Q_EMIT installFinished();
+    qInfo(ASTRA_LOG) << "Installed game in" << installDirectory;
 }
 
 #include "moc_gameinstaller.cpp"

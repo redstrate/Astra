@@ -105,6 +105,13 @@ GameInstaller *LauncherCore::createInstaller(Profile *profile)
     return new GameInstaller(*this, *profile, this);
 }
 
+GameInstaller *LauncherCore::createInstallerFromExisting(Profile *profile, const QString &filePath)
+{
+    Q_ASSERT(profile != nullptr);
+
+    return new GameInstaller(*this, *profile, filePath, this);
+}
+
 CompatibilityToolInstaller *LauncherCore::createCompatInstaller()
 {
     return new CompatibilityToolInstaller(*this, this);

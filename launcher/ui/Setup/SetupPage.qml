@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import QtCore
 import QtQuick
+import QtQuick.Dialogs
 import QtQuick.Layouts
 
 import org.kde.kirigami as Kirigami
@@ -35,14 +37,14 @@ FormCard.FormCardPage {
                 if (page.isInitialSetup) {
                     return i18n("You must have a legitimate installation of the FFXIV to continue.");
                 } else {
-                    return i18n("You must select a legitimate installation of FFXIV for '%1'", page.profile.name);
+                    return i18n("Select a game installation of FFXIV for '%1'.", page.profile.name);
                 }
             }
         }
     }
 
     FormCard.FormHeader {
-        title: i18n("Existing Installations")
+        title: i18n("Existing Installation")
         visible: LauncherCore.profileManager.hasAnyExistingInstallations()
     }
 
@@ -54,7 +56,7 @@ FormCard.FormCardPage {
         FormCard.FormTextDelegate {
             id: existingHelpDelegate
 
-            text: i18n("You can select an existing installation from another profile.")
+            text: i18n("You can select an existing game installation from another profile.")
         }
 
         FormCard.FormDelegateSeparator {
@@ -77,6 +79,26 @@ FormCard.FormCardPage {
                 }
             }
         }
+
+        FormCard.FormDelegateSeparator {
+            below: importDelegate
+        }
+
+        FormCard.FormButtonDelegate {
+            id: importDelegate
+
+            text: i18n("Import Existing Installation…")
+            description: i18n("Select an existing installation on disk or import from another launcher.")
+            icon.name: "document-import-symbolic"
+            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ExistingSetup"), {
+                profile: page.profile
+            })
+        }
+    }
+
+    FormCard.FormHeader {
+        title: i18n("Install Game")
+        visible: LauncherCore.accountManager.hasAnyAccounts()
     }
 
     FormCard.FormCard {
@@ -84,28 +106,43 @@ FormCard.FormCardPage {
         Layout.fillWidth: true
 
         FormCard.FormButtonDelegate {
-            id: findExistingDelegate
+            id: downloadDelegate
 
-            text: i18n("Find Existing Installation")
-            icon.name: "edit-find"
-            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ExistingSetup"), {
-                profile: page.profile
+            text: i18n("Download & Install Game")
+            description: i18n("Download the retail installer online from Square Enix.")
+            icon.name: "cloud-download"
+            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "InstallProgress"), {
+                gameInstaller: LauncherCore.createInstaller(page.profile)
             })
         }
 
         FormCard.FormDelegateSeparator {
-            above: findExistingDelegate
-            below: downloadDelegate
+            above: downloadDelegate
+            below: selectInstallDelegate
         }
 
         FormCard.FormButtonDelegate {
-            id: downloadDelegate
+            id: selectInstallDelegate
 
-            text: i18n("Download Game")
-            icon.name: "cloud-download"
-            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "DownloadSetup"), {
-                profile: page.profile
-            })
+            text: i18n("Select Existing Installer…")
+            description: i18n("Use a previously downloaded installer. Useful if offline or can't otherwise access the official servers.")
+            icon.name: "edit-find"
+
+            FileDialog {
+                id: dialog
+
+                currentFolder: StandardPaths.standardLocations(StandardPaths.DownloadLocation)[0]
+                nameFilters: [i18n("Windows executable (*.exe)")]
+
+                onAccepted: {
+                    const url = decodeURIComponent(selectedFile.toString().replace("file://", ""));
+                    page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "InstallProgress"), {
+                        gameInstaller: LauncherCore.createInstallerFromExisting(page.profile, url)
+                    });
+                }
+            }
+
+            onClicked: dialog.open()
         }
     }
 }

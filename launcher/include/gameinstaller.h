@@ -18,14 +18,18 @@ class GameInstaller : public QObject
 
 public:
     GameInstaller(LauncherCore &launcher, Profile &profile, QObject *parent = nullptr);
+    GameInstaller(LauncherCore &launcher, Profile &profile, const QString &filePath, QObject *parent = nullptr);
 
-    Q_INVOKABLE void installGame();
+    Q_INVOKABLE void start();
 
 Q_SIGNALS:
     void installFinished();
     void error(QString message);
 
 private:
+    void installGame();
+
     LauncherCore &m_launcher;
     Profile &m_profile;
+    QString m_localInstallerPath;
 };

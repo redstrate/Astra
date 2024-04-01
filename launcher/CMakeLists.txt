@@ -105,7 +105,6 @@ qt_target_qml_sources(astra
         ui/Setup/AccountSetup.qml
         ui/Setup/AddSapphire.qml
         ui/Setup/AddSquareEnix.qml
-        ui/Setup/DownloadSetup.qml
         ui/Setup/ExistingSetup.qml
         ui/Setup/InstallProgress.qml
         ui/Setup/SetupPage.qml

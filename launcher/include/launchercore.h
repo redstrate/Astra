@@ -86,6 +86,7 @@ public:
     Q_INVOKABLE bool autoLogin(Profile *profile);
 
     Q_INVOKABLE GameInstaller *createInstaller(Profile *profile);
+    Q_INVOKABLE GameInstaller *createInstallerFromExisting(Profile *profile, const QString &filePath);
     Q_INVOKABLE CompatibilityToolInstaller *createCompatInstaller();
 
     Q_INVOKABLE void clearAvatarCache();
@@ -121,6 +122,7 @@ Q_SIGNALS:
     void gameClosed();
     void loginError(QString message);
     void dalamudError(QString message);
+    void miscError(QString message);
     void stageChanged(QString message, QString explanation = {});
     void stageIndeterminate();
     void stageDeterminate(int min, int max, int value);
