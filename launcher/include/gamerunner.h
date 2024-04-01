@@ -8,7 +8,7 @@
 
 class LauncherCore;
 class Profile;
-class LoginAuth;
+struct LoginAuth;
 
 class GameRunner : public QObject
 {
