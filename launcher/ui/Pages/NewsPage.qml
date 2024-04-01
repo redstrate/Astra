@@ -100,7 +100,7 @@ QQC2.Control {
                 onClicked: applicationWindow().openUrl(LauncherCore.headline.banners[page.currentBannerIndex].link)
             }
 
-            layer.enabled: true
+            layer.enabled: !(bannerImage.width < layout.maximumWidth)
             layer.effect: OpacityMask {
                 maskSource: Item {
                     width: bannerImage.width
