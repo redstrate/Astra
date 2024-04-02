@@ -149,7 +149,7 @@ QString GameRunner::getGameArgs(const Profile &profile, const LoginAuth &auth)
         }
     }
 
-    if (m_launcher.isSteamDeck() || profile.account()->license() == Account::GameLicense::WindowsSteam) {
+    if (profile.account()->license() == Account::GameLicense::WindowsSteam) {
         gameArgs.push_back({QStringLiteral("IsSteam"), QString::number(1)});
     }
 
@@ -256,7 +256,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     arguments.push_back(profile.winePath());
 #endif
 
-    if (m_launcher.isSteamDeck() || profile.account()->license() == Account::GameLicense::WindowsSteam) {
+    if (profile.account()->license() == Account::GameLicense::WindowsSteam) {
         env.insert(QStringLiteral("IS_FFXIV_LAUNCH_FROM_STEAM"), QStringLiteral("1"));
     }
 
