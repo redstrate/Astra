@@ -67,6 +67,12 @@ install(FILES zone.xiv.astra.svg DESTINATION ${KDE_INSTALL_FULL_ICONDIR}/hicolor
 
 feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
+ecm_qt_install_logging_categories(
+        EXPORT ASTRA
+        FILE astra.categories
+        SORT DESTINATION ${KDE_INSTALL_LOGGINGCATEGORIESDIR}
+)
+
 file(GLOB_RECURSE ALL_CLANG_FORMAT_SOURCE_FILES src/*.cpp src/*.h)
 kde_clang_format(${ALL_CLANG_FORMAT_SOURCE_FILES})
 
