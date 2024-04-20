@@ -223,6 +223,11 @@ QDir Account::getConfigDir() const
     return userDir.absoluteFilePath(m_key);
 }
 
+QString Account::getConfigPath() const
+{
+    return getConfigDir().absolutePath();
+}
+
 void Account::fetchAvatar()
 {
     if (lodestoneId().isEmpty()) {

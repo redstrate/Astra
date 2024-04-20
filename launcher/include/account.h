@@ -79,6 +79,7 @@ public:
 
     /// Returns the path to the FFXIV config folder
     [[nodiscard]] QDir getConfigDir() const;
+    [[nodiscard]] Q_INVOKABLE QString getConfigPath() const;
 
     /// Updates FFXIV.cfg with some recommended options like turning the opening cutscene movie off
     void updateConfig();

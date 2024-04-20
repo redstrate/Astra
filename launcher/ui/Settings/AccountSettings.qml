@@ -20,6 +20,13 @@ FormCard.FormCardPage {
 
     actions: [
         Kirigami.Action {
+            text: i18n("Open User Folder…")
+            tooltip: i18n("The user folder contains saved appearance data and character settings for this account.")
+            icon.name: "folder-open-symbolic"
+
+            onTriggered: Qt.openUrlExternally("file://" + page.account.getConfigPath())
+        },
+        Kirigami.Action {
             text: i18n("Delete Account…")
             tooltip: !enabled ? i18n("Cannot delete the only account.") : ""
             icon.name: "delete"
