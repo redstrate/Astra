@@ -20,7 +20,7 @@ GameRunner::GameRunner(LauncherCore &launcher, QObject *parent)
 {
 }
 
-void GameRunner::beginGameExecutable(Profile &profile, const LoginAuth &auth)
+void GameRunner::beginGameExecutable(Profile &profile, const std::optional<LoginAuth> &auth)
 {
     QString gameExectuable;
     if (profile.directx9Enabled() && profile.hasDirectx9()) {
@@ -38,7 +38,7 @@ void GameRunner::beginGameExecutable(Profile &profile, const LoginAuth &auth)
     Q_EMIT m_launcher.successfulLaunch();
 }
 
-void GameRunner::beginVanillaGame(const QString &gameExecutablePath, Profile &profile, const LoginAuth &auth)
+void GameRunner::beginVanillaGame(const QString &gameExecutablePath, Profile &profile, const std::optional<LoginAuth> &auth)
 {
     profile.setLoggedIn(true);
 
@@ -57,7 +57,7 @@ void GameRunner::beginVanillaGame(const QString &gameExecutablePath, Profile &pr
     launchExecutable(profile, gameProcess, {gameExecutablePath, args}, true, true);
 }
 
-void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &profile, const LoginAuth &auth)
+void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &profile, const std::optional<LoginAuth> &auth)
 {
     profile.setLoggedIn(true);
 
@@ -123,44 +123,84 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
                      true);
 }
 
-QString GameRunner::getGameArgs(const Profile &profile, const LoginAuth &auth)
+QString GameRunner::getGameArgs(const Profile &profile, const std::optional<LoginAuth> &auth)
 {
     QList<std::pair<QString, QString>> gameArgs;
-    gameArgs.push_back({QStringLiteral("DEV.DataPathType"), QString::number(1)});
-    gameArgs.push_back({QStringLiteral("DEV.UseSqPack"), QString::number(1)});
 
-    gameArgs.push_back({QStringLiteral("DEV.MaxEntitledExpansionID"), QString::number(auth.maxExpansion)});
-    gameArgs.push_back({QStringLiteral("DEV.TestSID"), auth.SID});
-    gameArgs.push_back({QStringLiteral("SYS.Region"), QString::number(auth.region)});
-    gameArgs.push_back({QStringLiteral("language"), QString::number(profile.account()->language())});
-    gameArgs.push_back({QStringLiteral("ver"), profile.baseGameVersion()});
-    gameArgs.push_back({QStringLiteral("UserPath"), Utility::toWindowsPath(profile.account()->getConfigDir().absolutePath())});
-    gameArgs.push_back({QStringLiteral("resetconfig"), QStringLiteral("0")});
+    if (!profile.isBenchmark()) {
+        gameArgs.push_back({QStringLiteral("DEV.DataPathType"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("DEV.UseSqPack"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("ver"), profile.baseGameVersion()});
+        gameArgs.push_back({QStringLiteral("resetconfig"), QStringLiteral("0")});
+    }
+
+    if (auth) {
+        gameArgs.push_back({QStringLiteral("DEV.MaxEntitledExpansionID"), QString::number(auth->maxExpansion)});
+        gameArgs.push_back({QStringLiteral("DEV.TestSID"), auth->SID});
+        gameArgs.push_back({QStringLiteral("SYS.Region"), QString::number(auth->region)});
+        gameArgs.push_back({QStringLiteral("language"), QString::number(profile.account()->language())});
+        gameArgs.push_back({QStringLiteral("UserPath"), Utility::toWindowsPath(profile.account()->getConfigDir().absolutePath())});
+
+        Utility::createPathIfNeeded(profile.account()->getConfigDir().absolutePath());
+    } else if (profile.isBenchmark()) {
+        gameArgs.push_back({QStringLiteral("SYS.Language"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("SYS.Fps"), QString::number(0)});
+        gameArgs.push_back({QStringLiteral("SYS.WaterWet_DX11"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("SYS.OcclusionCulling_DX11"), QString::number(0)});
+        gameArgs.push_back({QStringLiteral("SYS.LodType_DX11"), QString::number(0)});
+        gameArgs.push_back({QStringLiteral("SYS.ReflectionType_DX11"), QString::number(3)});
+        gameArgs.push_back({QStringLiteral("SYS.AntiAliasing_DX11"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("SYS.TranslucentQuality_DX11"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("SYS.GrassQuality_DX11"), QString::number(3)});
+        gameArgs.push_back({QStringLiteral("SYS.ShadowLOD_DX11"), QString::number(0)});
+        gameArgs.push_back({QStringLiteral("SYS.ShadowVisibilityTypeSelf_DX11"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("SYS.ShadowVisibilityTypeOther_DX11"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("SYS.ShadowTextureSizeType_DX11"), QString::number(2)});
+        gameArgs.push_back({QStringLiteral("SYS.ShadowCascadeCountType_DX11"), QString::number(2)});
+        gameArgs.push_back({QStringLiteral("SYS.ShadowSoftShadowType_DX11"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("SYS.PhysicsTypeSelf_DX11"), QString::number(2)});
+        gameArgs.push_back({QStringLiteral("SYS.PhysicsTypeOther_DX11"), QString::number(2)});
+        gameArgs.push_back({QStringLiteral("SYS.TextureFilterQuality_DX11"), QString::number(2)});
+        gameArgs.push_back({QStringLiteral("SYS.TextureAnisotropicQuality_DX11"), QString::number(2)});
+        gameArgs.push_back({QStringLiteral("SYS.Vignetting_DX11"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("SYS.RadialBlur_DX11"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("SYS.SSAO_DX11"), QString::number(2)});
+        gameArgs.push_back({QStringLiteral("SYS.Glare_DX11"), QString::number(2)});
+        gameArgs.push_back({QStringLiteral("SYS.DepthOfField_DX11"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("SYS.ParallaxOcclusion_DX11"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("SYS.Tessellation_DX11"), QString::number(0)});
+        gameArgs.push_back({QStringLiteral("SYS.GlareRepresentation_DX11"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("SYS.DistortionWater_DX11"), QString::number(2)});
+        gameArgs.push_back({QStringLiteral("SYS.ScreenMode"), QString::number(0)});
+        gameArgs.push_back({QStringLiteral("SYS.ScreenWidth"), QString::number(1920)});
+        gameArgs.push_back({QStringLiteral("SYS.ScreenHeight"), QString::number(1080)});
+    }
 
     // FIXME: this should belong somewhere else...
-    Utility::createPathIfNeeded(profile.account()->getConfigDir().absolutePath());
     Utility::createPathIfNeeded(profile.winePrefixPath());
 
-    if (!auth.lobbyhost.isEmpty()) {
-        gameArgs.push_back({QStringLiteral("DEV.GMServerHost"), auth.frontierHost});
-        for (int i = 1; i < 9; i++) {
-            gameArgs.push_back({QStringLiteral("DEV.LobbyHost0%1").arg(QString::number(i)), auth.lobbyhost});
-            gameArgs.push_back({QStringLiteral("DEV.LobbyPort0%1").arg(QString::number(i)), QString::number(54994)});
+    if (auth) {
+        if (!auth->lobbyhost.isEmpty()) {
+            gameArgs.push_back({QStringLiteral("DEV.GMServerHost"), auth->frontierHost});
+            for (int i = 1; i < 9; i++) {
+                gameArgs.push_back({QStringLiteral("DEV.LobbyHost0%1").arg(QString::number(i)), auth->lobbyhost});
+                gameArgs.push_back({QStringLiteral("DEV.LobbyPort0%1").arg(QString::number(i)), QString::number(54994)});
+            }
+        }
+
+        if (profile.account()->license() == Account::GameLicense::WindowsSteam) {
+            gameArgs.push_back({QStringLiteral("IsSteam"), QString::number(1)});
         }
     }
 
-    if (profile.account()->license() == Account::GameLicense::WindowsSteam) {
-        gameArgs.push_back({QStringLiteral("IsSteam"), QString::number(1)});
-    }
-
-    const QString argFormat = m_launcher.settings()->argumentsEncrypted() ? QStringLiteral(" /%1 =%2") : QStringLiteral(" %1=%2");
+    const QString argFormat = !profile.isBenchmark() && m_launcher.settings()->argumentsEncrypted() ? QStringLiteral(" /%1 =%2") : QStringLiteral(" %1=%2");
 
     QString argJoined;
     for (const auto &[key, value] : gameArgs) {
         argJoined += argFormat.arg(key, value);
     }
 
-    return m_launcher.settings()->argumentsEncrypted() ? encryptGameArg(argJoined) : argJoined;
+    return !profile.isBenchmark() && m_launcher.settings()->argumentsEncrypted() ? encryptGameArg(argJoined) : argJoined;
 }
 
 void GameRunner::launchExecutable(const Profile &profile, QProcess *process, const QStringList &args, bool isGame, bool needsRegistrySetup)
@@ -171,8 +211,10 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     if (needsRegistrySetup) {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
         // FFXIV detects this as a "macOS" build by checking if Wine shows up
-        const int value = profile.account()->license() == Account::GameLicense::macOS ? 0 : 1;
-        addRegistryKey(profile, QStringLiteral("HKEY_CURRENT_USER\\Software\\Wine"), QStringLiteral("HideWineExports"), QString::number(value));
+        if (!profile.isBenchmark()) {
+            const int value = profile.account()->license() == Account::GameLicense::macOS ? 0 : 1;
+            addRegistryKey(profile, QStringLiteral("HKEY_CURRENT_USER\\Software\\Wine"), QStringLiteral("HideWineExports"), QString::number(value));
+        }
 
         setWindowsVersion(profile, QStringLiteral("win7"));
 
@@ -256,7 +298,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     arguments.push_back(profile.winePath());
 #endif
 
-    if (profile.account()->license() == Account::GameLicense::WindowsSteam) {
+    if (!profile.isBenchmark() && profile.account()->license() == Account::GameLicense::WindowsSteam) {
         env.insert(QStringLiteral("IS_FFXIV_LAUNCH_FROM_STEAM"), QStringLiteral("1"));
     }
 
@@ -264,8 +306,14 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
     const QString executable = arguments.takeFirst();
 
-    if (isGame)
-        process->setWorkingDirectory(profile.gamePath() + QStringLiteral("/game/"));
+    if (isGame) {
+        if (profile.isBenchmark()) {
+            // Benchmarks usually have some data located in the root
+            process->setWorkingDirectory(profile.gamePath());
+        } else {
+            process->setWorkingDirectory(profile.gamePath() + QStringLiteral("/game/"));
+        }
+    }
 
     process->setProcessEnvironment(env);
 

@@ -158,6 +158,9 @@ QQC2.Control {
         }
 
         FormCard.FormCard {
+            id: regularLoginCard
+
+            visible: !LauncherCore.currentProfile.isBenchmark
             maximumWidth: Kirigami.Units.gridUnit * 25
 
             Layout.fillWidth: true
@@ -293,6 +296,25 @@ QQC2.Control {
                 icon.name: "dialog-password"
                 visible: !LauncherCore.currentProfile.account.isSapphire
                 onClicked: applicationWindow().openUrl('https://secure.square-enix.com/account/app/svc/reminder')
+            }
+        }
+
+        FormCard.FormCard {
+            id: benchmarkLaunchCard
+
+            visible: LauncherCore.currentProfile.isBenchmark
+            maximumWidth: Kirigami.Units.gridUnit * 25
+
+            Layout.fillWidth: true
+
+            FormCard.FormButtonDelegate {
+                id: launchBenchmarkDelegate
+
+                text: i18n("Launch Benchmark")
+                onClicked: {
+                    LauncherCore.login(LauncherCore.currentProfile, "", "", "")
+                    page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "StatusPage"))
+                }
             }
         }
 

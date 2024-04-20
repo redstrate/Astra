@@ -97,8 +97,7 @@ FormCard.FormCardPage {
     }
 
     FormCard.FormHeader {
-        title: i18n("Install Game")
-        visible: LauncherCore.accountManager.hasAnyAccounts()
+        title: i18n("Retail Game")
     }
 
     FormCard.FormCard {
@@ -143,6 +142,55 @@ FormCard.FormCardPage {
             }
 
             onClicked: dialog.open()
+        }
+    }
+
+    FormCard.FormHeader {
+        title: i18n("Benchmark")
+    }
+
+    FormCard.FormCard {
+        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.fillWidth: true
+
+        FormCard.FormButtonDelegate {
+            id: downloadBenchmark
+
+            text: i18n("Download & Install Benchmark")
+            description: i18n("Download the official benchmark from Square Enix.")
+            icon.name: "cloud-download"
+            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "BenchmarkInstallProgress"), {
+                benchmarkInstaller: LauncherCore.createBenchmarkInstaller(page.profile)
+            })
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: downloadBenchmark
+            below: selectBenchmark
+        }
+
+        FormCard.FormButtonDelegate {
+            id: selectBenchmark
+
+            text: i18n("Select Existing Benchmark…")
+            description: i18n("Use a previously downloaded benchmark. Useful if offline or can't otherwise access the official servers.")
+            icon.name: "edit-find"
+
+            FileDialog {
+                id: benchmarkDialog
+
+                currentFolder: StandardPaths.standardLocations(StandardPaths.DownloadLocation)[0]
+                nameFilters: [i18n("Benchmark zip archive (*.zip)")]
+
+                onAccepted: {
+                    const url = decodeURIComponent(selectedFile.toString().replace("file://", ""));
+                    page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "BenchmarkInstallProgress"), {
+                        benchmarkInstaller: LauncherCore.createBenchmarkInstallerFromExisting(page.profile, url)
+                    });
+                }
+            }
+
+            onClicked: benchmarkDialog.open()
         }
     }
 }

@@ -22,6 +22,7 @@ class AssetUpdater;
 class GameInstaller;
 class CompatibilityToolInstaller;
 class GameRunner;
+class BenchmarkInstaller;
 
 class LoginInformation : public QObject
 {
@@ -88,6 +89,8 @@ public:
     Q_INVOKABLE GameInstaller *createInstaller(Profile *profile);
     Q_INVOKABLE GameInstaller *createInstallerFromExisting(Profile *profile, const QString &filePath);
     Q_INVOKABLE CompatibilityToolInstaller *createCompatInstaller();
+    Q_INVOKABLE BenchmarkInstaller *createBenchmarkInstaller(Profile *profile);
+    Q_INVOKABLE BenchmarkInstaller *createBenchmarkInstallerFromExisting(Profile *profile, const QString &filePath);
 
     Q_INVOKABLE void clearAvatarCache();
     Q_INVOKABLE void refreshNews();

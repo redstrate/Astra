@@ -35,10 +35,12 @@ FormCard.FormCardPage {
     ]
 
     FormCard.FormCard {
-        Layout.fillWidth: true
         Layout.topMargin: Kirigami.Units.largeSpacing
+        visible: repeater.count !== 0
 
         Repeater {
+            id: repeater
+
             model: LauncherCore.accountManager
 
             ColumnLayout {
@@ -53,7 +55,8 @@ FormCard.FormCardPage {
                     text: layout.account.name
                     description: layout.account.isSapphire ? i18n("Sapphire") : i18n("Square Enix")
 
-                    leading: Components.Avatar {
+                    leading: Components.Avatar
+                    {
                         name: layout.account.name
                         source: layout.account.avatarUrl
                     }

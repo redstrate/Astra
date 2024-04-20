@@ -44,6 +44,7 @@ target_sources(astra PRIVATE
         include/account.h
         include/accountmanager.h
         include/assetupdater.h
+        include/benchmarkinstaller.h
         include/compatibilitytoolinstaller.h
         include/encryptedarg.h
         include/gamerunner.h
@@ -64,6 +65,7 @@ target_sources(astra PRIVATE
         src/account.cpp
         src/accountmanager.cpp
         src/assetupdater.cpp
+        src/benchmarkinstaller.cpp
         src/compatibilitytoolinstaller.cpp
         src/encryptedarg.cpp
         src/gamerunner.cpp
@@ -105,6 +107,7 @@ qt_target_qml_sources(astra
         ui/Setup/AccountSetup.qml
         ui/Setup/AddSapphire.qml
         ui/Setup/AddSquareEnix.qml
+        ui/Setup/BenchmarkInstallProgress.qml
         ui/Setup/ExistingSetup.qml
         ui/Setup/InstallProgress.qml
         ui/Setup/SetupPage.qml

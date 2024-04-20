@@ -88,6 +88,7 @@ FormCard.FormCardPage {
                     id: buttonDelegate
 
                     text: layout.profile.name
+                    description: layout.profile.subtitle
                     onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ProfileSettings"), {
                         profile: layout.profile
                     })

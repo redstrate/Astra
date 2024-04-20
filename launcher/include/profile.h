@@ -42,6 +42,8 @@ class Profile : public QObject
     Q_PROPERTY(QString dalamudVersionText READ dalamudVersionText NOTIFY gameInstallChanged)
     Q_PROPERTY(QString wineVersionText READ wineVersionText NOTIFY wineChanged)
     Q_PROPERTY(bool loggedIn READ loggedIn NOTIFY loggedInChanged)
+    Q_PROPERTY(bool isBenchmark READ isBenchmark WRITE setIsBenchmark NOTIFY isBenchmarkChanged)
+    Q_PROPERTY(QString subtitle READ subtitle NOTIFY gameInstallChanged)
 
 public:
     explicit Profile(LauncherCore &launcher, const QString &key, QObject *parent = nullptr);
@@ -110,6 +112,9 @@ public:
     [[nodiscard]] int dalamudInjectDelay() const;
     void setDalamudInjectDelay(int value);
 
+    [[nodiscard]] bool isBenchmark() const;
+    void setIsBenchmark(bool value);
+
     [[nodiscard]] Account *account() const;
     [[nodiscard]] QString accountUuid() const;
     void setAccount(Account *account);
@@ -147,6 +152,8 @@ public:
     [[nodiscard]] bool loggedIn() const;
     void setLoggedIn(bool value);
 
+    [[nodiscard]] QString subtitle() const;
+
 Q_SIGNALS:
     void gameInstallChanged();
     void nameChanged();
@@ -166,6 +173,7 @@ Q_SIGNALS:
     void dalamudChannelChanged();
     void dalamudInjectMethodChanged();
     void dalamudInjectDelayChanged();
+    void isBenchmarkChanged();
     void accountChanged();
     void wineChanged();
     void loggedInChanged();

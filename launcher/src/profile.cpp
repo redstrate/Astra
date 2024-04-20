@@ -371,6 +371,20 @@ void Profile::setDalamudInjectDelay(const int value)
     }
 }
 
+bool Profile::isBenchmark() const
+{
+    return m_config->isBenchmark();
+}
+
+void Profile::setIsBenchmark(bool value)
+{
+    if (m_config->isBenchmark() != value) {
+        m_config->setIsBenchmark(value);
+        m_config->save();
+        Q_EMIT isBenchmarkChanged();
+    }
+}
+
 Account *Profile::account() const
 {
     return m_account;
@@ -572,6 +586,23 @@ void Profile::setLoggedIn(const bool value)
     if (m_loggedIn != value) {
         m_loggedIn = value;
         Q_EMIT loggedInChanged();
+    }
+}
+
+QString Profile::subtitle() const
+{
+    if (isBenchmark()) {
+        return i18n("Benchmark");
+    } else if (m_repositories.repositories_count > 0) {
+        const unsigned int latestExpansion = m_repositories.repositories_count - 1;
+        QString expansionName = i18n("Unknown Expansion");
+        if (latestExpansion < static_cast<unsigned int>(m_expansionNames.size())) {
+            expansionName = m_expansionNames[latestExpansion];
+        }
+
+        return QStringLiteral("%1 (%2)").arg(expansionName, QString::fromLatin1(m_repositories.repositories[latestExpansion].version));
+    } else {
+        return i18n("Unknown");
     }
 }
 

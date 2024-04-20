@@ -14,6 +14,7 @@
 #include "account.h"
 #include "assetupdater.h"
 #include "astra_log.h"
+#include "benchmarkinstaller.h"
 #include "compatibilitytoolinstaller.h"
 #include "gamerunner.h"
 #include "launchercore.h"
@@ -65,12 +66,16 @@ void LauncherCore::login(Profile *profile, const QString &username, const QStrin
 
     auto loginInformation = new LoginInformation(this);
     loginInformation->profile = profile;
-    loginInformation->username = username;
-    loginInformation->password = password;
-    loginInformation->oneTimePassword = oneTimePassword;
 
-    if (profile->account()->rememberPassword()) {
-        profile->account()->setPassword(password);
+    // Benchmark never has to login, of course
+    if (!profile->isBenchmark()) {
+        loginInformation->username = username;
+        loginInformation->password = password;
+        loginInformation->oneTimePassword = oneTimePassword;
+
+        if (profile->account()->rememberPassword()) {
+            profile->account()->setPassword(password);
+        }
     }
 
     beginLogin(*loginInformation);
@@ -115,6 +120,20 @@ GameInstaller *LauncherCore::createInstallerFromExisting(Profile *profile, const
 CompatibilityToolInstaller *LauncherCore::createCompatInstaller()
 {
     return new CompatibilityToolInstaller(*this, this);
+}
+
+BenchmarkInstaller *LauncherCore::createBenchmarkInstaller(Profile *profile)
+{
+    Q_ASSERT(profile != nullptr);
+
+    return new BenchmarkInstaller(*this, *profile, this);
+}
+
+BenchmarkInstaller *LauncherCore::createBenchmarkInstallerFromExisting(Profile *profile, const QString &filePath)
+{
+    Q_ASSERT(profile != nullptr);
+
+    return new BenchmarkInstaller(*this, *profile, filePath, this);
 }
 
 void LauncherCore::clearAvatarCache()
@@ -320,26 +339,34 @@ QString LauncherCore::cachedLogoImage() const
 
 QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 {
-    info.profile->account()->updateConfig();
+    // Hmm, I don't think we're set up for this yet?
+    if (!info.profile->isBenchmark()) {
+        info.profile->account()->updateConfig();
+    }
 
     auto assetUpdater = new AssetUpdater(*info.profile, *this, this);
     if (co_await assetUpdater->update()) {
         std::optional<LoginAuth> auth;
-        if (info.profile->account()->isSapphire()) {
-            auth = co_await m_sapphireLogin->login(info.profile->account()->lobbyUrl(), info);
-        } else {
-            auth = co_await m_squareEnixLogin->login(&info);
-        }
-
-        if (auth != std::nullopt) {
-            Q_EMIT stageChanged(i18n("Launching game..."));
-
-            if (isSteam()) {
-                m_steamApi->setLauncherMode(false);
+        if (!info.profile->isBenchmark()) {
+            if (info.profile->account()->isSapphire()) {
+                auth = co_await m_sapphireLogin->login(info.profile->account()->lobbyUrl(), info);
+            } else {
+                auth = co_await m_squareEnixLogin->login(&info);
             }
-
-            m_runner->beginGameExecutable(*info.profile, *auth);
         }
+
+        // If we expect an auth ticket, don't continue if missing
+        if (!info.profile->isBenchmark() && auth == std::nullopt) {
+            co_return;
+        }
+
+        Q_EMIT stageChanged(i18n("Launching game..."));
+
+        if (isSteam()) {
+            m_steamApi->setLauncherMode(false);
+        }
+
+        m_runner->beginGameExecutable(*info.profile, auth);
     }
 
     assetUpdater->deleteLater();
