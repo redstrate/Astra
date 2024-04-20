@@ -56,6 +56,7 @@ FormCard.FormCardPage {
             id: showDevToolsDelegate
 
             text: i18n("Show Developer Settings")
+            description: i18n("Enable settings that are useful for developers and tinkerers.")
             checked: LauncherCore.settings.showDevTools
             onCheckedChanged: LauncherCore.settings.showDevTools = checked
         }
