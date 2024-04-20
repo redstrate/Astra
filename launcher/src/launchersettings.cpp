@@ -163,6 +163,20 @@ void LauncherSettings::setArgumentsEncrypted(const bool value)
     }
 }
 
+bool LauncherSettings::enableRenderDocCapture() const
+{
+    return m_config->enableRenderDocCapture();
+}
+
+void LauncherSettings::setEnableRenderDocCapture(const bool value)
+{
+    if (m_config->enableRenderDocCapture() != value) {
+        m_config->setEnableRenderDocCapture(value);
+        m_config->save();
+        Q_EMIT enableRenderDocCaptureChanged();
+    }
+}
+
 QString LauncherSettings::currentProfile() const
 {
     return KSharedConfig::openStateConfig()->group(QStringLiteral("General")).readEntry(QStringLiteral("CurrentProfile"));

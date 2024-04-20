@@ -44,8 +44,23 @@ FormCard.FormCardPage {
             id: encryptArgDelegate
 
             text: i18n("Encrypt Game Arguments")
+            description: i18n("Disable encryption if you want to inspect the raw arguments passed to the game.")
             checked: LauncherCore.settings.argumentsEncrypted
             onCheckedChanged: LauncherCore.settings.argumentsEncrypted = checked
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: encryptArgDelegate
+            below: renderDocCaptureDelegate
+        }
+
+        FormCard.FormCheckDelegate {
+            id: renderDocCaptureDelegate
+
+            text: i18n("Allow RenderDoc Capture")
+            description: i18n("Inject the RenderDoc capture layer.")
+            checked: LauncherCore.settings.enableRenderDocCapture
+            onCheckedChanged: LauncherCore.settings.enableRenderDocCapture = checked
         }
     }
 

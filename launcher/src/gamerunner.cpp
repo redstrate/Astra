@@ -274,13 +274,15 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     }
 #endif
 
+    if (m_launcher.settings()->enableRenderDocCapture()) {
+        env.insert(QStringLiteral("VK_LAYER_RENDERDOC_Capture"), QStringLiteral("VK_LAYER_RENDERDOC_Capture"));
+        env.insert(QStringLiteral("ENABLE_VULKAN_RENDERDOC_CAPTURE"), QString::number(1));
+    }
+
 #if defined(Q_OS_LINUX)
     env.insert(QStringLiteral("WINEESYNC"), QString::number(1));
     env.insert(QStringLiteral("WINEFSYNC"), QString::number(1));
     env.insert(QStringLiteral("WINEFSYNC_FUTEX2"), QString::number(1));
-
-    // env.insert(QStringLiteral("VK_LAYER_RENDERDOC_Capture"), QStringLiteral("VK_LAYER_RENDERDOC_Capture"));
-    // env.insert(QStringLiteral("ENABLE_VULKAN_RENDERDOC_CAPTURE"), QString::number(1));
 
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     const QString logDir = dataDir.absoluteFilePath(QStringLiteral("log"));
