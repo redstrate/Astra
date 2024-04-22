@@ -3,7 +3,7 @@
 	url = https://github.com/paolostivanin/libcotp.git
 [submodule "external/libphysis"]
 	path = external/libphysis
-	url = https://git.sr.ht/~redstrate/libphysis
+	url = ../libphysis
 [submodule "external/kdsingleapplication"]
 	path = external/kdsingleapplication
 	url = https://github.com/KDAB/KDSingleApplication.git
