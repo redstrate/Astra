@@ -21,19 +21,16 @@ plugins!
 
 Details on where to find stable releases of Astra can be found on its [homepage](https://xiv.zone/astra).
 
-Distribution packaging is encouraged, so please send an [email through the mailing list](https://lists.sr.ht/~redstrate/public-inbox) for any concerns.
-
-## Support
-
-If you have an issue with Astra, please [email the mailing list](https://lists.sr.ht/~redstrate/public-inbox).
-
 ## Building
 
 Please refer to the [building document](BUILDING.md) for instructions on how to build Astra.
 
-## Contributing
+## Contributing & Support
 
-Please refer to the [contributing document](CONTRIBUTING.md) for everything you need to know to get started contributing to Novus.
+The best way you can help is by [monetarily supporting me](https://redstrate.com/fund/) or by submitting patches to
+help fix bugs or add functionality. Filing issues is appreciated, but I do this in my free time so please don't expect professional support.
+
+Please refer to the [contributing document](CONTRIBUTING.md) for everything you need to know to get started contributing to Astra.
 
 ## License
 

@@ -45,12 +45,26 @@ These are optional dependencies, that will be used if found on your system.
 * Gamemode
   * Turn on `ENABLE_GAMEMODE` to enable integration.
 
+### Getting source code
+
+Astra has git submodules that must be cloned alongside the repository, so make sure to pass the `--recursive` flag:
+
+```bash
+$ git clone --recursive https://github.com/redstrate/Astra.git
+```
+
+If you missed it, it's possible to initialize the submodules afterward:
+
+```bash
+$ git submodule update --init --recursive
+```
+
 ### Configuring
 
 To configure, run `cmake` in the source directory:
 
 ```bash
-$ cd astra
+$ cd Astra
 $ cmake -S . -B build
 ```
 
