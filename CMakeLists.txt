@@ -42,13 +42,13 @@ find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
         Concurrent
         Test)
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS Kirigami I18n Config CoreAddons Archive)
-find_package(PkgConfig REQUIRED)
 find_package(QCoro6 REQUIRED COMPONENTS Core Network Qml)
 qcoro_enable_coroutines()
 
 qt_policy(SET QTP0001 NEW)
 
 if (ENABLE_GAMEMODE)
+    find_package(PkgConfig REQUIRED)
     pkg_search_module(GAMEMODE REQUIRED gamemode)
 endif ()
 
