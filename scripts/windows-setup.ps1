@@ -114,3 +114,9 @@ Clone "qcoro" "https://github.com/danvratil/qcoro.git"
 Configure "qcoro" "-DBUILD_TESTING=OFF"
 cmake --build "$BuildDir-qcoro" --config Debug --target install --parallel $NumCores
 CheckCompileResult "qcoro"
+
+# Build QtKeychain
+Clone "qcoro" "https://github.com/frankosterfeld/qtkeychain.git"
+Configure "qtkeychain" "-DBUILD_TESTING=OFF"
+cmake --build "$BuildDir-qtkeychain" --config Debug --target install --parallel $NumCores
+CheckCompileResult "qtkeychain"
