@@ -9,3 +9,6 @@
 *.flatpak
 export/
 .clang-format
+# Windows
+local/
+prefix/
