@@ -30,6 +30,7 @@ include(KDEGitCommitHooks)
 include(KDEClangFormat)
 include(ECMAddTests)
 include(ECMQtDeclareLoggingCategory)
+include(ECMAddAppIcon)
 
 ecm_setup_version(${PROJECT_VERSION}
         VARIABLE_PREFIX ASTRA

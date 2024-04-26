@@ -182,6 +182,15 @@ endif ()
 
 install(TARGETS astra ${KF6_INSTALL_TARGETS_DEFAULT_ARGS})
 
+ecm_add_app_icon(astra
+        ICONS
+        ${CMAKE_SOURCE_DIR}/zone.xiv.astra.svg
+        ${CMAKE_SOURCE_DIR}/resources/16-astra.png
+        ${CMAKE_SOURCE_DIR}/resources/32-astra.png
+        ${CMAKE_SOURCE_DIR}/resources/48-astra.png
+        ${CMAKE_SOURCE_DIR}/resources/256-astra.png
+)
+
 qt_finalize_target(astra)
 
 qt_generate_deploy_qml_app_script(
