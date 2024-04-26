@@ -66,17 +66,19 @@ if (BUILD_TESTING)
     add_subdirectory(autotests)
 endif()
 
-install(FILES zone.xiv.astra.desktop DESTINATION ${KDE_INSTALL_APPDIR})
-install(FILES zone.xiv.astra.appdata.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
-install(FILES zone.xiv.astra.svg DESTINATION ${KDE_INSTALL_FULL_ICONDIR}/hicolor/scalable/apps)
+if (NOT WIN32)
+    install(FILES zone.xiv.astra.desktop DESTINATION ${KDE_INSTALL_APPDIR})
+    install(FILES zone.xiv.astra.appdata.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
+    install(FILES zone.xiv.astra.svg DESTINATION ${KDE_INSTALL_FULL_ICONDIR}/hicolor/scalable/apps)
+
+    ecm_qt_install_logging_categories(
+            EXPORT ASTRA
+            FILE astra.categories
+            SORT DESTINATION ${KDE_INSTALL_LOGGINGCATEGORIESDIR}
+    )
+endif()
 
 feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
-
-ecm_qt_install_logging_categories(
-        EXPORT ASTRA
-        FILE astra.categories
-        SORT DESTINATION ${KDE_INSTALL_LOGGINGCATEGORIESDIR}
-)
 
 file(GLOB_RECURSE ALL_CLANG_FORMAT_SOURCE_FILES src/*.cpp src/*.h)
 kde_clang_format(${ALL_CLANG_FORMAT_SOURCE_FILES})
