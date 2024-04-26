@@ -174,6 +174,12 @@ if (ENABLE_GAMEMODE)
     target_compile_definitions(astra PRIVATE ENABLE_GAMEMODE)
 endif ()
 
+if (WIN32)
+    set_target_properties(astra PROPERTIES
+            WIN32_EXECUTABLE TRUE
+            OUTPUT_NAME "Astra")
+endif ()
+
 install(TARGETS astra ${KF6_INSTALL_TARGETS_DEFAULT_ARGS})
 
 qt_finalize_target(astra)
