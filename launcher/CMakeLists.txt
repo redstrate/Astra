@@ -154,6 +154,13 @@ if (BUILD_WEBVIEW)
     )
     target_compile_definitions(astra PRIVATE HAVE_WEBVIEW)
 endif ()
+
+if (WIN32)
+    target_link_libraries(astra PRIVATE
+            KF6::BreezeIcons
+    )
+endif ()
+
 if (NOT MSVC)
     target_compile_options(astra PRIVATE -fexceptions)
 endif ()

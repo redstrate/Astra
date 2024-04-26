@@ -23,12 +23,20 @@
 #include "physis_logger.h"
 #include "sapphirelogin.h"
 
+#ifdef Q_OS_WIN
+#include <BreezeIcons/BreezeIcons>
+#endif
+
 using namespace Qt::StringLiterals;
 
 int main(int argc, char *argv[])
 {
 #ifdef HAVE_WEBVIEW
     QtWebView::initialize();
+#endif
+
+#ifdef Q_OS_WIN
+    BreezeIcons::initIcons();
 #endif
 
     if (qEnvironmentVariable("SteamDeck") == QStringLiteral("1")) {

@@ -135,3 +135,9 @@ Clone "unshield" "https://github.com/twogood/unshield.git"
 Configure "unshield" "-DBUILD_TESTING=OFF"
 cmake --build "$BuildDir-unshield" --config Debug --target install --parallel $NumCores
 CheckCompileResult "unshield"
+
+# Build breeze icons
+Clone "breeze-icons" "https://invent.kde.org/frameworks/breeze-icons.git"
+Configure "breeze-icons" "-DICONS_LIBRARY=ON -DSKIP_INSTALL_ICONS=ON"
+cmake --build "$BuildDir-breeze-icons" --config Debug --target install --parallel $NumCores
+CheckCompileResult "breeze-icons"
