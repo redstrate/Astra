@@ -59,6 +59,7 @@ jobs:
           sudo apt-get install \
             gettext \
             gamemode-dev \
+            libunshield-dev \
 
       - name: Cache Prefix
         id: cache-prefix-restore
