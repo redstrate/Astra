@@ -129,6 +129,7 @@ int main(int argc, char *argv[])
         }
     }
 
+#if defined(Q_OS_LINUX)
     // Default to org.kde.desktop style unless the user forces another style
     if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE")) {
         if (isSteamDeck) {
@@ -137,6 +138,7 @@ int main(int argc, char *argv[])
             QQuickStyle::setStyle(QStringLiteral("org.kde.desktop"));
         }
     }
+#endif
 
     QCoro::Qml::registerTypes();
 
