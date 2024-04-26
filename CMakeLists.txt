@@ -8,7 +8,9 @@ project(Astra VERSION 0.6.0 LANGUAGES CXX)
 option(BUILD_FLATPAK "Build for Flatpak." OFF)
 
 # options for features you may want or need
-option(ENABLE_GAMEMODE "Build with Feral GameMode support, requires the daemon to be installed." ON)
+if (NOT WIN32 AND NOT APPLE)
+    option(ENABLE_GAMEMODE "Build with Feral GameMode support, requires the daemon to be installed." ON)
+endif()
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
