@@ -58,8 +58,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install \
             gettext \
-            gperf \
-            libwayland-dev \
+            libgamemode-dev \
 
       - name: Cache Prefix
         id: cache-prefix-restore
