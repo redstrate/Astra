@@ -16,12 +16,14 @@ corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/libphysis/Cargo
         FEATURES game_install visual_data) # FIXME: split visual_data? we only need texture decompression
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libphysis/logger EXCLUDE_FROM_ALL)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(UNSHIELD REQUIRED IMPORTED_TARGET libunshield)
-
 target_include_directories(physis INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/libphysis/target/public)
-target_link_libraries(physis INTERFACE ${UNSHIELD_LIBRARIES} z)
-target_link_directories(physis INTERFACE ${UNSHIELD_LIBRARY_DIRS})
+
+# TODO: enable unshield on Windows
+if (NOT WIN32)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(UNSHIELD REQUIRED IMPORTED_TARGET libunshield)
+    target_link_directories(physis INTERFACE ${UNSHIELD_LIBRARY_DIRS})
+endif()
 
 set(KDSingleApplication_QT6 ON)
 set(KDSingleApplication_STATIC ON)

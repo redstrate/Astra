@@ -80,6 +80,12 @@ jobs:
           Invoke-WebRequest https://xiv.zone/distrib/dependencies/iconv.zip -OutFile iconv.zip
           unzip iconv.zip -d ${{ steps.strings.outputs.prefix-dir }}
           
+          Invoke-WebRequest https://xiv.zone/distrib/dependencies/gcrypt.zip -OutFile gcrypt.zip
+          unzip gcrypt.zip -d ${{ steps.strings.outputs.prefix-dir }}
+          
+          Invoke-WebRequest https://xiv.zone/distrib/dependencies/gpg-error.zip -OutFile gpg-error.zip
+          unzip gpg-error.zip -d ${{ steps.strings.outputs.prefix-dir }}
+          
           Invoke-WebRequest https://xiv.zone/distrib/dependencies/icoutils.zip -OutFile icoutils.zip
           unzip icoutils.zip -d ${{ steps.strings.outputs.prefix-dir }}
 
