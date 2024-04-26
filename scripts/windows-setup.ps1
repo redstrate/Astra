@@ -57,6 +57,9 @@ Expand-Archive -Path "$LocalDir/gcrypt.zip" -DestinationPath $PrefixDir -Force
 Invoke-WebRequest https://xiv.zone/distrib/dependencies/gpg-error.zip -OutFile "$LocalDir/gpg-error.zip"
 Expand-Archive -Path "$LocalDir/gpg-error.zip" -DestinationPath $PrefixDir -Force
 
+Invoke-WebRequest https://xiv.zone/distrib/dependencies/libwinpthread.zip -OutFile "$LocalDir/libwinpthread.zip"
+Expand-Archive -Path "$LocalDir/libwinpthread.zip" -DestinationPath $PrefixDir -Force
+
 # Build zlib
 Clone "zlib" "https://github.com/madler/zlib.git"
 Configure "zlib" "-DBUILD_TESTING=OFF"

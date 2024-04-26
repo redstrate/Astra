@@ -88,6 +88,9 @@ jobs:
           Invoke-WebRequest https://xiv.zone/distrib/dependencies/icoutils.zip -OutFile icoutils.zip
           unzip icoutils.zip -d ${{ steps.strings.outputs.prefix-dir }}
 
+          Invoke-WebRequest https://xiv.zone/distrib/dependencies/libwinpthread.zip -OutFile libwinpthread.zip
+          unzip libwinpthread.zip -d ${{ steps.strings.outputs.prefix-dir }}
+
       - name: Build zlib
         if: (runner.os == 'Windows') && (steps.cache-prefix-restore.outputs.cache-hit != 'true')
         run: |
