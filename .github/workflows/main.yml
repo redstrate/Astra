@@ -43,7 +43,7 @@ jobs:
         with:
           version: "6.6.*"
           cache: true
-          modules: 'qtwebengine qtwebview qtwebsockets qtshadertools qtwebchannel'
+          modules: 'qtshadertools'
 
       - name: Set reusable strings
         id: strings

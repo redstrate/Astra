@@ -41,7 +41,6 @@ find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
         Widgets
         Network
         QuickControls2
-        WebView
         Concurrent
         Test)
 if (BUILD_WEBVIEW)
