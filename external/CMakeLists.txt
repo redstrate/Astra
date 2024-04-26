@@ -28,6 +28,7 @@ else()
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(UNSHIELD REQUIRED IMPORTED_TARGET libunshield)
     target_link_directories(physis INTERFACE ${UNSHIELD_LIBRARY_DIRS})
+    target_link_libraries(physis INTERFACE ${UNSHIELD_LIBRARIES})
 endif()
 
 set(KDSingleApplication_QT6 ON)
