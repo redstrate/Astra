@@ -149,7 +149,9 @@ target_link_libraries(astra PRIVATE
         QCoro::Core
         QCoro::Network
         QCoro::Qml)
-target_compile_options(astra PRIVATE -fexceptions)
+if (NOT MSVC)
+    target_compile_options(astra PRIVATE -fexceptions)
+endif ()
 
 if (BUILD_FLATPAK)
     target_compile_definitions(astra PRIVATE FLATPAK)
