@@ -6,7 +6,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as QQC2
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
 
 import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.formcard as FormCard
@@ -101,15 +101,18 @@ QQC2.Control {
             }
 
             layer.enabled: !(bannerImage.width < layout.maximumWidth)
-            layer.effect: OpacityMask {
-                maskSource: Item {
-                    width: bannerImage.width
-                    height: bannerImage.height
-                    Rectangle {
-                        anchors.centerIn: parent
-                        width: bannerImage.width
-                        height: bannerImage.height
-                        radius: Kirigami.Units.smallSpacing
+            layer.effect: MultiEffect {
+                id: root
+
+                maskEnabled: true
+                maskSpreadAtMax: 1
+                maskSpreadAtMin: 1
+                maskThresholdMin: 0.5
+                maskSource: ShaderEffectSource {
+                    sourceItem: Rectangle {
+                        width: root.width
+                        height: root.height
+                        radius: Kirigami.Units.mediumSpacing
                     }
                 }
             }
