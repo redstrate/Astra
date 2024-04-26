@@ -6,6 +6,7 @@ project(Astra VERSION 0.6.0 LANGUAGES CXX)
 
 # build options used for distributors
 option(BUILD_FLATPAK "Build for Flatpak." OFF)
+option(BUILD_WEBVIEW "Build support for the integrated web browser. Only used on the Steam Deck." OFF)
 
 # options for features you may want or need
 if (NOT WIN32 AND NOT APPLE)
@@ -43,6 +44,9 @@ find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
         WebView
         Concurrent
         Test)
+if (BUILD_WEBVIEW)
+    find_package(Qt6WebView ${QT_MIN_VERSION} REQUIRED)
+endif ()
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS Kirigami I18n Config CoreAddons Archive)
 find_package(QCoro6 REQUIRED COMPONENTS Core Network Qml)
 qcoro_enable_coroutines()

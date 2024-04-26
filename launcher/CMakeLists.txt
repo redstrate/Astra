@@ -138,7 +138,6 @@ target_link_libraries(astra PRIVATE
         Qt6::Widgets
         Qt6::Quick
         Qt6::QuickControls2
-        Qt6::WebView
         Qt6::Concurrent
         KF6::Kirigami
         KF6::I18n
@@ -149,6 +148,12 @@ target_link_libraries(astra PRIVATE
         QCoro::Core
         QCoro::Network
         QCoro::Qml)
+if (BUILD_WEBVIEW)
+    target_link_libraries(astra PRIVATE
+            Qt6::WebView
+    )
+    target_compile_definitions(astra PRIVATE HAVE_WEBVIEW)
+endif ()
 if (NOT MSVC)
     target_compile_options(astra PRIVATE -fexceptions)
 endif ()
@@ -164,7 +169,9 @@ endif ()
 
 install(TARGETS astra ${KF6_INSTALL_TARGETS_DEFAULT_ARGS})
 
-qt_generate_deploy_app_script(
+qt_finalize_target(astra)
+
+qt_generate_deploy_qml_app_script(
         TARGET astra
         OUTPUT_SCRIPT deploy_script
         NO_UNSUPPORTED_PLATFORM_ERROR
