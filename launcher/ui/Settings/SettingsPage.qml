@@ -51,6 +51,7 @@ KirigamiSettings.CategorizedSettings {
             text: i18n("Compatibility Tool")
             icon.name: "system-run"
             page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/CompatibilityToolSetup.qml")
+            visible: !LauncherCore.isWindows
         },
         KirigamiSettings.SettingAction {
             actionName: "devtool"
