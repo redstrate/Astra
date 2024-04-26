@@ -91,6 +91,9 @@ jobs:
 
           Invoke-WebRequest https://xiv.zone/distrib/dependencies/libwinpthread.zip -OutFile libwinpthread.zip
           unzip libwinpthread.zip -d ${{ steps.strings.outputs.prefix-dir }}/bin
+          
+          Invoke-WebRequest https://xiv.zone/distrib/dependencies/libcrypto.zip -OutFile libcrypto.zip
+          unzip libcrypto.zip -d ${{ steps.strings.outputs.prefix-dir }}/bin
 
       - name: Build zlib
         if: (runner.os == 'Windows') && (steps.cache-prefix-restore.outputs.cache-hit != 'true')
@@ -230,6 +233,7 @@ jobs:
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libgpg-error6-0.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/zlib.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libwinpthread-1.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libcrypto-1_1-x64.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
 
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/Kirigami.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiDelegates.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
