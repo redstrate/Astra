@@ -161,3 +161,10 @@ if (ENABLE_GAMEMODE)
 endif ()
 
 install(TARGETS astra ${KF6_INSTALL_TARGETS_DEFAULT_ARGS})
+
+qt_generate_deploy_app_script(
+        TARGET astra
+        OUTPUT_SCRIPT deploy_script
+        NO_UNSUPPORTED_PLATFORM_ERROR
+)
+install(SCRIPT ${deploy_script})
