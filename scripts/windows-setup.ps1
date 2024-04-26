@@ -120,7 +120,7 @@ CheckCompileResult "corrosion"
 
 # Build QCoro
 Clone "qcoro" "https://github.com/danvratil/qcoro.git"
-Configure "qcoro" "-DBUILD_TESTING=OFF"
+Configure "qcoro" "-DBUILD_TESTING=OFF -DQCORO_WITH_QTWEBSOCKETS=OFF -DQCORO_BUILD_EXAMPLES=OFF"
 cmake --build "$BuildDir-qcoro" --config Debug --target install --parallel $NumCores
 CheckCompileResult "qcoro"
 

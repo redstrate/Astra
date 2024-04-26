@@ -169,7 +169,7 @@ jobs:
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
         run: |
           git clone https://github.com/danvratil/qcoro.git
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}-qcoro -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S qcoro -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-qcoro -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S qcoro -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF -DQCORO_WITH_QTWEBSOCKETS=OFF -DQCORO_BUILD_EXAMPLES=OFF
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-qcoro --config ${{ matrix.build_type }} --target install
 
       - name: Build QtKeychain
