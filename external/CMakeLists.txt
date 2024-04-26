@@ -18,8 +18,13 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libphysis/logger EXCLUDE_FROM_ALL)
 
 target_include_directories(physis INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/libphysis/target/public)
 
-# TODO: enable unshield on Windows
-if (NOT WIN32)
+# We should use the CMake module everywhere once distros update their packages
+if (WIN32)
+    # FIXME: unshield should include zlib in their upstream cmake
+    find_package(ZLIB REQUIRED)
+    find_package(unshield REQUIRED)
+    target_link_libraries(physis INTERFACE unshield::libunshield)
+else()
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(UNSHIELD REQUIRED IMPORTED_TARGET libunshield)
     target_link_directories(physis INTERFACE ${UNSHIELD_LIBRARY_DIRS})

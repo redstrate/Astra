@@ -126,3 +126,9 @@ Clone "qtkeychain" "https://github.com/frankosterfeld/qtkeychain.git"
 Configure "qtkeychain" "-DBUILD_TESTING=OFF -DBUILD_WITH_QT6=ON"
 cmake --build "$BuildDir-qtkeychain" --config Debug --target install --parallel $NumCores
 CheckCompileResult "qtkeychain"
+
+# Build unshield
+Clone "unshield" "https://github.com/twogood/unshield.git"
+Configure "unshield" "-DBUILD_TESTING=OFF"
+cmake --build "$BuildDir-unshield" --config Debug --target install --parallel $NumCores
+CheckCompileResult "unshield"
