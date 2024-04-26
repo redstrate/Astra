@@ -172,7 +172,7 @@ jobs:
       - name: Build QtKeychain
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
         run: |
-          git clone https://github.com/frankosterfeld/qtkeychain.git
+          git clone https://github.com/redstrate/qtkeychain.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-qtkeychain -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S qtkeychain -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF -DBUILD_WITH_QT6=ON -DQTKEYCHAIN_TARGET_NAME=keychain
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-qtkeychain --config ${{ matrix.build_type }} --target install
 
