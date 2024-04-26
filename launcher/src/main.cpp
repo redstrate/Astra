@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
 
 #ifdef Q_OS_WIN
     BreezeIcons::initIcons();
+    QIcon::setThemeName(QStringLiteral("Breeze"));
 #endif
 
     if (qEnvironmentVariable("SteamDeck") == QStringLiteral("1")) {
