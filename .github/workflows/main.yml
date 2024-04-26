@@ -224,6 +224,12 @@ jobs:
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/zlib.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libwinpthread-1.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
 
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/Kirigami.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiDelegates.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiPlatform.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/lib/qml/org -Destination ${{ steps.strings.outputs.build-output-dir }}/qml/ -Recurse
+
       - name: Remove extra files
         if: runner.os == 'Windows'
         run: |
