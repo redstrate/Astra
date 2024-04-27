@@ -67,13 +67,13 @@ void ProfileManager::deleteProfile(Profile *profile)
 QString ProfileManager::getDefaultGamePath(const QString &uuid)
 {
 #if defined(Q_OS_WIN)
-    return "C:\\Program Files (x86)\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn";
+    return QStringLiteral("C:\\Program Files (x86)\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn");
 #endif
 
 #if defined(Q_OS_MAC)
     return QDir::homePath() +
-        "/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program "
-        "Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn";
+        QStringLiteral("/Library/Application Support/FINAL FANTASY XIV ONLINE/Bottles/published_Final_Fantasy/drive_c/Program "
+        "Files (x86)/SquareEnix/FINAL FANTASY XIV - A Realm Reborn");
 #endif
 
 #if defined(Q_OS_LINUX)

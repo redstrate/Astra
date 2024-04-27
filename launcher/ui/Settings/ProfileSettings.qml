@@ -90,6 +90,8 @@ FormCard.FormCardPage {
     }
 
     FormCard.FormCard {
+        visible: !LauncherCore.isWindows
+
         Layout.fillWidth: true
 
         FormCard.FormComboBoxDelegate {
@@ -139,9 +141,12 @@ FormCard.FormCardPage {
 
     FormCard.FormHeader {
         title: i18n("Tools")
+        visible: !LauncherCore.isWindows
     }
 
     FormCard.FormCard {
+        visible: !LauncherCore.isWindows
+
         Layout.fillWidth: true
 
         FormCard.FormCheckDelegate {

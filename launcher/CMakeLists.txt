@@ -138,7 +138,6 @@ target_link_libraries(astra PRIVATE
         Qt6::Widgets
         Qt6::Quick
         Qt6::QuickControls2
-        Qt6::WebView
         Qt6::Concurrent
         KF6::Kirigami
         KF6::I18n
@@ -149,7 +148,22 @@ target_link_libraries(astra PRIVATE
         QCoro::Core
         QCoro::Network
         QCoro::Qml)
-target_compile_options(astra PRIVATE -fexceptions)
+if (BUILD_WEBVIEW)
+    target_link_libraries(astra PRIVATE
+            Qt6::WebView
+    )
+    target_compile_definitions(astra PRIVATE HAVE_WEBVIEW)
+endif ()
+
+if (WIN32)
+    target_link_libraries(astra PRIVATE
+            KF6::BreezeIcons
+    )
+endif ()
+
+if (NOT MSVC)
+    target_compile_options(astra PRIVATE -fexceptions)
+endif ()
 
 if (BUILD_FLATPAK)
     target_compile_definitions(astra PRIVATE FLATPAK)
@@ -160,4 +174,28 @@ if (ENABLE_GAMEMODE)
     target_compile_definitions(astra PRIVATE ENABLE_GAMEMODE)
 endif ()
 
+if (WIN32)
+    set_target_properties(astra PROPERTIES
+            WIN32_EXECUTABLE TRUE
+            OUTPUT_NAME "Astra")
+endif ()
+
 install(TARGETS astra ${KF6_INSTALL_TARGETS_DEFAULT_ARGS})
+
+ecm_add_app_icon(astra
+        ICONS
+        ${CMAKE_SOURCE_DIR}/zone.xiv.astra.svg
+        ${CMAKE_SOURCE_DIR}/resources/16-astra.png
+        ${CMAKE_SOURCE_DIR}/resources/32-astra.png
+        ${CMAKE_SOURCE_DIR}/resources/48-astra.png
+        ${CMAKE_SOURCE_DIR}/resources/256-astra.png
+)
+
+qt_finalize_target(astra)
+
+qt_generate_deploy_qml_app_script(
+        TARGET astra
+        OUTPUT_SCRIPT deploy_script
+        NO_UNSUPPORTED_PLATFORM_ERROR
+)
+install(SCRIPT ${deploy_script})

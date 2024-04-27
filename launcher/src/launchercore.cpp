@@ -302,6 +302,15 @@ bool LauncherCore::isSteamDeck() const
     }
 }
 
+bool LauncherCore::isWindows() const
+{
+#if defined(Q_OS_WIN)
+    return true;
+#else
+    return false;
+#endif
+}
+
 bool LauncherCore::isPatching() const
 {
     return m_isPatching;

@@ -8,9 +8,12 @@
 #include <QCommandLineParser>
 #include <QMessageBox>
 #include <QQuickStyle>
-#include <QtWebView>
 #include <kdsingleapplication.h>
 #include <qcoroqml.h>
+
+#ifdef HAVE_WEBVIEW
+#include <QtWebView>
+#endif
 
 #include "astra-version.h"
 #include "compatibilitytoolinstaller.h"
@@ -20,18 +23,29 @@
 #include "physis_logger.h"
 #include "sapphirelogin.h"
 
+#ifdef Q_OS_WIN
+#include <BreezeIcons/BreezeIcons>
+#endif
+
 using namespace Qt::StringLiterals;
 
 int main(int argc, char *argv[])
 {
+#ifdef HAVE_WEBVIEW
     QtWebView::initialize();
+#endif
+
+#ifdef Q_OS_WIN
+    BreezeIcons::initIcons();
+    QIcon::setThemeName(QStringLiteral("Breeze"));
+#endif
 
     if (qEnvironmentVariable("SteamDeck") == QStringLiteral("1")) {
         qputenv("QT_SCALE_FACTOR", "1.25");
         qputenv("QT_QUICK_CONTROLS_MOBILE", "1");
     }
 
-    QApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
 
     KDSingleApplication singleApplication;
     if (!singleApplication.isPrimaryInstance()) {
@@ -124,6 +138,7 @@ int main(int argc, char *argv[])
         }
     }
 
+#if defined(Q_OS_LINUX)
     // Default to org.kde.desktop style unless the user forces another style
     if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE")) {
         if (isSteamDeck) {
@@ -132,6 +147,7 @@ int main(int argc, char *argv[])
             QQuickStyle::setStyle(QStringLiteral("org.kde.desktop"));
         }
     }
+#endif
 
     QCoro::Qml::registerTypes();
 

@@ -1,0 +1,256 @@
+name: Main
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CMAKE_BUILD_PARALLEL_LEVEL: 2
+  MAKEFLAGS: '-j 2'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        build_type: [Release]
+        c_compiler: [gcc, cl]
+        include:
+          - os: windows-latest
+            c_compiler: cl
+            cpp_compiler: cl
+          - os: ubuntu-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+        exclude:
+          - os: windows-latest
+            c_compiler: gcc
+          - os: ubuntu-latest
+            c_compiler: cl
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: "6.6.*"
+          cache: true
+          modules: 'qtshadertools'
+
+      - name: Set reusable strings
+        id: strings
+        shell: bash
+        run: |
+          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+          echo "prefix-dir=${{ github.workspace }}/prefix" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install \
+            gettext \
+            gamemode-dev \
+            libunshield-dev \
+
+      - name: Cache Prefix
+        id: cache-prefix-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ steps.strings.outputs.prefix-dir }}
+          key: ${{ runner.os }}-prefix
+
+      - name: Setup Windows dependencies
+        if: (runner.os == 'Windows') && (steps.cache-prefix-restore.outputs.cache-hit != 'true')
+        shell: powershell
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          
+          Invoke-WebRequest https://xiv.zone/distrib/dependencies/gettext.zip -OutFile gettext.zip
+          unzip gettext.zip -d ${{ steps.strings.outputs.prefix-dir }}
+          
+          Invoke-WebRequest https://xiv.zone/distrib/dependencies/iconv.zip -OutFile iconv.zip
+          unzip iconv.zip -d ${{ steps.strings.outputs.prefix-dir }}
+          
+          Invoke-WebRequest https://xiv.zone/distrib/dependencies/gcrypt.zip -OutFile gcrypt.zip
+          unzip gcrypt.zip -d ${{ steps.strings.outputs.prefix-dir }}
+          
+          Invoke-WebRequest https://xiv.zone/distrib/dependencies/gpg-error.zip -OutFile gpg-error.zip
+          unzip gpg-error.zip -d ${{ steps.strings.outputs.prefix-dir }}
+          
+          Invoke-WebRequest https://xiv.zone/distrib/dependencies/icoutils.zip -OutFile icoutils.zip
+          unzip icoutils.zip -d ${{ steps.strings.outputs.prefix-dir }}
+
+          Invoke-WebRequest https://xiv.zone/distrib/dependencies/libwinpthread.zip -OutFile libwinpthread.zip
+          unzip libwinpthread.zip -d ${{ steps.strings.outputs.prefix-dir }}/bin
+          
+          Invoke-WebRequest https://xiv.zone/distrib/dependencies/libcrypto.zip -OutFile libcrypto.zip
+          unzip libcrypto.zip -d ${{ steps.strings.outputs.prefix-dir }}/bin
+
+      - name: Build zlib
+        if: (runner.os == 'Windows') && (steps.cache-prefix-restore.outputs.cache-hit != 'true')
+        run: |
+          git clone https://github.com/madler/zlib.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-zlib -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S zlib -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-zlib --config ${{ matrix.build_type }} --target install
+
+      - name: Build Extra CMake Modules
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        run: |
+          git clone https://invent.kde.org/frameworks/extra-cmake-modules.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-ECM -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S extra-cmake-modules -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-ECM --config ${{ matrix.build_type }} --target install
+          cmake --install ${{ steps.strings.outputs.build-output-dir }}-ECM --config ${{ matrix.build_type }}
+
+      - name: Configure KI18n
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        run: |
+          git clone https://invent.kde.org/frameworks/ki18n.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-ki18n -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ki18n -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
+
+      - name: Windows KI18n workaround
+        if: (runner.os == 'Windows') && (steps.cache-prefix-restore.outputs.cache-hit != 'true')
+        run: |
+          (Get-Content -ReadCount 0 ${{ steps.strings.outputs.build-output-dir }}-ki18n/cmake/build-pofiles.cmake) -replace 'FATAL_ERROR', 'WARNING' | Set-Content ${{ steps.strings.outputs.build-output-dir }}-ki18n/cmake/build-pofiles.cmake
+
+      - name: Build KI18n
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        run: |
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-ki18n --config ${{ matrix.build_type }} --target install
+
+      - name: Build KCoreAddons
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        run: |
+          git clone https://invent.kde.org/frameworks/kcoreaddons.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-kca -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kcoreaddons -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-kca --config ${{ matrix.build_type }} --target install
+
+      - name: Build KConfig
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        run: |
+          git clone https://invent.kde.org/frameworks/kconfig.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-kconfig -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kconfig -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-kconfig --config ${{ matrix.build_type }} --target install
+
+      - name: Build KArchive
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        run: |
+          git clone https://invent.kde.org/frameworks/karchive.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-karchive -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S karchive -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF -DWITH_BZIP2=OFF -DWITH_LIBLZMA=OFF -DWITH_LIBZSTD=OFF # TODO: enable bzip which we need later
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-karchive --config ${{ matrix.build_type }} --target install
+
+      - name: Build Kirigami
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        run: |
+          git clone https://invent.kde.org/frameworks/kirigami.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-kirigami -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kirigami -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-kirigami --config ${{ matrix.build_type }} --target install
+
+      - name: Build Kirigami Add-ons
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        run: |
+          git clone https://invent.kde.org/libraries/kirigami-addons.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-kirigami-addons -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kirigami-addons -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-kirigami-addons --config ${{ matrix.build_type }} --target install
+
+      - name: Build Breeze Icons
+        if: (runner.os == 'Windows') && (steps.cache-prefix-restore.outputs.cache-hit != 'true')
+        continue-on-error: true
+        run: |
+          git clone https://invent.kde.org/frameworks/breeze-icons.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-breeze-icons -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S breeze-icons -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DICONS_LIBRARY=ON -DSKIP_INSTALL_ICONS=ON
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-breeze-icons --config ${{ matrix.build_type }} --target install
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-breeze-icons --config ${{ matrix.build_type }} --target install
+
+      - name: Build Corrosion
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/corrosion-rs/corrosion.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-corrosion -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S corrosion -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DCORROSION_BUILD_TESTS=OFF
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-corrosion --config ${{ matrix.build_type }} --target install
+
+      - name: Build QCoro
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/danvratil/qcoro.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-qcoro -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S qcoro -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF -DQCORO_WITH_QTWEBSOCKETS=OFF -DQCORO_BUILD_EXAMPLES=OFF
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-qcoro --config ${{ matrix.build_type }} --target install
+
+      - name: Build QtKeychain
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/redstrate/qtkeychain.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-qtkeychain -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S qtkeychain -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF -DBUILD_WITH_QT6=ON -DQTKEYCHAIN_TARGET_NAME=keychain
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-qtkeychain --config ${{ matrix.build_type }} --target install
+
+      - name: Build unshield
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/twogood/unshield.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-unshield -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S unshield -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-unshield --config ${{ matrix.build_type }} --target install
+
+      - name: Save Prefix
+        id: cache-prefix-save
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ steps.strings.outputs.prefix-dir }}
+          key: ${{ steps.cache-prefix-restore.outputs.cache-primary-key }}
+
+      - name: Configure
+        run: >
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }}
+          -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.build-output-dir }}/bin
+          -S ${{ github.workspace }}
+
+      - name: Build
+        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --target install
+
+      - name: Copy required DLLs
+        if: runner.os == 'Windows'
+        run: |
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/intl-8.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/iconv.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/zlib.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/q6keychain.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6I18n.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6ConfigGui.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6CoreAddons.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6Archive.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/unshield.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libgcrypt-20.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6ConfigCore.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libgpg-error6-0.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/zlib.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libwinpthread-1.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libcrypto-1_1-x64.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6BreezeIcons.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/Kirigami.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiDelegates.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiPlatform.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/lib/qml/* -Destination ${{ steps.strings.outputs.build-output-dir }}/qml/ -Recurse
+
+      - name: Remove extra files
+        if: runner.os == 'Windows'
+        run: |
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/opengl32sw.dll
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-package
+          path: ${{ steps.strings.outputs.build-output-dir }}/bin
