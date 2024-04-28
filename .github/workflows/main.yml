@@ -11,6 +11,14 @@ env:
   MAKEFLAGS: '-j 2'
 
 jobs:
+  reuse:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: REUSE Compliance Check
+      uses: fsfe/reuse-action@v3
+
   build:
     runs-on: ${{ matrix.os }}
 
