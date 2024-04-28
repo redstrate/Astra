@@ -1,7 +1,5 @@
 # Astra
 
-[![builds.sr.ht status](https://builds.sr.ht/~redstrate/astra.svg)](https://builds.sr.ht/~redstrate/astra?)
-
 Linux FFXIV launcher that supports profiles, multiple accounts and [Dalamud](https://github.com/goatcorp/Dalamud)
 plugins!
 
