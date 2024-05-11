@@ -256,7 +256,7 @@ QCoro::Task<bool> SquareEnixLogin::loginOAuth()
     postData.addQueryItem(QStringLiteral("otppw"), m_info->oneTimePassword);
 
     QUrl url;
-    url.setScheme(QStringLiteral("https"));
+    url.setScheme(m_launcher.settings()->preferredProtocol());
     url.setHost(QStringLiteral("ffxiv-login.%1").arg(m_launcher.settings()->squareEnixLoginServer()));
     url.setPath(QStringLiteral("/oauth/ffxivarr/login/login.send"));
 
@@ -301,8 +301,12 @@ QCoro::Task<bool> SquareEnixLogin::loginOAuth()
         const QRegularExpression errorRe(QStringLiteral(R"lit(window.external.user\("login=auth,ng,err,(?<launchParams>.*)\);)lit"));
         const QRegularExpressionMatch errorMatch = errorRe.match(str);
 
-        // there's a stray quote at the end of the error string, so let's remove that
-        Q_EMIT m_launcher.loginError(errorMatch.captured(1).chopped(1));
+        if (errorMatch.hasCaptured(1)) {
+            // there's a stray quote at the end of the error string, so let's remove that
+            Q_EMIT m_launcher.loginError(errorMatch.captured(1).chopped(1));
+        } else {
+            Q_EMIT m_launcher.loginError(i18n("Unknown error"));
+        }
 
         co_return false;
     }
@@ -313,7 +317,7 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
     qInfo(ASTRA_LOG) << "Registering the session...";
 
     QUrl url;
-    url.setScheme(QStringLiteral("https"));
+    url.setScheme(m_launcher.settings()->preferredProtocol());
     url.setHost(QStringLiteral("patch-gamever.%1").arg(m_launcher.settings()->squareEnixServer()));
     url.setPath(QStringLiteral("/http/win32/ffxivneo_release_game/%1/%2").arg(m_info->profile->baseGameVersion(), m_SID));
 
