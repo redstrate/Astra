@@ -31,20 +31,23 @@ QCoro::Task<bool> AssetUpdater::update()
     qInfo(ASTRA_LOG) << "Checking for compatibility tool updates...";
 
     m_dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    const QDir compatibilityToolDir = m_dataDir.absoluteFilePath(QStringLiteral("tool"));
-    m_wineDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("wine"));
-    m_dxvkDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("dxvk"));
 
-    Utility::createPathIfNeeded(m_wineDir);
-    Utility::createPathIfNeeded(m_dxvkDir);
+    if (LauncherCore::needsCompatibilityTool()) {
+        const QDir compatibilityToolDir = m_dataDir.absoluteFilePath(QStringLiteral("tool"));
+        m_wineDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("wine"));
+        m_dxvkDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("dxvk"));
 
-    if (m_profile.wineType() == Profile::WineType::BuiltIn && !co_await checkRemoteCompatibilityToolVersion()) {
-        co_return false;
-    }
+        Utility::createPathIfNeeded(m_wineDir);
+        Utility::createPathIfNeeded(m_dxvkDir);
 
-    // TODO: should DXVK be tied to this setting...?
-    if (m_profile.wineType() == Profile::WineType::BuiltIn && !co_await checkRemoteDxvkVersion()) {
-        co_return false;
+        if (m_profile.wineType() == Profile::WineType::BuiltIn && !co_await checkRemoteCompatibilityToolVersion()) {
+            co_return false;
+        }
+
+        // TODO: should DXVK be tied to this setting...?
+        if (m_profile.wineType() == Profile::WineType::BuiltIn && !co_await checkRemoteDxvkVersion()) {
+            co_return false;
+        }
     }
 
     if (!m_profile.dalamudEnabled()) {

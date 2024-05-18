@@ -111,7 +111,8 @@ public:
     [[nodiscard]] bool isLoadingFinished() const;
     [[nodiscard]] bool isSteam() const;
     [[nodiscard]] bool isSteamDeck() const;
-    [[nodiscard]] bool isWindows() const;
+    [[nodiscard]] static bool isWindows();
+    [[nodiscard]] static bool needsCompatibilityTool();
     [[nodiscard]] Q_INVOKABLE bool isPatching() const;
 
     [[nodiscard]] QNetworkAccessManager *mgr();
