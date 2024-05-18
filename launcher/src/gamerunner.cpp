@@ -177,7 +177,8 @@ QString GameRunner::getGameArgs(const Profile &profile, const std::optional<Logi
     }
 
     // FIXME: this should belong somewhere else...
-    Utility::createPathIfNeeded(profile.winePrefixPath());
+    if (LauncherCore::needsCompatibilityTool())
+        Utility::createPathIfNeeded(profile.winePrefixPath());
 
     if (auth) {
         if (!auth->lobbyhost.isEmpty()) {
