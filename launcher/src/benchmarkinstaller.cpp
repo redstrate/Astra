@@ -69,8 +69,8 @@ void BenchmarkInstaller::installGame()
 
     KZip archive(m_localInstallerPath);
     if (!archive.open(QIODevice::ReadOnly)) {
-        qCritical(ASTRA_LOG) << "Failed to extract benchmark files";
-        Q_EMIT error(i18n("Failed to extract benchmark files."));
+        qCritical(ASTRA_LOG) << "Failed to extract benchmark files:" << archive.errorString();
+        Q_EMIT error(i18n("Failed to extract benchmark files:\n\n%1", archive.errorString()));
         return;
     }
 
