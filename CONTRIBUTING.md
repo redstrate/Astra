@@ -6,7 +6,7 @@ Once you finished your changes, use [git send-email](https://git-send-email.io/)
 
 ## What Needs Doing
 
-The current TODO list can be located [here](https://todo.sr.ht/~redstrate/astra). It's the best place for feature requests and bug reports.
+The current TODO list can be located [here](https://github.com/redstrate/astra). It's the best place for feature requests and bug reports.
 
 ## Where Stuff Is
 
