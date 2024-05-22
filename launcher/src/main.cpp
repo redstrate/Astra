@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
     about.addComponent(QStringLiteral("libphysis"),
                        i18n("C bindings for physis"),
                        QString::fromLatin1(physis_get_libphysis_version()),
-                       QStringLiteral("https://git.sr.ht/~redstrate/libphysis"),
+                       QStringLiteral("https://github.com/redstrate/libphysis"),
                        KAboutLicense::GPL_V3);
     about.addComponent(QStringLiteral("KDSingleApplication"),
                        i18n("Helper class for single-instance policy applications "),
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
                        QStringLiteral("https://github.com/paolostivanin/libcotp"),
                        KAboutLicense::Unknown);
     about.setDesktopFileName(QStringLiteral("zone.xiv.astra"));
-    about.setBugAddress(QByteArrayLiteral("https://lists.sr.ht/~redstrate/public-inbox"));
+    about.setBugAddress(QByteArrayLiteral("https://github.com/redstrate/astra/issues"));
     about.setComponentName(QStringLiteral("astra"));
     about.setProgramLogo(QStringLiteral("zone.xiv.astra"));
     about.setOrganizationDomain(QByteArrayLiteral("xiv.zone"));

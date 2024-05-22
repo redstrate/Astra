@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Astra
 Upstream-Contact: Joshua Goins <josh@redstrate.com>
-Source: https://git.sr.ht/~redstrate/astra
+Source: https://github.com/redstrate/astra
 
 Files: .gitmodules README.md BUILDING.md FLATPAK.md CONTRIBUTING.md .build.yml .editorconfig zone.xiv.astra.yml zone.xiv.astra.desktop misc/* scripts/* .github/*
 Copyright: Joshua Goins <josh@redstrate.com>

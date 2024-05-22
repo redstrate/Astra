@@ -20,11 +20,11 @@
         <keyword translate="no">ff14</keyword>
     </keywords>
     <url type="homepage">https://xiv.zone/astra</url>
-    <url type="bugtracker">https://todo.sr.ht/~redstrate/astra</url>
+    <url type="bugtracker">https://github.com/redstrate/astra/issues</url>
     <url type="faq">https://xiv.zone/astra/faq</url>
     <url type="donation">https://redstrate.com/fund</url>
     <url type="contact">https://redstrate.com/contact</url>
-    <url type="vcs-browser">https://sr.ht/~redstrate/astra</url>
+    <url type="vcs-browser">https://github.com/redstrate/astra</url>
     <launchable type="desktop-id">zone.xiv.astra.desktop</launchable>
     <releases>
         <release version="0.6.0"/>
