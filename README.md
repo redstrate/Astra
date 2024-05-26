@@ -7,13 +7,15 @@ plugins!
 
 ## Features
 
-* Wine Support - Handles launching Wine for you.
-* Dalamud Support - You can use Dalamud plugins out of the box.
-* Multiple Profiles - Almost all of the settings can be set per-profile.
-* Encrypted Arguments - Game arguments are encrypted out of the box, so it's just as secure as other launchers.
-* Secure Password Storage - Login information is encrypted using your system keychain and is never stored plain-text.
-* Game Patching Support - Can patch the game without the need to boot into the official launcher.
-* Sapphire Login - Can login to 3rd party Sapphire servers.
+* Wine Support: Handles launching Wine for you.
+* Dalamud Support: You can use Dalamud plugins out of the box!
+* Multiple Profiles: Customizable per-profile settings for users that need multiple game installs.
+* Encrypted Arguments: Game arguments are encrypted out of the box, and is as secure as other launchers.
+* Secure Password Storage: Login information is encrypted using your system keychain and is never stored plain-text.
+* Game Patching Support: Can patch the game without the need to boot into the official launcher.
+* Alternative Server Support: Can log into Sapphire servers and use alternative domains. 
+
+**Note:** Steam-linked Square Enix accounts are not currently supported. You will have to use the official launcher or XIVLauncher.Core.
 
 ## Get It
 
