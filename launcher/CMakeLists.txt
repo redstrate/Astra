@@ -195,9 +195,12 @@ ecm_add_app_icon(astra
 
 qt_finalize_target(astra)
 
-qt_generate_deploy_qml_app_script(
-        TARGET astra
-        OUTPUT_SCRIPT deploy_script
-        NO_UNSUPPORTED_PLATFORM_ERROR
-)
-install(SCRIPT ${deploy_script})
+# the current tooling completely breaks in Flatpak, and is unnecessary there anyway
+if (NOT BUILD_FLATPAK)
+    qt_generate_deploy_qml_app_script(
+            TARGET astra
+            OUTPUT_SCRIPT deploy_script
+            NO_UNSUPPORTED_PLATFORM_ERROR
+    )
+    install(SCRIPT ${deploy_script})
+endif()

@@ -295,11 +295,7 @@ bool LauncherCore::isSteam() const
 
 bool LauncherCore::isSteamDeck() const
 {
-    if (m_steamApi != nullptr) {
-        return m_steamApi->isDeck() || qEnvironmentVariable("SteamDeck") == QStringLiteral("1");
-    } else {
-        return false;
-    }
+    return qEnvironmentVariable("SteamDeck") == QStringLiteral("1");
 }
 
 bool LauncherCore::isWindows()
