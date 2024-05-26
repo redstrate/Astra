@@ -19,7 +19,7 @@ plugins!
 
 ## Get It
 
-Details on where to find stable releases of Astra can be found on its [homepage](https://xiv.zone/astra).
+Details on where to find stable releases of Astra can be found on its [homepage](https://xiv.zone/astra/install).
 
 ## Building
 
