@@ -247,11 +247,13 @@ FormCard.FormCardPage {
         FormCard.FormDelegateSeparator {
             above: dalamudChannelDelegate
             below: dalamudInjectDelegate
+            visible: LauncherCore.settings.showDevTools
         }
 
         FormCard.FormComboBoxDelegate {
             id: dalamudInjectDelegate
 
+            visible: LauncherCore.settings.showDevTools
             text: i18n("Injection Method")
             description: "It shouldn't be nessecary to change this setting, unless you're running into issues injecting Dalamud."
             model: ["Entrypoint", "DLL Injection"]
@@ -268,6 +270,7 @@ FormCard.FormCardPage {
         FormCard.FormSpinBoxDelegate {
             id: dalamudDelayDelegate
 
+            visible: LauncherCore.settings.showDevTools
             label: i18n("Injection Delay")
             value: page.profile.dalamudInjectDelay
             onValueChanged: page.profile.dalamudInjectDelay = value
