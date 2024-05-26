@@ -56,7 +56,7 @@ FormCard.FormCardPage {
     }
 
     FormCard.FormHeader {
-        title: i18n("Create New Account")
+        title: i18n("Add Account")
         visible: LauncherCore.accountManager.hasAnyAccounts()
     }
 
@@ -67,7 +67,7 @@ FormCard.FormCardPage {
         FormCard.FormButtonDelegate {
             id: addSquareEnixButton
 
-            text: i18n("Add Square Enix Account…")
+            text: i18n("Square Enix Account…")
             description: i18n("Used for logging into the official game servers.")
             icon.name: "list-add-symbolic"
             onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"), {
@@ -83,8 +83,8 @@ FormCard.FormCardPage {
         FormCard.FormButtonDelegate {
             id: addSapphireButton
 
-            text: i18n("Add Sapphire Account…")
-            description: i18n("Only used for Sapphire servers, don't select this if unless you plan to connect to one.")
+            text: i18n("Sapphire Account…")
+            description: i18n("Only for Sapphire servers, don't select this if unless you need to connect to one.")
             icon.name: "list-add-symbolic"
             onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSapphire"), {
                 profile: page.profile

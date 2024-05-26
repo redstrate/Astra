@@ -57,7 +57,7 @@ FormCard.FormCardPage {
         FormCard.FormTextDelegate {
             id: helpTextDelegate
 
-            text: i18n("If you can't find your existing game installation, manually select the path below.")
+            text: i18n("If you can't find your existing game installation, manually select the folder below.")
         }
         FormCard.FormDelegateSeparator {
             above: helpTextDelegate
@@ -67,7 +67,7 @@ FormCard.FormCardPage {
             id: selectDelegate
 
             icon.name: "document-open-folder"
-            text: i18n("Select Existing Path")
+            text: i18n("Select Existing Folder")
 
             onClicked: dialog.open()
         }

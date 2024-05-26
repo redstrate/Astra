@@ -54,7 +54,7 @@ FormCard.FormCardPage {
         FormFolderDelegate {
             id: gamePathDelegate
 
-            text: i18n("Game Path")
+            text: i18n("Game Folder")
             folder: page.profile.gamePath
 
             onAccepted: (folder) => page.profile.gamePath = folder
@@ -126,7 +126,7 @@ FormCard.FormCardPage {
         FormFolderDelegate {
             id: winePrefixPathDelegate
 
-            text: i18n("Wine Prefix Path")
+            text: i18n("Wine Prefix Folder")
             folder: page.profile.winePrefixPath
         }
 
