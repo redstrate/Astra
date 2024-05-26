@@ -19,30 +19,6 @@ FormCard.FormCardPage {
 
     title: i18n("Find Existing Installation")
 
-    FormCard.FormCard {
-        Layout.topMargin: Kirigami.Units.largeSpacing
-        Layout.fillWidth: true
-
-        FormCard.FormTextDelegate {
-            id: helpTextDelegate
-
-            text: i18n("Please select the path to your existing installation.")
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: helpTextDelegate
-            below: selectDelegate
-        }
-
-        FormCard.FormButtonDelegate {
-            id: selectDelegate
-
-            text: i18n("Select Existing Path")
-            icon.name: "document-open-folder"
-            onClicked: dialog.open()
-        }
-    }
-
     data: FolderDialog {
         id: dialog
 
@@ -51,4 +27,50 @@ FormCard.FormCardPage {
             applicationWindow().checkSetup();
         }
     }
+
+    FormCard.FormCard {
+        Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
+
+        Repeater {
+            model: ExistingInstallModel {}
+
+            delegate: FormCard.FormButtonDelegate {
+                required property var path
+                required property var type
+
+                text: path
+                description: type
+
+                onClicked: {
+                    page.profile.gamePath = path;
+                    applicationWindow().checkSetup();
+                }
+            }
+        }
+    }
+
+    FormCard.FormCard {
+        Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
+
+        FormCard.FormTextDelegate {
+            id: helpTextDelegate
+
+            text: i18n("If you can't find your existing game installation, manually select the path below.")
+        }
+        FormCard.FormDelegateSeparator {
+            above: helpTextDelegate
+            below: selectDelegate
+        }
+        FormCard.FormButtonDelegate {
+            id: selectDelegate
+
+            icon.name: "document-open-folder"
+            text: i18n("Select Existing Path")
+
+            onClicked: dialog.open()
+        }
+    }
 }
+

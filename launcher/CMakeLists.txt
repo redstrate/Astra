@@ -47,6 +47,7 @@ target_sources(astra PRIVATE
         include/benchmarkinstaller.h
         include/compatibilitytoolinstaller.h
         include/encryptedarg.h
+        include/existinginstallmodel.h
         include/gamerunner.h
         include/gameinstaller.h
         include/headline.h
@@ -68,6 +69,7 @@ target_sources(astra PRIVATE
         src/benchmarkinstaller.cpp
         src/compatibilitytoolinstaller.cpp
         src/encryptedarg.cpp
+        src/existinginstallmodel.cpp
         src/gamerunner.cpp
         src/headline.cpp
         src/gameinstaller.cpp
