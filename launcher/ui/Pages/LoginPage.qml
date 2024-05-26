@@ -57,14 +57,11 @@ QQC2.Control {
             return false;
         }
 
-        if (LauncherCore.currentProfile.loggedIn) {
-            return false;
-        }
-
-        return true;
+        return !LauncherCore.currentProfile.loggedIn;
     }
 
     function updateFields() {
+        console.info(!LauncherCore.currentProfile.account.needsPassword && LauncherCore.currentProfile.account.rememberPassword);
         usernameField.text = LauncherCore.currentProfile.account.name;
         passwordField.text = !LauncherCore.currentProfile.account.needsPassword && LauncherCore.currentProfile.account.rememberPassword ? LauncherCore.currentProfile.account.getPassword() : "";
         otpField.text = "";
@@ -98,6 +95,8 @@ QQC2.Control {
             loginButton.forceActiveFocus();
         }
     }
+
+    Component.onCompleted: updateFields()
 
     contentItem: ColumnLayout {
         width: parent.width
@@ -236,7 +235,6 @@ QQC2.Control {
                 id: passwordField
                 label: LauncherCore.currentProfile.account.isSapphire ? i18n("Password") : i18n("Square Enix Password")
                 echoMode: TextInput.Password
-                enabled: LauncherCore.currentProfile.account.rememberPassword ? LauncherCore.currentProfile.account.needsPassword : true
                 focus: true
                 onAccepted: {
                     if (otpField.visible) {
@@ -245,7 +243,6 @@ QQC2.Control {
                         loginButton.clicked();
                     }
                 }
-                text: (!LauncherCore.currentProfile.account.needsPassword && LauncherCore.currentProfile.account.rememberPassword) ? LauncherCore.currentProfile.account.getPassword() : ""
             }
 
             FormCard.FormDelegateSeparator {

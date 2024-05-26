@@ -321,7 +321,7 @@ QCoro::Task<QString> Account::getKeychainValue(const QString &key)
         co_await qCoro(job, &QKeychain::ReadPasswordJob::finished);
 
         if (job->error() != QKeychain::NoError) {
-            qWarning(ASTRA_LOG) << "Error when reading" << key << job->errorString();
+            qWarning(ASTRA_LOG) << "Error when reading" << key << job->errorString() << "for account" << uuid();
         }
 
         co_return job->textData();
