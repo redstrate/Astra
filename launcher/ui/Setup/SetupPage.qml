@@ -19,10 +19,17 @@ FormCard.FormCardPage {
 
     title: isInitialSetup ? i18n("Initial Setup") : i18n("Profile Setup")
 
+    data: FolderDialog {
+        id: installFolderDialog
+
+        onAccepted: page.profile.gamePath = decodeURIComponent(selectedFolder.toString().replace("file://", ""))
+    }
+
     Image {
         source: "qrc:/zone.xiv.astra.svg"
 
         fillMode: Image.PreserveAspectFit
+        visible: !LauncherCore.profileManager.hasAnyExistingInstallations()
 
         Layout.fillWidth: true
         Layout.fillHeight: true
@@ -31,15 +38,33 @@ FormCard.FormCardPage {
 
     FormCard.FormCard {
         Layout.fillWidth: true
+        Layout.topMargin: LauncherCore.profileManager.hasAnyExistingInstallations() ? Kirigami.Units.largeSpacing : 0
 
         FormCard.FormTextDelegate {
+            id: helpText
+
             text: {
                 if (page.isInitialSetup) {
-                    return i18n("You must have a legitimate installation of the FFXIV to continue.");
+                    return i18n("You must have a legitimate installation of FFXIV to continue.");
                 } else {
-                    return i18n("Select a game installation of FFXIV for '%1'.", page.profile.name);
+                    return i18n("Select a game installation for '%1'.", page.profile.name);
                 }
             }
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: helpText
+            below: selectInstallFolder
+        }
+
+        FormCard.FormButtonDelegate {
+            id: selectInstallFolder
+
+            icon.name: "document-open-folder"
+            text: i18n("Select Install Folder")
+            description: profile.gamePath
+
+            onClicked: installFolderDialog.open()
         }
     }
 
