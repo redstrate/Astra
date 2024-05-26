@@ -244,6 +244,7 @@ void Account::fetchAvatar()
         QUrl url;
         url.setScheme(m_launcher.settings()->preferredProtocol());
         url.setHost(m_launcher.settings()->xivApiServer());
+
         url.setPath(QStringLiteral("/character/%1").arg(lodestoneId()));
 
         QNetworkRequest request(url);
@@ -256,8 +257,12 @@ void Account::fetchAvatar()
                 const QNetworkRequest avatarRequest(QUrl(document.object()["Character"_L1].toObject()["Avatar"_L1].toString()));
                 Utility::printRequest(QStringLiteral("GET"), avatarRequest);
 
+                if (avatarRequest.url().isEmpty()) {
+                    return;
+                }
+
                 auto avatarReply = m_launcher.mgr()->get(avatarRequest);
-                QObject::connect(avatarReply, &QNetworkReply::finished, [this, filename, avatarReply] {
+                connect(avatarReply, &QNetworkReply::finished, [this, filename, avatarReply] {
                     QFile file(filename);
                     file.open(QIODevice::ReadWrite);
                     file.write(avatarReply->readAll());
