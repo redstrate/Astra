@@ -131,7 +131,7 @@ Kirigami.ApplicationWindow {
         function onShowNewsChanged() {
             // workaround annoying Qt layout bug
             // TODO: see if this changed in Qt7
-            appWindow.pageStack.layers.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
+            appWindow.pageStack.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
         }
     }
 
