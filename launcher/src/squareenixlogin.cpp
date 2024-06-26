@@ -80,16 +80,22 @@ QCoro::Task<bool> SquareEnixLogin::checkGateStatus()
     co_await reply;
 
     const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
+    if (document.isEmpty()) {
+        Q_EMIT m_launcher.loginError(i18n("An error occured when checking login gate status:\n\n%1", reply->errorString()));
+        co_return false;
+    }
+
     const bool isGateOpen = !document.isEmpty() && document.object()["status"_L1].toInt() != 0;
 
     if (isGateOpen) {
         qInfo(ASTRA_LOG) << "Gate is open!";
         co_return true;
-    } else {
-        qInfo(ASTRA_LOG) << "Gate is closed!";
-        Q_EMIT m_launcher.loginError(i18n("The login gate is closed, the game may be under maintenance.\n\n%1", reply->errorString()));
-        co_return false;
     }
+
+    qInfo(ASTRA_LOG) << "Gate is closed!";
+    Q_EMIT m_launcher.loginError(i18n("The login gate is closed, the game may be under maintenance."));
+
+    co_return false;
 }
 
 QCoro::Task<bool> SquareEnixLogin::checkLoginStatus()
