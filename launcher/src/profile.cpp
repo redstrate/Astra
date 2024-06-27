@@ -556,6 +556,16 @@ void Profile::setDalamudVersion(const QString &version)
     m_dalamudVersion = version;
 }
 
+void Profile::setDalamudApplicable(bool applicable)
+{
+    m_dalamudApplicable = applicable;
+}
+
+bool Profile::dalamudShouldLaunch() const
+{
+    return dalamudEnabled() && m_dalamudApplicable;
+}
+
 QString Profile::compatibilityToolVersion() const
 {
     return m_compatibilityToolVersion;

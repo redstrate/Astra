@@ -176,6 +176,9 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudVersion()
     m_remoteRuntimeVersion = doc["runtimeVersion"_L1].toString();
     m_remoteDalamudDownloadUrl = doc["downloadUrl"_L1].toString();
 
+    // TODO: Also check supportedGameVer as a fallback
+    m_profile.setDalamudApplicable(doc["isApplicableForCurrentGameVer"_L1].toBool());
+
     qInfo(ASTRA_LOG) << "Latest available Dalamud version:" << m_remoteDalamudVersion << "local:" << m_profile.dalamudVersion();
     qInfo(ASTRA_LOG) << "Latest available NET runtime:" << m_remoteRuntimeVersion;
 

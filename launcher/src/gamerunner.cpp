@@ -29,7 +29,7 @@ void GameRunner::beginGameExecutable(Profile &profile, const std::optional<Login
         gameExectuable = profile.gamePath() + QStringLiteral("/game/ffxiv_dx11.exe");
     }
 
-    if (profile.dalamudEnabled()) {
+    if (profile.dalamudShouldLaunch()) {
         beginDalamudGame(gameExectuable, profile, auth);
     } else {
         beginVanillaGame(gameExectuable, profile, auth);
@@ -127,22 +127,7 @@ QString GameRunner::getGameArgs(const Profile &profile, const std::optional<Logi
 {
     QList<std::pair<QString, QString>> gameArgs;
 
-    if (!profile.isBenchmark()) {
-        gameArgs.push_back({QStringLiteral("DEV.DataPathType"), QString::number(1)});
-        gameArgs.push_back({QStringLiteral("DEV.UseSqPack"), QString::number(1)});
-        gameArgs.push_back({QStringLiteral("ver"), profile.baseGameVersion()});
-        gameArgs.push_back({QStringLiteral("resetconfig"), QStringLiteral("0")});
-    }
-
-    if (auth) {
-        gameArgs.push_back({QStringLiteral("DEV.MaxEntitledExpansionID"), QString::number(auth->maxExpansion)});
-        gameArgs.push_back({QStringLiteral("DEV.TestSID"), auth->SID});
-        gameArgs.push_back({QStringLiteral("SYS.Region"), QString::number(auth->region)});
-        gameArgs.push_back({QStringLiteral("language"), QString::number(profile.account()->language())});
-        gameArgs.push_back({QStringLiteral("UserPath"), Utility::toWindowsPath(profile.account()->getConfigDir().absolutePath())});
-
-        Utility::createPathIfNeeded(profile.account()->getConfigDir().absolutePath());
-    } else if (profile.isBenchmark()) {
+    if (profile.isBenchmark()) {
         gameArgs.push_back({QStringLiteral("SYS.Language"), QString::number(1)});
         gameArgs.push_back({QStringLiteral("SYS.Fps"), QString::number(0)});
         gameArgs.push_back({QStringLiteral("SYS.WaterWet_DX11"), QString::number(1)});
@@ -174,6 +159,26 @@ QString GameRunner::getGameArgs(const Profile &profile, const std::optional<Logi
         gameArgs.push_back({QStringLiteral("SYS.ScreenMode"), QString::number(0)});
         gameArgs.push_back({QStringLiteral("SYS.ScreenWidth"), QString::number(1920)});
         gameArgs.push_back({QStringLiteral("SYS.ScreenHeight"), QString::number(1080)});
+    } else {
+        gameArgs.push_back({QStringLiteral("DEV.DataPathType"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("DEV.UseSqPack"), QString::number(1)});
+        gameArgs.push_back({QStringLiteral("ver"), profile.baseGameVersion()});
+        gameArgs.push_back({QStringLiteral("resetconfig"), QStringLiteral("0")});
+        gameArgs.push_back({QStringLiteral("language"), QString::number(profile.account()->language())});
+        gameArgs.push_back({QStringLiteral("UserPath"), Utility::toWindowsPath(profile.account()->getConfigDir().absolutePath())});
+
+        Utility::createPathIfNeeded(profile.account()->getConfigDir().absolutePath());
+
+        if (auth) {
+            gameArgs.push_back({QStringLiteral("DEV.MaxEntitledExpansionID"), QString::number(auth->maxExpansion)});
+            gameArgs.push_back({QStringLiteral("DEV.TestSID"), auth->SID});
+            gameArgs.push_back({QStringLiteral("SYS.Region"), QString::number(auth->region)});
+        } else {
+            // fallback just needed to get to the title screen
+            gameArgs.push_back({QStringLiteral("DEV.MaxEntitledExpansionID"), QString::number(1)});
+            gameArgs.push_back({QStringLiteral("DEV.TestSID"), QString::number(1)});
+            gameArgs.push_back({QStringLiteral("SYS.Region"), QString::number(1)});
+        }
     }
 
     // FIXME: this should belong somewhere else...

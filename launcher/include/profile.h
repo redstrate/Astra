@@ -143,6 +143,13 @@ public:
     [[nodiscard]] QString dalamudVersion() const;
     void setDalamudVersion(const QString &version);
 
+    /// @brief Sets whether or not the Dalamud version is applicable to the current game version.
+    /// @note If this is false, Dalamud will not launch.
+    void setDalamudApplicable(bool applicable);
+
+    /// @return If Dalamud is enabled, and it's also applicable for the current game version.
+    bool dalamudShouldLaunch() const;
+
     [[nodiscard]] QString compatibilityToolVersion() const;
     void setCompatibilityToolVersion(const QString &version);
 
@@ -200,6 +207,7 @@ private:
     int m_dalamudAssetVersion = -1;
     QString m_runtimeVersion;
     QString m_compatibilityToolVersion;
+    bool m_dalamudApplicable = false;
 
     bool m_loggedIn = false;
 
