@@ -40,6 +40,20 @@ FormCard.FormCardPage {
     FormCard.FormCard {
         Layout.fillWidth: true
 
+        FormCard.FormButtonDelegate {
+            id: launchGameDelegate
+
+            text: i18n("Launch Game Now")
+            description: i18n("This is meant for testing if we can get to the title screen and will fail at doing anything else.")
+
+            onClicked: LauncherCore.immediatelyLaunch(LauncherCore.currentProfile)
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: launchGameDelegate
+            below: encryptArgDelegate
+        }
+
         FormCard.FormCheckDelegate {
             id: encryptArgDelegate
 

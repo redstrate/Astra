@@ -87,6 +87,10 @@ public:
     /// check the result to see whether they need to "reset" or show a failed state or not. \note The login process is asynchronous.
     Q_INVOKABLE bool autoLogin(Profile *profile);
 
+    /// Launches the game without patching, or logging in.
+    /// Meant to test if we can get to the title screen and is intended to fail to do anything else.
+    Q_INVOKABLE void immediatelyLaunch(Profile *profile);
+
     Q_INVOKABLE GameInstaller *createInstaller(Profile *profile);
     Q_INVOKABLE GameInstaller *createInstallerFromExisting(Profile *profile, const QString &filePath);
     Q_INVOKABLE CompatibilityToolInstaller *createCompatInstaller();

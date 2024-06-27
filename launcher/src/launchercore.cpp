@@ -103,6 +103,13 @@ bool LauncherCore::autoLogin(Profile *profile)
     return true;
 }
 
+void LauncherCore::immediatelyLaunch(Profile *profile)
+{
+    Q_ASSERT(profile != nullptr);
+
+    m_runner->beginGameExecutable(*profile, std::nullopt);
+}
+
 GameInstaller *LauncherCore::createInstaller(Profile *profile)
 {
     Q_ASSERT(profile != nullptr);
@@ -354,17 +361,17 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
         info.profile->account()->updateConfig();
     }
 
+    std::optional<LoginAuth> auth;
+    if (!info.profile->isBenchmark()) {
+        if (info.profile->account()->isSapphire()) {
+            auth = co_await m_sapphireLogin->login(info.profile->account()->lobbyUrl(), info);
+        } else {
+            auth = co_await m_squareEnixLogin->login(&info);
+        }
+    }
+
     auto assetUpdater = new AssetUpdater(*info.profile, *this, this);
     if (co_await assetUpdater->update()) {
-        std::optional<LoginAuth> auth;
-        if (!info.profile->isBenchmark()) {
-            if (info.profile->account()->isSapphire()) {
-                auth = co_await m_sapphireLogin->login(info.profile->account()->lobbyUrl(), info);
-            } else {
-                auth = co_await m_squareEnixLogin->login(&info);
-            }
-        }
-
         // If we expect an auth ticket, don't continue if missing
         if (!info.profile->isBenchmark() && auth == std::nullopt) {
             co_return;
