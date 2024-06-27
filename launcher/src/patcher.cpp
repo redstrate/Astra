@@ -71,10 +71,13 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
         const int ourIndex = patchIndex++;
 
         const QString filename = QStringLiteral("%1.patch").arg(patch.name);
+        const QString tempFilename = QStringLiteral("%1.patch~").arg(patch.name); // tilde afterwards to hide it easily
+
         const QDir repositoryDir = m_patchesDir.absoluteFilePath(patch.repository);
         Utility::createPathIfNeeded(repositoryDir);
 
         const QString patchPath = repositoryDir.absoluteFilePath(filename);
+        const QString tempPatchPath = repositoryDir.absoluteFilePath(tempFilename);
 
         const QueuedPatch queuedPatch{.name = patch.name,
                                       .repository = patch.repository,
@@ -102,18 +105,23 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
 
             auto patchReply = m_launcher.mgr()->get(patchRequest);
 
-            connect(patchReply, &QNetworkReply::downloadProgress, this, [this, ourIndex, queuedPatch](int received, int total) {
+            connect(patchReply, &QNetworkReply::downloadProgress, this, [this, ourIndex](int received, int total) {
                 Q_UNUSED(total)
                 updateDownloadProgress(ourIndex, received);
             });
 
-            synchronizer.addFuture(QtFuture::connect(patchReply, &QNetworkReply::finished).then([this, ourIndex, patchPath, patchReply] {
-                qDebug(ASTRA_PATCHER) << "Downloaded to" << patchPath;
-
-                QFile file(patchPath);
-                file.open(QIODevice::WriteOnly);
+            connect(patchReply, &QNetworkReply::readyRead, this, [this, tempPatchPath, patchReply] {
+                // TODO: don't open the file each time we recieve data
+                QFile file(tempPatchPath);
+                file.open(QIODevice::WriteOnly | QIODevice::Append);
                 file.write(patchReply->readAll());
                 file.close();
+            });
+
+            synchronizer.addFuture(QtFuture::connect(patchReply, &QNetworkReply::finished).then([this, ourIndex, patchPath, tempPatchPath] {
+                qDebug(ASTRA_PATCHER) << "Downloaded to" << patchPath;
+
+                QDir().rename(tempPatchPath, patchPath);
 
                 QMutexLocker locker(&m_finishedPatchesMutex);
                 m_finishedPatches++;
