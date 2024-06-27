@@ -31,26 +31,34 @@ QCoro::Task<std::optional<LoginAuth>> SquareEnixLogin::login(LoginInformation *i
     Q_ASSERT(info != nullptr);
     m_info = info;
 
-    if (!co_await checkGateStatus()) {
-        co_return std::nullopt;
-    }
-
-    // There seems to be a limitation in their boot patching system.
-    // Their server can only give one patch a time, so the boot process must keep trying to patch until
-    // there is no patches left.
+    // First, let's check for boot updates. While not technically required for us, it's needed for later hash checking.
+    // It's also a really good idea anyway, in case the official launcher is needed.
     while (m_lastRunHasPatched) {
+        // There seems to be a limitation in their boot patching system.
+        // Their server can only give one patch a time, so the boot process must keep trying to patch until
+        // there is no patches left.
         co_await checkBootUpdates();
     }
 
+    // Then check if we can even login.
     if (!co_await checkLoginStatus()) {
         co_return std::nullopt;
     }
 
+    // Login with through the oauth API. This gives us some information like a temporary SID, region and expansion information
     if (!co_await loginOAuth()) {
         co_return std::nullopt;
     }
 
+    // Register the session with the server. This method also updates the game as necessary.
     if (!co_await registerSession()) {
+        co_return std::nullopt;
+    }
+
+    // Finally, double check the *world* status to make sure we don't try to log in during maintenance.
+    // Doing it late here ensures we handle cases where the patch is available during maintenance (like during expansion launches)
+    // but stops before trying to log in when you're not supposed to.
+    if (!co_await checkGateStatus()) {
         co_return std::nullopt;
     }
 
