@@ -175,8 +175,8 @@ QString GameRunner::getGameArgs(const Profile &profile, const std::optional<Logi
             gameArgs.push_back({QStringLiteral("SYS.Region"), QString::number(auth->region)});
         } else {
             // fallback just needed to get to the title screen
-            gameArgs.push_back({QStringLiteral("DEV.MaxEntitledExpansionID"), QString::number(1)});
-            gameArgs.push_back({QStringLiteral("DEV.TestSID"), QString::number(1)});
+            gameArgs.push_back({QStringLiteral("DEV.MaxEntitledExpansionID"), QString::number(2)});
+            gameArgs.push_back({QStringLiteral("DEV.TestSID"), QString::number(0)});
             gameArgs.push_back({QStringLiteral("SYS.Region"), QString::number(1)});
         }
     }
