@@ -175,7 +175,7 @@ void Patcher::processPatch(const QueuedPatch &patch)
 
         if (patch.length != f.size()) {
             f.remove();
-            qFatal(ASTRA_PATCHER) << patch.path << "has the wrong size.";
+            qCritical(ASTRA_PATCHER) << patch.path << "has the wrong size.";
             Q_EMIT m_launcher.miscError(i18n("Patch %1 is the wrong size. The downloaded patch has been discarded, please log in again.", patch.name));
             return;
         }
@@ -197,7 +197,7 @@ void Patcher::processPatch(const QueuedPatch &patch)
 
             if (QString::fromUtf8(hash.result().toHex()) != patch.hashes[i]) {
                 f.remove();
-                qFatal(ASTRA_PATCHER) << patch.path << "failed the hash check.";
+                qCritical(ASTRA_PATCHER) << patch.path << "failed the hash check.";
                 Q_EMIT m_launcher.miscError(i18n("Patch %1 failed the hash check. The downloaded patch has been discarded, please log in again.", patch.name));
                 return;
             }
@@ -212,7 +212,7 @@ void Patcher::processPatch(const QueuedPatch &patch)
     }
 
     if (!res) {
-        qFatal(ASTRA_PATCHER) << "Failed to install" << patch.path << "to" << (isBoot() ? QStringLiteral("boot") : patch.repository);
+        qCritical(ASTRA_PATCHER) << "Failed to install" << patch.path << "to" << (isBoot() ? QStringLiteral("boot") : patch.repository);
         Q_EMIT m_launcher.miscError(i18n("Patch %1 failed to apply. The game is now in an invalid state and must be immediately repaired.", patch.name));
         return;
     }
