@@ -204,7 +204,9 @@ void Patcher::processPatch(const QueuedPatch &patch)
         if (patch.repository == "game"_L1) {
             verFilePath = m_baseDirectory + QStringLiteral("/ffxivgame.ver");
         } else {
-            verFilePath = m_baseDirectory + QStringLiteral("/sqpack/") + patch.repository + QStringLiteral("/") + patch.repository + QStringLiteral(".ver");
+            const QString sqPackDir = m_baseDirectory + QStringLiteral("/sqpack/") + patch.repository + QStringLiteral("/");
+            Utility::createPathIfNeeded(sqPackDir);
+            verFilePath = sqPackDir + patch.repository + QStringLiteral(".ver");
         }
     }
 
