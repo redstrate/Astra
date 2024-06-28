@@ -100,6 +100,11 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
         m_patchQueue[ourIndex] = queuedPatch;
 
         if (!QFile::exists(patchPath)) {
+            // make sure to remove any previous attempts
+            if (QFile::exists(tempPatchPath)) {
+                QFile::remove(tempPatchPath);
+            }
+
             const auto patchRequest = QNetworkRequest(QUrl(patch.url));
             Utility::printRequest(QStringLiteral("GET"), patchRequest);
 
@@ -168,7 +173,12 @@ void Patcher::processPatch(const QueuedPatch &patch)
 
         qDebug(ASTRA_PATCHER) << "Installing" << patch.path;
 
-        Q_ASSERT_X(patch.length == f.size(), "Patcher", "Patch length does not match size!");
+        if (patch.length != f.size()) {
+            f.remove();
+            qFatal(ASTRA_PATCHER) << patch.path << "has the wrong size.";
+            Q_EMIT m_launcher.miscError(i18n("Patch %1 is the wrong size. The downloaded patch has been discarded, please log in again.", patch.name));
+            return;
+        }
 
         const int parts = std::ceil(static_cast<double>(patch.length) / static_cast<double>(patch.hashBlockSize));
 
@@ -185,14 +195,26 @@ void Patcher::processPatch(const QueuedPatch &patch)
             QCryptographicHash hash(QCryptographicHash::Sha1);
             hash.addData(block);
 
-            Q_ASSERT_X(QString::fromUtf8(hash.result().toHex()) == patch.hashes[i], "Patcher", "Patch hash does not match!");
+            if (QString::fromUtf8(hash.result().toHex()) != patch.hashes[i]) {
+                f.remove();
+                qFatal(ASTRA_PATCHER) << patch.path << "failed the hash check.";
+                Q_EMIT m_launcher.miscError(i18n("Patch %1 failed the hash check. The downloaded patch has been discarded, please log in again.", patch.name));
+                return;
+            }
         }
     }
 
+    bool res;
     if (isBoot()) {
-        physis_bootdata_apply_patch(m_bootData, patch.path.toStdString().c_str());
+        res = physis_bootdata_apply_patch(m_bootData, patch.path.toStdString().c_str());
     } else {
-        physis_gamedata_apply_patch(m_gameData, patch.path.toStdString().c_str());
+        res = physis_gamedata_apply_patch(m_gameData, patch.path.toStdString().c_str());
+    }
+
+    if (!res) {
+        qFatal(ASTRA_PATCHER) << "Failed to install" << patch.path << "to" << (isBoot() ? QStringLiteral("boot") : patch.repository);
+        Q_EMIT m_launcher.miscError(i18n("Patch %1 failed to apply. The game is now in an invalid state and must be immediately repaired."));
+        return;
     }
 
     qDebug(ASTRA_PATCHER) << "Installed" << patch.path << "to" << (isBoot() ? QStringLiteral("boot") : patch.repository);
