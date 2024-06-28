@@ -168,7 +168,7 @@ void Patcher::processPatch(const QueuedPatch &patch)
 
         qDebug(ASTRA_PATCHER) << "Installing" << patch.path;
 
-        Q_ASSERT_X(patch.length == f.size(), "Patcher", "Patch length does not match sizeQ!");
+        Q_ASSERT_X(patch.length == f.size(), "Patcher", "Patch length does not match size!");
 
         const int parts = std::ceil(static_cast<double>(patch.length) / static_cast<double>(patch.hashBlockSize));
 
