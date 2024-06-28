@@ -196,7 +196,7 @@ ecm_add_app_icon(astra
 qt_finalize_target(astra)
 
 # the current tooling completely breaks in Flatpak, and is unnecessary there anyway
-if (NOT BUILD_FLATPAK)
+if (WIN32)
     qt_generate_deploy_qml_app_script(
             TARGET astra
             OUTPUT_SCRIPT deploy_script
