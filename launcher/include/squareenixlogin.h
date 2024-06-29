@@ -30,7 +30,7 @@ private:
     QCoro::Task<bool> checkLoginStatus();
 
     /// Check for updates to the boot components. Even though we don't use these, it's checked by later login steps.
-    QCoro::Task<> checkBootUpdates();
+    QCoro::Task<bool> checkBootUpdates();
 
     using StoredInfo = std::pair<QString, QUrl>;
 

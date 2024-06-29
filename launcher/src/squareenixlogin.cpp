@@ -37,7 +37,9 @@ QCoro::Task<std::optional<LoginAuth>> SquareEnixLogin::login(LoginInformation *i
         // There seems to be a limitation in their boot patching system.
         // Their server can only give one patch a time, so the boot process must keep trying to patch until
         // there is no patches left.
-        co_await checkBootUpdates();
+        if (!co_await checkBootUpdates()) {
+            co_return std::nullopt;
+        }
     }
 
     // Then check if we can even login.
@@ -141,7 +143,7 @@ QCoro::Task<bool> SquareEnixLogin::checkLoginStatus()
     }
 }
 
-QCoro::Task<> SquareEnixLogin::checkBootUpdates()
+QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
 {
     m_lastRunHasPatched = false;
 
@@ -172,19 +174,25 @@ QCoro::Task<> SquareEnixLogin::checkBootUpdates()
     const auto reply = m_launcher.mgr()->get(request);
     co_await reply;
 
-    const QString patchList = QString::fromUtf8(reply->readAll());
-    if (!patchList.isEmpty()) {
-        m_patcher = new Patcher(m_launcher, m_info->profile->gamePath() + QStringLiteral("/boot"), *m_info->profile->bootData(), this);
-        const bool hasPatched = co_await m_patcher->patch(PatchList(patchList));
-        if (hasPatched) {
-            // update game version information
-            m_info->profile->readGameVersion();
+    if (reply->error() == QNetworkReply::NoError) {
+        const QString patchList = QString::fromUtf8(reply->readAll());
+        if (!patchList.isEmpty()) {
+            m_patcher = new Patcher(m_launcher, m_info->profile->gamePath() + QStringLiteral("/boot"), *m_info->profile->bootData(), this);
+            const bool hasPatched = co_await m_patcher->patch(PatchList(patchList));
+            if (hasPatched) {
+                // update game version information
+                m_info->profile->readGameVersion();
+            }
+            m_patcher->deleteLater();
+            m_lastRunHasPatched = true;
         }
-        m_patcher->deleteLater();
-        m_lastRunHasPatched = true;
+    } else {
+        qWarning(ASTRA_LOG) << "Unknown error when verifying boot files:" << reply->errorString();
+        Q_EMIT m_launcher.loginError(i18n("Unknown error when verifying boot files.\n\n%1", reply->errorString()));
+        co_return false;
     }
 
-    co_return;
+    co_return true;
 }
 
 QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStoredValue()
