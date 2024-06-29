@@ -233,16 +233,16 @@ void Patcher::processPatch(const QueuedPatch &patch)
     }
 
     Utility::writeVersion(verFilePath, patch.version);
+
+    if (!m_launcher.settings()->keepPatches()) {
+        QFile::remove(patch.path);
+    }
 }
 
 void Patcher::setupDirectories()
 {
     QDir dataDir;
-    if (m_launcher.settings()->keepPatches()) {
-        dataDir.setPath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
-    } else {
-        dataDir.setPath(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
-    }
+    dataDir.setPath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
 
     m_patchesDir.setPath(dataDir.absoluteFilePath(QStringLiteral("patch")));
 }
