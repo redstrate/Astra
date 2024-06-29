@@ -65,12 +65,16 @@ QCoro::Task<bool> AssetUpdater::update()
     Utility::createPathIfNeeded(m_dalamudAssetDir);
     Utility::createPathIfNeeded(m_dalamudRuntimeDir);
 
-    if (!co_await checkRemoteDalamudAssetVersion()) {
-        co_return false;
-    }
+    if (m_profile.dalamudChannel() != Profile::DalamudChannel::Local) {
+        if (!co_await checkRemoteDalamudAssetVersion()) {
+            co_return false;
+        }
 
-    if (!co_await checkRemoteDalamudVersion()) {
-        co_return false;
+        if (!co_await checkRemoteDalamudVersion()) {
+            co_return false;
+        }
+    } else {
+        qInfo(ASTRA_LOG) << "Using a local Dalamud installation, skipping version checks!";
     }
 
     co_return true;

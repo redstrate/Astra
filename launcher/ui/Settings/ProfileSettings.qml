@@ -238,7 +238,7 @@ FormCard.FormCardPage {
             id: dalamudChannelDelegate
 
             text: i18n("Update Channel")
-            model: [i18n("Stable"), i18n("Staging")]
+            model: LauncherCore.settings.showDevTools ? [i18n("Stable"), i18n("Staging"), i18n("Local")] : [i18n("Stable"), i18n("Staging")]
             currentIndex: page.profile.dalamudChannel
             onCurrentIndexChanged: page.profile.dalamudChannel = currentIndex
             enabled: page.profile.dalamudEnabled

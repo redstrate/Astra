@@ -493,6 +493,8 @@ QString Profile::dalamudChannelName() const
         return QStringLiteral("stable");
     case DalamudChannel::Staging:
         return QStringLiteral("staging");
+    case DalamudChannel::Local:
+        return QStringLiteral("local");
     }
 
     Q_UNREACHABLE();
@@ -563,7 +565,8 @@ void Profile::setDalamudApplicable(bool applicable)
 
 bool Profile::dalamudShouldLaunch() const
 {
-    return dalamudEnabled() && m_dalamudApplicable;
+    // Local Dalamud installations can always run
+    return dalamudEnabled() && (dalamudChannel() != DalamudChannel::Local ? m_dalamudApplicable : true);
 }
 
 QString Profile::compatibilityToolVersion() const

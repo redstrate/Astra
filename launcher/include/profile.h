@@ -51,7 +51,7 @@ public:
     enum class WineType { BuiltIn, Custom };
     Q_ENUM(WineType)
 
-    enum class DalamudChannel { Stable, Staging };
+    enum class DalamudChannel { Stable, Staging, Local };
     Q_ENUM(DalamudChannel)
 
     enum class DalamudInjectMethod { Entrypoint, DLLInject };
