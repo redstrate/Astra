@@ -61,7 +61,6 @@ QQC2.Control {
     }
 
     function updateFields() {
-        console.info(!LauncherCore.currentProfile.account.needsPassword && LauncherCore.currentProfile.account.rememberPassword);
         usernameField.text = LauncherCore.currentProfile.account.name;
         passwordField.text = !LauncherCore.currentProfile.account.needsPassword && LauncherCore.currentProfile.account.rememberPassword ? LauncherCore.currentProfile.account.getPassword() : "";
         otpField.text = "";
