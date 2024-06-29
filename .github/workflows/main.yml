@@ -252,6 +252,7 @@ jobs:
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiPlatform.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiPrimitives.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiDialogs.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiLayouts.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
 
           Copy-Item -Force -Recurse -Path ${{ steps.strings.outputs.prefix-dir }}\lib\qml\* -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/qml/
 
