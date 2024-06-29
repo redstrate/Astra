@@ -17,7 +17,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(QT_MIN_VERSION 6.6)
-set(KF_MIN_VERSION 6.0)
+set(KF_MIN_VERSION 6.3)
 
 find_package(ECM ${KF_MIN_VERSION} REQUIRED NO_MODULE)
 list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
@@ -48,6 +48,7 @@ if (BUILD_WEBVIEW)
     find_package(Qt6WebView ${QT_MIN_VERSION} REQUIRED)
 endif ()
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS Kirigami I18n Config CoreAddons Archive)
+find_package(KF6KirigamiAddons 1.2.1 REQUIRED)
 find_package(QCoro6 REQUIRED COMPONENTS Core Network Qml)
 qcoro_enable_coroutines()
 
