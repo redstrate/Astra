@@ -397,62 +397,82 @@ QCoro::Task<> LauncherCore::fetchNews()
     query.addQueryItem(QStringLiteral("lang"), QStringLiteral("en-us"));
     query.addQueryItem(QStringLiteral("media"), QStringLiteral("pcapp"));
 
-    QUrl url;
-    url.setScheme(m_settings->preferredProtocol());
-    url.setHost(QStringLiteral("frontier.%1").arg(m_settings->squareEnixServer()));
-    url.setPath(QStringLiteral("/news/headline.json"));
-    url.setQuery(query);
+    QUrl headlineUrl;
+    headlineUrl.setScheme(m_settings->preferredProtocol());
+    headlineUrl.setHost(QStringLiteral("frontier.%1").arg(m_settings->squareEnixServer()));
+    headlineUrl.setPath(QStringLiteral("/news/headline.json"));
+    headlineUrl.setQuery(query);
 
-    QNetworkRequest request(QUrl(QStringLiteral("%1&%2").arg(url.toString(), QString::number(QDateTime::currentMSecsSinceEpoch()))));
-    request.setRawHeader(QByteArrayLiteral("Accept"), QByteArrayLiteral("application/json, text/plain, */*"));
-    request.setRawHeader(QByteArrayLiteral("Origin"), QByteArrayLiteral("https://launcher.finalfantasyxiv.com"));
-    request.setRawHeader(QByteArrayLiteral("Referer"),
-                         QStringLiteral("https://launcher.finalfantasyxiv.com/v600/index.html?rc_lang=%1&time=%2")
-                             .arg(QStringLiteral("en-us"), QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH")))
-                             .toUtf8());
-    Utility::printRequest(QStringLiteral("GET"), request);
+    QNetworkRequest headlineRequest(QUrl(QStringLiteral("%1&%2").arg(headlineUrl.toString(), QString::number(QDateTime::currentMSecsSinceEpoch()))));
+    headlineRequest.setRawHeader(QByteArrayLiteral("Accept"), QByteArrayLiteral("application/json, text/plain, */*"));
+    headlineRequest.setRawHeader(QByteArrayLiteral("Origin"), QByteArrayLiteral("https://launcher.finalfantasyxiv.com"));
+    headlineRequest.setRawHeader(QByteArrayLiteral("Referer"),
+                                 QStringLiteral("https://launcher.finalfantasyxiv.com/v600/index.html?rc_lang=%1&time=%2")
+                                     .arg(QStringLiteral("en-us"), QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH")))
+                                     .toUtf8());
+    Utility::printRequest(QStringLiteral("GET"), headlineRequest);
 
-    auto reply = mgr()->get(request);
-    co_await reply;
+    auto headlineReply = mgr()->get(headlineRequest);
+    co_await headlineReply;
 
-    auto document = QJsonDocument::fromJson(reply->readAll());
+    QUrl bannerUrl;
+    bannerUrl.setScheme(m_settings->preferredProtocol());
+    bannerUrl.setHost(QStringLiteral("frontier.%1").arg(m_settings->squareEnixServer()));
+    bannerUrl.setPath(QStringLiteral("/v2/topics/%1/banner.json").arg(QStringLiteral("en-us")));
+    bannerUrl.setQuery(query);
+
+    QNetworkRequest bannerRequest(QUrl(QStringLiteral("%1&_=%3").arg(bannerUrl.toString(), QString::number(QDateTime::currentMSecsSinceEpoch()))));
+    bannerRequest.setRawHeader(QByteArrayLiteral("Accept"), QByteArrayLiteral("application/json, text/plain, */*"));
+    bannerRequest.setRawHeader(QByteArrayLiteral("Origin"), QByteArrayLiteral("https://launcher.finalfantasyxiv.com"));
+    bannerRequest.setRawHeader(QByteArrayLiteral("Referer"),
+                               QStringLiteral("https://launcher.finalfantasyxiv.com/v700/index.html?rc_lang=%1&time=%2")
+                                   .arg(QStringLiteral("en-us"), QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH")))
+                                   .toUtf8());
+    Utility::printRequest(QStringLiteral("GET"), bannerRequest);
+
+    auto bannerReply = mgr()->get(bannerRequest);
+    co_await bannerReply;
+
+    auto document = QJsonDocument::fromJson(headlineReply->readAll());
+    auto bannerDocument = QJsonDocument::fromJson(bannerReply->readAll());
 
     auto headline = new Headline(this);
-    if (document.isEmpty()) {
+    if (document.isEmpty() || bannerDocument.isEmpty()) {
         headline->failedToLoad = true;
-    }
+    } else {
+        const auto parseNews = [](QJsonObject object) -> News {
+            News news;
+            news.date = QDateTime::fromString(object["date"_L1].toString(), Qt::DateFormat::ISODate);
+            news.id = object["id"_L1].toString();
+            news.tag = object["tag"_L1].toString();
+            news.title = object["title"_L1].toString();
 
-    const auto parseNews = [](QJsonObject object) -> News {
-        News news;
-        news.date = QDateTime::fromString(object["date"_L1].toString(), Qt::DateFormat::ISODate);
-        news.id = object["id"_L1].toString();
-        news.tag = object["tag"_L1].toString();
-        news.title = object["title"_L1].toString();
+            if (object["url"_L1].toString().isEmpty()) {
+                news.url = QUrl(QStringLiteral("https://na.finalfantasyxiv.com/lodestone/news/detail/%1").arg(news.id));
+            } else {
+                news.url = QUrl(object["url"_L1].toString());
+            }
 
-        if (object["url"_L1].toString().isEmpty()) {
-            news.url = QUrl(QStringLiteral("https://na.finalfantasyxiv.com/lodestone/news/detail/%1").arg(news.id));
-        } else {
-            news.url = QUrl(object["url"_L1].toString());
+            return news;
+        };
+
+        for (const auto bannerObject : bannerDocument.object()["banner"_L1].toArray()) {
+            // TODO: use new order_priority and fix_order params
+            headline->banners.push_back(
+                {.link = QUrl(bannerObject.toObject()["link"_L1].toString()), .bannerImage = QUrl(bannerObject.toObject()["lsb_banner"_L1].toString())});
         }
 
-        return news;
-    };
+        for (const auto newsObject : document.object()["news"_L1].toArray()) {
+            headline->news.push_back(parseNews(newsObject.toObject()));
+        }
 
-    for (const auto bannerObject : document.object()["banner"_L1].toArray()) {
-        headline->banners.push_back(
-            {.link = QUrl(bannerObject.toObject()["link"_L1].toString()), .bannerImage = QUrl(bannerObject.toObject()["lsb_banner"_L1].toString())});
-    }
+        for (const auto pinnedObject : document.object()["pinned"_L1].toArray()) {
+            headline->pinned.push_back(parseNews(pinnedObject.toObject()));
+        }
 
-    for (const auto newsObject : document.object()["news"_L1].toArray()) {
-        headline->news.push_back(parseNews(newsObject.toObject()));
-    }
-
-    for (const auto pinnedObject : document.object()["pinned"_L1].toArray()) {
-        headline->pinned.push_back(parseNews(pinnedObject.toObject()));
-    }
-
-    for (const auto pinnedObject : document.object()["topics"_L1].toArray()) {
-        headline->topics.push_back(parseNews(pinnedObject.toObject()));
+        for (const auto pinnedObject : document.object()["topics"_L1].toArray()) {
+            headline->topics.push_back(parseNews(pinnedObject.toObject()));
+        }
     }
 
     m_headline = headline;
