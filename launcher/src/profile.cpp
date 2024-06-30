@@ -420,6 +420,10 @@ void Profile::readGameVersion()
         readGameData();
     }
 
+    // Extract frontier url if possible
+    const QString launcherPath = QString(gamePath() + QStringLiteral("/boot/ffxivlauncher64.exe"));
+    m_frontierUrl = QString::fromUtf8(physis_extract_frontier_url(launcherPath.toStdString().c_str()));
+
     Q_EMIT gameInstallChanged();
 }
 
@@ -531,6 +535,16 @@ QString Profile::expansionVersion(const int index) const
 {
     Q_ASSERT(index <= numInstalledExpansions());
     return QString::fromLatin1(m_repositories.repositories[index + 1].version);
+}
+
+QString Profile::frontierUrl() const
+{
+    if (m_frontierUrl.isEmpty()) {
+        // fallback url
+        return QStringLiteral("https://launcher.finalfantasyxiv.com/v600/");
+    } else {
+        return m_frontierUrl;
+    }
 }
 
 int Profile::dalamudAssetVersion() const

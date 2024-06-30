@@ -406,10 +406,11 @@ QCoro::Task<> LauncherCore::fetchNews()
     QNetworkRequest headlineRequest(QUrl(QStringLiteral("%1&%2").arg(headlineUrl.toString(), QString::number(QDateTime::currentMSecsSinceEpoch()))));
     headlineRequest.setRawHeader(QByteArrayLiteral("Accept"), QByteArrayLiteral("application/json, text/plain, */*"));
     headlineRequest.setRawHeader(QByteArrayLiteral("Origin"), QByteArrayLiteral("https://launcher.finalfantasyxiv.com"));
-    headlineRequest.setRawHeader(QByteArrayLiteral("Referer"),
-                                 QStringLiteral("https://launcher.finalfantasyxiv.com/v600/index.html?rc_lang=%1&time=%2")
-                                     .arg(QStringLiteral("en-us"), QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH")))
-                                     .toUtf8());
+    headlineRequest.setRawHeader(
+        QByteArrayLiteral("Referer"),
+        QStringLiteral("%1/index.html?rc_lang=%2&time=%3")
+            .arg(currentProfile()->frontierUrl(), QStringLiteral("en-us"), QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH")))
+            .toUtf8());
     Utility::printRequest(QStringLiteral("GET"), headlineRequest);
 
     auto headlineReply = mgr()->get(headlineRequest);
@@ -424,10 +425,11 @@ QCoro::Task<> LauncherCore::fetchNews()
     QNetworkRequest bannerRequest(QUrl(QStringLiteral("%1&_=%3").arg(bannerUrl.toString(), QString::number(QDateTime::currentMSecsSinceEpoch()))));
     bannerRequest.setRawHeader(QByteArrayLiteral("Accept"), QByteArrayLiteral("application/json, text/plain, */*"));
     bannerRequest.setRawHeader(QByteArrayLiteral("Origin"), QByteArrayLiteral("https://launcher.finalfantasyxiv.com"));
-    bannerRequest.setRawHeader(QByteArrayLiteral("Referer"),
-                               QStringLiteral("https://launcher.finalfantasyxiv.com/v700/index.html?rc_lang=%1&time=%2")
-                                   .arg(QStringLiteral("en-us"), QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH")))
-                                   .toUtf8());
+    bannerRequest.setRawHeader(
+        QByteArrayLiteral("Referer"),
+        QStringLiteral("%1/v700/index.html?rc_lang=%2&time=%3")
+            .arg(currentProfile()->frontierUrl(), QStringLiteral("en-us"), QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd-HH")))
+            .toUtf8());
     Utility::printRequest(QStringLiteral("GET"), bannerRequest);
 
     auto bannerReply = mgr()->get(bannerRequest);

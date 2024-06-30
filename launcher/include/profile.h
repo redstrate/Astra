@@ -135,6 +135,8 @@ public:
     [[nodiscard]] int numInstalledExpansions() const;
     [[nodiscard]] QString expansionVersion(int index) const;
 
+    [[nodiscard]] QString frontierUrl() const;
+
     [[nodiscard]] int dalamudAssetVersion() const;
     void setDalamudAssetVersion(int version);
 
@@ -208,6 +210,8 @@ private:
     QString m_runtimeVersion;
     QString m_compatibilityToolVersion;
     bool m_dalamudApplicable = false;
+
+    QString m_frontierUrl;
 
     bool m_loggedIn = false;
 
