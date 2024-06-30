@@ -237,7 +237,7 @@ QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStor
 
     // fetches Steam username
     if (m_info->profile->account()->license() == Account::GameLicense::WindowsSteam) {
-        const QRegularExpression re(QStringLiteral(R"lit(<input name=""sqexid"" type=""hidden"" value=""(?<sqexid>.*)""\/>)lit"));
+        const static QRegularExpression re(QStringLiteral(R"lit(<input name=""sqexid"" type=""hidden"" value=""(?<sqexid>.*)""\/>)lit"));
         const QRegularExpressionMatch match = re.match(str);
 
         if (match.hasMatch()) {
@@ -249,7 +249,7 @@ QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStor
         m_username = m_info->username;
     }
 
-    const QRegularExpression re(QStringLiteral(R"lit(\t<\s*input .* name="_STORED_" value="(?<stored>.*)">)lit"));
+    const static QRegularExpression re(QStringLiteral(R"lit(\t<\s*input .* name="_STORED_" value="(?<stored>.*)">)lit"));
     const QRegularExpressionMatch match = re.match(str);
     if (match.hasMatch()) {
         co_return StoredInfo{match.captured(1), url};
@@ -296,7 +296,7 @@ QCoro::Task<bool> SquareEnixLogin::loginOAuth()
 
     const QString str = QString::fromUtf8(reply->readAll());
 
-    const QRegularExpression re(QStringLiteral(R"lit(window.external.user\("login=auth,ok,(?<launchParams>.*)\);)lit"));
+    const static QRegularExpression re(QStringLiteral(R"lit(window.external.user\("login=auth,ok,(?<launchParams>.*)\);)lit"));
     const QRegularExpressionMatch match = re.match(str);
     if (match.hasMatch()) {
         const auto parts = match.captured(1).split(','_L1);
@@ -320,7 +320,7 @@ QCoro::Task<bool> SquareEnixLogin::loginOAuth()
 
         co_return true;
     } else {
-        const QRegularExpression errorRe(QStringLiteral(R"lit(window.external.user\("login=auth,ng,err,(?<launchParams>.*)\);)lit"));
+        const static QRegularExpression errorRe(QStringLiteral(R"lit(window.external.user\("login=auth,ng,err,(?<launchParams>.*)\);)lit"));
         const QRegularExpressionMatch errorMatch = errorRe.match(str);
 
         if (errorMatch.hasCaptured(1)) {

@@ -239,38 +239,41 @@ void Account::fetchAvatar()
 
     const QString filename = QStringLiteral("%1/%2.jpg").arg(cacheLocation, lodestoneId());
     if (!QFile(filename).exists()) {
-        qDebug(ASTRA_LOG) << "Did not find lodestone character " << lodestoneId() << " in cache, fetching from xivapi.";
+        qDebug(ASTRA_LOG) << "Did not find lodestone character " << lodestoneId() << " in cache, fetching from Lodestone.";
 
         QUrl url;
         url.setScheme(m_launcher.settings()->preferredProtocol());
-        url.setHost(m_launcher.settings()->xivApiServer());
-
-        url.setPath(QStringLiteral("/character/%1").arg(lodestoneId()));
+        url.setHost(QStringLiteral("na.%1").arg(m_launcher.settings()->mainServer())); // TODO: NA isnt the only thing in the world...
+        url.setPath(QStringLiteral("/lodestone/character/%1").arg(lodestoneId()));
 
         QNetworkRequest request(url);
         Utility::printRequest(QStringLiteral("GET"), request);
 
         const auto reply = m_launcher.mgr()->get(request);
         connect(reply, &QNetworkReply::finished, [this, filename, reply] {
-            auto document = QJsonDocument::fromJson(reply->readAll());
-            if (document.isObject()) {
-                const QNetworkRequest avatarRequest(QUrl(document.object()["Character"_L1].toObject()["Avatar"_L1].toString()));
-                Utility::printRequest(QStringLiteral("GET"), avatarRequest);
+            QString document = QString::fromUtf8(reply->readAll());
+            if (!document.isEmpty()) {
+                const static QRegularExpression re(
+                    QStringLiteral(R"lit(<div\s[^>]*class=["|']frame__chara__face["|'][^>]*>\s*<img\s[&>]*src=["|']([^"']*))lit"));
+                const QRegularExpressionMatch match = re.match(document);
 
-                if (avatarRequest.url().isEmpty()) {
-                    return;
+                if (match.hasCaptured(1)) {
+                    const QString newAvatarUrl = match.captured(1);
+
+                    const QNetworkRequest avatarRequest = QNetworkRequest(QUrl(newAvatarUrl));
+                    Utility::printRequest(QStringLiteral("GET"), avatarRequest);
+
+                    auto avatarReply = m_launcher.mgr()->get(avatarRequest);
+                    connect(avatarReply, &QNetworkReply::finished, [this, filename, avatarReply] {
+                        QFile file(filename);
+                        file.open(QIODevice::ReadWrite);
+                        file.write(avatarReply->readAll());
+                        file.close();
+
+                        m_avatarUrl = QStringLiteral("file:///%1").arg(filename);
+                        Q_EMIT avatarUrlChanged();
+                    });
                 }
-
-                auto avatarReply = m_launcher.mgr()->get(avatarRequest);
-                connect(avatarReply, &QNetworkReply::finished, [this, filename, avatarReply] {
-                    QFile file(filename);
-                    file.open(QIODevice::ReadWrite);
-                    file.write(avatarReply->readAll());
-                    file.close();
-
-                    m_avatarUrl = QStringLiteral("file:///%1").arg(filename);
-                    Q_EMIT avatarUrlChanged();
-                });
             }
         });
     } else {

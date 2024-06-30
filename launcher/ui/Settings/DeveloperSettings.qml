@@ -114,7 +114,7 @@ FormCard.FormCardPage {
         FormCard.FormTextFieldDelegate {
             id: mainServerDelegate
 
-            label: i18n("SE Main Server")
+            label: i18n("SE Main Server (ffxiv.com)")
             text: LauncherCore.settings.squareEnixServer
             onTextChanged: LauncherCore.settings.squareEnixServer = text
         }
@@ -127,22 +127,22 @@ FormCard.FormCardPage {
         FormCard.FormTextFieldDelegate {
             id: loginServerDelegate
 
-            label: i18n("SE Login Server")
+            label: i18n("SE Login Server (square-enix.com)")
             text: LauncherCore.settings.squareEnixLoginServer
             onTextChanged: LauncherCore.settings.squareEnixLoginServer = text
         }
 
         FormCard.FormDelegateSeparator {
             above: loginServerDelegate
-            below: xivApiServerDelegate
+            below: mainServerDelegate
         }
 
         FormCard.FormTextFieldDelegate {
-            id: xivApiServerDelegate
+            id: mainServerDelegate
 
-            label: i18n("XIV Api Server")
-            text: LauncherCore.settings.xivApiServer
-            onTextChanged: LauncherCore.settings.xivApiServer = text
+            label: i18n("Main Server (finalfantasyxiv.com)")
+            text: LauncherCore.settings.mainServer
+            onTextChanged: LauncherCore.settings.mainServer = text
         }
     }
 }

@@ -22,7 +22,7 @@ class LauncherSettings : public QObject
     Q_PROPERTY(QString dalamudDistribServer READ dalamudDistribServer WRITE setDalamudDistribServer NOTIFY dalamudDistribServerChanged)
     Q_PROPERTY(QString squareEnixServer READ squareEnixServer WRITE setSquareEnixServer NOTIFY squareEnixServerChanged)
     Q_PROPERTY(QString squareEnixLoginServer READ squareEnixLoginServer WRITE setSquareEnixLoginServer NOTIFY squareEnixLoginServerChanged)
-    Q_PROPERTY(QString xivApiServer READ xivApiServer WRITE setXivApiServer NOTIFY xivApiServerChanged)
+    Q_PROPERTY(QString mainServer READ mainServer WRITE setMainServer NOTIFY mainServerChanged)
     Q_PROPERTY(QString preferredProtocol READ preferredProtocol WRITE setPreferredProtocol NOTIFY preferredProtocolChanged)
     Q_PROPERTY(QString screenshotDir READ screenshotDir WRITE setScreenshotDir NOTIFY screenshotDirChanged)
     Q_PROPERTY(bool argumentsEncrypted READ argumentsEncrypted WRITE setArgumentsEncrypted NOTIFY encryptedArgumentsChanged)
@@ -52,8 +52,8 @@ public:
     [[nodiscard]] QString squareEnixLoginServer() const;
     void setSquareEnixLoginServer(const QString &value);
 
-    [[nodiscard]] QString xivApiServer() const;
-    void setXivApiServer(const QString &value);
+    [[nodiscard]] QString mainServer() const;
+    void setMainServer(const QString &value);
 
     [[nodiscard]] QString preferredProtocol() const;
     void setPreferredProtocol(const QString &value);
@@ -80,7 +80,7 @@ Q_SIGNALS:
     void dalamudDistribServerChanged();
     void squareEnixServerChanged();
     void squareEnixLoginServerChanged();
-    void xivApiServerChanged();
+    void mainServerChanged();
     void preferredProtocolChanged();
     void screenshotDirChanged();
     void encryptedArgumentsChanged();

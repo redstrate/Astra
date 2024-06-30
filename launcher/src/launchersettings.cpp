@@ -107,17 +107,17 @@ void LauncherSettings::setSquareEnixLoginServer(const QString &value)
     }
 }
 
-QString LauncherSettings::xivApiServer() const
+QString LauncherSettings::mainServer() const
 {
-    return m_config->xivApiServer();
+    return m_config->mainServer();
 }
 
-void LauncherSettings::setXivApiServer(const QString &value)
+void LauncherSettings::setMainServer(const QString &value)
 {
-    if (value != m_config->xivApiServer()) {
-        m_config->setXivApiServer(value);
+    if (value != m_config->mainServer()) {
+        m_config->setMainServer(value);
         m_config->save();
-        Q_EMIT xivApiServerChanged();
+        Q_EMIT mainServerChanged();
     }
 }
 

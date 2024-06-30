@@ -40,8 +40,8 @@ SPDX-License-Identifier: CC0-1.0
     <entry name="SquareEnixLoginServer" type="String">
       <default>square-enix.com</default>
     </entry>
-    <entry name="XivApiServer" type="String">
-      <default>xivapi.com</default>
+    <entry name="MainServer" type="String">
+      <default>finalfantasyxiv.com</default>
     </entry>
     <entry name="PreferredProtocol" type="String">
       <default>https</default>
