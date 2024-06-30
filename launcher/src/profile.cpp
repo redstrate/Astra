@@ -541,7 +541,7 @@ QString Profile::frontierUrl() const
 {
     if (m_frontierUrl.isEmpty()) {
         // fallback url
-        return QStringLiteral("https://launcher.finalfantasyxiv.com/v600/");
+        return QStringLiteral("https://launcher.finalfantasyxiv.com/v700/");
     } else {
         return m_frontierUrl;
     }
