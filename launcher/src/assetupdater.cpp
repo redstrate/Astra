@@ -161,6 +161,8 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudVersion()
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("track"), m_profile.dalamudChannelName());
 
+    url.setQuery(query);
+
     const QNetworkRequest request(url);
     Utility::printRequest(QStringLiteral("GET"), request);
 
