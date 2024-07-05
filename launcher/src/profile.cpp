@@ -52,7 +52,7 @@ void Profile::readDalamudInfo()
         if (QFile::exists(dalamudDepsJson)) {
             QFile depsJson(dalamudDepsJson);
             depsJson.open(QFile::ReadOnly);
-            QJsonDocument doc = QJsonDocument::fromJson(depsJson.readAll());
+            const QJsonDocument doc = QJsonDocument::fromJson(depsJson.readAll());
 
             QString versionString;
             for (const auto &target : doc["targets"_L1].toObject().keys()) {
@@ -85,10 +85,10 @@ void Profile::readGameData()
         return;
     }
 
-    auto header = physis_gamedata_extract_file(m_gameData, "exd/exversion.exh");
+    const auto header = physis_gamedata_extract_file(m_gameData, "exd/exversion.exh");
     physis_EXH *exh = physis_parse_excel_sheet_header(header);
     if (exh != nullptr) {
-        physis_EXD exd = physis_gamedata_read_excel_sheet(m_gameData, "ExVersion", exh, Language::English, 0);
+        const physis_EXD exd = physis_gamedata_read_excel_sheet(m_gameData, "ExVersion", exh, Language::English, 0);
 
         for (unsigned int i = 0; i < exd.row_count; i++) {
             m_expansionNames.push_back(QString::fromLatin1(exd.row_data[i].column_data[0].string._0));
@@ -334,10 +334,10 @@ Profile::DalamudChannel Profile::dalamudChannel() const
     return static_cast<DalamudChannel>(m_config->dalamudChannel());
 }
 
-void Profile::setDalamudChannel(const DalamudChannel value)
+void Profile::setDalamudChannel(const DalamudChannel channel)
 {
-    if (static_cast<DalamudChannel>(m_config->dalamudChannel()) != value) {
-        m_config->setDalamudChannel(static_cast<int>(value));
+    if (static_cast<DalamudChannel>(m_config->dalamudChannel()) != channel) {
+        m_config->setDalamudChannel(static_cast<int>(channel));
         m_config->save();
         Q_EMIT dalamudChannelChanged();
     }
@@ -376,7 +376,7 @@ bool Profile::isBenchmark() const
     return m_config->isBenchmark();
 }
 
-void Profile::setIsBenchmark(bool value)
+void Profile::setIsBenchmark(const bool value)
 {
     if (m_config->isBenchmark() != value) {
         m_config->setIsBenchmark(value);
@@ -421,7 +421,7 @@ void Profile::readGameVersion()
     }
 
     // Extract frontier url if possible
-    const QString launcherPath = QString(gamePath() + QStringLiteral("/boot/ffxivlauncher64.exe"));
+    const auto launcherPath = QString(gamePath() + QStringLiteral("/boot/ffxivlauncher64.exe"));
     m_frontierUrl = QString::fromUtf8(physis_extract_frontier_url(launcherPath.toStdString().c_str()));
 
     Q_EMIT gameInstallChanged();
@@ -552,7 +552,7 @@ int Profile::dalamudAssetVersion() const
     return m_dalamudAssetVersion;
 }
 
-void Profile::setDalamudAssetVersion(int version)
+void Profile::setDalamudAssetVersion(const int version)
 {
     m_dalamudAssetVersion = version;
 }
@@ -572,7 +572,7 @@ void Profile::setDalamudVersion(const QString &version)
     m_dalamudVersion = version;
 }
 
-void Profile::setDalamudApplicable(bool applicable)
+void Profile::setDalamudApplicable(const bool applicable)
 {
     m_dalamudApplicable = applicable;
 }
@@ -593,12 +593,12 @@ void Profile::setCompatibilityToolVersion(const QString &version)
     m_compatibilityToolVersion = version;
 }
 
-BootData *Profile::bootData()
+BootData *Profile::bootData() const
 {
     return m_bootData;
 }
 
-GameData *Profile::gameData()
+GameData *Profile::gameData() const
 {
     return m_gameData;
 }

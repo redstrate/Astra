@@ -3,7 +3,6 @@
 
 #include "account.h"
 
-#include <QEventLoop>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <cotp.h>
@@ -84,7 +83,7 @@ bool Account::isSapphire() const
     return m_config.isSapphire();
 }
 
-void Account::setIsSapphire(bool value)
+void Account::setIsSapphire(const bool value)
 {
     if (m_config.isSapphire() != value) {
         m_config.setIsSapphire(value);
@@ -98,10 +97,10 @@ QString Account::lobbyUrl() const
     return m_config.lobbyUrl();
 }
 
-void Account::setLobbyUrl(const QString &value)
+void Account::setLobbyUrl(const QString &url)
 {
-    if (m_config.lobbyUrl() != value) {
-        m_config.setLobbyUrl(value);
+    if (m_config.lobbyUrl() != url) {
+        m_config.setLobbyUrl(url);
         m_config.save();
         Q_EMIT lobbyUrlChanged();
     }
@@ -194,7 +193,7 @@ void Account::setPassword(const QString &password)
 
 QString Account::getOTP()
 {
-    auto otpSecret = QCoro::waitFor(getKeychainValue(QStringLiteral("otp-secret")));
+    const auto otpSecret = QCoro::waitFor(getKeychainValue(QStringLiteral("otp-secret")));
     if (otpSecret.isEmpty()) {
         return {};
     }
@@ -246,12 +245,12 @@ void Account::fetchAvatar()
         url.setHost(QStringLiteral("na.%1").arg(m_launcher.settings()->mainServer())); // TODO: NA isnt the only thing in the world...
         url.setPath(QStringLiteral("/lodestone/character/%1").arg(lodestoneId()));
 
-        QNetworkRequest request(url);
+        const QNetworkRequest request(url);
         Utility::printRequest(QStringLiteral("GET"), request);
 
         const auto reply = m_launcher.mgr()->get(request);
         connect(reply, &QNetworkReply::finished, [this, filename, reply] {
-            QString document = QString::fromUtf8(reply->readAll());
+            const QString document = QString::fromUtf8(reply->readAll());
             if (!document.isEmpty()) {
                 const static QRegularExpression re(
                     QStringLiteral(R"lit(<div\s[^>]*class=["|']frame__chara__face["|'][^>]*>\s*<img\s[&>]*src=["|']([^"']*))lit"));
@@ -260,7 +259,7 @@ void Account::fetchAvatar()
                 if (match.hasCaptured(1)) {
                     const QString newAvatarUrl = match.captured(1);
 
-                    const QNetworkRequest avatarRequest = QNetworkRequest(QUrl(newAvatarUrl));
+                    const auto avatarRequest = QNetworkRequest(QUrl(newAvatarUrl));
                     Utility::printRequest(QStringLiteral("GET"), avatarRequest);
 
                     auto avatarReply = m_launcher.mgr()->get(avatarRequest);
@@ -331,9 +330,11 @@ QCoro::Task<QString> Account::getKeychainValue(const QString &key)
     }
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
+// ^ Could be const, but this function shouldn't be considered as such
 void Account::updateConfig()
 {
-    auto configDir = getConfigDir().absoluteFilePath(QStringLiteral("FFXIV.cfg"));
+    const auto configDir = getConfigDir().absoluteFilePath(QStringLiteral("FFXIV.cfg"));
 
     if (!QFile::exists(configDir)) {
         return;
@@ -341,24 +342,24 @@ void Account::updateConfig()
 
     qInfo(ASTRA_LOG) << "Updating FFXIV.cfg...";
 
-    auto configDirStd = configDir.toStdString();
+    const auto configDirStd = configDir.toStdString();
 
-    auto cfgFileBuffer = physis_read_file(configDirStd.c_str());
-    auto cfgFile = physis_cfg_parse(cfgFileBuffer);
+    const auto cfgFileBuffer = physis_read_file(configDirStd.c_str());
+    const auto cfgFile = physis_cfg_parse(cfgFileBuffer);
 
     // Ensure that the opening cutscene movie never plays, since it's broken in most versions of Wine
     physis_cfg_set_value(cfgFile, "CutsceneMovieOpening", "1");
 
-    auto screenshotDir = m_launcher.settings()->screenshotDir();
+    const auto screenshotDir = m_launcher.settings()->screenshotDir();
     Utility::createPathIfNeeded(screenshotDir);
 
-    auto screenshotDirWin = Utility::toWindowsPath(screenshotDir);
-    auto screenshotDirWinStd = screenshotDirWin.toStdString();
+    const auto screenshotDirWin = Utility::toWindowsPath(screenshotDir);
+    const auto screenshotDirWinStd = screenshotDirWin.toStdString();
 
     // Set the screenshot path
     physis_cfg_set_value(cfgFile, "ScreenShotDir", screenshotDirWinStd.c_str());
 
-    auto buffer = physis_cfg_write(cfgFile);
+    const auto buffer = physis_cfg_write(cfgFile);
 
     QFile file(configDir);
     file.open(QIODevice::WriteOnly);

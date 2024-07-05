@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <QString>
-
 #include "launchercore.h"
 
 class SapphireLogin : QObject
@@ -13,6 +11,7 @@ public:
     explicit SapphireLogin(LauncherCore &window, QObject *parent = nullptr);
 
     /// Begins the login process for Sapphire servers
+    /// \param lobbyUrl The URL to the Sapphire lobby server
     /// \param info The required login information
     QCoro::Task<std::optional<LoginAuth>> login(const QString &lobbyUrl, const LoginInformation &info);
 

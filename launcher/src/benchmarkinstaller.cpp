@@ -6,9 +6,6 @@
 #include <KArchiveDirectory>
 #include <KLocalizedString>
 #include <KZip>
-#include <QFile>
-#include <QNetworkReply>
-#include <QStandardPaths>
 
 #include "astra_log.h"
 #include "launchercore.h"
@@ -16,7 +13,7 @@
 #include "utility.h"
 
 // TODO: this should be dynamically grabbed from the webpage to avoid hardcoding it
-const QString installerUrl = QStringLiteral("https://download.finalfantasyxiv.com/s9qmq6SJfMMqYM4o/ffxiv-dawntrail-bench.zip");
+const auto installerUrl = QStringLiteral("https://download.finalfantasyxiv.com/s9qmq6SJfMMqYM4o/ffxiv-dawntrail-bench.zip");
 
 BenchmarkInstaller::BenchmarkInstaller(LauncherCore &launcher, Profile &profile, QObject *parent)
     : QObject(parent)
@@ -34,7 +31,7 @@ BenchmarkInstaller::BenchmarkInstaller(LauncherCore &launcher, Profile &profile,
 void BenchmarkInstaller::start()
 {
     if (m_localInstallerPath.isEmpty()) {
-        const QNetworkRequest request = QNetworkRequest(QUrl(installerUrl));
+        const auto request = QNetworkRequest(QUrl(installerUrl));
         Utility::printRequest(QStringLiteral("GET"), request);
 
         // TODO: benchmarks are usually quite large, and need download progress reporting
@@ -76,7 +73,7 @@ void BenchmarkInstaller::installGame()
 
     // the first directory is the same as the version we download
     const KArchiveDirectory *root = archive.directory();
-    root->copyTo(installDirectory.absolutePath(), true);
+    Q_UNUSED(root->copyTo(installDirectory.absolutePath(), true))
 
     archive.close();
 

@@ -39,14 +39,14 @@ LauncherCore::LauncherCore()
     m_accountManager->load();
 
     // restore profile -> account connections
-    for (auto profile : m_profileManager->profiles()) {
-        if (auto account = m_accountManager->getByUuid(profile->accountUuid())) {
+    for (const auto profile : m_profileManager->profiles()) {
+        if (const auto account = m_accountManager->getByUuid(profile->accountUuid())) {
             profile->setAccount(account);
         }
     }
 
     // set default profile, if found
-    if (auto profile = m_profileManager->getProfileByUUID(m_settings->currentProfile())) {
+    if (const auto profile = m_profileManager->getProfileByUUID(m_settings->currentProfile())) {
         setCurrentProfile(profile);
     }
 
@@ -64,7 +64,7 @@ void LauncherCore::login(Profile *profile, const QString &username, const QStrin
 {
     Q_ASSERT(profile != nullptr);
 
-    auto loginInformation = new LoginInformation(this);
+    const auto loginInformation = new LoginInformation(this);
     loginInformation->profile = profile;
 
     // Benchmark never has to login, of course
@@ -162,7 +162,7 @@ void LauncherCore::refreshLogoImage()
     const QDir logoDir = cacheDir.absoluteFilePath(QStringLiteral("logos"));
 
     if (!logoDir.exists()) {
-        QDir().mkpath(logoDir.absolutePath());
+        Q_UNUSED(QDir().mkpath(logoDir.absolutePath()))
     }
 
     const auto saveTexture = [](GameData *data, const QString &path, const QString &name) {
@@ -170,18 +170,18 @@ void LauncherCore::refreshLogoImage()
             return;
         }
 
-        auto file = physis_gamedata_extract_file(data, path.toStdString().c_str());
+        const auto file = physis_gamedata_extract_file(data, path.toStdString().c_str());
         if (file.data != nullptr) {
-            auto tex = physis_texture_parse(file);
+            const auto tex = physis_texture_parse(file);
 
-            QImage image(tex.rgba, tex.width, tex.height, QImage::Format_RGBA8888);
-            image.save(name);
+            const QImage image(tex.rgba, tex.width, tex.height, QImage::Format_RGBA8888);
+            Q_UNUSED(image.save(name))
         }
     };
 
     // TODO: this finds the first profile that has a valid image, but this could probably be cached per-profile
     for (int i = 0; i < m_profileManager->numProfiles(); i++) {
-        auto profile = m_profileManager->getProfile(i);
+        const auto profile = m_profileManager->getProfile(i);
         if (profile->isGameInstalled() && profile->gameData()) {
             // A Realm Reborn
             saveTexture(profile->gameData(), QStringLiteral("ui/uld/Title_Logo.tex"), logoDir.absoluteFilePath(QStringLiteral("ffxiv.png")));
@@ -220,7 +220,7 @@ Profile *LauncherCore::currentProfile() const
     return m_profileManager->getProfile(m_currentProfileIndex);
 }
 
-void LauncherCore::setCurrentProfile(Profile *profile)
+void LauncherCore::setCurrentProfile(const Profile *profile)
 {
     Q_ASSERT(profile != nullptr);
 
@@ -246,7 +246,7 @@ void LauncherCore::setCurrentProfile(Profile *profile)
     return m_profileManager->getProfileByUUID(m_settings->config()->autoLoginProfile());
 }
 
-void LauncherCore::setAutoLoginProfile(Profile *profile)
+void LauncherCore::setAutoLoginProfile(const Profile *profile)
 {
     if (profile != nullptr) {
         auto uuid = profile->uuid();
@@ -370,7 +370,7 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
         }
     }
 
-    auto assetUpdater = new AssetUpdater(*info.profile, *this, this);
+    const auto assetUpdater = new AssetUpdater(*info.profile, *this, this);
     if (co_await assetUpdater->update()) {
         // If we expect an auth ticket, don't continue if missing
         if (!info.profile->isBenchmark() && auth == std::nullopt) {
@@ -435,10 +435,10 @@ QCoro::Task<> LauncherCore::fetchNews()
     auto bannerReply = mgr()->get(bannerRequest);
     co_await bannerReply;
 
-    auto document = QJsonDocument::fromJson(headlineReply->readAll());
-    auto bannerDocument = QJsonDocument::fromJson(bannerReply->readAll());
+    const auto document = QJsonDocument::fromJson(headlineReply->readAll());
+    const auto bannerDocument = QJsonDocument::fromJson(bannerReply->readAll());
 
-    auto headline = new Headline(this);
+    const auto headline = new Headline(this);
     if (document.isEmpty() || bannerDocument.isEmpty()) {
         headline->failedToLoad = true;
     } else {

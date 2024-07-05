@@ -4,6 +4,7 @@
 #pragma once
 
 #include <QtQml>
+
 #include <physis.hpp>
 
 class ExistingInstallModel : public QAbstractListModel

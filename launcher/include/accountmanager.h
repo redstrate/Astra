@@ -4,7 +4,6 @@
 #pragma once
 
 #include <QAbstractListModel>
-#include <QtQml/qqmlregistration.h>
 
 #include "account.h"
 
@@ -36,7 +35,7 @@ public:
 
     [[nodiscard]] Account *getByUuid(const QString &uuid) const;
 
-    Q_INVOKABLE bool canDelete(Account *account) const;
+    Q_INVOKABLE bool canDelete(const Account *account) const;
     Q_INVOKABLE void deleteAccount(Account *account);
 
     Q_INVOKABLE [[nodiscard]] bool hasAnyAccounts() const;

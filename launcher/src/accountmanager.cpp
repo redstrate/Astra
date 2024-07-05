@@ -22,7 +22,7 @@ void AccountManager::load()
             const QString uuid = QString(id).remove("account-"_L1);
             qInfo(ASTRA_LOG) << "Loading account" << uuid;
 
-            auto account = new Account(m_launcher, uuid, this);
+            const auto account = new Account(m_launcher, uuid, this);
             m_accounts.append(account);
             Q_EMIT accountsChanged();
         }
@@ -35,7 +35,7 @@ int AccountManager::rowCount(const QModelIndex &index) const
     return static_cast<int>(m_accounts.size());
 }
 
-QVariant AccountManager::data(const QModelIndex &index, int role) const
+QVariant AccountManager::data(const QModelIndex &index, const int role) const
 {
     if (!checkIndex(index)) {
         return {};
@@ -54,9 +54,9 @@ QHash<int, QByteArray> AccountManager::roleNames() const
     return {{AccountRole, QByteArrayLiteral("account")}};
 }
 
-Account *AccountManager::createSquareEnixAccount(const QString &username, int licenseType, bool isFreeTrial)
+Account *AccountManager::createSquareEnixAccount(const QString &username, const int licenseType, const bool isFreeTrial)
 {
-    auto account = new Account(m_launcher, QUuid::createUuid().toString(), this);
+    const auto account = new Account(m_launcher, QUuid::createUuid().toString(), this);
     account->setIsSapphire(false);
     account->setLicense(static_cast<Account::GameLicense>(licenseType));
     account->setIsFreeTrial(isFreeTrial);
@@ -69,7 +69,7 @@ Account *AccountManager::createSquareEnixAccount(const QString &username, int li
 
 Account *AccountManager::createSapphireAccount(const QString &lobbyUrl, const QString &username)
 {
-    auto account = new Account(m_launcher, QUuid::createUuid().toString(), this);
+    const auto account = new Account(m_launcher, QUuid::createUuid().toString(), this);
     account->setIsSapphire(true);
     account->setName(username);
     account->setLobbyUrl(lobbyUrl);
@@ -90,7 +90,7 @@ Account *AccountManager::getByUuid(const QString &uuid) const
     return nullptr;
 }
 
-bool AccountManager::canDelete(Account *account) const
+bool AccountManager::canDelete(const Account *account) const
 {
     Q_UNUSED(account)
     return m_accounts.size() != 1;

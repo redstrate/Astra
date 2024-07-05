@@ -53,7 +53,7 @@ static char ChecksumTable[] = {'f', 'X', '1', 'p', 'G', 't', 'd', 'S', '5', 'C',
 
 inline char GetChecksum(const unsigned int key)
 {
-    auto value = key & 0x000F0000;
+    const auto value = key & 0x000F0000;
     return ChecksumTable[value >> 16];
 }
 

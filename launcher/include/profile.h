@@ -3,9 +3,8 @@
 
 #pragma once
 
-#include <QObject>
-#include <QtLogging>
-#include <QtQml/qqmlregistration.h>
+#include <QtQml>
+
 #include <physis.hpp>
 
 class Account;
@@ -150,13 +149,13 @@ public:
     void setDalamudApplicable(bool applicable);
 
     /// @return If Dalamud is enabled, and it's also applicable for the current game version.
-    bool dalamudShouldLaunch() const;
+    [[nodiscard]] bool dalamudShouldLaunch() const;
 
     [[nodiscard]] QString compatibilityToolVersion() const;
     void setCompatibilityToolVersion(const QString &version);
 
-    BootData *bootData();
-    GameData *gameData();
+    BootData *bootData() const;
+    GameData *gameData() const;
 
     [[nodiscard]] bool loggedIn() const;
     void setLoggedIn(bool value);

@@ -5,7 +5,6 @@
 #include "astra_http_log.h"
 
 #include <QSslConfiguration>
-#include <QStandardPaths>
 
 using namespace Qt::StringLiterals;
 
@@ -22,7 +21,7 @@ void Utility::printRequest(const QString &type, const QNetworkRequest &request)
 void Utility::createPathIfNeeded(const QDir &dir)
 {
     if (!QDir().exists(dir.absolutePath())) {
-        QDir().mkpath(dir.absolutePath());
+        Q_UNUSED(QDir().mkpath(dir.absolutePath()))
     }
 }
 

@@ -3,13 +3,15 @@
 
 #pragma once
 
-#include "patchlist.h"
 #include <QDir>
 #include <QMutex>
 #include <QNetworkAccessManager>
 #include <QString>
-#include <physis.hpp>
 #include <qcorotask.h>
+
+#include <physis.hpp>
+
+#include "patchlist.h"
 
 class LauncherCore;
 

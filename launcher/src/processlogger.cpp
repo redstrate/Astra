@@ -4,6 +4,7 @@
 #include "processlogger.h"
 #include "astra_log.h"
 #include "utility.h"
+
 #include <QStandardPaths>
 
 ProcessLogger::ProcessLogger(QProcess *process)

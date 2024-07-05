@@ -33,7 +33,7 @@ int ProfileManager::getProfileIndex(const QString &name)
 
 Profile *ProfileManager::getProfileByUUID(const QString &uuid)
 {
-    for (auto &m_profile : m_profiles) {
+    for (const auto &m_profile : m_profiles) {
         if (m_profile->uuid() == uuid)
             return m_profile;
     }
@@ -43,7 +43,7 @@ Profile *ProfileManager::getProfileByUUID(const QString &uuid)
 
 Profile *ProfileManager::addProfile()
 {
-    auto newProfile = new Profile(m_launcher, QUuid::createUuid().toString(), this);
+    const auto newProfile = new Profile(m_launcher, QUuid::createUuid().toString(), this);
     newProfile->setName(QStringLiteral("New Profile"));
 
     insertProfile(newProfile);
@@ -85,7 +85,7 @@ void ProfileManager::load()
         if (id.contains("profile-"_L1)) {
             const QString uuid = QString(id).remove("profile-"_L1);
             qInfo(ASTRA_LOG) << "Loading profile" << uuid;
-            auto profile = new Profile(m_launcher, uuid, this);
+            const auto profile = new Profile(m_launcher, uuid, this);
             insertProfile(profile);
         }
     }
@@ -102,7 +102,7 @@ int ProfileManager::rowCount(const QModelIndex &index) const
     return static_cast<int>(m_profiles.size());
 }
 
-QVariant ProfileManager::data(const QModelIndex &index, int role) const
+QVariant ProfileManager::data(const QModelIndex &index, const int role) const
 {
     if (!checkIndex(index)) {
         return {};
@@ -134,7 +134,7 @@ QList<Profile *> ProfileManager::profiles() const
     return m_profiles;
 }
 
-bool ProfileManager::canDelete(Profile *account) const
+bool ProfileManager::canDelete(const Profile *account) const
 {
     Q_UNUSED(account)
     return m_profiles.size() != 1;

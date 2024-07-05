@@ -6,9 +6,7 @@
 #include <KLocalizedString>
 #include <QDir>
 #include <QFile>
-#include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QStandardPaths>
 #include <QtConcurrent>
 #include <physis.hpp>
 #include <qcorofuture.h>
@@ -110,7 +108,7 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
 
             auto patchReply = m_launcher.mgr()->get(patchRequest);
 
-            connect(patchReply, &QNetworkReply::downloadProgress, this, [this, ourIndex](int received, int total) {
+            connect(patchReply, &QNetworkReply::downloadProgress, this, [this, ourIndex](const int received, const int total) {
                 Q_UNUSED(total)
                 updateDownloadProgress(ourIndex, received);
             });
@@ -256,7 +254,7 @@ QString Patcher::getBaseString() const
     }
 }
 
-void Patcher::updateDownloadProgress(const int index, int received)
+void Patcher::updateDownloadProgress(const int index, const int received)
 {
     QMutexLocker locker(&m_finishedPatchesMutex);
 
@@ -275,7 +273,7 @@ void Patcher::updateMessage()
                 repositoryName = QStringLiteral("ffxiv");
             }
 
-            const float progress = ((float)patch.bytesDownloaded / (float)patch.length) * 100.0f;
+            const float progress = (static_cast<float>(patch.bytesDownloaded) / static_cast<float>(patch.length)) * 100.0f;
             const QString progressStr = QStringLiteral("%1").arg(progress, 1, 'f', 1, QLatin1Char('0'));
 
             Q_EMIT m_launcher.stageChanged(i18n("Downloading %1 - %2 [%3/%4]", repositoryName, patch.version, m_finishedPatches, m_remainingPatches),

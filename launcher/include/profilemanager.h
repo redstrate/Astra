@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include <QAbstractListModel>
-#include <QtQml/qqmlregistration.h>
+#include <QtQml>
 
 #include "profile.h"
 
@@ -41,7 +40,7 @@ public:
     [[nodiscard]] QList<Profile *> profiles() const;
     [[nodiscard]] int numProfiles() const;
 
-    Q_INVOKABLE bool canDelete(Profile *account) const;
+    Q_INVOKABLE bool canDelete(const Profile *account) const;
 
     [[nodiscard]] Q_INVOKABLE bool hasAnyExistingInstallations() const;
 

@@ -11,7 +11,7 @@ ExistingInstallModel::ExistingInstallModel(QObject *parent)
     fill();
 }
 
-QVariant ExistingInstallModel::data(const QModelIndex &index, int role) const
+QVariant ExistingInstallModel::data(const QModelIndex &index, const int role) const
 {
     Q_ASSERT(checkIndex(index, QAbstractItemModel::CheckIndexOption::IndexIsValid));
 
@@ -54,8 +54,8 @@ QHash<int, QByteArray> ExistingInstallModel::roleNames() const
 
 void ExistingInstallModel::fill()
 {
-    auto dirs = physis_find_existing_game_dirs();
-    for (int i = 0; i < dirs.count; i++) {
+    const auto dirs = physis_find_existing_game_dirs();
+    for (uint32_t i = 0; i < dirs.count; i++) {
         // We shouldn't be able to import our own game installs, that's handled elsewhere in the UI
         if (dirs.entries[i].install_type != ExistingInstallType::Astra) {
             beginInsertRows({}, m_existingInstalls.size(), m_existingInstalls.size());

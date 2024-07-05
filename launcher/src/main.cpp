@@ -4,9 +4,6 @@
 #include <KAboutData>
 #include <KLocalizedContext>
 #include <KLocalizedString>
-#include <QApplication>
-#include <QCommandLineParser>
-#include <QMessageBox>
 #include <QQuickStyle>
 #include <kdsingleapplication.h>
 #include <qcoroqml.h>
@@ -16,12 +13,9 @@
 #endif
 
 #include "astra-version.h"
-#include "compatibilitytoolinstaller.h"
-#include "gameinstaller.h"
 #include "launchercore.h"
 #include "logger.h"
 #include "physis_logger.h"
-#include "sapphirelogin.h"
 
 #ifdef Q_OS_WIN
 #include <BreezeIcons/BreezeIcons>
@@ -45,9 +39,9 @@ int main(int argc, char *argv[])
         qputenv("QT_QUICK_CONTROLS_MOBILE", "1");
     }
 
-    QGuiApplication app(argc, argv);
+    const QGuiApplication app(argc, argv);
 
-    KDSingleApplication singleApplication;
+    const KDSingleApplication singleApplication;
     if (!singleApplication.isPrimaryInstance()) {
         return 0;
     }
@@ -153,7 +147,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    auto core = engine.singletonInstance<LauncherCore *>(QStringLiteral("zone.xiv.astra"), QStringLiteral("LauncherCore"));
+    const auto core = engine.singletonInstance<LauncherCore *>(QStringLiteral("zone.xiv.astra"), QStringLiteral("LauncherCore"));
     if (parser.isSet(steamOption)) {
         core->initializeSteam();
     }

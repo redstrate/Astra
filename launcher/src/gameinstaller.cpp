@@ -14,7 +14,7 @@
 #include "profile.h"
 #include "utility.h"
 
-const QString installerUrl = QStringLiteral("https://download.finalfantasyxiv.com/inst/ffxivsetup.exe");
+const auto installerUrl = QStringLiteral("https://download.finalfantasyxiv.com/inst/ffxivsetup.exe");
 const QByteArray installerSha256 = QByteArray::fromHex("cf70bfaaf4f429794358ef84acbcbdc4193bee109fa1b6aea81bd4de038e500e");
 
 GameInstaller::GameInstaller(LauncherCore &launcher, Profile &profile, QObject *parent)
@@ -33,7 +33,7 @@ GameInstaller::GameInstaller(LauncherCore &launcher, Profile &profile, const QSt
 void GameInstaller::start()
 {
     if (m_localInstallerPath.isEmpty()) {
-        const QNetworkRequest request = QNetworkRequest(QUrl(installerUrl));
+        const auto request = QNetworkRequest(QUrl(installerUrl));
         Utility::printRequest(QStringLiteral("GET"), request);
 
         auto reply = m_launcher.mgr()->get(request);

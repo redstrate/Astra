@@ -3,9 +3,6 @@
 
 #pragma once
 
-#include <QJsonArray>
-#include <QObject>
-#include <QTemporaryDir>
 #include <qcorotask.h>
 
 #include "launchercore.h"

@@ -42,9 +42,9 @@ void GameRunner::beginVanillaGame(const QString &gameExecutablePath, Profile &pr
 {
     profile.setLoggedIn(true);
 
-    auto gameProcess = new QProcess(this);
+    const auto gameProcess = new QProcess(this);
     gameProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    connect(gameProcess, &QProcess::finished, this, [this, &profile](int exitCode) {
+    connect(gameProcess, &QProcess::finished, this, [this, &profile](const int exitCode) {
         profile.setLoggedIn(false);
         Q_UNUSED(exitCode)
         Q_EMIT m_launcher.gameClosed();
@@ -85,8 +85,8 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
     const QDir dalamudInstallDir = dalamudDir.absoluteFilePath(profile.dalamudChannelName());
     const QString dalamudInjector = dalamudInstallDir.absoluteFilePath(QStringLiteral("Dalamud.Injector.exe"));
 
-    auto dalamudProcess = new QProcess(this);
-    connect(dalamudProcess, &QProcess::finished, this, [this, &profile](int exitCode) {
+    const auto dalamudProcess = new QProcess(this);
+    connect(dalamudProcess, &QProcess::finished, this, [this, &profile](const int exitCode) {
         profile.setLoggedIn(false);
         Q_UNUSED(exitCode)
         Q_EMIT m_launcher.gameClosed();
@@ -123,7 +123,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
                      true);
 }
 
-QString GameRunner::getGameArgs(const Profile &profile, const std::optional<LoginAuth> &auth)
+QString GameRunner::getGameArgs(const Profile &profile, const std::optional<LoginAuth> &auth) const
 {
     QList<std::pair<QString, QString>> gameArgs;
 
@@ -333,7 +333,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
 void GameRunner::addRegistryKey(const Profile &settings, const QString &key, const QString &value, const QString &data)
 {
-    auto process = new QProcess(this);
+    const auto process = new QProcess(this);
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     launchExecutable(settings,
                      process,
@@ -345,7 +345,7 @@ void GameRunner::addRegistryKey(const Profile &settings, const QString &key, con
 
 void GameRunner::setWindowsVersion(const Profile &settings, const QString &version)
 {
-    auto process = new QProcess(this);
+    const auto process = new QProcess(this);
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     launchExecutable(settings, process, {QStringLiteral("winecfg"), QStringLiteral("/v"), version}, false, false);
     process->waitForFinished();

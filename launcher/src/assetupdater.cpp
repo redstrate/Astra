@@ -207,7 +207,7 @@ QCoro::Task<bool> AssetUpdater::installCompatibilityTool()
 {
     Q_EMIT launcher.stageChanged(i18n("Updating compatibility tool..."));
 
-    const QNetworkRequest request = QNetworkRequest(QUrl(m_remoteCompatibilityToolUrl));
+    const auto request = QNetworkRequest(QUrl(m_remoteCompatibilityToolUrl));
     Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = launcher.mgr()->get(request);
@@ -233,8 +233,8 @@ QCoro::Task<bool> AssetUpdater::installCompatibilityTool()
     }
 
     // the first directory is the same as the version we download
-    const KArchiveDirectory *root = dynamic_cast<const KArchiveDirectory *>(archive.directory()->entry(m_remoteCompatibilityToolVersion));
-    root->copyTo(m_wineDir.absolutePath(), true);
+    const auto *root = dynamic_cast<const KArchiveDirectory *>(archive.directory()->entry(m_remoteCompatibilityToolVersion));
+    Q_UNUSED(root->copyTo(m_wineDir.absolutePath(), true))
 
     archive.close();
 
@@ -249,7 +249,7 @@ QCoro::Task<bool> AssetUpdater::installDxvkTool()
 {
     Q_EMIT launcher.stageChanged(i18n("Updating DXVK..."));
 
-    const QNetworkRequest request = QNetworkRequest(QUrl(m_remoteDxvkToolUrl));
+    const auto request = QNetworkRequest(QUrl(m_remoteDxvkToolUrl));
     Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = launcher.mgr()->get(request);
@@ -275,8 +275,8 @@ QCoro::Task<bool> AssetUpdater::installDxvkTool()
     }
 
     // the first directory is the same as the version we download
-    const KArchiveDirectory *root = dynamic_cast<const KArchiveDirectory *>(archive.directory()->entry(m_remoteDxvkToolVersion));
-    root->copyTo(m_dxvkDir.absolutePath(), true);
+    const auto *root = dynamic_cast<const KArchiveDirectory *>(archive.directory()->entry(m_remoteDxvkToolVersion));
+    Q_UNUSED(root->copyTo(m_dxvkDir.absolutePath(), true))
 
     archive.close();
 
@@ -289,7 +289,7 @@ QCoro::Task<bool> AssetUpdater::installDalamudAssets()
 {
     Q_EMIT launcher.stageChanged(i18n("Updating Dalamud assets..."));
 
-    const QNetworkRequest request = QNetworkRequest(QUrl(m_remoteDalamudAssetPackageUrl));
+    const auto request = QNetworkRequest(QUrl(m_remoteDalamudAssetPackageUrl));
     Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = launcher.mgr()->get(request);
@@ -321,7 +321,7 @@ QCoro::Task<bool> AssetUpdater::installDalamud()
 {
     Q_EMIT launcher.stageChanged(i18n("Updating Dalamud..."));
 
-    const QNetworkRequest request = QNetworkRequest(QUrl(m_remoteDalamudDownloadUrl));
+    const auto request = QNetworkRequest(QUrl(m_remoteDalamudDownloadUrl));
     Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = launcher.mgr()->get(request);

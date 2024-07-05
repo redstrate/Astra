@@ -88,7 +88,7 @@ private:
 
 Q_GLOBAL_STATIC(Logger, logger)
 
-void handler(QtMsgType type, const QMessageLogContext &context, const QString &message)
+void handler(const QtMsgType type, const QMessageLogContext &context, const QString &message)
 {
     switch (type) {
     case QtDebugMsg:

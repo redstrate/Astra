@@ -5,7 +5,7 @@
 
 #include <QDir>
 #include <QObject>
-#include <QtQml/qqmlregistration.h>
+#include <QtQml>
 #include <qcorotask.h>
 
 #include "accountconfig.h"
@@ -104,13 +104,13 @@ private:
     void fetchAvatar();
     QCoro::Task<> fetchPassword();
 
-    /*
-     * Sets a value in the keychain. This function is asynchronous.
+    /**
+     * @brief Sets a value in the keychain. This function is asynchronous.
      */
     void setKeychainValue(const QString &key, const QString &value);
 
-    /*
-     * Retrieves a value from the keychain. This function is synchronous.
+    /**
+     * @brief Retrieves a value from the keychain. This function is synchronous.
      */
     QCoro::Task<QString> getKeychainValue(const QString &key);
 

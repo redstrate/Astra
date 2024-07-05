@@ -29,9 +29,9 @@ void CompatibilityToolInstaller::installCompatibilityTool()
     if (astraToolDir.exists()) {
         Q_EMIT error(i18n("The compatibility tool is already installed."));
         return;
-    } else {
-        QDir().mkpath(astraToolDir.absolutePath());
     }
+
+    Q_UNUSED(QDir().mkpath(astraToolDir.absolutePath()))
 
     QString command;
     if (KSandbox::isFlatpak()) {
@@ -62,7 +62,7 @@ void CompatibilityToolInstaller::installCompatibilityTool()
     toolManifestFile.write(toolManifestContents.toUtf8());
     toolManifestFile.close();
 
-    const QString compatibilityToolContents = QStringLiteral(
+    const auto compatibilityToolContents = QStringLiteral(
         "\"compatibilitytools\"\n"
         "{\n"
         "  \"compat_tools\"\n"

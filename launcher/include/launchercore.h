@@ -3,9 +3,7 @@
 
 #pragma once
 
-#include <QFuture>
 #include <QNetworkAccessManager>
-#include <QProcess>
 #include <QtQml>
 #include <qcorotask.h>
 
@@ -102,11 +100,11 @@ public:
     Q_INVOKABLE void refreshLogoImage();
 
     [[nodiscard]] Profile *currentProfile() const;
-    void setCurrentProfile(Profile *profile);
+    void setCurrentProfile(const Profile *profile);
 
     [[nodiscard]] QString autoLoginProfileName() const;
     [[nodiscard]] Profile *autoLoginProfile() const;
-    void setAutoLoginProfile(Profile *value);
+    void setAutoLoginProfile(const Profile *value);
 
     // Networking misc.
     void buildRequest(const Profile &settings, QNetworkRequest &request);
