@@ -422,7 +422,9 @@ void Profile::readGameVersion()
 
     // Extract frontier url if possible
     const auto launcherPath = QString(gamePath() + QStringLiteral("/boot/ffxivlauncher64.exe"));
-    m_frontierUrl = QString::fromUtf8(physis_extract_frontier_url(launcherPath.toStdString().c_str()));
+    if (QFile::exists(launcherPath)) {
+        m_frontierUrl = QString::fromUtf8(physis_extract_frontier_url(launcherPath.toStdString().c_str()));
+    }
 
     Q_EMIT gameInstallChanged();
 }
