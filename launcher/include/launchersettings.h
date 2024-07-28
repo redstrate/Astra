@@ -26,6 +26,7 @@ class LauncherSettings : public QObject
     Q_PROPERTY(QString screenshotDir READ screenshotDir WRITE setScreenshotDir NOTIFY screenshotDirChanged)
     Q_PROPERTY(bool argumentsEncrypted READ argumentsEncrypted WRITE setArgumentsEncrypted NOTIFY encryptedArgumentsChanged)
     Q_PROPERTY(bool enableRenderDocCapture READ enableRenderDocCapture WRITE setEnableRenderDocCapture NOTIFY enableRenderDocCaptureChanged)
+    Q_PROPERTY(bool enableSync READ enableSync WRITE setEnableSync NOTIFY enableSyncChanged)
 
 public:
     explicit LauncherSettings(QObject *parent = nullptr);
@@ -74,6 +75,9 @@ public:
     [[nodiscard]] QString currentProfile() const;
     void setCurrentProfile(const QString &value);
 
+    [[nodiscard]] bool enableSync() const;
+    void setEnableSync(bool enabled);
+
     Config *config();
 
 Q_SIGNALS:
@@ -89,6 +93,7 @@ Q_SIGNALS:
     void screenshotDirChanged();
     void encryptedArgumentsChanged();
     void enableRenderDocCaptureChanged();
+    void enableSyncChanged();
 
 private:
     Config *m_config = nullptr;

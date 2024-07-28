@@ -47,6 +47,12 @@ KirigamiSettings.CategorizedSettings {
             page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/AccountsPage.qml")
         },
         KirigamiSettings.SettingAction {
+            actionName: "sync"
+            text: i18n("Sync")
+            icon.name: "state-sync-symbolic"
+            page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/SyncSettings.qml")
+        },
+        KirigamiSettings.SettingAction {
             actionName: "compattool"
             text: i18n("Compatibility Tool")
             icon.name: "system-run"

@@ -21,6 +21,7 @@ class GameInstaller;
 class CompatibilityToolInstaller;
 class GameRunner;
 class BenchmarkInstaller;
+class SyncManager;
 
 class LoginInformation : public QObject
 {
@@ -67,7 +68,7 @@ class LauncherCore : public QObject
     Q_PROPERTY(Headline *headline READ headline NOTIFY newsChanged)
     Q_PROPERTY(Profile *currentProfile READ currentProfile WRITE setCurrentProfile NOTIFY currentProfileChanged)
     Q_PROPERTY(Profile *autoLoginProfile READ autoLoginProfile WRITE setAutoLoginProfile NOTIFY autoLoginProfileChanged)
-    Q_PROPERTY(QString cachedLogoImage READ cachedLogoImage NOTIFY cachedLogoImageChanged)
+    Q_PROPERTY(SyncManager *syncManager READ syncManager CONSTANT)
 
 public:
     LauncherCore();
@@ -123,6 +124,7 @@ public:
     [[nodiscard]] AccountManager *accountManager();
     [[nodiscard]] Headline *headline() const;
     [[nodiscard]] QString cachedLogoImage() const;
+    [[nodiscard]] SyncManager *syncManager() const;
 
 Q_SIGNALS:
     void loadingFinished();
@@ -164,6 +166,7 @@ private:
     LauncherSettings *m_settings = nullptr;
     GameRunner *m_runner = nullptr;
     QString m_cachedLogoImage;
+    SyncManager *m_syncManager = nullptr;
 
     int m_currentProfileIndex = 0;
 };

@@ -15,11 +15,13 @@
 #include "assetupdater.h"
 #include "astra_log.h"
 #include "benchmarkinstaller.h"
+#include "charactersync.h"
 #include "compatibilitytoolinstaller.h"
 #include "gamerunner.h"
 #include "launchercore.h"
 #include "sapphirelogin.h"
 #include "squareenixlogin.h"
+#include "syncmanager.h"
 #include "utility.h"
 
 using namespace Qt::StringLiterals;
@@ -34,6 +36,7 @@ LauncherCore::LauncherCore()
     m_profileManager = new ProfileManager(*this, this);
     m_accountManager = new AccountManager(*this, this);
     m_runner = new GameRunner(*this, this);
+    m_syncManager = new SyncManager(this);
 
     m_profileManager->load();
     m_accountManager->load();
@@ -354,11 +357,21 @@ QString LauncherCore::cachedLogoImage() const
     return m_cachedLogoImage;
 }
 
+SyncManager *LauncherCore::syncManager() const
+{
+    return m_syncManager;
+}
+
 QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 {
     // Hmm, I don't think we're set up for this yet?
     if (!info.profile->isBenchmark()) {
         info.profile->account()->updateConfig();
+    }
+
+    const auto characterSync = new CharacterSync(*info.profile->account(), *this, this);
+    if (!co_await characterSync->sync()) {
+        co_return;
     }
 
     std::optional<LoginAuth> auth;

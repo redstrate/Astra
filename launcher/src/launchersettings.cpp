@@ -214,6 +214,20 @@ void LauncherSettings::setCurrentProfile(const QString &value)
     stateConfig->sync();
 }
 
+bool LauncherSettings::enableSync() const
+{
+    return m_config->enableSync();
+}
+
+void LauncherSettings::setEnableSync(const bool enabled)
+{
+    if (m_config->enableSync() != enabled) {
+        m_config->setEnableSync(enabled);
+        m_config->save();
+        Q_EMIT enableSyncChanged();
+    }
+}
+
 Config *LauncherSettings::config()
 {
     return m_config;
