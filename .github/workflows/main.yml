@@ -9,6 +9,9 @@ on:
 env:
   CMAKE_BUILD_PARALLEL_LEVEL: 2
   MAKEFLAGS: '-j 2'
+  QT_VERSION: 6.6 # Keep in sync with CMakeLists.txt
+  KF_VERSION: v6.4.0 # Ditto
+  KIRIGAMI_ADDONS_VERSION: v1.2.1 # Ditto x2
 
 jobs:
   reuse:
@@ -49,7 +52,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
-          version: "6.6.*"
+          version: "${{ env.QT_VERSION }}.*"
           cache: true
           modules: 'qtshadertools'
 
@@ -113,7 +116,7 @@ jobs:
       - name: Build Extra CMake Modules
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
         run: |
-          git clone https://invent.kde.org/frameworks/extra-cmake-modules.git
+          git clone --depth 1 --branch ${{ env.KF_VERSION }} https://invent.kde.org/frameworks/extra-cmake-modules.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-ECM -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S extra-cmake-modules -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-ECM --config ${{ matrix.build_type }} --target install
           cmake --install ${{ steps.strings.outputs.build-output-dir }}-ECM --config ${{ matrix.build_type }}
@@ -121,7 +124,7 @@ jobs:
       - name: Configure KI18n
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
         run: |
-          git clone https://invent.kde.org/frameworks/ki18n.git
+          git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/ki18n.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-ki18n -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ki18n -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
 
       - name: Windows KI18n workaround
@@ -137,35 +140,35 @@ jobs:
       - name: Build KCoreAddons
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
         run: |
-          git clone https://invent.kde.org/frameworks/kcoreaddons.git
+          git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/kcoreaddons.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-kca -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kcoreaddons -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-kca --config ${{ matrix.build_type }} --target install
 
       - name: Build KConfig
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
         run: |
-          git clone https://invent.kde.org/frameworks/kconfig.git
+          git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/kconfig.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-kconfig -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kconfig -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-kconfig --config ${{ matrix.build_type }} --target install
 
       - name: Build KArchive
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
         run: |
-          git clone https://invent.kde.org/frameworks/karchive.git
+          git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/karchive.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-karchive -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S karchive -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF -DWITH_BZIP2=OFF -DWITH_LIBLZMA=OFF -DWITH_LIBZSTD=OFF # TODO: enable bzip which we need later
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-karchive --config ${{ matrix.build_type }} --target install
 
       - name: Build Kirigami
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
         run: |
-          git clone https://invent.kde.org/frameworks/kirigami.git
+          git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/kirigami.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-kirigami -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kirigami -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-kirigami --config ${{ matrix.build_type }} --target install
 
       - name: Build Kirigami Add-ons
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
         run: |
-          git clone https://invent.kde.org/libraries/kirigami-addons.git
+          git clone --depth 1 --branch ${{ env.KIRIGAMI_ADDONS_VERSION }}  https://invent.kde.org/libraries/kirigami-addons.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-kirigami-addons -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kirigami-addons -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-kirigami-addons --config ${{ matrix.build_type }} --target install
 
@@ -173,7 +176,7 @@ jobs:
         if: (runner.os == 'Windows') && (steps.cache-prefix-restore.outputs.cache-hit != 'true')
         continue-on-error: true
         run: |
-          git clone https://invent.kde.org/frameworks/breeze-icons.git
+          git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/breeze-icons.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-breeze-icons -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S breeze-icons -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DICONS_LIBRARY=ON -DSKIP_INSTALL_ICONS=ON
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-breeze-icons --config ${{ matrix.build_type }} --target install
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-breeze-icons --config ${{ matrix.build_type }} --target install
