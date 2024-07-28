@@ -274,8 +274,8 @@ QQC2.Control {
                 icon.name: "unlock"
                 enabled: page.isLoginValid
                 onClicked: {
-                    LauncherCore.login(LauncherCore.currentProfile, usernameField.text, passwordField.text, otpField.text)
                     page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "StatusPage"))
+                    LauncherCore.login(LauncherCore.currentProfile, usernameField.text, passwordField.text, otpField.text)
                 }
             }
 
@@ -308,8 +308,8 @@ QQC2.Control {
 
                 text: i18n("Launch Benchmark")
                 onClicked: {
-                    LauncherCore.login(LauncherCore.currentProfile, "", "", "")
                     page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "StatusPage"))
+                    LauncherCore.login(LauncherCore.currentProfile, "", "", "")
                 }
             }
         }

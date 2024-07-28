@@ -45,6 +45,7 @@ target_sources(astra PRIVATE
         include/accountmanager.h
         include/assetupdater.h
         include/benchmarkinstaller.h
+        include/charactersync.h
         include/compatibilitytoolinstaller.h
         include/encryptedarg.h
         include/existinginstallmodel.h
@@ -62,12 +63,14 @@ target_sources(astra PRIVATE
         include/sapphirelogin.h
         include/squareenixlogin.h
         include/steamapi.h
+        include/syncmanager.h
         include/utility.h
 
         src/account.cpp
         src/accountmanager.cpp
         src/assetupdater.cpp
         src/benchmarkinstaller.cpp
+        src/charactersync.cpp
         src/compatibilitytoolinstaller.cpp
         src/encryptedarg.cpp
         src/existinginstallmodel.cpp
@@ -86,6 +89,7 @@ target_sources(astra PRIVATE
         src/sapphirelogin.cpp
         src/squareenixlogin.cpp
         src/steamapi.cpp
+        src/syncmanager.cpp
         src/utility.cpp
 )
 
@@ -108,6 +112,7 @@ qt_target_qml_sources(astra
         ui/Settings/ProfileSettings.qml
         ui/Settings/ProfilesPage.qml
         ui/Settings/SettingsPage.qml
+        ui/Settings/SyncSettings.qml
         ui/Setup/AccountSetup.qml
         ui/Setup/AddSapphire.qml
         ui/Setup/AddSquareEnix.qml
@@ -151,7 +156,8 @@ target_link_libraries(astra PRIVATE
         KF6::Archive
         QCoro::Core
         QCoro::Network
-        QCoro::Qml)
+        QCoro::Qml
+        QuotientQt6)
 if (BUILD_WEBVIEW)
     target_link_libraries(astra PRIVATE
             Qt6::WebView

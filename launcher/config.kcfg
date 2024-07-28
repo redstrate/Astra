@@ -27,6 +27,11 @@ SPDX-License-Identifier: CC0-1.0
       <default code="true">QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + QDir::separator() + QStringLiteral("FFXIV")</default>
     </entry>
   </group>
+  <group name="Sync">
+    <entry name="EnableSync" type="bool">
+      <default>false</default>
+    </entry>
+  </group>
   <group name="Developer">
     <entry name="KeepPatches" type="bool">
       <default>false</default>
