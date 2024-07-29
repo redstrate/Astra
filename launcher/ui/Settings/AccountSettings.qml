@@ -36,12 +36,32 @@ FormCard.FormCardPage {
         }
     ]
 
-    FormCard.FormHeader {
-        title: i18n("General")
+    header: Kirigami.NavigationTabBar {
+        width: parent.width
+
+        actions: [
+            Kirigami.Action {
+                id: generalAction
+                text: i18n("General")
+            },
+            Kirigami.Action {
+                id: accountAction
+                text: i18n("Account")
+            },
+            Kirigami.Action {
+                id: loginAction
+                text: i18n("Login")
+            }
+        ]
+
+        Component.onCompleted: actions[0].checked = true
     }
 
     FormCard.FormCard {
+        visible: generalAction.checked
+
         Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
 
         FormCard.FormTextFieldDelegate {
             id: usernameDelegate
@@ -81,15 +101,11 @@ FormCard.FormCardPage {
         }
     }
 
-    FormCard.FormHeader {
-        title: i18n("Square Enix")
-        visible: !page.account.isSapphire
-    }
-
     FormCard.FormCard {
-        visible: !page.account.isSapphire
+        visible: accountAction.checked && !page.account.isSapphire
 
         Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
 
         FormCard.FormComboBoxDelegate {
             id: licenseField
@@ -158,15 +174,11 @@ FormCard.FormCardPage {
         }
     }
 
-    FormCard.FormHeader {
-        title: i18n("Sapphire")
-        visible: page.account.isSapphire
-    }
-
     FormCard.FormCard {
-        visible: page.account.isSapphire
+        visible: accountAction.checked && page.account.isSapphire
 
         Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
 
         FormCard.FormTextFieldDelegate {
             id: lobbyURLDelegate
@@ -179,12 +191,11 @@ FormCard.FormCardPage {
         }
     }
 
-    FormCard.FormHeader {
-        title: i18n("Login")
-    }
-
     FormCard.FormCard {
+        visible: loginAction.checked
+
         Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
 
         FormCard.FormCheckDelegate {
             id: rememberPasswordDelegate

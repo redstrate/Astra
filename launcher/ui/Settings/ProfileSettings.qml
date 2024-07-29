@@ -31,12 +31,38 @@ FormCard.FormCardPage {
         }
     ]
 
-    FormCard.FormHeader {
-        title: i18n("General")
+    header: Kirigami.NavigationTabBar {
+        width: parent.width
+
+        actions: [
+            Kirigami.Action {
+                id: generalAction
+                text: i18n("General")
+            },
+            Kirigami.Action {
+                id: wineAction
+                text: i18n("Wine")
+                visible: !LauncherCore.isWindows
+            },
+            Kirigami.Action {
+                id: toolsAction
+                text: i18n("Tools")
+                visible: !LauncherCore.isWindows
+            },
+            Kirigami.Action {
+                id: dalamudAction
+                text: i18n("Dalamud")
+            }
+        ]
+
+        Component.onCompleted: actions[0].checked = true
     }
 
     FormCard.FormCard {
+        visible: generalAction.checked
+
         Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
 
         FormCard.FormTextFieldDelegate {
             id: nameDelegate
@@ -85,14 +111,11 @@ FormCard.FormCardPage {
         }
     }
 
-    FormCard.FormHeader {
-        title: i18n("Wine")
-    }
-
     FormCard.FormCard {
-        visible: !LauncherCore.isWindows
+        visible: wineAction.checked
 
         Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
 
         FormCard.FormComboBoxDelegate {
             id: wineTypeDelegate
@@ -139,15 +162,11 @@ FormCard.FormCardPage {
         }
     }
 
-    FormCard.FormHeader {
-        title: i18n("Tools")
-        visible: !LauncherCore.isWindows
-    }
-
     FormCard.FormCard {
-        visible: !LauncherCore.isWindows
+        visible: toolsAction.checked
 
         Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
 
         FormCard.FormCheckDelegate {
             text: i18n("Enable Gamescope")
@@ -213,12 +232,11 @@ FormCard.FormCardPage {
         }
     }
 
-    FormCard.FormHeader {
-        title: i18n("Dalamud")
-    }
-
     FormCard.FormCard {
+        visible: dalamudAction.checked
+
         Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
 
         FormCard.FormCheckDelegate {
             id: enableDalamudDelegate
