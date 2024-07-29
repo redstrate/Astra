@@ -85,6 +85,42 @@ FormCard.FormCardPage {
     FormCard.FormCard {
         Layout.fillWidth: true
 
+        FormCard.FormButtonDelegate {
+            id: resetToDefaultsDelegate
+
+            text: i18n("Reset to Defaults")
+
+            onClicked: {
+                preferredProtocolDelegate.text = LauncherCore.settings.defaultPreferredProtocol();
+                dalamudServerDelegate.text = LauncherCore.settings.defaultDalamudDistribServer();
+                squareMainServerDelegate.text = LauncherCore.settings.defaultSquareEnixServer();
+                loginServerDelegate.text = LauncherCore.settings.defaultSquareEnixLoginServer();
+                mainServerDelegate.text = LauncherCore.settings.defaultMainServer();
+            }
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: resetToDefaultsDelegate
+            below: localServerDelegate
+        }
+
+        FormCard.FormButtonDelegate {
+            id: localServerDelegate
+
+            text: i18n("Set to localhost")
+
+            onClicked: {
+                preferredProtocolDelegate.text = "http";
+                squareMainServerDelegate.text = "ffxiv.local";
+                loginServerDelegate.text = "square.local";
+            }
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: localServerDelegate
+            below: preferredProtocolDelegate
+        }
+
         FormCard.FormTextFieldDelegate {
             id: preferredProtocolDelegate
 

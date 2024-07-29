@@ -79,6 +79,11 @@ void LauncherSettings::setDalamudDistribServer(const QString &value)
     }
 }
 
+QString LauncherSettings::defaultDalamudDistribServer() const
+{
+    return m_config->defaultDalamudDistribServerValue();
+}
+
 QString LauncherSettings::squareEnixServer() const
 {
     return m_config->squareEnixServer();
@@ -91,6 +96,11 @@ void LauncherSettings::setSquareEnixServer(const QString &value)
         m_config->save();
         Q_EMIT squareEnixServerChanged();
     }
+}
+
+QString LauncherSettings::defaultSquareEnixServer() const
+{
+    return m_config->defaultSquareEnixServerValue();
 }
 
 QString LauncherSettings::squareEnixLoginServer() const
@@ -107,6 +117,11 @@ void LauncherSettings::setSquareEnixLoginServer(const QString &value)
     }
 }
 
+QString LauncherSettings::defaultSquareEnixLoginServer() const
+{
+    return m_config->defaultSquareEnixLoginServerValue();
+}
+
 QString LauncherSettings::mainServer() const
 {
     return m_config->mainServer();
@@ -121,6 +136,11 @@ void LauncherSettings::setMainServer(const QString &value)
     }
 }
 
+QString LauncherSettings::defaultMainServer() const
+{
+    return m_config->defaultMainServerValue();
+}
+
 QString LauncherSettings::preferredProtocol() const
 {
     return m_config->preferredProtocol();
@@ -133,6 +153,11 @@ void LauncherSettings::setPreferredProtocol(const QString &value)
         m_config->save();
         Q_EMIT preferredProtocolChanged();
     }
+}
+
+QString LauncherSettings::defaultPreferredProtocol() const
+{
+    return m_config->defaultPreferredProtocolValue();
 }
 
 QString LauncherSettings::screenshotDir() const

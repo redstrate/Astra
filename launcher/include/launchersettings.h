@@ -44,18 +44,23 @@ public:
 
     [[nodiscard]] QString dalamudDistribServer() const;
     void setDalamudDistribServer(const QString &value);
+    Q_INVOKABLE QString defaultDalamudDistribServer() const;
 
     [[nodiscard]] QString squareEnixServer() const;
     void setSquareEnixServer(const QString &value);
+    Q_INVOKABLE QString defaultSquareEnixServer() const;
 
     [[nodiscard]] QString squareEnixLoginServer() const;
     void setSquareEnixLoginServer(const QString &value);
+    Q_INVOKABLE QString defaultSquareEnixLoginServer() const;
 
     [[nodiscard]] QString mainServer() const;
     void setMainServer(const QString &value);
+    Q_INVOKABLE QString defaultMainServer() const;
 
     [[nodiscard]] QString preferredProtocol() const;
     void setPreferredProtocol(const QString &value);
+    Q_INVOKABLE QString defaultPreferredProtocol() const;
 
     [[nodiscard]] QString screenshotDir() const;
     void setScreenshotDir(const QString &value);
