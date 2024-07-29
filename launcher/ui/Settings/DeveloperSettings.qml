@@ -108,11 +108,11 @@ FormCard.FormCardPage {
 
         FormCard.FormDelegateSeparator {
             above: dalamudServerDelegate
-            below: mainServerDelegate
+            below: squareMainServerDelegate
         }
 
         FormCard.FormTextFieldDelegate {
-            id: mainServerDelegate
+            id: squareMainServerDelegate
 
             label: i18n("SE Main Server (ffxiv.com)")
             text: LauncherCore.settings.squareEnixServer
@@ -120,7 +120,7 @@ FormCard.FormCardPage {
         }
 
         FormCard.FormDelegateSeparator {
-            above: mainServerDelegate
+            above: squareMainServerDelegate
             below: loginServerDelegate
         }
 
