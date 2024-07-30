@@ -56,6 +56,7 @@ target_sources(astra PRIVATE
         include/logger.h
         include/patcher.h
         include/processlogger.h
+        include/processwatcher.h
         include/profile.h
         include/profilemanager.h
         include/sapphirelogin.h
@@ -79,6 +80,7 @@ target_sources(astra PRIVATE
         src/main.cpp
         src/patcher.cpp
         src/processlogger.cpp
+        src/processwatcher.cpp
         src/profile.cpp
         src/profilemanager.cpp
         src/sapphirelogin.cpp

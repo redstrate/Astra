@@ -10,7 +10,7 @@
 class ProcessLogger : public QObject
 {
 public:
-    explicit ProcessLogger(QProcess *process);
+    explicit ProcessLogger(const QString &baseName, QProcess *process);
 
 private:
     QFile m_file;

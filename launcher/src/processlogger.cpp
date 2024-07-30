@@ -7,12 +7,12 @@
 
 #include <QStandardPaths>
 
-ProcessLogger::ProcessLogger(QProcess *process)
+ProcessLogger::ProcessLogger(const QString &baseName, QProcess *process)
 {
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     const QDir logDirectory = dataDir.absoluteFilePath(QStringLiteral("log"));
 
-    m_file.setFileName(logDirectory.absoluteFilePath(QStringLiteral("ffxiv.log")));
+    m_file.setFileName(logDirectory.absoluteFilePath(QStringLiteral("%1.log").arg(baseName)));
     m_file.open(QIODevice::WriteOnly | QIODevice::Unbuffered);
 
     connect(process, &QProcess::readyReadStandardOutput, this, [this, process] {

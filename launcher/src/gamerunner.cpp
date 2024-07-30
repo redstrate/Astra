@@ -7,9 +7,11 @@
 #include <gamemode_client.h>
 #endif
 
+#include "astra_log.h"
 #include "encryptedarg.h"
 #include "launchercore.h"
 #include "processlogger.h"
+#include "processwatcher.h"
 #include "utility.h"
 
 using namespace Qt::StringLiterals;
@@ -52,7 +54,7 @@ void GameRunner::beginVanillaGame(const QString &gameExecutablePath, Profile &pr
 
     auto args = getGameArgs(profile, auth);
 
-    new ProcessLogger(gameProcess);
+    new ProcessLogger(QStringLiteral("ffxiv"), gameProcess);
 
     launchExecutable(profile, gameProcess, {gameExecutablePath, args}, true, true);
 }
@@ -75,7 +77,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
     // so we need to match typical XIVQuickLauncher behavior here. Why? I have no clue.
     const QDir dalamudPluginDir = dalamudUserPluginDir.absoluteFilePath(QStringLiteral("installedPlugins"));
 
-    const QString logDir = dataDir.absoluteFilePath(QStringLiteral("log"));
+    const QDir logDir = dataDir.absoluteFilePath(QStringLiteral("log"));
     Utility::createPathIfNeeded(logDir);
 
     const QDir dalamudRuntimeDir = dalamudDir.absoluteFilePath(QStringLiteral("runtime"));
@@ -86,9 +88,35 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
     const QString dalamudInjector = dalamudInstallDir.absoluteFilePath(QStringLiteral("Dalamud.Injector.exe"));
 
     const auto dalamudProcess = new QProcess(this);
-    connect(dalamudProcess, &QProcess::finished, this, [this, &profile](const int exitCode) {
-        profile.setLoggedIn(false);
+    connect(dalamudProcess, &QProcess::finished, this, [this, &profile, logDir](const int exitCode) {
         Q_UNUSED(exitCode)
+
+        // So here's the kicker, we can't depend on Dalamud to give us an accurate finished signal for the game.
+        // finished() is called when the injector exits.
+
+        // so what we'll do instead is get the game PID from Dalamud first.
+        QFile logFile(logDir.absoluteFilePath(QStringLiteral("dalamud-initial-injection.log")));
+        logFile.open(QIODevice::ReadOnly);
+
+        const static QRegularExpression pidRegex(QStringLiteral("{\"pid\": (\\d*),"));
+        const QString log = QString::fromUtf8(logFile.readAll());
+
+        const auto match = pidRegex.match(log);
+        if (match.hasCaptured(1)) {
+            const int PID = match.captured(1).toInt();
+            if (PID > 0) {
+                qCInfo(ASTRA_LOG) << "Recieved PID from Dalamud:" << PID;
+                auto watcher = new ProcessWatcher(PID);
+                connect(watcher, &ProcessWatcher::finished, this, [this, &profile] {
+                    profile.setLoggedIn(false);
+                    Q_EMIT m_launcher.gameClosed();
+                });
+                return;
+            }
+        }
+
+        // If Dalamud didn't give a valid PID, OK. Let's just do our previous status quo and inidcate we did log out.
+        profile.setLoggedIn(false);
         Q_EMIT m_launcher.gameClosed();
     });
 
@@ -100,7 +128,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
 #endif
     dalamudProcess->setProcessEnvironment(env);
 
-    new ProcessLogger(dalamudProcess);
+    new ProcessLogger(QStringLiteral("dalamud-initial-injection"), dalamudProcess);
 
     const auto args = getGameArgs(profile, auth);
 
