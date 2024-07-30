@@ -121,6 +121,10 @@ Kirigami.ApplicationWindow {
         function onCurrentProfileChanged() {
             appWindow.checkSetup();
         }
+
+        function onShowWindow() {
+            appWindow.show();
+        }
     }
 
     Connections {

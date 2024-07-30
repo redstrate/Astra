@@ -147,6 +147,7 @@ Q_SIGNALS:
     void currentProfileChanged();
     void autoLoginProfileChanged();
     void cachedLogoImageChanged();
+    void showWindow();
 
 protected:
     friend class Patcher;

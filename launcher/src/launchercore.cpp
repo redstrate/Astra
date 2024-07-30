@@ -518,15 +518,24 @@ QCoro::Task<> LauncherCore::fetchNews()
 QCoro::Task<> LauncherCore::handleGameExit(Profile *profile)
 {
 #ifdef BUILD_SYNC
-    qCDebug(ASTRA_LOG) << "Game closed! Uploading character data...";
-    const auto characterSync = new CharacterSync(*profile->account(), *this, this);
-    co_await characterSync->sync(false); // TODO: handle errors and especially interactive ones
-#endif
+    if (m_settings->enableSync()) {
+        Q_EMIT showWindow();
 
+        qCDebug(ASTRA_LOG) << "Game closed! Uploading character data...";
+        const auto characterSync = new CharacterSync(*profile->account(), *this, this);
+        co_await characterSync->sync(false);
+
+        // Tell the user they can now quit.
+        Q_EMIT stageChanged(i18n("You may now safely close the game."));
+
+        co_return;
+    }
+#endif
     // Otherwise, quit when everything is finished.
     if (m_settings->closeWhenLaunched()) {
         QCoreApplication::exit();
     }
+
     co_return;
 }
 
