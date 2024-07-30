@@ -68,7 +68,10 @@ class LauncherCore : public QObject
     Q_PROPERTY(Headline *headline READ headline NOTIFY newsChanged)
     Q_PROPERTY(Profile *currentProfile READ currentProfile WRITE setCurrentProfile NOTIFY currentProfileChanged)
     Q_PROPERTY(Profile *autoLoginProfile READ autoLoginProfile WRITE setAutoLoginProfile NOTIFY autoLoginProfileChanged)
+
+#ifdef BUILD_SYNC
     Q_PROPERTY(SyncManager *syncManager READ syncManager CONSTANT)
+#endif
 
 public:
     LauncherCore();
@@ -117,6 +120,7 @@ public:
     [[nodiscard]] static bool isWindows();
     [[nodiscard]] static bool needsCompatibilityTool();
     [[nodiscard]] Q_INVOKABLE bool isPatching() const;
+    [[nodiscard]] Q_INVOKABLE bool supportsSync() const;
 
     [[nodiscard]] QNetworkAccessManager *mgr();
     [[nodiscard]] LauncherSettings *settings();
@@ -124,7 +128,10 @@ public:
     [[nodiscard]] AccountManager *accountManager();
     [[nodiscard]] Headline *headline() const;
     [[nodiscard]] QString cachedLogoImage() const;
+
+#ifdef BUILD_SYNC
     [[nodiscard]] SyncManager *syncManager() const;
+#endif
 
 Q_SIGNALS:
     void loadingFinished();
@@ -166,7 +173,10 @@ private:
     LauncherSettings *m_settings = nullptr;
     GameRunner *m_runner = nullptr;
     QString m_cachedLogoImage;
+
+#ifdef BUILD_SYNC
     SyncManager *m_syncManager = nullptr;
+#endif
 
     int m_currentProfileIndex = 0;
 };

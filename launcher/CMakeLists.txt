@@ -45,7 +45,6 @@ target_sources(astra PRIVATE
         include/accountmanager.h
         include/assetupdater.h
         include/benchmarkinstaller.h
-        include/charactersync.h
         include/compatibilitytoolinstaller.h
         include/encryptedarg.h
         include/existinginstallmodel.h
@@ -63,14 +62,12 @@ target_sources(astra PRIVATE
         include/sapphirelogin.h
         include/squareenixlogin.h
         include/steamapi.h
-        include/syncmanager.h
         include/utility.h
 
         src/account.cpp
         src/accountmanager.cpp
         src/assetupdater.cpp
         src/benchmarkinstaller.cpp
-        src/charactersync.cpp
         src/compatibilitytoolinstaller.cpp
         src/encryptedarg.cpp
         src/existinginstallmodel.cpp
@@ -89,7 +86,6 @@ target_sources(astra PRIVATE
         src/sapphirelogin.cpp
         src/squareenixlogin.cpp
         src/steamapi.cpp
-        src/syncmanager.cpp
         src/utility.cpp
 )
 
@@ -122,6 +118,16 @@ qt_target_qml_sources(astra
         ui/Setup/SetupPage.qml
         ui/Main.qml
 )
+if (BUILD_SYNC)
+    target_sources(astra PRIVATE
+            include/charactersync.h
+            include/syncmanager.h
+
+            src/charactersync.cpp
+            src/syncmanager.cpp
+    )
+    target_compile_definitions(astra PRIVATE BUILD_SYNC)
+endif()
 
 set_source_files_properties(../zone.xiv.astra.svg PROPERTIES
         QT_RESOURCE_ALIAS /zone.xiv.astra.svg
