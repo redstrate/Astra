@@ -15,14 +15,17 @@
 #include "assetupdater.h"
 #include "astra_log.h"
 #include "benchmarkinstaller.h"
-#include "charactersync.h"
 #include "compatibilitytoolinstaller.h"
 #include "gamerunner.h"
 #include "launchercore.h"
 #include "sapphirelogin.h"
 #include "squareenixlogin.h"
-#include "syncmanager.h"
 #include "utility.h"
+
+#ifdef BUILD_SYNC
+#include "charactersync.h"
+#include "syncmanager.h"
+#endif
 
 using namespace Qt::StringLiterals;
 
@@ -36,7 +39,10 @@ LauncherCore::LauncherCore()
     m_profileManager = new ProfileManager(*this, this);
     m_accountManager = new AccountManager(*this, this);
     m_runner = new GameRunner(*this, this);
+
+#ifdef BUILD_SYNC
     m_syncManager = new SyncManager(this);
+#endif
 
     m_profileManager->load();
     m_accountManager->load();
@@ -327,6 +333,15 @@ bool LauncherCore::isPatching() const
     return m_isPatching;
 }
 
+bool LauncherCore::supportsSync() const
+{
+#ifdef BUILD_SYNC
+    return true;
+#else
+    return false;
+#endif
+}
+
 QNetworkAccessManager *LauncherCore::mgr()
 {
     return m_mgr;
@@ -357,10 +372,12 @@ QString LauncherCore::cachedLogoImage() const
     return m_cachedLogoImage;
 }
 
+#ifdef BUILD_SYNC
 SyncManager *LauncherCore::syncManager() const
 {
     return m_syncManager;
 }
+#endif
 
 QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 {
@@ -369,10 +386,12 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
         info.profile->account()->updateConfig();
     }
 
+#ifdef BUILD_SYNC
     const auto characterSync = new CharacterSync(*info.profile->account(), *this, this);
     if (!co_await characterSync->sync()) {
         co_return;
     }
+#endif
 
     std::optional<LoginAuth> auth;
     if (!info.profile->isBenchmark()) {

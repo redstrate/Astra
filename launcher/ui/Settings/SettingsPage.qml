@@ -51,6 +51,7 @@ KirigamiSettings.CategorizedSettings {
             text: i18n("Sync")
             icon.name: "state-sync-symbolic"
             page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/SyncSettings.qml")
+            visible: LauncherCore.supportsSync()
         },
         KirigamiSettings.SettingAction {
             actionName: "compattool"
