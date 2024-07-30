@@ -16,13 +16,11 @@ CharacterSync::CharacterSync(Account &account, LauncherCore &launcher, QObject *
 {
 }
 
-QCoro::Task<bool> CharacterSync::sync()
+QCoro::Task<bool> CharacterSync::sync(const bool initialSync)
 {
     if (!launcher.settings()->enableSync()) {
         co_return true;
     }
-
-    qInfo() << "A";
 
     auto syncManager = launcher.syncManager();
     if (!syncManager->connected()) {
@@ -32,8 +30,6 @@ QCoro::Task<bool> CharacterSync::sync()
         co_return false;
     }
 
-    qInfo() << "C";
-
     if (!syncManager->isReady()) {
         Q_EMIT launcher.stageChanged(i18n("Waiting for sync connection..."));
 
@@ -42,6 +38,21 @@ QCoro::Task<bool> CharacterSync::sync()
     }
 
     Q_EMIT launcher.stageChanged(i18n("Synchronizing character data..."));
+
+    // On game boot, check if we need the lock. Otherwise break it when we clean up.
+    if (initialSync) {
+        if (const auto hostname = co_await syncManager->checkLock(); hostname.has_value()) {
+            // Don't warn about our own failures
+            if (hostname != QSysInfo::machineHostName()) {
+                Q_EMIT launcher.loginError(i18n("Device %1 has not yet uploaded it's character data. Astra will not continue until that device is re-synced."));
+                co_return false;
+            }
+        }
+
+        syncManager->setLock();
+    } else {
+        syncManager->breakLock();
+    }
 
     // so first, we need to list the character folders
     // we sync each one separately
@@ -63,15 +74,19 @@ QCoro::Task<bool> CharacterSync::sync()
     for (const auto &dir : characterDirs) {
         const QString id = dir.fileName(); // FFXIV_CHR0040000001000001 for example
         const auto previousData = co_await syncManager->getUploadedCharacterData(id);
-        if (!previousData.has_value()) {
+
+        // TODO: make this a little bit smarter. We shouldn't waste time re-uploading data that's exactly the same.
+        if (!initialSync || !previousData.has_value()) {
             // if we didn't upload character data yet, upload it now
             co_await uploadCharacterData(dir.absoluteFilePath(), id);
         } else {
             // otherwise, download it
 
-            // but check first if it's our hostname
-            if (QSysInfo::machineHostName() == previousData->hostname) {
-                qCDebug(ASTRA_LOG) << "Skipping! We uploaded this data.";
+            const bool exists = QFile::exists(dir.absoluteFilePath() + QStringLiteral("/GEARSET.DAT"));
+
+            // but check first if it's our hostname. only skip if it exists
+            if (exists && QSysInfo::machineHostName() == previousData->hostname) {
+                qCDebug(ASTRA_LOG) << "Skipping" << id << "We uploaded this data.";
                 continue;
             }
 

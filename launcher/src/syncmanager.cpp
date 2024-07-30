@@ -21,6 +21,7 @@
 
 const QString roomType = QStringLiteral("zone.xiv.astra-sync");
 const QString syncEventType = QStringLiteral("zone.xiv.astra.sync");
+const QString lockEventType = QStringLiteral("zone.xiv.astra.lock");
 
 using namespace Quotient;
 
@@ -248,6 +249,37 @@ QCoro::Task<bool> SyncManager::downloadCharacterData(const QString &mxcUri, cons
     // TODO: error handling
 
     co_return true;
+}
+
+QCoro::Task<std::optional<QString>> SyncManager::checkLock()
+{
+    const auto lockEvent = m_currentRoom->currentState().contentJson(syncEventType, QStringLiteral("latest"));
+    if (lockEvent.isEmpty()) {
+        co_return std::nullopt;
+    }
+
+    qCDebug(ASTRA_LOG) << "previous lock event:" << lockEvent;
+    const QString hostname = lockEvent[QStringLiteral("hostname")].toString();
+    if (hostname == QStringLiteral("none")) {
+        co_return std::nullopt;
+    }
+
+    co_return hostname;
+}
+
+QCoro::Task<> SyncManager::setLock()
+{
+    auto lockSetState =
+        m_currentRoom->setState(syncEventType, QStringLiteral("latest"), QJsonObject{{QStringLiteral("hostname"), QSysInfo::machineHostName()}});
+    co_await qCoro(lockSetState, &BaseJob::finished);
+    co_return;
+}
+
+QCoro::Task<> SyncManager::breakLock()
+{
+    auto lockSetState = m_currentRoom->setState(syncEventType, QStringLiteral("latest"), QJsonObject{{QStringLiteral("hostname"), QStringLiteral("none")}});
+    co_await qCoro(lockSetState, &BaseJob::finished);
+    co_return;
 }
 
 #include "moc_syncmanager.cpp"

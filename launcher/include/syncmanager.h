@@ -61,6 +61,15 @@ public:
     /// Downloads character data
     QCoro::Task<bool> downloadCharacterData(const QString &mxcUri, const QString &destPath);
 
+    /// Checks the lock on the sync
+    QCoro::Task<std::optional<QString>> checkLock();
+
+    /// Sets the sync lock to the device's hostname
+    QCoro::Task<> setLock();
+
+    /// Breaks the sync lock
+    QCoro::Task<> breakLock();
+
 Q_SIGNALS:
     void connectedChanged();
     void userIdChanged();

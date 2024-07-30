@@ -40,6 +40,8 @@ LauncherCore::LauncherCore()
     m_accountManager = new AccountManager(*this, this);
     m_runner = new GameRunner(*this, this);
 
+    connect(this, &LauncherCore::gameClosed, this, &LauncherCore::handleGameExit);
+
 #ifdef BUILD_SYNC
     m_syncManager = new SyncManager(this);
 #endif
@@ -511,6 +513,21 @@ QCoro::Task<> LauncherCore::fetchNews()
 
     m_headline = headline;
     Q_EMIT newsChanged();
+}
+
+QCoro::Task<> LauncherCore::handleGameExit(Profile *profile)
+{
+#ifdef BUILD_SYNC
+    qCDebug(ASTRA_LOG) << "Game closed! Uploading character data...";
+    const auto characterSync = new CharacterSync(*profile->account(), *this, this);
+    co_await characterSync->sync(false); // TODO: handle errors and especially interactive ones
+#endif
+
+    // Otherwise, quit when everything is finished.
+    if (m_settings->closeWhenLaunched()) {
+        QCoreApplication::exit();
+    }
+    co_return;
 }
 
 #include "moc_launchercore.cpp"
