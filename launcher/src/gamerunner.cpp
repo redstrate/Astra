@@ -49,7 +49,7 @@ void GameRunner::beginVanillaGame(const QString &gameExecutablePath, Profile &pr
     connect(gameProcess, &QProcess::finished, this, [this, &profile](const int exitCode) {
         profile.setLoggedIn(false);
         Q_UNUSED(exitCode)
-        Q_EMIT m_launcher.gameClosed();
+        Q_EMIT m_launcher.gameClosed(&profile);
     });
 
     auto args = getGameArgs(profile, auth);
@@ -109,7 +109,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
                 auto watcher = new ProcessWatcher(PID);
                 connect(watcher, &ProcessWatcher::finished, this, [this, &profile] {
                     profile.setLoggedIn(false);
-                    Q_EMIT m_launcher.gameClosed();
+                    Q_EMIT m_launcher.gameClosed(&profile);
                 });
                 return;
             }
@@ -117,7 +117,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
 
         // If Dalamud didn't give a valid PID, OK. Let's just do our previous status quo and inidcate we did log out.
         profile.setLoggedIn(false);
-        Q_EMIT m_launcher.gameClosed();
+        Q_EMIT m_launcher.gameClosed(&profile);
     });
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();

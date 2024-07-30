@@ -21,8 +21,9 @@ public:
     explicit CharacterSync(Account &account, LauncherCore &launcher, QObject *parent = nullptr);
 
     /// Checks and synchronizes character files as necessary.
+    /// \param initialSync Whether this is the initial sync on game start.
     /// \return False if the synchronization failed.
-    QCoro::Task<bool> sync();
+    QCoro::Task<bool> sync(bool initialSync = true);
 
 private:
     QCoro::Task<void> uploadCharacterData(const QDir &dir, const QString &id);

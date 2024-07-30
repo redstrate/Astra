@@ -24,7 +24,7 @@ FormCard.FormCardPage {
         FormCard.FormCheckDelegate {
             id: closeAstraDelegate
 
-            text: i18n("Close Astra when game is launched")
+            text: i18n("Hide Astra when game is launched")
             checked: LauncherCore.settings.closeWhenLaunched
             onCheckedChanged: LauncherCore.settings.closeWhenLaunched = checked
         }

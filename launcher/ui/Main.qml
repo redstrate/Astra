@@ -113,9 +113,7 @@ Kirigami.ApplicationWindow {
         }
 
         function onGameClosed() {
-            if (LauncherCore.settings.closeWhenLaunched) {
-                Qt.callLater(Qt.quit);
-            } else {
+            if (!LauncherCore.settings.closeWhenLaunched) {
                 appWindow.checkSetup();
             }
         }

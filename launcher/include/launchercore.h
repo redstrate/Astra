@@ -136,7 +136,7 @@ public:
 Q_SIGNALS:
     void loadingFinished();
     void successfulLaunch();
-    void gameClosed();
+    void gameClosed(Profile *profile);
     void loginError(QString message);
     void dalamudError(QString message);
     void miscError(QString message);
@@ -157,6 +157,8 @@ private:
     QCoro::Task<> beginLogin(LoginInformation &info);
 
     QCoro::Task<> fetchNews();
+
+    QCoro::Task<> handleGameExit(Profile *profile);
 
     SteamAPI *m_steamApi = nullptr;
 
