@@ -162,8 +162,11 @@ target_link_libraries(astra PRIVATE
         KF6::Archive
         QCoro::Core
         QCoro::Network
-        QCoro::Qml
-        QuotientQt6)
+        QCoro::Qml)
+if (BUILD_SYNC)
+    target_link_libraries(astra PRIVATE QuotientQt6)
+endif()
+
 if (BUILD_WEBVIEW)
     target_link_libraries(astra PRIVATE
             Qt6::WebView
