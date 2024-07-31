@@ -23,6 +23,12 @@ const auto roomType = QStringLiteral("zone.xiv.astra-sync");
 const auto syncEventType = QStringLiteral("zone.xiv.astra.sync");
 const auto lockEventType = QStringLiteral("zone.xiv.astra.lock");
 
+const auto hostnameKey = QStringLiteral("hostname");
+const auto latestKey = QStringLiteral("latest");
+const auto noneKey = QStringLiteral("none");
+const auto filesKey = QStringLiteral("files");
+const auto contentUriKey = QStringLiteral("content-uri");
+
 using namespace Quotient;
 
 SyncManager::SyncManager(QObject *parent)
@@ -104,7 +110,10 @@ Quotient::Connection *SyncManager::connection() const
 
 QCoro::Task<> SyncManager::sync()
 {
-    // TODO: de-duplicate sync() calls. otherwise if they happen in quick succession, they wait on each other which is useless for our use case
+    // We don't need two syncs running at once.
+    if (connection()->syncJob()) {
+        co_return;
+    }
 
     auto connection = m_accountRegistry.accounts().first();
     connection->sync();
@@ -209,12 +218,18 @@ QCoro::Task<std::optional<SyncManager::PreviousCharacterData>> SyncManager::getU
         co_return std::nullopt;
     } else {
         qCDebug(ASTRA_LOG) << "previous sync event:" << syncEvent;
-        co_return PreviousCharacterData{.mxcUri = syncEvent[QStringLiteral("content-uri")].toString(),
-                                        .hostname = syncEvent[QStringLiteral("hostname")].toString()};
+
+        auto filesVariantMap = syncEvent[filesKey].toVariant().toMap();
+        QMap<QString, QString> fileHashes;
+        for (const auto &[file, hashVariant] : filesVariantMap.asKeyValueRange()) {
+            fileHashes[file] = hashVariant.toString();
+        }
+
+        co_return PreviousCharacterData{.mxcUri = syncEvent[contentUriKey].toString(), .hostname = syncEvent[hostnameKey].toString(), .fileHashes = fileHashes};
     }
 }
 
-QCoro::Task<bool> SyncManager::uploadedCharacterData(const QString &id, const QString &path)
+QCoro::Task<bool> SyncManager::uploadCharacterArchive(const QString &id, const QString &path, const QMap<QString, QString> &fileHashes)
 {
     Q_ASSERT(m_currentRoom);
 
@@ -225,16 +240,22 @@ QCoro::Task<bool> SyncManager::uploadedCharacterData(const QString &id, const QS
 
     const QUrl contentUri = uploadFileJob->contentUri();
 
+    QVariantMap fileHashesVariant;
+    for (const auto &[file, hash] : fileHashes.asKeyValueRange()) {
+        fileHashesVariant[file] = QVariant::fromValue(hash);
+    }
+
     auto syncSetState = m_currentRoom->setState(
         syncEventType,
         id,
-        QJsonObject{{{QStringLiteral("content-uri"), contentUri.toString()}, {QStringLiteral("hostname"), QSysInfo::machineHostName()}}});
+        QJsonObject{
+            {{contentUriKey, contentUri.toString()}, {hostnameKey, QSysInfo::machineHostName()}, {filesKey, QJsonObject::fromVariantMap(fileHashesVariant)}}});
     co_await qCoro(syncSetState, &BaseJob::finished);
 
     co_return true;
 }
 
-QCoro::Task<bool> SyncManager::downloadCharacterData(const QString &mxcUri, const QString &destPath)
+QCoro::Task<bool> SyncManager::downloadCharacterArchive(const QString &mxcUri, const QString &destPath)
 {
     auto job = connection()->downloadFile(QUrl::fromUserInput(mxcUri), destPath);
     co_await qCoro(job, &BaseJob::finished);
@@ -246,14 +267,14 @@ QCoro::Task<bool> SyncManager::downloadCharacterData(const QString &mxcUri, cons
 
 QCoro::Task<std::optional<QString>> SyncManager::checkLock()
 {
-    const auto lockEvent = m_currentRoom->currentState().contentJson(syncEventType, QStringLiteral("latest"));
+    const auto lockEvent = m_currentRoom->currentState().contentJson(syncEventType, latestKey);
     if (lockEvent.isEmpty()) {
         co_return std::nullopt;
     }
 
     qCDebug(ASTRA_LOG) << "previous lock event:" << lockEvent;
-    const QString hostname = lockEvent[QStringLiteral("hostname")].toString();
-    if (hostname == QStringLiteral("none")) {
+    const QString hostname = lockEvent[hostnameKey].toString();
+    if (hostname == noneKey) {
         co_return std::nullopt;
     }
 
@@ -262,15 +283,14 @@ QCoro::Task<std::optional<QString>> SyncManager::checkLock()
 
 QCoro::Task<> SyncManager::setLock()
 {
-    auto lockSetState =
-        m_currentRoom->setState(syncEventType, QStringLiteral("latest"), QJsonObject{{QStringLiteral("hostname"), QSysInfo::machineHostName()}});
+    auto lockSetState = m_currentRoom->setState(syncEventType, latestKey, QJsonObject{{hostnameKey, QSysInfo::machineHostName()}});
     co_await qCoro(lockSetState, &BaseJob::finished);
     co_return;
 }
 
 QCoro::Task<> SyncManager::breakLock()
 {
-    auto lockSetState = m_currentRoom->setState(syncEventType, QStringLiteral("latest"), QJsonObject{{QStringLiteral("hostname"), QStringLiteral("none")}});
+    auto lockSetState = m_currentRoom->setState(syncEventType, latestKey, QJsonObject{{hostnameKey, noneKey}});
     co_await qCoro(lockSetState, &BaseJob::finished);
     co_return;
 }
