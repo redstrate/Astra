@@ -29,10 +29,13 @@ ecm_qt_declare_logging_category(astra_static
 
 target_sources(astra_static PRIVATE
         include/patchlist.h
-        src/patchlist.cpp)
+        include/utility.h
+        src/patchlist.cpp
+        src/utility.cpp)
 target_include_directories(astra_static PUBLIC include)
 target_link_libraries(astra_static PUBLIC
-        Qt6::Core)
+        Qt6::Core
+        Qt6::Network)
 
 add_executable(astra)
 
@@ -62,7 +65,6 @@ target_sources(astra PRIVATE
         include/sapphirelogin.h
         include/squareenixlogin.h
         include/steamapi.h
-        include/utility.h
 
         src/account.cpp
         src/accountmanager.cpp
@@ -86,7 +88,6 @@ target_sources(astra PRIVATE
         src/sapphirelogin.cpp
         src/squareenixlogin.cpp
         src/steamapi.cpp
-        src/utility.cpp
 )
 
 qt_target_qml_sources(astra
@@ -148,8 +149,6 @@ target_link_libraries(astra PRIVATE
         cotp
         KDAB::kdsingleapplication
         Qt6Keychain::Qt6Keychain
-        Qt6::Core
-        Qt6::Network
         Qt6::Widgets
         Qt6::Quick
         Qt6::QuickControls2

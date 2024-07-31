@@ -39,7 +39,7 @@ QString Utility::readVersion(const QString &path)
     QFile file(path);
     file.open(QFile::ReadOnly | QFile::Text);
 
-    return QString::fromUtf8(file.readAll());
+    return QString::fromUtf8(file.readAll()).trimmed();
 }
 
 void Utility::writeVersion(const QString &path, const QString &version)
