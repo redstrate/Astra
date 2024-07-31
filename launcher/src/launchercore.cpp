@@ -515,9 +515,10 @@ QCoro::Task<> LauncherCore::fetchNews()
     Q_EMIT newsChanged();
 }
 
-QCoro::Task<> LauncherCore::handleGameExit(Profile *profile)
+QCoro::Task<> LauncherCore::handleGameExit(const Profile *profile)
 {
 #ifdef BUILD_SYNC
+    // TODO: once we have Steam API support we can tell Steam to delay putting the Deck to sleep until our upload is complete
     if (m_settings->enableSync()) {
         Q_EMIT showWindow();
 

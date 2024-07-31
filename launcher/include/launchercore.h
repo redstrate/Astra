@@ -159,7 +159,7 @@ private:
 
     QCoro::Task<> fetchNews();
 
-    QCoro::Task<> handleGameExit(Profile *profile);
+    QCoro::Task<> handleGameExit(const Profile *profile);
 
     SteamAPI *m_steamApi = nullptr;
 

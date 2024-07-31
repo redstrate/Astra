@@ -7,7 +7,7 @@
 
 #include <Quotient/accountregistry.h>
 #include <Quotient/connection.h>
-#include <Task>
+#include <qcorotask.h>
 
 /**
  * @brief Handles setting up the connection to Matrix and all of the fun things needed to do for that.
@@ -63,6 +63,7 @@ public:
     struct PreviousCharacterData {
         QString mxcUri;
         QString hostname;
+        QMap<QString, QString> fileHashes;
     };
 
     /**
@@ -74,12 +75,12 @@ public:
      * @brief Uploads character data for @p id from @p path.
      * @return True if uploaded successfuly, false otherwise.
      */
-    QCoro::Task<bool> uploadedCharacterData(const QString &id, const QString &path);
+    QCoro::Task<bool> uploadCharacterArchive(const QString &id, const QString &path, const QMap<QString, QString> &fileHashes);
 
     /**
      * @brief Downloads the character data archive from @p mxcUri and extracts it in @p destPath.
      */
-    QCoro::Task<bool> downloadCharacterData(const QString &mxcUri, const QString &destPath);
+    QCoro::Task<bool> downloadCharacterArchive(const QString &mxcUri, const QString &destPath);
 
     /**
      * @brief Checks if there's a lock.

@@ -5,13 +5,17 @@
 
 #include <KLocalizedString>
 #include <KZip>
-#include <QCoro>
+#include <qcorosignal.h>
+#include <qcorotask.h>
 
 #include "astra_log.h"
 #include "syncmanager.h"
 
+const auto gearsetFilename = QStringLiteral("GEARSET.DAT");
+
 CharacterSync::CharacterSync(Account &account, LauncherCore &launcher, QObject *parent)
-    : launcher(launcher)
+    : QObject(parent)
+    , launcher(launcher)
     , m_account(account)
 {
 }
@@ -22,9 +26,8 @@ QCoro::Task<bool> CharacterSync::sync(const bool initialSync)
         co_return true;
     }
 
-    auto syncManager = launcher.syncManager();
+    const auto syncManager = launcher.syncManager();
     if (!syncManager->connected()) {
-        qInfo() << "B";
         // TODO: provide an option to continue in the UI
         Q_EMIT launcher.loginError(i18n("Failed to connect to sync server! Please check your sync settings."));
         co_return false;
@@ -78,21 +81,38 @@ QCoro::Task<bool> CharacterSync::sync(const bool initialSync)
         const QString id = dir.fileName(); // FFXIV_CHR0040000001000001 for example
         const auto previousData = co_await syncManager->getUploadedCharacterData(id);
 
-        // TODO: make this a little bit smarter. We shouldn't waste time re-uploading data that's exactly the same.
-        if (!initialSync || !previousData.has_value()) {
-            // if we didn't upload character data yet, upload it now
-            co_await uploadCharacterData(dir.absoluteFilePath(), id);
-        } else {
-            // otherwise, download it
-
-            const bool exists = QFile::exists(dir.absoluteFilePath() + QStringLiteral("/GEARSET.DAT"));
-
-            // but check first if it's our hostname. only skip if it exists
-            if (exists && QSysInfo::machineHostName() == previousData->hostname) {
-                qCDebug(ASTRA_LOG) << "Skipping" << id << "We uploaded this data.";
-                continue;
+        // The files are packed into an archive. So if only one of the files doesn't exist or fails the hash check, download the whole thing and overwrite.
+        bool areFilesDifferent = false;
+        for (const auto &[file, hash] : previousData->fileHashes.asKeyValueRange()) {
+            QFile existingFile(QDir(dir.absoluteFilePath()).absoluteFilePath(file));
+            if (!existingFile.exists()) {
+                areFilesDifferent = true;
+                qCDebug(ASTRA_LOG) << id << "does not match locally, reason:" << existingFile.fileName() << "does not exist";
+                break;
             }
 
+            existingFile.open(QIODevice::ReadOnly);
+            const auto existingHash = QString::fromUtf8(QCryptographicHash::hash(existingFile.readAll(), QCryptographicHash::Algorithm::Sha256).toHex());
+            if (existingHash != hash) {
+                areFilesDifferent = true;
+                qCDebug(ASTRA_LOG) << id << "does not match locally, reason: hashes do not match for" << file;
+                break;
+            }
+        }
+
+        const bool hasPreviousUpload = !previousData.has_value();
+        const bool isGameClosing = !initialSync;
+
+        // We want to upload if the files are truly different, or there is no existing data on the server.
+        const bool needsUpload = (areFilesDifferent && isGameClosing) || hasPreviousUpload;
+
+        // We want to download if the files are different.
+        const bool needsDownload = areFilesDifferent;
+
+        if (needsUpload) {
+            // if we didn't upload character data yet, upload it now
+            co_await uploadCharacterData(dir.absoluteFilePath(), id);
+        } else if (needsDownload) {
             co_await downloadCharacterData(dir.absoluteFilePath(), id, previousData->mxcUri);
         }
     }
@@ -103,21 +123,26 @@ QCoro::Task<bool> CharacterSync::sync(const bool initialSync)
 QCoro::Task<void> CharacterSync::uploadCharacterData(const QDir &dir, const QString &id)
 {
     qCDebug(ASTRA_LOG) << "Uploading" << dir << id;
-    QTemporaryDir tempDir;
+    const QTemporaryDir tempDir;
 
-    auto tempZipPath = tempDir.filePath(QStringLiteral("%1.zip").arg(id));
+    const auto tempZipPath = tempDir.filePath(QStringLiteral("%1.zip").arg(id));
 
-    KZip *zip = new KZip(tempZipPath);
+    const auto zip = new KZip(tempZipPath);
     zip->setCompression(KZip::DeflateCompression);
     zip->open(QIODevice::WriteOnly);
 
-    QFile gearsetFile(dir.filePath(QStringLiteral("GEARSET.DAT")));
+    QFile gearsetFile(dir.filePath(gearsetFilename));
     gearsetFile.open(QFile::ReadOnly);
 
-    zip->writeFile(QStringLiteral("GEARSET.DAT"), gearsetFile.readAll());
+    const auto data = gearsetFile.readAll();
+
+    zip->writeFile(gearsetFilename, data);
     zip->close();
 
-    co_await launcher.syncManager()->uploadedCharacterData(id, tempZipPath);
+    QMap<QString, QString> fileHashes;
+    fileHashes[gearsetFilename] = QString::fromUtf8(QCryptographicHash::hash(data, QCryptographicHash::Algorithm::Sha256).toHex());
+
+    co_await launcher.syncManager()->uploadCharacterArchive(id, tempZipPath, fileHashes);
     // TODO: error handling
 
     co_return;
@@ -125,19 +150,19 @@ QCoro::Task<void> CharacterSync::uploadCharacterData(const QDir &dir, const QStr
 
 QCoro::Task<void> CharacterSync::downloadCharacterData(const QDir &dir, const QString &id, const QString &contentUri)
 {
-    QTemporaryDir tempDir;
+    const QTemporaryDir tempDir;
 
-    auto tempZipPath = tempDir.filePath(QStringLiteral("%1.zip").arg(id));
+    const auto tempZipPath = tempDir.filePath(QStringLiteral("%1.zip").arg(id));
 
-    co_await launcher.syncManager()->downloadCharacterData(contentUri, tempZipPath);
+    co_await launcher.syncManager()->downloadCharacterArchive(contentUri, tempZipPath);
 
-    KZip *zip = new KZip(tempZipPath);
+    auto zip = new KZip(tempZipPath);
     zip->setCompression(KZip::DeflateCompression);
     zip->open(QIODevice::ReadOnly);
 
     qCDebug(ASTRA_LOG) << "contents:" << zip->directory()->entries();
 
-    zip->directory()->file(QStringLiteral("GEARSET.DAT"))->copyTo(dir.absolutePath());
+    Q_UNUSED(zip->directory()->file(gearsetFilename)->copyTo(dir.absolutePath()))
 
     qCDebug(ASTRA_LOG) << "Extracted character data!";
 
