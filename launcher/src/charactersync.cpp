@@ -39,6 +39,9 @@ QCoro::Task<bool> CharacterSync::sync(const bool initialSync)
 
     Q_EMIT launcher.stageChanged(i18n("Synchronizing character data..."));
 
+    // Perform a manual sync just in case
+    co_await syncManager->sync();
+
     // On game boot, check if we need the lock. Otherwise break it when we clean up.
     if (initialSync) {
         if (const auto hostname = co_await syncManager->checkLock(); hostname.has_value()) {
