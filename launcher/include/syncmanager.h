@@ -11,7 +11,7 @@
 
 /**
  * @brief Handles setting up the connection to Matrix and all of the fun things needed to do for that.
- * Does NOT handle the actual synchronization process, see @c CharacterSync. That handles determining the files to sync and whatnot.
+ * Does NOT handle the actual synchronization process, see @c CharacterSync.
  */
 class SyncManager : public QObject
 {
@@ -24,27 +24,40 @@ public:
     explicit SyncManager(QObject *parent = nullptr);
 
     /**
-     * Log in to a connection
+     * @brief Log in to a connection
      * @param matrixId user id in the form @user:server.tld
      * @param password
      */
     Q_INVOKABLE void login(const QString &matrixId, const QString &password);
 
     /**
-     * Log out of the connection
+     * @brief Log out of the connection
      */
     Q_INVOKABLE void logout();
 
     /**
-     * Run a single sync. We're not syncing constantly, since we typically don't need it and it consumes a lot of data
+     * @brief Run a single sync. We're not syncing constantly, since we typically don't need it and it consumes a lot of data.
      */
-    Q_INVOKABLE void sync();
+    Q_INVOKABLE QCoro::Task<> sync();
 
+    /**
+     * @return Whether there is a connection to the server.
+     */
     bool connected() const;
+
+    /**
+     * @return The currently logged in user.
+     */
     QString userId() const;
+
+    /**
+     * @return The LibQuotient connection.
+     */
     Quotient::Connection *connection() const;
 
-    /// If we're ready to begin downloading or uploading data
+    /**
+     * @return If we're ready to begin downloading or uploading data
+     */
     bool isReady() const;
 
     struct PreviousCharacterData {
@@ -52,22 +65,35 @@ public:
         QString hostname;
     };
 
-    /// Returns a content repo URI, or nullopt if there's existing character data or not respectively
+    /**
+     * @return The currently uploaded character data, or nullopt if there's none for @p id.
+     */
     QCoro::Task<std::optional<PreviousCharacterData>> getUploadedCharacterData(const QString &id);
 
-    /// Uploads character data for @p id from @p path (a file)
+    /**
+     * @brief Uploads character data for @p id from @p path.
+     * @return True if uploaded successfuly, false otherwise.
+     */
     QCoro::Task<bool> uploadedCharacterData(const QString &id, const QString &path);
 
-    /// Downloads character data
+    /**
+     * @brief Downloads the character data archive from @p mxcUri and extracts it in @p destPath.
+     */
     QCoro::Task<bool> downloadCharacterData(const QString &mxcUri, const QString &destPath);
 
-    /// Checks the lock on the sync
+    /**
+     * @brief Checks if there's a lock.
+     */
     QCoro::Task<std::optional<QString>> checkLock();
 
-    /// Sets the sync lock to the device's hostname
+    /**
+     * @brief Sets the sync to the device's hostname.
+     */
     QCoro::Task<> setLock();
 
-    /// Breaks the sync lock
+    /**
+     * @brief Breaks the current sync lock.
+     */
     QCoro::Task<> breakLock();
 
 Q_SIGNALS:
@@ -80,7 +106,8 @@ Q_SIGNALS:
 private:
     QString roomId() const;
     void setRoomId(const QString &roomId);
-    QCoro::Task<void> findRoom();
+    QCoro::Task<> findRoom();
+    QCoro::Task<> beginInitialSync();
 
     Quotient::AccountRegistry m_accountRegistry;
 

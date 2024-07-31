@@ -19,9 +19,9 @@
 #include <QCoro>
 #include <QTemporaryFile>
 
-const QString roomType = QStringLiteral("zone.xiv.astra-sync");
-const QString syncEventType = QStringLiteral("zone.xiv.astra.sync");
-const QString lockEventType = QStringLiteral("zone.xiv.astra.lock");
+const auto roomType = QStringLiteral("zone.xiv.astra-sync");
+const auto syncEventType = QStringLiteral("zone.xiv.astra.sync");
+const auto lockEventType = QStringLiteral("zone.xiv.astra.lock");
 
 using namespace Quotient;
 
@@ -32,13 +32,14 @@ SyncManager::SyncManager(QObject *parent)
     connect(&m_accountRegistry, &AccountRegistry::rowsInserted, this, [this]() {
         connection()->setCacheState(false);
         connection()->setLazyLoading(false);
-        connection()->setDirectChatEncryptionDefault(false);
-        connection()->setEncryptionDefault(false);
+        Connection::setDirectChatEncryptionDefault(false);
+        Connection::setEncryptionDefault(false);
 
         Q_EMIT connectedChanged();
         Q_EMIT userIdChanged();
         Q_EMIT connectionChanged();
-        sync();
+
+        beginInitialSync();
     });
     connect(&m_accountRegistry, &AccountRegistry::rowsRemoved, this, [this]() {
         Q_EMIT connectedChanged();
@@ -61,7 +62,7 @@ void SyncManager::login(const QString &matrixId, const QString &password)
         Qt::SingleShotConnection);
 
     connect(connection, &Connection::connected, this, [this, connection] {
-        qCDebug(ASTRA_LOG) << "Connected!";
+        qCDebug(ASTRA_LOG) << "Connected to the sync server!";
 
         // TODO: store somewhere else, not their QSettings
         AccountSettings account(connection->userId());
@@ -101,23 +102,15 @@ Quotient::Connection *SyncManager::connection() const
     return nullptr;
 }
 
-void SyncManager::sync()
+QCoro::Task<> SyncManager::sync()
 {
+    // TODO: de-duplicate sync() calls. otherwise if they happen in quick succession, they wait on each other which is useless for our use case
+
     auto connection = m_accountRegistry.accounts().first();
     connection->sync();
-    connect(
-        connection,
-        &Connection::syncDone,
-        this,
-        [this]() {
-            m_accountRegistry.accounts().first()->stopSync();
-
-            qCDebug(ASTRA_LOG) << "Done with sync.";
-
-            // Find the room we need to sync with
-            findRoom();
-        },
-        Qt::SingleShotConnection);
+    co_await qCoro(connection, &Connection::syncDone);
+    m_accountRegistry.accounts().first()->stopSync();
+    co_return;
 }
 
 QCoro::Task<void> SyncManager::findRoom()
@@ -280,6 +273,14 @@ QCoro::Task<> SyncManager::breakLock()
     auto lockSetState = m_currentRoom->setState(syncEventType, QStringLiteral("latest"), QJsonObject{{QStringLiteral("hostname"), QStringLiteral("none")}});
     co_await qCoro(lockSetState, &BaseJob::finished);
     co_return;
+}
+
+QCoro::Task<> SyncManager::beginInitialSync()
+{
+    co_await sync();
+
+    // Find the room we need to sync with
+    findRoom();
 }
 
 #include "moc_syncmanager.cpp"
