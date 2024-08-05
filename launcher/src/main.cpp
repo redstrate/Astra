@@ -132,10 +132,10 @@ int main(int argc, char *argv[])
         if (!args.empty() && !args.join(QLatin1Char(';')).contains("ffxivboot.exe"_L1)) {
             return 0;
         }
+    }
 
-        if (qEnvironmentVariable("SteamDeck") == QStringLiteral("1")) {
-            isSteamDeck = true;
-        }
+    if (qEnvironmentVariable("SteamDeck") == QStringLiteral("1")) {
+        isSteamDeck = true;
     }
 
 #if defined(Q_OS_LINUX)
