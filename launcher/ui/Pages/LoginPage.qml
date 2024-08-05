@@ -16,6 +16,8 @@ import zone.xiv.astra
 QQC2.Control {
     id: page
 
+    bottomPadding: Kirigami.Units.largeSpacing
+
     readonly property string invalidLoginReason: {
         if (!LauncherCore.currentProfile.account) {
             return i18n("Profile has no associated account.");
