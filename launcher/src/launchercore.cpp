@@ -313,7 +313,7 @@ bool LauncherCore::isSteam() const
 
 bool LauncherCore::isSteamDeck() const
 {
-    return qEnvironmentVariable("SteamDeck") == QStringLiteral("1");
+    return Utility::isSteamDeck();
 }
 
 bool LauncherCore::isWindows()

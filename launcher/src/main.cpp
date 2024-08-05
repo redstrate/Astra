@@ -4,7 +4,6 @@
 #include <KAboutData>
 #include <KLocalizedContext>
 #include <KLocalizedString>
-#include <QGuiApplication>
 #include <QQuickStyle>
 #include <kdsingleapplication.h>
 #include <qcoroqml.h>
@@ -17,6 +16,7 @@
 #include "launchercore.h"
 #include "logger.h"
 #include "physis_logger.h"
+#include "utility.h"
 
 #ifdef Q_OS_WIN
 #include <BreezeIcons/BreezeIcons>
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     QIcon::setThemeName(QStringLiteral("Breeze"));
 #endif
 
-    if (qEnvironmentVariable("SteamDeck") == QStringLiteral("1")) {
+    if (Utility::isSteamDeck()) {
         qputenv("QT_SCALE_FACTOR", "1.25");
         qputenv("QT_QUICK_CONTROLS_MOBILE", "1");
     }
@@ -121,7 +121,6 @@ int main(int argc, char *argv[])
         parser.showVersion();
     }
 
-    bool isSteamDeck = false;
     if (parser.isSet(steamOption)) {
         const QStringList args = parser.positionalArguments();
         // Steam tries to use as a compatibility tool, running installation scripts (like DirectX), so try to ignore it.
@@ -130,14 +129,10 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (qEnvironmentVariable("SteamDeck") == QStringLiteral("1")) {
-        isSteamDeck = true;
-    }
-
 #if defined(Q_OS_LINUX)
     // Default to org.kde.desktop style unless the user forces another style
     if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE")) {
-        if (isSteamDeck) {
+        if (Utility::isSteamDeck()) {
             QQuickStyle::setStyle(QStringLiteral("org.kde.breeze"));
         } else {
             QQuickStyle::setStyle(QStringLiteral("org.kde.desktop"));

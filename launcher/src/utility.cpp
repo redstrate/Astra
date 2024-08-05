@@ -49,3 +49,8 @@ void Utility::writeVersion(const QString &path, const QString &version)
     verFile.write(version.toUtf8());
     verFile.close();
 }
+
+bool Utility::isSteamDeck()
+{
+    return qEnvironmentVariable("SteamDeck") == QStringLiteral("1");
+}

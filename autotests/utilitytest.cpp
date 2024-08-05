@@ -52,6 +52,18 @@ private Q_SLOTS:
         Utility::writeVersion(verFile.fileName(), QStringLiteral("2023.09.15.0000.0000"));
         QCOMPARE(Utility::readVersion(verFile.fileName()), QStringLiteral("2023.09.15.0000.0000"));
     }
+
+    void testIsSteamDeck()
+    {
+        QCOMPARE(Utility::isSteamDeck(), false);
+
+        qputenv("SteamDeck", "0");
+        QCOMPARE(Utility::isSteamDeck(), false);
+
+        qputenv("SteamDeck", "1");
+
+        QCOMPARE(Utility::isSteamDeck(), true);
+    }
 };
 
 QTEST_MAIN(UtilityTest)
