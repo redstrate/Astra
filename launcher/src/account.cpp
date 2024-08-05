@@ -316,6 +316,7 @@ QCoro::Task<QString> Account::getKeychainValue(const QString &key)
 #else
         job->setKey(m_key + QStringLiteral("-") + key);
 #endif
+        job->setInsecureFallback(m_launcher.isSteamDeck()); // The Steam Deck does not have secrets provider in Game Mode
         job->start();
 
         co_await qCoro(job, &QKeychain::ReadPasswordJob::finished);
