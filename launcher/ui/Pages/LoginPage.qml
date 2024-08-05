@@ -63,15 +63,10 @@ QQC2.Control {
     function updateFields() {
         usernameField.text = LauncherCore.currentProfile.account.name;
         passwordField.text = !LauncherCore.currentProfile.account.needsPassword && LauncherCore.currentProfile.account.rememberPassword ? LauncherCore.currentProfile.account.getPassword() : "";
-        otpField.text = "";
-    }
-
-    Connections {
-        target: LauncherCore
-
-        function onCurrentProfileChanged() {
-            page.updateFields();
-            LauncherCore.refreshLogoImage();
+        if (LauncherCore.currentProfile.account.rememberOTP) {
+            otpField.text = "Auto-generated";
+        } else {
+            otpField.text = "";
         }
     }
 
@@ -251,6 +246,8 @@ QQC2.Control {
 
             FormCard.FormTextFieldDelegate {
                 id: otpField
+
+                enabled: !LauncherCore.currentProfile.account.rememberOTP
                 label: i18n("One-time Password")
                 visible: LauncherCore.currentProfile.account.useOTP
                 onAccepted: {
