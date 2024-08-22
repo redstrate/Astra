@@ -13,6 +13,7 @@ private Q_SLOTS:
     void testDummyProfile()
     {
         ProfileManager profileManager;
+        QAbstractItemModelTester modelTester(&profileManager);
 
         QCOMPARE(profileManager.rowCount({}), 0);
         profileManager.load();
@@ -33,6 +34,7 @@ private Q_SLOTS:
     void testProfileManagement()
     {
         ProfileManager profileManager;
+        QAbstractItemModelTester modelTester(&profileManager);
 
         QCOMPARE(profileManager.rowCount({}), 0);
         profileManager.load();
