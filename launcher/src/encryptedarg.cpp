@@ -66,7 +66,7 @@ QString encryptGameArg(const QString &arg)
     char buffer[9]{};
     sprintf(buffer, "%08x", key);
 
-    Blowfish const *blowfish = physis_blowfish_initialize(reinterpret_cast<uint8_t *>(buffer), 9);
+    Blowfish *blowfish = physis_blowfish_initialize(reinterpret_cast<uint8_t *>(buffer), 9);
 
     uint8_t *out_data = nullptr;
     uint32_t out_size = 0;
@@ -79,6 +79,8 @@ QString encryptGameArg(const QString &arg)
 
     const QString base64 = QString::fromUtf8(encryptedArg.toBase64(QByteArray::Base64Option::Base64UrlEncoding | QByteArray::Base64Option::KeepTrailingEquals));
     const char checksum = GetChecksum(key);
+
+    physis_blowfish_free(blowfish);
 
     return QStringLiteral("//**sqex0003%1%2**//").arg(base64, QString(QLatin1Char(checksum)));
 }
