@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include <QObject>
 #include <QTimer>
 
 /// Listens and waits for a process to finish.
@@ -11,7 +10,7 @@ class ProcessWatcher : public QObject
 {
     Q_OBJECT
 public:
-    explicit ProcessWatcher(const int PID);
+    explicit ProcessWatcher(qint64 PID, QObject *parent = nullptr);
 
 Q_SIGNALS:
     void finished();

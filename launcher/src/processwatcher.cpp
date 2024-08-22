@@ -7,9 +7,10 @@
 
 #include "moc_processwatcher.cpp"
 
-ProcessWatcher::ProcessWatcher(const int PID)
+ProcessWatcher::ProcessWatcher(const qint64 PID, QObject *parent)
+    : QObject(parent)
 {
-    m_timer = new QTimer();
+    m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, [this, PID] {
         const auto info = KProcessList::processInfo(PID);
         // If we can't find the PID, bail!
@@ -19,6 +20,6 @@ ProcessWatcher::ProcessWatcher(const int PID)
             Q_EMIT finished();
         }
     });
-    m_timer->setInterval(std::chrono::seconds(30));
+    m_timer->setInterval(std::chrono::seconds(5));
     m_timer->start();
 }
