@@ -440,7 +440,7 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 {
     // Hmm, I don't think we're set up for this yet?
     if (!info.profile->isBenchmark()) {
-        info.profile->account()->updateConfig();
+        updateConfig(info.profile->account());
     }
 
 #ifdef BUILD_SYNC
@@ -593,6 +593,41 @@ QCoro::Task<> LauncherCore::handleGameExit(const Profile *profile)
     }
 
     co_return;
+}
+
+void LauncherCore::updateConfig(const Account *account)
+{
+    const auto configDir = account->getConfigDir().absoluteFilePath(QStringLiteral("FFXIV.cfg"));
+
+    if (!QFile::exists(configDir)) {
+        return;
+    }
+
+    qInfo(ASTRA_LOG) << "Updating FFXIV.cfg...";
+
+    const auto configDirStd = configDir.toStdString();
+
+    const auto cfgFileBuffer = physis_read_file(configDirStd.c_str());
+    const auto cfgFile = physis_cfg_parse(cfgFileBuffer);
+
+    // Ensure that the opening cutscene movie never plays, since it's broken in most versions of Wine
+    physis_cfg_set_value(cfgFile, "CutsceneMovieOpening", "1");
+
+    const auto screenshotDir = settings()->screenshotDir();
+    Utility::createPathIfNeeded(screenshotDir);
+
+    const auto screenshotDirWin = Utility::toWindowsPath(screenshotDir);
+    const auto screenshotDirWinStd = screenshotDirWin.toStdString();
+
+    // Set the screenshot path
+    physis_cfg_set_value(cfgFile, "ScreenShotDir", screenshotDirWinStd.c_str());
+
+    const auto buffer = physis_cfg_write(cfgFile);
+
+    QFile file(configDir);
+    file.open(QIODevice::WriteOnly);
+    file.write(reinterpret_cast<const char *>(buffer.data), buffer.size);
+    file.close();
 }
 
 #include "moc_launchercore.cpp"

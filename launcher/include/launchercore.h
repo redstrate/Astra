@@ -164,6 +164,9 @@ private:
 
     QCoro::Task<> handleGameExit(const Profile *profile);
 
+    /// Updates FFXIV.cfg with some recommended options like turning the opening cutscene movie off
+    void updateConfig(const Account *account);
+
     SteamAPI *m_steamApi = nullptr;
 
     bool m_loadingFinished = false;

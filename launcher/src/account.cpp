@@ -281,43 +281,6 @@ QCoro::Task<QString> Account::getKeychainValue(const QString &key)
     }
 }
 
-// ReSharper disable once CppMemberFunctionMayBeConst
-// ^ Could be const, but this function shouldn't be considered as such
-void Account::updateConfig()
-{
-    const auto configDir = getConfigDir().absoluteFilePath(QStringLiteral("FFXIV.cfg"));
-
-    if (!QFile::exists(configDir)) {
-        return;
-    }
-
-    qInfo(ASTRA_LOG) << "Updating FFXIV.cfg...";
-
-    const auto configDirStd = configDir.toStdString();
-
-    const auto cfgFileBuffer = physis_read_file(configDirStd.c_str());
-    const auto cfgFile = physis_cfg_parse(cfgFileBuffer);
-
-    // Ensure that the opening cutscene movie never plays, since it's broken in most versions of Wine
-    physis_cfg_set_value(cfgFile, "CutsceneMovieOpening", "1");
-
-    const auto screenshotDir = m_launcher.settings()->screenshotDir();
-    Utility::createPathIfNeeded(screenshotDir);
-
-    const auto screenshotDirWin = Utility::toWindowsPath(screenshotDir);
-    const auto screenshotDirWinStd = screenshotDirWin.toStdString();
-
-    // Set the screenshot path
-    physis_cfg_set_value(cfgFile, "ScreenShotDir", screenshotDirWinStd.c_str());
-
-    const auto buffer = physis_cfg_write(cfgFile);
-
-    QFile file(configDir);
-    file.open(QIODevice::WriteOnly);
-    file.write(reinterpret_cast<const char *>(buffer.data), buffer.size);
-    file.close();
-}
-
 bool Account::needsPassword() const
 {
     return m_needsPassword;
