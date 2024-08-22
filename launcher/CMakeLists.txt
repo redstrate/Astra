@@ -3,6 +3,10 @@
 
 add_library(astra_static STATIC)
 
+qt_add_qml_module(astra_static
+        URI zone.xiv.astra
+        VERSION 1.0)
+
 ecm_qt_declare_logging_category(astra_static
         HEADER astra_log.h
         IDENTIFIER ASTRA_LOG
@@ -120,10 +124,6 @@ endif()
 
 add_executable(astra)
 
-qt_add_qml_module(astra
-        URI zone.xiv.astra
-        VERSION 1.0)
-
 target_sources(astra PRIVATE
         include/logger.h
 
@@ -131,7 +131,7 @@ target_sources(astra PRIVATE
         src/main.cpp
 )
 
-qt_target_qml_sources(astra
+qt_target_qml_sources(astra_static
     QML_FILES
         ui/Components/FormFileDelegate.qml
         ui/Components/FormFolderDelegate.qml
@@ -165,7 +165,7 @@ set_source_files_properties(../zone.xiv.astra.svg PROPERTIES
         QT_RESOURCE_ALIAS /zone.xiv.astra.svg
 )
 
-qt_target_qml_sources(astra
+qt_target_qml_sources(astra_static
         PREFIX /
         RESOURCES
         ../zone.xiv.astra.svg
@@ -173,6 +173,7 @@ qt_target_qml_sources(astra
 
 target_link_libraries(astra PRIVATE
         astra_static
+        astra_staticplugin
         physis-logger
         KDAB::kdsingleapplication
         Qt6::Widgets
