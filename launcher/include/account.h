@@ -74,6 +74,8 @@ public:
     Q_INVOKABLE QString getPassword();
     void setPassword(const QString &password);
 
+    void setAvatarUrl(const QString &url);
+
     Q_INVOKABLE QString getOTP();
     Q_INVOKABLE void setOTPSecret(const QString &secret);
 
@@ -101,7 +103,6 @@ Q_SIGNALS:
     bool needsPasswordChanged();
 
 private:
-    void fetchAvatar();
     QCoro::Task<> fetchPassword();
 
     /**

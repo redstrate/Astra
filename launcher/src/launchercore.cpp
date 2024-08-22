@@ -40,6 +40,9 @@ LauncherCore::LauncherCore()
     m_accountManager = new AccountManager(*this, this);
     m_runner = new GameRunner(*this, this);
 
+    connect(m_accountManager, &AccountManager::accountAdded, this, &LauncherCore::fetchAvatar);
+    connect(m_accountManager, &AccountManager::accountLodestoneIdChanged, this, &LauncherCore::fetchAvatar);
+
     connect(this, &LauncherCore::gameClosed, this, &LauncherCore::handleGameExit);
 
 #ifdef BUILD_SYNC
@@ -152,6 +155,58 @@ BenchmarkInstaller *LauncherCore::createBenchmarkInstallerFromExisting(Profile *
     Q_ASSERT(profile != nullptr);
 
     return new BenchmarkInstaller(*this, *profile, filePath, this);
+}
+
+void LauncherCore::fetchAvatar(Account *account)
+{
+    if (account->lodestoneId().isEmpty()) {
+        return;
+    }
+
+    const QString cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + QStringLiteral("/avatars");
+    Utility::createPathIfNeeded(cacheLocation);
+
+    const QString filename = QStringLiteral("%1/%2.jpg").arg(cacheLocation, account->lodestoneId());
+    if (!QFile(filename).exists()) {
+        qDebug(ASTRA_LOG) << "Did not find lodestone character " << account->lodestoneId() << " in cache, fetching from Lodestone.";
+
+        QUrl url;
+        url.setScheme(settings()->preferredProtocol());
+        url.setHost(QStringLiteral("na.%1").arg(settings()->mainServer())); // TODO: NA isnt the only thing in the world...
+        url.setPath(QStringLiteral("/lodestone/character/%1").arg(account->lodestoneId()));
+
+        const QNetworkRequest request(url);
+        Utility::printRequest(QStringLiteral("GET"), request);
+
+        const auto reply = mgr()->get(request);
+        connect(reply, &QNetworkReply::finished, [this, filename, reply, account] {
+            const QString document = QString::fromUtf8(reply->readAll());
+            if (!document.isEmpty()) {
+                const static QRegularExpression re(
+                    QStringLiteral(R"lit(<div\s[^>]*class=["|']frame__chara__face["|'][^>]*>\s*<img\s[&>]*src=["|']([^"']*))lit"));
+                const QRegularExpressionMatch match = re.match(document);
+
+                if (match.hasCaptured(1)) {
+                    const QString newAvatarUrl = match.captured(1);
+
+                    const auto avatarRequest = QNetworkRequest(QUrl(newAvatarUrl));
+                    Utility::printRequest(QStringLiteral("GET"), avatarRequest);
+
+                    auto avatarReply = mgr()->get(avatarRequest);
+                    connect(avatarReply, &QNetworkReply::finished, [this, filename, avatarReply, account] {
+                        QFile file(filename);
+                        file.open(QIODevice::ReadWrite);
+                        file.write(avatarReply->readAll());
+                        file.close();
+
+                        account->setAvatarUrl(QStringLiteral("file:///%1").arg(filename));
+                    });
+                }
+            }
+        });
+    } else {
+        account->setAvatarUrl(QStringLiteral("file:///%1").arg(filename));
+    }
 }
 
 void LauncherCore::clearAvatarCache()

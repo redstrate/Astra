@@ -21,7 +21,6 @@ Account::Account(LauncherCore &launcher, const QString &key, QObject *parent)
     , m_key(key)
     , m_launcher(launcher)
 {
-    fetchAvatar();
     fetchPassword();
 }
 
@@ -68,7 +67,6 @@ void Account::setLodestoneId(const QString &id)
     if (m_config.lodestoneId() != id) {
         m_config.setLodestoneId(id);
         m_config.save();
-        fetchAvatar();
         Q_EMIT lodestoneIdChanged();
     }
 }
@@ -191,6 +189,14 @@ void Account::setPassword(const QString &password)
     }
 }
 
+void Account::setAvatarUrl(const QString &url)
+{
+    if (m_avatarUrl != url) {
+        m_avatarUrl = url;
+        Q_EMIT avatarUrlChanged();
+    }
+}
+
 QString Account::getOTP()
 {
     const auto otpSecret = QCoro::waitFor(getKeychainValue(QStringLiteral("otp-secret")));
@@ -225,60 +231,6 @@ QDir Account::getConfigDir() const
 QString Account::getConfigPath() const
 {
     return getConfigDir().absolutePath();
-}
-
-void Account::fetchAvatar()
-{
-    if (lodestoneId().isEmpty()) {
-        return;
-    }
-
-    const QString cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + QStringLiteral("/avatars");
-    Utility::createPathIfNeeded(cacheLocation);
-
-    const QString filename = QStringLiteral("%1/%2.jpg").arg(cacheLocation, lodestoneId());
-    if (!QFile(filename).exists()) {
-        qDebug(ASTRA_LOG) << "Did not find lodestone character " << lodestoneId() << " in cache, fetching from Lodestone.";
-
-        QUrl url;
-        url.setScheme(m_launcher.settings()->preferredProtocol());
-        url.setHost(QStringLiteral("na.%1").arg(m_launcher.settings()->mainServer())); // TODO: NA isnt the only thing in the world...
-        url.setPath(QStringLiteral("/lodestone/character/%1").arg(lodestoneId()));
-
-        const QNetworkRequest request(url);
-        Utility::printRequest(QStringLiteral("GET"), request);
-
-        const auto reply = m_launcher.mgr()->get(request);
-        connect(reply, &QNetworkReply::finished, [this, filename, reply] {
-            const QString document = QString::fromUtf8(reply->readAll());
-            if (!document.isEmpty()) {
-                const static QRegularExpression re(
-                    QStringLiteral(R"lit(<div\s[^>]*class=["|']frame__chara__face["|'][^>]*>\s*<img\s[&>]*src=["|']([^"']*))lit"));
-                const QRegularExpressionMatch match = re.match(document);
-
-                if (match.hasCaptured(1)) {
-                    const QString newAvatarUrl = match.captured(1);
-
-                    const auto avatarRequest = QNetworkRequest(QUrl(newAvatarUrl));
-                    Utility::printRequest(QStringLiteral("GET"), avatarRequest);
-
-                    auto avatarReply = m_launcher.mgr()->get(avatarRequest);
-                    connect(avatarReply, &QNetworkReply::finished, [this, filename, avatarReply] {
-                        QFile file(filename);
-                        file.open(QIODevice::ReadWrite);
-                        file.write(avatarReply->readAll());
-                        file.close();
-
-                        m_avatarUrl = QStringLiteral("file:///%1").arg(filename);
-                        Q_EMIT avatarUrlChanged();
-                    });
-                }
-            }
-        });
-    } else {
-        m_avatarUrl = QStringLiteral("file:///%1").arg(filename);
-        Q_EMIT avatarUrlChanged();
-    }
 }
 
 void Account::setKeychainValue(const QString &key, const QString &value)

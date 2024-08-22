@@ -99,7 +99,10 @@ public:
     Q_INVOKABLE BenchmarkInstaller *createBenchmarkInstaller(Profile *profile);
     Q_INVOKABLE BenchmarkInstaller *createBenchmarkInstallerFromExisting(Profile *profile, const QString &filePath);
 
+    /// Fetches the avatar for @p account
+    void fetchAvatar(Account *account);
     Q_INVOKABLE void clearAvatarCache();
+
     Q_INVOKABLE void refreshNews();
     Q_INVOKABLE void refreshLogoImage();
 

@@ -43,6 +43,8 @@ public:
 
 Q_SIGNALS:
     void accountsChanged();
+    void accountAdded(Account *account);
+    void accountLodestoneIdChanged(Account *account);
 
 private:
     void insertAccount(Account *account);

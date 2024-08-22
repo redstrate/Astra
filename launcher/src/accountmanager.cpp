@@ -111,10 +111,14 @@ void AccountManager::deleteAccount(Account *account)
 
 void AccountManager::insertAccount(Account *account)
 {
+    connect(account, &Account::avatarUrlChanged, this, [this, account] {
+        Q_EMIT accountLodestoneIdChanged(account);
+    });
     beginInsertRows(QModelIndex(), static_cast<int>(m_accounts.size()), static_cast<int>(m_accounts.size()));
     m_accounts.append(account);
     endInsertRows();
     Q_EMIT accountsChanged();
+    Q_EMIT accountAdded(account);
 }
 
 bool AccountManager::hasAnyAccounts() const
