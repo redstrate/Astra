@@ -15,8 +15,13 @@ private Q_SLOTS:
         ProfileManager profileManager;
         QAbstractItemModelTester modelTester(&profileManager);
 
+        const QSignalSpy profilesChangedSpy(&profileManager, &ProfileManager::profilesChanged);
+        QVERIFY(profilesChangedSpy.isValid());
+
         QCOMPARE(profileManager.rowCount({}), 0);
         profileManager.load();
+
+        QCOMPARE(profilesChangedSpy.count(), 1);
 
         // the dummy profile
         QCOMPARE(profileManager.rowCount({}), 1);
@@ -36,10 +41,15 @@ private Q_SLOTS:
         ProfileManager profileManager;
         QAbstractItemModelTester modelTester(&profileManager);
 
+        const QSignalSpy profilesChangedSpy(&profileManager, &ProfileManager::profilesChanged);
+        QVERIFY(profilesChangedSpy.isValid());
+
         QCOMPARE(profileManager.rowCount({}), 0);
         profileManager.load();
+        QCOMPARE(profilesChangedSpy.count(), 1);
 
         profileManager.addProfile();
+        QCOMPARE(profilesChangedSpy.count(), 2);
 
         QCOMPARE(profileManager.rowCount({}), 2);
         QCOMPARE(profileManager.numProfiles(), 2);
