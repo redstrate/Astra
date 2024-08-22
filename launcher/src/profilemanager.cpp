@@ -10,9 +10,8 @@
 
 using namespace Qt::StringLiterals;
 
-ProfileManager::ProfileManager(LauncherCore &launcher, QObject *parent)
+ProfileManager::ProfileManager(QObject *parent)
     : QAbstractListModel(parent)
-    , m_launcher(launcher)
 {
 }
 
@@ -43,7 +42,7 @@ Profile *ProfileManager::getProfileByUUID(const QString &uuid)
 
 Profile *ProfileManager::addProfile()
 {
-    const auto newProfile = new Profile(m_launcher, QUuid::createUuid().toString(), this);
+    const auto newProfile = new Profile(QUuid::createUuid().toString(), this);
     newProfile->setName(QStringLiteral("New Profile"));
 
     insertProfile(newProfile);
@@ -85,7 +84,7 @@ void ProfileManager::load()
         if (id.contains("profile-"_L1)) {
             const QString uuid = QString(id).remove("profile-"_L1);
             qInfo(ASTRA_LOG) << "Loading profile" << uuid;
-            const auto profile = new Profile(m_launcher, uuid, this);
+            const auto profile = new Profile(uuid, this);
             insertProfile(profile);
         }
     }

@@ -9,7 +9,6 @@
 
 class Account;
 class ProfileConfig;
-class LauncherCore;
 
 class Profile : public QObject
 {
@@ -45,7 +44,7 @@ class Profile : public QObject
     Q_PROPERTY(QString subtitle READ subtitle NOTIFY gameInstallChanged)
 
 public:
-    explicit Profile(LauncherCore &launcher, const QString &key, QObject *parent = nullptr);
+    explicit Profile(const QString &key, QObject *parent = nullptr);
 
     enum class WineType { BuiltIn, Custom };
     Q_ENUM(WineType)
@@ -213,6 +212,4 @@ private:
     QString m_frontierUrl;
 
     bool m_loggedIn = false;
-
-    LauncherCore &m_launcher;
 };

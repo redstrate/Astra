@@ -28,26 +28,12 @@ ecm_qt_declare_logging_category(astra_static
 )
 
 target_sources(astra_static PRIVATE
+        include/account.h
         include/patchlist.h
         include/processwatcher.h
+        include/profilemanager.h
+        include/profile.h
         include/utility.h
-        src/patchlist.cpp
-        src/processwatcher.cpp
-        src/utility.cpp)
-target_include_directories(astra_static PUBLIC include)
-target_link_libraries(astra_static PUBLIC
-        Qt6::Core
-        Qt6::Network
-        KF6::CoreAddons)
-
-add_executable(astra)
-
-qt_add_qml_module(astra
-        URI zone.xiv.astra
-        VERSION 1.0)
-
-target_sources(astra PRIVATE
-        include/account.h
         include/accountmanager.h
         include/assetupdater.h
         include/benchmarkinstaller.h
@@ -59,16 +45,12 @@ target_sources(astra PRIVATE
         include/headline.h
         include/launchercore.h
         include/launchersettings.h
-        include/logger.h
         include/patcher.h
         include/processlogger.h
-        include/profile.h
-        include/profilemanager.h
         include/sapphirelogin.h
         include/squareenixlogin.h
         include/steamapi.h
 
-        src/account.cpp
         src/accountmanager.cpp
         src/assetupdater.cpp
         src/benchmarkinstaller.cpp
@@ -80,15 +62,73 @@ target_sources(astra PRIVATE
         src/gameinstaller.cpp
         src/launchercore.cpp
         src/launchersettings.cpp
-        src/logger.cpp
-        src/main.cpp
+        src/account.cpp
+        src/patchlist.cpp
+        src/processwatcher.cpp
+        src/profilemanager.cpp
+        src/profile.cpp
+        src/utility.cpp
         src/patcher.cpp
         src/processlogger.cpp
-        src/profile.cpp
-        src/profilemanager.cpp
         src/sapphirelogin.cpp
         src/squareenixlogin.cpp
-        src/steamapi.cpp
+        src/steamapi.cpp)
+target_include_directories(astra_static PUBLIC include)
+target_link_libraries(astra_static PUBLIC
+        physis
+        cotp
+        Qt6::Core
+        Qt6::Quick
+        Qt6::Network
+        Qt6::Concurrent
+        Qt6Keychain::Qt6Keychain
+        KF6::I18n
+        KF6::CoreAddons
+        KF6::ConfigCore
+        KF6::ConfigGui
+        KF6::Archive
+        QCoro::Core
+        QCoro::Network
+        QCoro::Qml)
+kconfig_add_kcfg_files(astra_static GENERATE_MOC config.kcfgc accountconfig.kcfgc profileconfig.kcfgc)
+target_include_directories(astra_static PUBLIC include ${CMAKE_BINARY_DIR})
+
+if (NOT MSVC)
+    target_compile_options(astra_static PUBLIC -fexceptions)
+endif ()
+
+if (BUILD_FLATPAK)
+    target_compile_definitions(astra_static PUBLIC FLATPAK)
+endif ()
+
+if (ENABLE_GAMEMODE)
+    target_link_libraries(astra_static PUBLIC ${GAMEMODE_LIBRARIES})
+    target_compile_definitions(astra_static PUBLIC ENABLE_GAMEMODE)
+endif ()
+
+if (BUILD_SYNC)
+    target_sources(astra_static PRIVATE
+            include/charactersync.h
+            include/syncmanager.h
+
+            src/charactersync.cpp
+            src/syncmanager.cpp
+    )
+    target_compile_definitions(astra_static PUBLIC BUILD_SYNC)
+    target_link_libraries(astra_static PRIVATE QuotientQt6)
+endif()
+
+add_executable(astra)
+
+qt_add_qml_module(astra
+        URI zone.xiv.astra
+        VERSION 1.0)
+
+target_sources(astra PRIVATE
+        include/logger.h
+
+        src/logger.cpp
+        src/main.cpp
 )
 
 qt_target_qml_sources(astra
@@ -120,16 +160,6 @@ qt_target_qml_sources(astra
         ui/Setup/SetupPage.qml
         ui/Main.qml
 )
-if (BUILD_SYNC)
-    target_sources(astra PRIVATE
-            include/charactersync.h
-            include/syncmanager.h
-
-            src/charactersync.cpp
-            src/syncmanager.cpp
-    )
-    target_compile_definitions(astra PRIVATE BUILD_SYNC)
-endif()
 
 set_source_files_properties(../zone.xiv.astra.svg PROPERTIES
         QT_RESOURCE_ALIAS /zone.xiv.astra.svg
@@ -141,30 +171,13 @@ qt_target_qml_sources(astra
         ../zone.xiv.astra.svg
 )
 
-kconfig_add_kcfg_files(astra GENERATE_MOC config.kcfgc accountconfig.kcfgc profileconfig.kcfgc)
-target_include_directories(astra PRIVATE include ${CMAKE_BINARY_DIR})
 target_link_libraries(astra PRIVATE
         astra_static
-        physis
         physis-logger
-        cotp
         KDAB::kdsingleapplication
-        Qt6Keychain::Qt6Keychain
         Qt6::Widgets
-        Qt6::Quick
         Qt6::QuickControls2
-        Qt6::Concurrent
-        KF6::Kirigami
-        KF6::I18n
-        KF6::ConfigCore
-        KF6::ConfigGui
-        KF6::Archive
-        QCoro::Core
-        QCoro::Network
-        QCoro::Qml)
-if (BUILD_SYNC)
-    target_link_libraries(astra PRIVATE QuotientQt6)
-endif()
+        KF6::Kirigami)
 
 if (BUILD_WEBVIEW)
     target_link_libraries(astra PRIVATE
@@ -177,19 +190,6 @@ if (WIN32)
     target_link_libraries(astra PRIVATE
             KF6::BreezeIcons
     )
-endif ()
-
-if (NOT MSVC)
-    target_compile_options(astra PRIVATE -fexceptions)
-endif ()
-
-if (BUILD_FLATPAK)
-    target_compile_definitions(astra PRIVATE FLATPAK)
-endif ()
-
-if (ENABLE_GAMEMODE)
-    target_link_libraries(astra PRIVATE ${GAMEMODE_LIBRARIES})
-    target_compile_definitions(astra PRIVATE ENABLE_GAMEMODE)
 endif ()
 
 if (WIN32)

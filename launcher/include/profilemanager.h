@@ -16,7 +16,7 @@ class ProfileManager : public QAbstractListModel
     Q_PROPERTY(int numProfiles READ numProfiles NOTIFY profilesChanged)
 
 public:
-    explicit ProfileManager(LauncherCore &launcher, QObject *parent = nullptr);
+    explicit ProfileManager(QObject *parent = nullptr);
 
     void load();
 
@@ -54,6 +54,4 @@ private:
     void insertProfile(Profile *profile);
 
     QList<Profile *> m_profiles;
-
-    LauncherCore &m_launcher;
 };

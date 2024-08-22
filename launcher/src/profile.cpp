@@ -16,11 +16,10 @@
 
 using namespace Qt::StringLiterals;
 
-Profile::Profile(LauncherCore &launcher, const QString &key, QObject *parent)
+Profile::Profile(const QString &key, QObject *parent)
     : QObject(parent)
     , m_uuid(key)
     , m_config(new ProfileConfig(key))
-    , m_launcher(launcher)
 {
     readGameVersion();
     readWineInfo();

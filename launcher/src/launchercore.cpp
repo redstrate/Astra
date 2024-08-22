@@ -36,7 +36,7 @@ LauncherCore::LauncherCore()
     m_mgr = new QNetworkAccessManager(this);
     m_sapphireLogin = new SapphireLogin(*this, this);
     m_squareEnixLogin = new SquareEnixLogin(*this, this);
-    m_profileManager = new ProfileManager(*this, this);
+    m_profileManager = new ProfileManager(this);
     m_accountManager = new AccountManager(*this, this);
     m_runner = new GameRunner(*this, this);
 
