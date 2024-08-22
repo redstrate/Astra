@@ -29,13 +29,16 @@ ecm_qt_declare_logging_category(astra_static
 
 target_sources(astra_static PRIVATE
         include/patchlist.h
+        include/processwatcher.h
         include/utility.h
         src/patchlist.cpp
+        src/processwatcher.cpp
         src/utility.cpp)
 target_include_directories(astra_static PUBLIC include)
 target_link_libraries(astra_static PUBLIC
         Qt6::Core
-        Qt6::Network)
+        Qt6::Network
+        KF6::CoreAddons)
 
 add_executable(astra)
 
@@ -59,7 +62,6 @@ target_sources(astra PRIVATE
         include/logger.h
         include/patcher.h
         include/processlogger.h
-        include/processwatcher.h
         include/profile.h
         include/profilemanager.h
         include/sapphirelogin.h
@@ -82,7 +84,6 @@ target_sources(astra PRIVATE
         src/main.cpp
         src/patcher.cpp
         src/processlogger.cpp
-        src/processwatcher.cpp
         src/profile.cpp
         src/profilemanager.cpp
         src/sapphirelogin.cpp
@@ -157,7 +158,6 @@ target_link_libraries(astra PRIVATE
         KF6::I18n
         KF6::ConfigCore
         KF6::ConfigGui
-        KF6::CoreAddons
         KF6::Archive
         QCoro::Core
         QCoro::Network

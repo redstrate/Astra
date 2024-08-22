@@ -7,6 +7,12 @@ ecm_add_test(patchlisttest.cpp
     NAME_PREFIX "astra-"
 )
 
+ecm_add_test(processwatchertest.cpp
+        TEST_NAME processwatchertest
+        LINK_LIBRARIES astra_static Qt::Test
+        NAME_PREFIX "astra-"
+)
+
 ecm_add_test(utilitytest.cpp
         TEST_NAME utilitytest
         LINK_LIBRARIES astra_static Qt::Test
