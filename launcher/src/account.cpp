@@ -235,7 +235,7 @@ QString Account::getConfigPath() const
 
 void Account::setKeychainValue(const QString &key, const QString &value)
 {
-    if (m_launcher.isSteamDeck()) {
+    if (Utility::isSteamDeck()) {
         auto stateConfig = KSharedConfig::openStateConfig();
 
         stateConfig->group(QStringLiteral("Passwords")).writeEntry(m_key + QStringLiteral("-") + key, value);
@@ -248,7 +248,6 @@ void Account::setKeychainValue(const QString &key, const QString &value)
 #else
         job->setKey(m_key + QStringLiteral("-") + key);
 #endif
-        job->setInsecureFallback(m_launcher.isSteamDeck()); // The Steam Deck does not have secrets provider in Game Mode
         job->start();
 
         connect(job, &QKeychain::WritePasswordJob::finished, this, [job] {
@@ -261,7 +260,7 @@ void Account::setKeychainValue(const QString &key, const QString &value)
 
 QCoro::Task<QString> Account::getKeychainValue(const QString &key)
 {
-    if (m_launcher.isSteamDeck()) {
+    if (Utility::isSteamDeck()) {
         co_return KSharedConfig::openStateConfig()->group(QStringLiteral("Passwords")).readEntry(m_key + QStringLiteral("-") + key);
     } else {
         auto job = new QKeychain::ReadPasswordJob(QStringLiteral("Astra"), this);
@@ -270,7 +269,6 @@ QCoro::Task<QString> Account::getKeychainValue(const QString &key)
 #else
         job->setKey(m_key + QStringLiteral("-") + key);
 #endif
-        job->setInsecureFallback(m_launcher.isSteamDeck()); // The Steam Deck does not have secrets provider in Game Mode
         job->start();
 
         co_await qCoro(job, &QKeychain::ReadPasswordJob::finished);
