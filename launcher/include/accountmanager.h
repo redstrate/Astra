@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <QAbstractListModel>
-
 #include "account.h"
 
 class AccountManager : public QAbstractListModel
@@ -16,7 +14,7 @@ class AccountManager : public QAbstractListModel
     Q_PROPERTY(int numAccounts READ numAccounts NOTIFY accountsChanged)
 
 public:
-    explicit AccountManager(LauncherCore &launcher, QObject *parent = nullptr);
+    explicit AccountManager(QObject *parent = nullptr);
 
     void load();
 
@@ -50,6 +48,4 @@ private:
     void insertAccount(Account *account);
 
     QList<Account *> m_accounts;
-
-    LauncherCore &m_launcher;
 };

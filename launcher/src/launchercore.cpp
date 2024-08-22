@@ -37,7 +37,7 @@ LauncherCore::LauncherCore()
     m_sapphireLogin = new SapphireLogin(*this, this);
     m_squareEnixLogin = new SquareEnixLogin(*this, this);
     m_profileManager = new ProfileManager(this);
-    m_accountManager = new AccountManager(*this, this);
+    m_accountManager = new AccountManager(this);
     m_runner = new GameRunner(*this, this);
 
     connect(m_accountManager, &AccountManager::accountAdded, this, &LauncherCore::fetchAvatar);

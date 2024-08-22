@@ -8,9 +8,8 @@
 
 using namespace Qt::StringLiterals;
 
-AccountManager::AccountManager(LauncherCore &launcher, QObject *parent)
+AccountManager::AccountManager(QObject *parent)
     : QAbstractListModel(parent)
-    , m_launcher(launcher)
 {
 }
 
@@ -22,7 +21,7 @@ void AccountManager::load()
             const QString uuid = QString(id).remove("account-"_L1);
             qInfo(ASTRA_LOG) << "Loading account" << uuid;
 
-            const auto account = new Account(m_launcher, uuid, this);
+            const auto account = new Account(uuid, this);
             m_accounts.append(account);
             Q_EMIT accountsChanged();
         }
@@ -56,7 +55,7 @@ QHash<int, QByteArray> AccountManager::roleNames() const
 
 Account *AccountManager::createSquareEnixAccount(const QString &username, const int licenseType, const bool isFreeTrial)
 {
-    const auto account = new Account(m_launcher, QUuid::createUuid().toString(), this);
+    const auto account = new Account(QUuid::createUuid().toString(), this);
     account->setIsSapphire(false);
     account->setLicense(static_cast<Account::GameLicense>(licenseType));
     account->setIsFreeTrial(isFreeTrial);
@@ -69,7 +68,7 @@ Account *AccountManager::createSquareEnixAccount(const QString &username, const 
 
 Account *AccountManager::createSapphireAccount(const QString &lobbyUrl, const QString &username)
 {
-    const auto account = new Account(m_launcher, QUuid::createUuid().toString(), this);
+    const auto account = new Account(QUuid::createUuid().toString(), this);
     account->setIsSapphire(true);
     account->setName(username);
     account->setLobbyUrl(lobbyUrl);

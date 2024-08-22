@@ -3,14 +3,11 @@
 
 #pragma once
 
-#include <QDir>
 #include <QObject>
 #include <QtQml>
 #include <qcorotask.h>
 
 #include "accountconfig.h"
-
-class LauncherCore;
 
 class Account : public QObject
 {
@@ -32,7 +29,7 @@ class Account : public QObject
     Q_PROPERTY(bool needsPassword READ needsPassword NOTIFY needsPasswordChanged)
 
 public:
-    explicit Account(LauncherCore &launcher, const QString &key, QObject *parent = nullptr);
+    explicit Account(const QString &key, QObject *parent = nullptr);
 
     enum class GameLicense { WindowsStandalone, WindowsSteam, macOS };
     Q_ENUM(GameLicense)
@@ -115,6 +112,5 @@ private:
     AccountConfig m_config;
     QString m_key;
     QString m_avatarUrl;
-    LauncherCore &m_launcher;
     bool m_needsPassword = false;
 };

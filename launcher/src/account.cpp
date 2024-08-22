@@ -3,23 +3,19 @@
 
 #include "account.h"
 
-#include <QNetworkReply>
-#include <QNetworkRequest>
 #include <cotp.h>
 #include <qcorocore.h>
 #include <qt6keychain/keychain.h>
 
 #include "astra_log.h"
-#include "launchercore.h"
 #include "utility.h"
 
 using namespace Qt::StringLiterals;
 
-Account::Account(LauncherCore &launcher, const QString &key, QObject *parent)
+Account::Account(const QString &key, QObject *parent)
     : QObject(parent)
     , m_config(key)
     , m_key(key)
-    , m_launcher(launcher)
 {
     fetchPassword();
 }
