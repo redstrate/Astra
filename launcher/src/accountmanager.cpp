@@ -92,7 +92,7 @@ Account *AccountManager::getByUuid(const QString &uuid) const
 bool AccountManager::canDelete(const Account *account) const
 {
     Q_UNUSED(account)
-    return m_accounts.size() != 1;
+    return m_accounts.size() > 1;
 }
 
 void AccountManager::deleteAccount(Account *account)
