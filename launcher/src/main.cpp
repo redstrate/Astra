@@ -35,11 +35,6 @@ int main(int argc, char *argv[])
 
     KIconTheme::initTheme();
 
-    if (Utility::isSteamDeck()) {
-        qputenv("QT_SCALE_FACTOR", "1.25");
-        qputenv("QT_QUICK_CONTROLS_MOBILE", "1");
-    }
-
     const QGuiApplication app(argc, argv);
 
     const KDSingleApplication singleApplication;
