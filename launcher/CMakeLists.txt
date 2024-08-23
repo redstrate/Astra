@@ -120,6 +120,11 @@ if (BUILD_SYNC)
     target_link_libraries(astra_static PRIVATE QuotientQt6)
 endif()
 
+if (TARGET Qt6::DBus)
+    target_link_libraries(astra_static PRIVATE Qt6::DBus)
+    target_compile_definitions(astra_static PRIVATE -DHAS_DBUS)
+endif ()
+
 add_executable(astra)
 
 target_sources(astra PRIVATE

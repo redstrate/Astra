@@ -167,6 +167,12 @@ private:
     /// Updates FFXIV.cfg with some recommended options like turning the opening cutscene movie off
     void updateConfig(const Account *account);
 
+    /// Tell the system to keep the screen on and don't go to sleep
+    void inhibitSleep();
+
+    /// Tell the system we can allow the screen to turn off
+    void uninhibitSleep();
+
     SteamAPI *m_steamApi = nullptr;
 
     bool m_loadingFinished = false;
@@ -188,4 +194,6 @@ private:
 #endif
 
     int m_currentProfileIndex = 0;
+
+    unsigned int screenSaverDbusCookie = 0;
 };

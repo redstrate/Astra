@@ -50,6 +50,10 @@ find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
 if (BUILD_WEBVIEW)
     find_package(Qt6WebView ${QT_MIN_VERSION} REQUIRED)
 endif ()
+if (LINUX)
+    find_package(Qt6 ${QT_MIN_VERSION} REQUIRED NO_MODULE COMPONENTS DBus)
+endif ()
+
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS Kirigami I18n Config CoreAddons Archive)
 find_package(KF6KirigamiAddons 1.2.1 REQUIRED)
 find_package(QCoro6 REQUIRED COMPONENTS Core Network Qml)

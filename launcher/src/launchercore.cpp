@@ -27,6 +27,12 @@
 #include "syncmanager.h"
 #endif
 
+#ifdef HAS_DBUS
+#include <QDBusConnection>
+#include <QDBusReply>
+#include <QGuiApplication>
+#endif
+
 using namespace Qt::StringLiterals;
 
 LauncherCore::LauncherCore()
@@ -77,6 +83,8 @@ void LauncherCore::initializeSteam()
 void LauncherCore::login(Profile *profile, const QString &username, const QString &password, const QString &oneTimePassword)
 {
     Q_ASSERT(profile != nullptr);
+
+    inhibitSleep();
 
     const auto loginInformation = new LoginInformation(this);
     loginInformation->profile = profile;
@@ -572,6 +580,10 @@ QCoro::Task<> LauncherCore::fetchNews()
 
 QCoro::Task<> LauncherCore::handleGameExit(const Profile *profile)
 {
+    qCDebug(ASTRA_LOG) << "Game has closed.";
+
+    uninhibitSleep();
+
 #ifdef BUILD_SYNC
     // TODO: once we have Steam API support we can tell Steam to delay putting the Deck to sleep until our upload is complete
     if (m_settings->enableSync()) {
@@ -628,6 +640,42 @@ void LauncherCore::updateConfig(const Account *account)
     file.open(QIODevice::WriteOnly);
     file.write(reinterpret_cast<const char *>(buffer.data), buffer.size);
     file.close();
+}
+
+void LauncherCore::inhibitSleep()
+{
+#ifdef HAS_DBUS
+    if (screenSaverDbusCookie != 0)
+        return;
+
+    QDBusMessage message = QDBusMessage::createMethodCall(QStringLiteral("org.freedesktop.ScreenSaver"),
+                                                          QStringLiteral("/ScreenSaver"),
+                                                          QStringLiteral("org.freedesktop.ScreenSaver"),
+                                                          QStringLiteral("Inhibit"));
+    message << QGuiApplication::desktopFileName();
+    message << i18n("Playing FFXIV");
+
+    const QDBusReply<uint> reply = QDBusConnection::sessionBus().call(message);
+    if (reply.isValid()) {
+        screenSaverDbusCookie = reply.value();
+    }
+#endif
+}
+
+void LauncherCore::uninhibitSleep()
+{
+#ifdef HAS_DBUS
+    if (screenSaverDbusCookie == 0)
+        return;
+
+    QDBusMessage message = QDBusMessage::createMethodCall(QStringLiteral("org.freedesktop.ScreenSaver"),
+                                                          QStringLiteral("/ScreenSaver"),
+                                                          QStringLiteral("org.freedesktop.ScreenSaver"),
+                                                          QStringLiteral("UnInhibit"));
+    message << static_cast<uint>(screenSaverDbusCookie);
+    screenSaverDbusCookie = 0;
+    QDBusConnection::sessionBus().send(message);
+#endif
 }
 
 #include "moc_launchercore.cpp"
