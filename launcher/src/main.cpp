@@ -4,6 +4,7 @@
 #include <KAboutData>
 #include <KLocalizedContext>
 #include <KLocalizedString>
+#include <QGuiApplication> // NOTE: do not remove this, if your IDE suggests to do so
 #include <QQuickStyle>
 #include <kdsingleapplication.h>
 #include <qcoroqml.h>
