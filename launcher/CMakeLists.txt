@@ -3,7 +3,7 @@
 
 add_library(astra_static STATIC)
 
-qt_add_qml_module(astra_static
+ecm_add_qml_module(astra_static
         URI zone.xiv.astra
         VERSION 1.0)
 

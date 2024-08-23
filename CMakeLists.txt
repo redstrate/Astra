@@ -34,6 +34,7 @@ include(KDEClangFormat)
 include(ECMAddTests)
 include(ECMQtDeclareLoggingCategory)
 include(ECMAddAppIcon)
+include(ECMQmlModule)
 
 ecm_setup_version(${PROJECT_VERSION}
         VARIABLE_PREFIX ASTRA
