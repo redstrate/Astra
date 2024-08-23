@@ -380,6 +380,8 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
             const QString body = QString::fromUtf8(reply->readAll());
 
             if (!body.isEmpty()) {
+                qDebug(ASTRA_LOG) << "Game patch list:" << body;
+
                 m_patcher = new Patcher(m_launcher, m_info->profile->gamePath() + QStringLiteral("/game"), *m_info->profile->gameData(), this);
                 std::string bodyStd = body.toStdString();
                 const bool hasPatched = co_await m_patcher->patch(physis_parse_patchlist(PatchListType::Game, bodyStd.c_str()));

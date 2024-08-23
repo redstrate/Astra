@@ -64,6 +64,7 @@ private:
     BootData *m_bootData = nullptr;
     GameData *m_gameData = nullptr;
     QStorageInfo m_patchesDirStorageInfo;
+    QStorageInfo m_baseDirStorageInfo;
 
     int m_remainingPatches = -1;
 

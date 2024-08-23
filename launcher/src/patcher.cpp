@@ -55,10 +55,32 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
         co_return false;
     }
 
+    // First, let's check if we have enough space to even download the patches
     const qint64 neededSpace = patchList.patch_length - m_patchesDirStorageInfo.bytesAvailable();
     if (neededSpace > 0) {
         KFormat format;
         QString neededSpaceStr = format.formatByteSize(neededSpace);
+        Q_EMIT m_launcher.miscError(i18n("There is not enough space available on disk to update the game. You need %1 of free space.", neededSpaceStr));
+        co_return false;
+    }
+
+    // If we do, we want to make sure we have enough space for all of the repositories we download
+    QMap<QString, int64_t> repositorySizes;
+    for (int i = 0; i < patchList.num_entries; i++) {
+        // Record the largest byte size for the repository
+        const auto &patch = patchList.entries[i];
+        const auto &key = Utility::repositoryFromPatchUrl(QLatin1String(patch.url));
+        repositorySizes[key] = std::max(patch.size_on_disk, repositorySizes.value(Utility::repositoryFromPatchUrl(QLatin1String(patch.url)), 0));
+    }
+
+    int64_t requiredInstallSize = 0;
+    for (const auto &[_, value] : repositorySizes.asKeyValueRange()) {
+        requiredInstallSize += value;
+    }
+    const qint64 neededInstallSpace = requiredInstallSize - m_baseDirStorageInfo.bytesAvailable();
+    if (neededInstallSpace > 0) {
+        KFormat format;
+        QString neededSpaceStr = format.formatByteSize(neededInstallSpace);
         Q_EMIT m_launcher.miscError(i18n("There is not enough space available on disk to update the game. You need %1 of free space.", neededSpaceStr));
         co_return false;
     }
@@ -259,6 +281,8 @@ void Patcher::setupDirectories()
 
     m_patchesDir.setPath(dataDir.absoluteFilePath(QStringLiteral("patch")));
     m_patchesDirStorageInfo = QStorageInfo(m_patchesDir);
+
+    m_baseDirStorageInfo = QStorageInfo(m_baseDirectory);
 }
 
 QString Patcher::getBaseString() const
