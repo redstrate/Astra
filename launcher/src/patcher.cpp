@@ -120,8 +120,8 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
                                       .version = QLatin1String(patch.version),
                                       .path = patchPath,
                                       .hashes = convertedHashes,
-                                      .hashBlockSize = patch.hash_block_size,
-                                      .length = patch.length,
+                                      .hashBlockSize = static_cast<long>(patch.hash_block_size),
+                                      .length = static_cast<long>(patch.length),
                                       .isBoot = isBoot()};
 
         qDebug(ASTRA_PATCHER) << "Adding a queued patch:";
