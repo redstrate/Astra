@@ -92,7 +92,9 @@ target_link_libraries(astra_static PUBLIC
         QCoro::Core
         QCoro::Network
         QCoro::Qml)
-kconfig_add_kcfg_files(astra_static GENERATE_MOC config.kcfgc accountconfig.kcfgc profileconfig.kcfgc)
+kconfig_target_kcfg_file(astra_static FILE config.kcfg CLASS_NAME Config MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR)
+kconfig_target_kcfg_file(astra_static FILE accountconfig.kcfg CLASS_NAME AccountConfig MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR)
+kconfig_target_kcfg_file(astra_static FILE profileconfig.kcfg CLASS_NAME ProfileConfig MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR)
 target_include_directories(astra_static PUBLIC include ${CMAKE_BINARY_DIR})
 
 if (NOT MSVC)
@@ -118,7 +120,7 @@ if (BUILD_SYNC)
     )
     target_compile_definitions(astra_static PUBLIC BUILD_SYNC)
     target_link_libraries(astra_static PRIVATE QuotientQt6)
-endif()
+endif ()
 
 if (TARGET Qt6::DBus)
     target_link_libraries(astra_static PRIVATE Qt6::DBus)
@@ -135,7 +137,7 @@ target_sources(astra PRIVATE
 )
 
 qt_target_qml_sources(astra_static
-    QML_FILES
+        QML_FILES
         ui/Components/FormFileDelegate.qml
         ui/Components/FormFolderDelegate.qml
         ui/Pages/AutoLoginPage.qml
@@ -223,4 +225,4 @@ if (WIN32)
             NO_UNSUPPORTED_PLATFORM_ERROR
     )
     install(SCRIPT ${deploy_script})
-endif()
+endif ()

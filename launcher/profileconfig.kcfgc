@@ -1,9 +1,0 @@
-# SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
-# SPDX-License-Identifier: CC0-1.0
-File=profileconfig.kcfg
-ClassName=ProfileConfig
-Mutators=true
-DefaultValueGetters=true
-GenerateProperties=true
-ParentInConstructor=true
-Singleton=false
