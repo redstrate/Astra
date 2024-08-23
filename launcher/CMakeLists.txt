@@ -3,7 +3,7 @@
 
 add_library(astra_static STATIC)
 
-ecm_add_qml_module(astra_static
+ecm_add_qml_module(astra_static GENERATE_PLUGIN_SOURCE
         URI zone.xiv.astra
         VERSION 1.0)
 
@@ -183,7 +183,8 @@ target_link_libraries(astra PRIVATE
         KDAB::kdsingleapplication
         Qt6::Widgets
         Qt6::QuickControls2
-        KF6::Kirigami)
+        KF6::Kirigami
+        KF6::IconThemes)
 
 if (BUILD_WEBVIEW)
     target_link_libraries(astra PRIVATE
@@ -208,7 +209,6 @@ install(TARGETS astra ${KF6_INSTALL_TARGETS_DEFAULT_ARGS})
 
 ecm_add_app_icon(astra
         ICONS
-        ${CMAKE_SOURCE_DIR}/zone.xiv.astra.svg
         ${CMAKE_SOURCE_DIR}/resources/16-astra.png
         ${CMAKE_SOURCE_DIR}/resources/32-astra.png
         ${CMAKE_SOURCE_DIR}/resources/48-astra.png

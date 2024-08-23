@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <KAboutData>
+#include <KIconTheme>
 #include <KLocalizedContext>
 #include <KLocalizedString>
 #include <QGuiApplication> // NOTE: do not remove this, if your IDE suggests to do so
@@ -32,10 +33,7 @@ int main(int argc, char *argv[])
     QtWebView::initialize();
 #endif
 
-#ifdef Q_OS_WIN
-    BreezeIcons::initIcons();
-    QIcon::setThemeName(QStringLiteral("Breeze"));
-#endif
+    KIconTheme::initTheme();
 
     if (Utility::isSteamDeck()) {
         qputenv("QT_SCALE_FACTOR", "1.25");
