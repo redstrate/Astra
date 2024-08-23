@@ -15,4 +15,5 @@ void setSSL(QNetworkRequest &request);
 QString readVersion(const QString &path);
 void writeVersion(const QString &path, const QString &version);
 bool isSteamDeck();
+QString repositoryFromPatchUrl(const QString &url);
 }

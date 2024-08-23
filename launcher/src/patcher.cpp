@@ -3,6 +3,7 @@
 
 #include "patcher.h"
 
+#include <KFormat>
 #include <KLocalizedString>
 #include <QDir>
 #include <QFile>
@@ -13,7 +14,6 @@
 
 #include "astra_patcher_log.h"
 #include "launchercore.h"
-#include "patchlist.h"
 #include "utility.h"
 
 using namespace Qt::StringLiterals;
@@ -49,50 +49,65 @@ Patcher::~Patcher()
     m_launcher.m_isPatching = false;
 }
 
-QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
+QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
 {
-    if (patchList.isEmpty()) {
+    if (patchList.num_entries == 0) {
+        co_return false;
+    }
+
+    const qint64 neededSpace = patchList.patch_length - m_patchesDirStorageInfo.bytesAvailable();
+    if (neededSpace > 0) {
+        KFormat format;
+        QString neededSpaceStr = format.formatByteSize(neededSpace);
+        Q_EMIT m_launcher.miscError(i18n("There is not enough space available on disk to update the game. You need %1 of free space.", neededSpaceStr));
         co_return false;
     }
 
     Q_EMIT m_launcher.stageIndeterminate();
     Q_EMIT m_launcher.stageChanged(i18n("Updating %1", getBaseString()));
 
-    m_remainingPatches = static_cast<int>(patchList.patches().size());
+    m_remainingPatches = patchList.num_entries;
     m_patchQueue.resize(m_remainingPatches);
 
     QFutureSynchronizer<void> synchronizer;
 
     int patchIndex = 0;
 
-    for (auto &patch : patchList.patches()) {
+    for (int i = 0; i < patchList.num_entries; i++) {
+        const auto &patch = patchList.entries[i];
+
         const int ourIndex = patchIndex++;
 
-        const QString filename = QStringLiteral("%1.patch").arg(patch.name);
-        const QString tempFilename = QStringLiteral("%1.patch~").arg(patch.name); // tilde afterwards to hide it easily
+        const QString filename = QStringLiteral("%1.patch").arg(QLatin1String(patch.version));
+        const QString tempFilename = QStringLiteral("%1.patch~").arg(QLatin1String(patch.version)); // tilde afterwards to hide it easily
 
-        const QDir repositoryDir = m_patchesDir.absoluteFilePath(patch.repository);
+        const QString repository = Utility::repositoryFromPatchUrl(QLatin1String(patch.url));
+        const QDir repositoryDir = m_patchesDir.absoluteFilePath(repository);
         Utility::createPathIfNeeded(repositoryDir);
 
         const QString patchPath = repositoryDir.absoluteFilePath(filename);
         const QString tempPatchPath = repositoryDir.absoluteFilePath(tempFilename);
 
-        const QueuedPatch queuedPatch{.name = patch.name,
-                                      .repository = patch.repository,
-                                      .version = patch.version,
+        QStringList convertedHashes;
+        for (uint64_t i = 0; i < patch.hash_count; i++) {
+            convertedHashes.push_back(QLatin1String(patch.hashes[i]));
+        }
+
+        const QueuedPatch queuedPatch{.name = QLatin1String(patch.version),
+                                      .repository = repository,
+                                      .version = QLatin1String(patch.version),
                                       .path = patchPath,
-                                      .hashes = patch.hashes,
-                                      .hashBlockSize = patch.hashBlockSize,
+                                      .hashes = convertedHashes,
+                                      .hashBlockSize = patch.hash_block_size,
                                       .length = patch.length,
                                       .isBoot = isBoot()};
 
         qDebug(ASTRA_PATCHER) << "Adding a queued patch:";
-        qDebug(ASTRA_PATCHER) << "- Name:" << patch.name;
-        qDebug(ASTRA_PATCHER) << "- Repository or is boot:" << (isBoot() ? QStringLiteral("boot") : patch.repository);
+        qDebug(ASTRA_PATCHER) << "- Repository or is boot:" << (isBoot() ? QStringLiteral("boot") : repository);
         qDebug(ASTRA_PATCHER) << "- Version:" << patch.version;
         qDebug(ASTRA_PATCHER) << "- Downloaded Path:" << patchPath;
         qDebug(ASTRA_PATCHER) << "- Hashes:" << patch.hashes;
-        qDebug(ASTRA_PATCHER) << "- Hash Block Size:" << patch.hashBlockSize;
+        qDebug(ASTRA_PATCHER) << "- Hash Block Size:" << patch.hash_block_size;
         qDebug(ASTRA_PATCHER) << "- Length:" << patch.length;
 
         m_patchQueue[ourIndex] = queuedPatch;
@@ -103,7 +118,7 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
                 QFile::remove(tempPatchPath);
             }
 
-            const auto patchRequest = QNetworkRequest(QUrl(patch.url));
+            const auto patchRequest = QNetworkRequest(QUrl(QLatin1String(patch.url)));
             Utility::printRequest(QStringLiteral("GET"), patchRequest);
 
             auto patchReply = m_launcher.mgr()->get(patchRequest);
@@ -135,7 +150,7 @@ QCoro::Task<bool> Patcher::patch(const PatchList &patchList)
         } else {
             m_patchQueue[ourIndex].downloaded = true;
             m_finishedPatches++;
-            qDebug(ASTRA_PATCHER) << "Found existing patch: " << patch.name;
+            qDebug(ASTRA_PATCHER) << "Found existing patch: " << patch.version;
         }
     }
 
@@ -243,6 +258,7 @@ void Patcher::setupDirectories()
     dataDir.setPath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
 
     m_patchesDir.setPath(dataDir.absoluteFilePath(QStringLiteral("patch")));
+    m_patchesDirStorageInfo = QStorageInfo(m_patchesDir);
 }
 
 QString Patcher::getBaseString() const

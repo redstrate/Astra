@@ -177,14 +177,19 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
     if (reply->error() == QNetworkReply::NoError) {
         const QString patchList = QString::fromUtf8(reply->readAll());
         if (!patchList.isEmpty()) {
+            qDebug(ASTRA_LOG) << "Boot patch list:" << patchList;
+
             m_patcher = new Patcher(m_launcher, m_info->profile->gamePath() + QStringLiteral("/boot"), *m_info->profile->bootData(), this);
-            const bool hasPatched = co_await m_patcher->patch(PatchList(patchList));
+            const std::string patchListStd = patchList.toStdString();
+            const bool hasPatched = co_await m_patcher->patch(physis_parse_patchlist(PatchListType::Boot, patchListStd.c_str()));
             if (hasPatched) {
                 // update game version information
                 m_info->profile->readGameVersion();
+            } else {
+                co_return false;
             }
-            m_patcher->deleteLater();
             m_lastRunHasPatched = true;
+            m_patcher->deleteLater();
         }
     } else {
         qWarning(ASTRA_LOG) << "Unknown error when verifying boot files:" << reply->errorString();
@@ -376,7 +381,8 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
 
             if (!body.isEmpty()) {
                 m_patcher = new Patcher(m_launcher, m_info->profile->gamePath() + QStringLiteral("/game"), *m_info->profile->gameData(), this);
-                const bool hasPatched = co_await m_patcher->patch(PatchList(body));
+                std::string bodyStd = body.toStdString();
+                const bool hasPatched = co_await m_patcher->patch(physis_parse_patchlist(PatchListType::Game, bodyStd.c_str()));
                 if (hasPatched) {
                     // re-read game version if it has updated
                     m_info->profile->readGameVersion();

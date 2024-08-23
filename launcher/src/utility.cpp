@@ -54,3 +54,9 @@ bool Utility::isSteamDeck()
 {
     return qEnvironmentVariable("SteamDeck") == QStringLiteral("1");
 }
+
+QString Utility::repositoryFromPatchUrl(const QString &url)
+{
+    auto url_parts = url.split('/'_L1);
+    return url_parts[url_parts.size() - 3];
+}

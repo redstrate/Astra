@@ -3,15 +3,13 @@
 
 #pragma once
 
-#include <QDir>
 #include <QMutex>
 #include <QNetworkAccessManager>
+#include <QStorageInfo>
 #include <QString>
 #include <qcorotask.h>
 
 #include <physis.hpp>
-
-#include "patchlist.h"
 
 class LauncherCore;
 
@@ -26,7 +24,7 @@ public:
     Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData &bootData, QObject *parent = nullptr);
     ~Patcher() override;
 
-    QCoro::Task<bool> patch(const PatchList &patchList);
+    QCoro::Task<bool> patch(const physis_PatchList &patchList);
 
 private:
     void setupDirectories();
@@ -65,6 +63,7 @@ private:
     QString m_baseDirectory;
     BootData *m_bootData = nullptr;
     GameData *m_gameData = nullptr;
+    QStorageInfo m_patchesDirStorageInfo;
 
     int m_remainingPatches = -1;
 

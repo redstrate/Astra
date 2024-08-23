@@ -33,7 +33,6 @@ ecm_qt_declare_logging_category(astra_static
 
 target_sources(astra_static PRIVATE
         include/account.h
-        include/patchlist.h
         include/processwatcher.h
         include/profilemanager.h
         include/profile.h
@@ -67,7 +66,6 @@ target_sources(astra_static PRIVATE
         src/launchercore.cpp
         src/launchersettings.cpp
         src/account.cpp
-        src/patchlist.cpp
         src/processwatcher.cpp
         src/profilemanager.cpp
         src/profile.cpp
