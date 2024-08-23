@@ -23,11 +23,11 @@ public:
 private:
     /// Checks the gate status to see if the servers are closed for maintenance
     /// \return False if the gate is closed, true if open.
-    QCoro::Task<bool> checkGateStatus();
+    QCoro::Task<bool> checkGateStatus() const;
 
     /// Checks the login status to see if the servers are closed for maintenance
     /// \return False if logging in is disabled, true if open.
-    QCoro::Task<bool> checkLoginStatus();
+    QCoro::Task<bool> checkLoginStatus() const;
 
     /// Check for updates to the boot components. Even though we don't use these, it's checked by later login steps.
     QCoro::Task<bool> checkBootUpdates();
@@ -46,7 +46,7 @@ private:
     QCoro::Task<bool> registerSession();
 
     /// Returns the hashes of the boot components
-    QCoro::Task<QString> getBootHash();
+    QCoro::Task<QString> getBootHash() const;
 
     /// Gets the SHA1 hash of a file
     static QString getFileHash(const QString &file);

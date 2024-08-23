@@ -67,7 +67,7 @@ QCoro::Task<std::optional<LoginAuth>> SquareEnixLogin::login(LoginInformation *i
     co_return m_auth;
 }
 
-QCoro::Task<bool> SquareEnixLogin::checkGateStatus()
+QCoro::Task<bool> SquareEnixLogin::checkGateStatus() const
 {
     Q_EMIT m_launcher.stageChanged(i18n("Checking gate..."));
     qInfo(ASTRA_LOG) << "Checking if the gate is open...";
@@ -108,7 +108,7 @@ QCoro::Task<bool> SquareEnixLogin::checkGateStatus()
     co_return false;
 }
 
-QCoro::Task<bool> SquareEnixLogin::checkLoginStatus()
+QCoro::Task<bool> SquareEnixLogin::checkLoginStatus() const
 {
     Q_EMIT m_launcher.stageChanged(i18n("Checking login..."));
     qInfo(ASTRA_LOG) << "Checking if login is open...";
@@ -416,7 +416,7 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
     co_return false;
 }
 
-QCoro::Task<QString> SquareEnixLogin::getBootHash()
+QCoro::Task<QString> SquareEnixLogin::getBootHash() const
 {
     const QList<QString> fileList = {QStringLiteral("ffxivboot.exe"),
                                      QStringLiteral("ffxivboot64.exe"),

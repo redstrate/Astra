@@ -5,7 +5,7 @@
 
 #include <QObject>
 #include <QString>
-#include <QtQml/qqmlregistration.h>
+#include <QtQml>
 
 class LauncherCore;
 class Profile;

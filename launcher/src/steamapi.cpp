@@ -3,7 +3,6 @@
 
 #include "steamapi.h"
 
-#include "astra_log.h"
 #include "launchercore.h"
 
 SteamAPI::SteamAPI(QObject *parent)

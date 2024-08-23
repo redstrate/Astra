@@ -28,8 +28,8 @@ private:
     QCoro::Task<bool> checkRemoteDalamudAssetVersion();
     QCoro::Task<bool> checkRemoteDalamudVersion();
 
-    QCoro::Task<bool> installCompatibilityTool();
-    QCoro::Task<bool> installDxvkTool();
+    QCoro::Task<bool> installCompatibilityTool() const;
+    QCoro::Task<bool> installDxvkTool() const;
     QCoro::Task<bool> installDalamudAssets();
     QCoro::Task<bool> installDalamud();
     QCoro::Task<bool> installRuntime();
@@ -39,7 +39,7 @@ private:
     [[nodiscard]] QUrl dotnetRuntimePackageUrl(const QString &version) const;
     [[nodiscard]] QUrl dotnetDesktopPackageUrl(const QString &version) const;
 
-    bool extractZip(const QString &filePath, const QString &directory);
+    static bool extractZip(const QString &filePath, const QString &directory);
 
     LauncherCore &launcher;
 

@@ -203,7 +203,7 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudVersion()
     co_return true;
 }
 
-QCoro::Task<bool> AssetUpdater::installCompatibilityTool()
+QCoro::Task<bool> AssetUpdater::installCompatibilityTool() const
 {
     Q_EMIT launcher.stageChanged(i18n("Updating compatibility tool..."));
 
@@ -245,7 +245,7 @@ QCoro::Task<bool> AssetUpdater::installCompatibilityTool()
     co_return true;
 }
 
-QCoro::Task<bool> AssetUpdater::installDxvkTool()
+QCoro::Task<bool> AssetUpdater::installDxvkTool() const
 {
     Q_EMIT launcher.stageChanged(i18n("Updating DXVK..."));
 
