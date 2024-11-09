@@ -20,7 +20,7 @@
 
 const QString platform = QStringLiteral("win32");
 const QString bootUpdateChannel = QStringLiteral("ffxivneo_release_boot");
-const QString gameUpdateChannel = QStringLiteral("win32");
+const QString gameUpdateChannel = QStringLiteral("ffxivneo_release_game");
 
 const QByteArray patchUserAgent = QByteArrayLiteral("FFXIV PATCH CLIENT");
 const QByteArray macosPatchUserAgent = QByteArrayLiteral("FFXIV-MAC PATCH CLIEN");
@@ -165,7 +165,7 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
     QUrl url;
     url.setScheme(QStringLiteral("http"));
     url.setHost(QStringLiteral("patch-bootver.%1").arg(m_launcher.settings()->squareEnixServer()));
-    url.setPath(QStringLiteral("/http/%1/%2/%3/").arg(platform, gameUpdateChannel, m_info->profile->bootVersion()));
+    url.setPath(QStringLiteral("/http/%1/%2/%3/").arg(platform, bootUpdateChannel, m_info->profile->bootVersion()));
     url.setQuery(query);
 
     auto request = QNetworkRequest(url);
