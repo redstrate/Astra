@@ -288,7 +288,7 @@ QQC2.Control {
                 id: forgotPasswordButton
 
                 text: i18n("Forgot ID or Password")
-                icon.name: "dialog-password"
+                icon.name: "question-symbolic"
                 visible: !LauncherCore.currentProfile.account.isSapphire
                 onClicked: applicationWindow().openUrl('https://secure.square-enix.com/account/app/svc/reminder')
             }
