@@ -22,6 +22,9 @@ const QString platform = QStringLiteral("win32");
 const QString bootUpdateChannel = QStringLiteral("ffxivneo_release_boot");
 const QString gameUpdateChannel = QStringLiteral("win32");
 
+const QByteArray patchUserAgent = QByteArrayLiteral("FFXIV PATCH CLIENT");
+const QByteArray macosPatchUserAgent = QByteArrayLiteral("FFXIV-MAC PATCH CLIEN");
+
 using namespace Qt::StringLiterals;
 
 SquareEnixLogin::SquareEnixLogin(LauncherCore &window, QObject *parent)
@@ -167,9 +170,9 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
 
     auto request = QNetworkRequest(url);
     if (m_info->profile->account()->license() == Account::GameLicense::macOS) {
-        request.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("FFXIV-MAC PATCH CLIENT"));
+        request.setHeader(QNetworkRequest::KnownHeaders::UserAgentHeader, macosPatchUserAgent);
     } else {
-        request.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("FFXIV PATCH CLIENT"));
+        request.setHeader(QNetworkRequest::KnownHeaders::UserAgentHeader, patchUserAgent);
     }
 
     request.setRawHeader(QByteArrayLiteral("Host"), QStringLiteral("patch-bootver.%1").arg(m_launcher.settings()->squareEnixServer()).toUtf8());
@@ -355,7 +358,7 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
     auto request = QNetworkRequest(url);
     Utility::setSSL(request);
     request.setRawHeader(QByteArrayLiteral("X-Hash-Check"), QByteArrayLiteral("enabled"));
-    request.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("FFXIV PATCH CLIENT"));
+    request.setHeader(QNetworkRequest::KnownHeaders::UserAgentHeader, patchUserAgent);
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/x-www-form-urlencoded"));
 
     QString report = QStringLiteral("%1=%2\n").arg(m_info->profile->bootVersion(), co_await getBootHash());
