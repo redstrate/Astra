@@ -14,6 +14,8 @@
 #include "processwatcher.h"
 #include "utility.h"
 
+#include <KProcessList>
+
 using namespace Qt::StringLiterals;
 
 GameRunner::GameRunner(LauncherCore &launcher, QObject *parent)
@@ -103,9 +105,21 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
 
         const auto match = pidRegex.match(log);
         if (match.hasCaptured(1)) {
-            const int PID = match.captured(1).toInt();
+            qint64 PID = match.captured(1).toInt();
             if (PID > 0) {
                 qCInfo(ASTRA_LOG) << "Recieved PID from Dalamud:" << PID;
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+                // Dalamud gives us a Windows PID, but that's useless to us. We need to find the PID of the game now:
+
+                const auto info = KProcessList::processInfoList();
+                for (const auto &entry : info) {
+                    if (entry.name().contains(QLatin1String("ffxiv"))) {
+                        qCInfo(ASTRA_LOG) << "Using PID of" << entry.name() << "which is" << entry.pid();
+                        PID = entry.pid();
+                    }
+                }
+
+#endif
                 auto watcher = new ProcessWatcher(PID);
                 connect(watcher, &ProcessWatcher::finished, this, [this, &profile] {
                     profile.setLoggedIn(false);
