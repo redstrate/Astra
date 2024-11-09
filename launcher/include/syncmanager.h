@@ -19,6 +19,7 @@ class SyncManager : public QObject
     Q_PROPERTY(bool connected READ connected NOTIFY connectedChanged)
     Q_PROPERTY(QString userId READ userId NOTIFY userIdChanged)
     Q_PROPERTY(Quotient::Connection *connection READ connection NOTIFY connectionChanged)
+    Q_PROPERTY(bool initialSync READ initialSync WRITE setInitialSync NOTIFY initialSyncChanged)
 
 public:
     explicit SyncManager(QObject *parent = nullptr);
@@ -97,12 +98,19 @@ public:
      */
     QCoro::Task<> breakLock();
 
+    /**
+     * @return If we should always update data on the server, and don't care about the previous data.
+     */
+    bool initialSync() const;
+    void setInitialSync(bool initialSync);
+
 Q_SIGNALS:
     void connectedChanged();
     void userIdChanged();
     void connectionChanged();
     void isReadyChanged();
     void loginError(const QString &message);
+    void initialSyncChanged();
 
 private:
     void invokeLogin();
@@ -113,4 +121,5 @@ private:
     Quotient::AccountRegistry m_accountRegistry;
 
     Quotient::Room *m_currentRoom = nullptr;
+    bool m_initialSync = false;
 };

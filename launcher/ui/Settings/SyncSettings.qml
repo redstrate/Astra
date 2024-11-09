@@ -100,6 +100,20 @@ FormCard.FormCardPage {
 
         FormCard.FormDelegateSeparator {
             above: usernameLabelDelegate
+            below: initialSyncDelegate
+        }
+
+        FormCard.FormCheckDelegate {
+            id: initialSyncDelegate
+
+            text: i18n("Overwrite existing data")
+            description: i18n("Temporarily overwrite any existing data on the server. This setting is not saved, and is reset when you log in.")
+            checked: LauncherCore.syncManager.initialSync
+            onCheckedChanged: LauncherCore.syncManager.initialSync = checked
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: initialSyncDelegate
             below: logoutDelegate
         }
 

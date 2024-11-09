@@ -322,4 +322,17 @@ QCoro::Task<> SyncManager::breakLock()
     co_return;
 }
 
+bool SyncManager::initialSync() const
+{
+    return m_initialSync;
+}
+
+void SyncManager::setInitialSync(bool initialSync)
+{
+    if (m_initialSync != initialSync) {
+        m_initialSync = initialSync;
+        Q_EMIT initialSyncChanged();
+    }
+}
+
 #include "moc_syncmanager.cpp"

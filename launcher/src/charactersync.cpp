@@ -77,6 +77,11 @@ QCoro::Task<bool> CharacterSync::sync(const bool initialSync)
 
     qCDebug(ASTRA_LOG) << "Character directories:" << characterDirs;
 
+    const bool manualOverwrite = syncManager->initialSync();
+
+    // Reset initial sync setting
+    syncManager->setInitialSync(false);
+
     for (const auto &dir : characterDirs) {
         const QString id = dir.fileName(); // FFXIV_CHR0040000001000001 for example
         const auto previousData = co_await syncManager->getUploadedCharacterData(id);
@@ -104,7 +109,7 @@ QCoro::Task<bool> CharacterSync::sync(const bool initialSync)
         const bool isGameClosing = !initialSync;
 
         // We want to upload if the files are truly different, or there is no existing data on the server.
-        const bool needsUpload = (areFilesDifferent && isGameClosing) || hasPreviousUpload;
+        const bool needsUpload = (areFilesDifferent && isGameClosing) || hasPreviousUpload || manualOverwrite;
 
         // We want to download if the files are different.
         const bool needsDownload = areFilesDifferent;
@@ -116,7 +121,7 @@ QCoro::Task<bool> CharacterSync::sync(const bool initialSync)
         } else if (needsDownload) {
             qCDebug(ASTRA_LOG) << id << "downloading character data";
             if (!co_await downloadCharacterData(dir.absoluteFilePath(), id, previousData->mxcUri)) {
-                Q_EMIT launcher.loginError(i18n("Failed to sync character data from the server. Please do another initial sync under Settings and try again."));
+                Q_EMIT launcher.loginError(i18n("Failed to sync character data from the server. You can try overwriting existing data under Settings."));
                 co_return false;
             }
         }
