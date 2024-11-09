@@ -24,6 +24,7 @@ void AccountManager::load()
             const auto account = new Account(uuid, this);
             m_accounts.append(account);
             Q_EMIT accountsChanged();
+            Q_EMIT accountAdded(account);
         }
     }
 }
