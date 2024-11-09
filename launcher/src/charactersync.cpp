@@ -138,6 +138,7 @@ QCoro::Task<void> CharacterSync::uploadCharacterData(const QDir &dir, const QStr
 
     zip->writeFile(gearsetFilename, data);
     zip->close();
+    delete zip;
 
     QMap<QString, QString> fileHashes;
     fileHashes[gearsetFilename] = QString::fromUtf8(QCryptographicHash::hash(data, QCryptographicHash::Algorithm::Sha256).toHex());
@@ -167,6 +168,7 @@ QCoro::Task<void> CharacterSync::downloadCharacterData(const QDir &dir, const QS
     qCDebug(ASTRA_LOG) << "Extracted character data!";
 
     zip->close();
+    delete zip;
 
     co_return;
 }
