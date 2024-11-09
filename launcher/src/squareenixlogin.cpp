@@ -385,11 +385,13 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
                 m_patcher = new Patcher(m_launcher, m_info->profile->gamePath() + QStringLiteral("/game"), *m_info->profile->gameData(), this);
                 std::string bodyStd = body.toStdString();
                 const bool hasPatched = co_await m_patcher->patch(physis_parse_patchlist(PatchListType::Game, bodyStd.c_str()));
-                if (hasPatched) {
-                    // re-read game version if it has updated
-                    m_info->profile->readGameVersion();
-                }
                 m_patcher->deleteLater();
+                if (!hasPatched) {
+                    co_return false;
+                }
+
+                // re-read game version if it has updated
+                m_info->profile->readGameVersion();
             }
 
             m_auth.SID = patchUniqueId;
