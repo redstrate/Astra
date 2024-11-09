@@ -18,6 +18,10 @@
 #include "launchercore.h"
 #include "utility.h"
 
+const QString platform = QStringLiteral("win32");
+const QString bootUpdateChannel = QStringLiteral("ffxivneo_release_boot");
+const QString gameUpdateChannel = QStringLiteral("win32");
+
 using namespace Qt::StringLiterals;
 
 SquareEnixLogin::SquareEnixLogin(LauncherCore &window, QObject *parent)
@@ -158,7 +162,7 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
     QUrl url;
     url.setScheme(QStringLiteral("http"));
     url.setHost(QStringLiteral("patch-bootver.%1").arg(m_launcher.settings()->squareEnixServer()));
-    url.setPath(QStringLiteral("/http/win32/ffxivneo_release_boot/%1/").arg(m_info->profile->bootVersion()));
+    url.setPath(QStringLiteral("/http/%1/%2/%3/").arg(platform, gameUpdateChannel, m_info->profile->bootVersion()));
     url.setQuery(query);
 
     auto request = QNetworkRequest(url);
@@ -346,7 +350,7 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
     QUrl url;
     url.setScheme(m_launcher.settings()->preferredProtocol());
     url.setHost(QStringLiteral("patch-gamever.%1").arg(m_launcher.settings()->squareEnixServer()));
-    url.setPath(QStringLiteral("/http/win32/ffxivneo_release_game/%1/%2").arg(m_info->profile->baseGameVersion(), m_SID));
+    url.setPath(QStringLiteral("/http/%1/%2/%3/%4").arg(platform, gameUpdateChannel, m_info->profile->baseGameVersion(), m_SID));
 
     auto request = QNetworkRequest(url);
     Utility::setSSL(request);
