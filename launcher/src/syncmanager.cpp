@@ -17,7 +17,6 @@
 #include <KSharedConfig>
 #include <QCoreApplication>
 #include <QCoro>
-#include <QTemporaryFile>
 
 const auto roomType = QStringLiteral("zone.xiv.astra-sync");
 const auto syncEventType = QStringLiteral("zone.xiv.astra.sync");
@@ -179,7 +178,7 @@ QCoro::Task<void> SyncManager::findRoom()
                                             {},
                                             {},
                                             QJsonObject{{QStringLiteral("type"), roomType}});
-        co_await qCoro(job, &BaseJob::finished);
+        co_await qCoro(job.get(), &BaseJob::finished);
 
         setRoomId(job->roomId());
         qCDebug(ASTRA_LOG) << "Created sync room at" << job->roomId();
@@ -234,7 +233,7 @@ QCoro::Task<bool> SyncManager::uploadCharacterArchive(const QString &id, const Q
     Q_ASSERT(m_currentRoom);
 
     auto uploadFileJob = connection()->uploadFile(path);
-    co_await qCoro(uploadFileJob, &BaseJob::finished);
+    co_await qCoro(uploadFileJob.get(), &BaseJob::finished);
 
     // TODO: error handling
 
