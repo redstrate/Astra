@@ -105,10 +105,10 @@ Q_SIGNALS:
     void loginError(const QString &message);
 
 private:
+    void invokeLogin();
     QString roomId() const;
     void setRoomId(const QString &roomId);
     QCoro::Task<> findRoom();
-    QCoro::Task<> beginInitialSync();
 
     Quotient::AccountRegistry m_accountRegistry;
 

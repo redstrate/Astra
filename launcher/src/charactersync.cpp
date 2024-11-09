@@ -33,6 +33,9 @@ QCoro::Task<bool> CharacterSync::sync(const bool initialSync)
         co_return false;
     }
 
+    // Perform a manual sync just in case
+    co_await syncManager->sync();
+
     if (!syncManager->isReady()) {
         Q_EMIT launcher.stageChanged(i18n("Waiting for sync connection..."));
 
@@ -41,9 +44,6 @@ QCoro::Task<bool> CharacterSync::sync(const bool initialSync)
     }
 
     Q_EMIT launcher.stageChanged(i18n("Synchronizing character data..."));
-
-    // Perform a manual sync just in case
-    co_await syncManager->sync();
 
     // On game boot, check if we need the lock. Otherwise break it when we clean up.
     if (initialSync) {
@@ -110,10 +110,15 @@ QCoro::Task<bool> CharacterSync::sync(const bool initialSync)
         const bool needsDownload = areFilesDifferent;
 
         if (needsUpload) {
+            qCDebug(ASTRA_LOG) << id << "uploading character data";
             // if we didn't upload character data yet, upload it now
             co_await uploadCharacterData(dir.absoluteFilePath(), id);
         } else if (needsDownload) {
-            co_await downloadCharacterData(dir.absoluteFilePath(), id, previousData->mxcUri);
+            qCDebug(ASTRA_LOG) << id << "downloading character data";
+            if (!co_await downloadCharacterData(dir.absoluteFilePath(), id, previousData->mxcUri)) {
+                Q_EMIT launcher.loginError(i18n("Failed to sync character data from the server. Please do another initial sync under Settings and try again."));
+                co_return false;
+            }
         }
     }
 
@@ -149,7 +154,7 @@ QCoro::Task<void> CharacterSync::uploadCharacterData(const QDir &dir, const QStr
     co_return;
 }
 
-QCoro::Task<void> CharacterSync::downloadCharacterData(const QDir &dir, const QString &id, const QString &contentUri)
+QCoro::Task<bool> CharacterSync::downloadCharacterData(const QDir &dir, const QString &id, const QString &contentUri)
 {
     const QTemporaryDir tempDir;
 
@@ -160,17 +165,27 @@ QCoro::Task<void> CharacterSync::downloadCharacterData(const QDir &dir, const QS
     auto zip = new KZip(tempZipPath);
     zip->setCompression(KZip::DeflateCompression);
     zip->open(QIODevice::ReadOnly);
+    if (zip->isOpen()) {
+        qCDebug(ASTRA_LOG) << "contents:" << zip->directory()->entries();
 
-    qCDebug(ASTRA_LOG) << "contents:" << zip->directory()->entries();
+        if (auto file = zip->directory()->file(gearsetFilename); file != nullptr) {
+            Q_UNUSED(file->copyTo(dir.absolutePath()))
 
-    Q_UNUSED(zip->directory()->file(gearsetFilename)->copyTo(dir.absolutePath()))
+            qCDebug(ASTRA_LOG) << "Extracted character data!";
 
-    qCDebug(ASTRA_LOG) << "Extracted character data!";
+            zip->close();
+            delete zip;
+
+            co_return true;
+        }
+    }
 
     zip->close();
     delete zip;
 
-    co_return;
+    qCDebug(ASTRA_LOG) << "Failed to read character ZIP!";
+
+    co_return false;
 }
 
 #include "moc_charactersync.cpp"

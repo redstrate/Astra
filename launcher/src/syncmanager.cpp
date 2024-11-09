@@ -33,7 +33,7 @@ using namespace Quotient;
 SyncManager::SyncManager(QObject *parent)
     : QObject(parent)
 {
-    m_accountRegistry.invokeLogin(); // TODO: port from invokeLogin
+    invokeLogin();
     connect(&m_accountRegistry, &AccountRegistry::rowsInserted, this, [this]() {
         connection()->setCacheState(false);
         connection()->setLazyLoading(false);
@@ -43,8 +43,6 @@ SyncManager::SyncManager(QObject *parent)
         Q_EMIT connectedChanged();
         Q_EMIT userIdChanged();
         Q_EMIT connectionChanged();
-
-        beginInitialSync();
     });
     connect(&m_accountRegistry, &AccountRegistry::rowsRemoved, this, [this]() {
         Q_EMIT connectedChanged();
@@ -117,7 +115,11 @@ QCoro::Task<> SyncManager::sync()
     auto connection = m_accountRegistry.accounts().first();
     connection->sync();
     co_await qCoro(connection, &Connection::syncDone);
-    m_accountRegistry.accounts().first()->stopSync();
+
+    if (!m_currentRoom) {
+        co_await findRoom();
+    }
+
     co_return;
 }
 
@@ -131,6 +133,18 @@ QCoro::Task<void> SyncManager::findRoom()
 
     // If we have no room id set, we need to find the correct room type
     const bool needsFirstTimeRoom = roomId.isEmpty();
+
+    if (!needsFirstTimeRoom) {
+        auto room = m_accountRegistry.accounts().first()->room(roomId);
+        if (room) {
+            qCDebug(ASTRA_LOG) << "Found pre-existing room!";
+
+            m_currentRoom = room;
+            Q_EMIT isReadyChanged();
+
+            co_return;
+        }
+    }
 
     // Try to find our room
     auto rooms = m_accountRegistry.accounts().first()->rooms(Quotient::JoinState::Join);
@@ -150,15 +164,6 @@ QCoro::Task<void> SyncManager::findRoom()
                     setRoomId(room->id());
                     Q_EMIT isReadyChanged();
                 }
-            }
-        } else {
-            if (room->id() == roomId) {
-                qCDebug(ASTRA_LOG) << "Found pre-existing room!";
-
-                m_currentRoom = room;
-                Q_EMIT isReadyChanged();
-
-                co_return;
             }
         }
     }
@@ -190,6 +195,28 @@ QCoro::Task<void> SyncManager::findRoom()
     co_return;
 }
 
+void SyncManager::invokeLogin()
+{
+    // Simplified from libQuotient, but this can be simplified even more
+    const auto accounts = SettingsGroup("Accounts"_L1).childGroups();
+    for (const auto &accountId : accounts) {
+        AccountSettings account{accountId};
+
+        if (account.homeserver().isEmpty())
+            continue;
+
+        auto accessTokenLoadingJob = new QKeychain::ReadPasswordJob(qAppName(), this);
+        accessTokenLoadingJob->setKey(accountId);
+        connect(accessTokenLoadingJob, &QKeychain::Job::finished, this, [accountId, this, accessTokenLoadingJob]() {
+            AccountSettings account{accountId};
+            auto connection = new Connection(account.homeserver());
+            connection->assumeIdentity(account.userId(), account.deviceId(), QString::fromUtf8(accessTokenLoadingJob->binaryData()));
+            m_accountRegistry.add(connection);
+        });
+        accessTokenLoadingJob->start();
+    }
+}
+
 QString SyncManager::roomId() const
 {
     return KSharedConfig::openStateConfig()->group(QStringLiteral("Sync")).readEntry(QStringLiteral("RoomId"));
@@ -204,6 +231,7 @@ void SyncManager::setRoomId(const QString &roomId)
 
 bool SyncManager::isReady() const
 {
+    qInfo() << connected() << m_currentRoom;
     return connected() && m_currentRoom;
 }
 
@@ -292,14 +320,6 @@ QCoro::Task<> SyncManager::breakLock()
     auto lockSetState = m_currentRoom->setState(syncEventType, latestKey, QJsonObject{{hostnameKey, noneKey}});
     co_await qCoro(lockSetState, &BaseJob::finished);
     co_return;
-}
-
-QCoro::Task<> SyncManager::beginInitialSync()
-{
-    co_await sync();
-
-    // Find the room we need to sync with
-    findRoom();
 }
 
 #include "moc_syncmanager.cpp"

@@ -27,7 +27,7 @@ public:
 
 private:
     QCoro::Task<void> uploadCharacterData(const QDir &dir, const QString &id);
-    QCoro::Task<void> downloadCharacterData(const QDir &dir, const QString &id, const QString &contentUri);
+    QCoro::Task<bool> downloadCharacterData(const QDir &dir, const QString &id, const QString &contentUri);
 
     LauncherCore &launcher;
     Account &m_account;
