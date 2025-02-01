@@ -9,9 +9,9 @@ on:
 env:
   CMAKE_BUILD_PARALLEL_LEVEL: 2
   MAKEFLAGS: '-j 2'
-  QT_VERSION: 6.6 # Keep in sync with CMakeLists.txt
-  KF_VERSION: v6.4.0 # Ditto
-  KIRIGAMI_ADDONS_VERSION: v1.2.1 # Ditto x2
+  QT_VERSION: 6.8.1 # Keep in sync with CMakeLists.txt
+  KF_VERSION: v6.10.0 # Ditto
+  KIRIGAMI_ADDONS_VERSION: v1.7.0 # Ditto x2
 
 jobs:
   reuse:
@@ -20,7 +20,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: REUSE Compliance Check
-      uses: fsfe/reuse-action@v3
+      uses: fsfe/reuse-action@v5
 
   build:
     runs-on: ${{ matrix.os }}
@@ -50,11 +50,11 @@ jobs:
           submodules: true
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
-          version: "${{ env.QT_VERSION }}.*"
+          version: "${{ env.QT_VERSION }}"
           cache: true
-          modules: 'qtshadertools'
+          modules: qtshadertools
 
       - name: Set reusable strings
         id: strings
@@ -71,6 +71,7 @@ jobs:
             gettext \
             gamemode-dev \
             libunshield-dev \
+            libsecret-1-dev
 
       - name: Cache Prefix
         id: cache-prefix-restore
@@ -165,6 +166,22 @@ jobs:
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-kirigami -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kirigami -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-kirigami --config ${{ matrix.build_type }} --target install
 
+      - name: Build KGuiAddons
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        continue-on-error: true
+        run: |
+          git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/kguiaddons.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-kguiaddons -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kguiaddons -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DWITH_WAYLAND=OFF -DWITH_X11=OFF -DBUILD_TESTING=OFF
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-kguiaddons --config ${{ matrix.build_type }} --target install
+
+      - name: Build KGlobalAccel
+        if: (runner.os == 'Linux') && (steps.cache-prefix-restore.outputs.cache-hit != 'true')
+        continue-on-error: true
+        run: |
+          git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/kglobalaccel.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-kglobalaccel -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kglobalaccel -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-kglobalaccel --config ${{ matrix.build_type }} --target install
+
       - name: Build Kirigami Add-ons
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
         run: |
@@ -173,13 +190,37 @@ jobs:
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-kirigami-addons --config ${{ matrix.build_type }} --target install
 
       - name: Build Breeze Icons
-        if: (runner.os == 'Windows') && (steps.cache-prefix-restore.outputs.cache-hit != 'true')
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
         continue-on-error: true
         run: |
           git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/breeze-icons.git
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}-breeze-icons -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S breeze-icons -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DICONS_LIBRARY=ON -DSKIP_INSTALL_ICONS=ON
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-breeze-icons -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S breeze-icons -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DICONS_LIBRARY=ON -DSKIP_INSTALL_ICONS=ON -DBUILD_TESTING=OFF
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-breeze-icons --config ${{ matrix.build_type }} --target install
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-breeze-icons --config ${{ matrix.build_type }} --target install
+
+      - name: Build KWidgetsAddons
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        continue-on-error: true
+        run: |
+          git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/kwidgetsaddons.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-kwidgetsaddons -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kwidgetsaddons -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-kwidgetsaddons --config ${{ matrix.build_type }} --target install
+
+      - name: Build KColorScheme
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        continue-on-error: true
+        run: |
+          git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/kcolorscheme.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-kcolorscheme -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kcolorscheme -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-kcolorscheme --config ${{ matrix.build_type }} --target install
+
+      - name: Build KIconThemes
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        continue-on-error: true
+        run: |
+          git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/kiconthemes.git
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-kiconthemes -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kiconthemes -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}-kiconthemes --config ${{ matrix.build_type }} --target install
 
       - name: Build Corrosion
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
@@ -235,7 +276,6 @@ jobs:
         run: |
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/intl-8.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/iconv.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
-          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/zlib.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/q6keychain.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6I18n.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6ConfigGui.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
@@ -245,10 +285,15 @@ jobs:
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libgcrypt-20.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6ConfigCore.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libgpg-error6-0.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
-          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/zlib.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/zlib1.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/z.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libwinpthread-1.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libcrypto-1_1-x64.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6BreezeIcons.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6IconThemes.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6ColorScheme.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6GuiAddons.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6WidgetsAddons.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
 
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/Kirigami.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiDelegates.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
@@ -256,6 +301,7 @@ jobs:
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiPrimitives.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiDialogs.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiLayouts.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiPrivate.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
 
           Copy-Item -Force -Recurse -Path ${{ steps.strings.outputs.prefix-dir }}\lib\qml\* -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/qml/
 
@@ -270,3 +316,27 @@ jobs:
         with:
           name: ${{ runner.os }}-package
           path: ${{ steps.strings.outputs.build-output-dir }}/bin
+
+  #build-flatpak:
+  #  runs-on: ubuntu-latest
+
+  #  steps:
+  #    - uses: actions/checkout@v4
+  #      with:
+  #        submodules: true
+
+  #    - name: Setup Linux dependencies
+  #      run: |
+  #        sudo apt-get update
+  #        sudo apt-get install \
+  #          flatpak-builder \
+
+  #    - name: Build Flatpak
+  #      run: |
+  #        ./scripts/build-flatpak.sh
+
+  #    - name: Archive artifacts
+  #      uses: actions/upload-artifact@v4
+  #      with:
+  #        name: flatpak
+  #        path: astra.flatpak
