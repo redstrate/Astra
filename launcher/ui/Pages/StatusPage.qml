@@ -58,35 +58,35 @@ Kirigami.Page {
     Connections {
         target: LauncherCore
 
-        function onStageChanged(message, explanation) {
-            placeholder.text = message
-            placeholder.explanation = explanation
+        function onStageChanged(message: string, explanation: string): void {
+            placeholder.text = message;
+            placeholder.explanation = explanation;
         }
 
-        function onStageIndeterminate() {
-            placeholder.determinate = false
+        function onStageIndeterminate(): void {
+            placeholder.determinate = false;
         }
 
-        function onStageDeterminate(min, max, value) {
-            placeholder.determinate = true
-            placeholder.progressBar.value = value
-            placeholder.progressBar.from = min
-            placeholder.progressBar.to = max
+        function onStageDeterminate(min: int, max: int, value: int): void {
+            placeholder.determinate = true;
+            placeholder.progressBar.value = value;
+            placeholder.progressBar.from = min;
+            placeholder.progressBar.to = max;
         }
 
-        function onLoginError(message) {
+        function onLoginError(message: string): void {
             errorDialog.title = i18n("Login Error");
             errorDialog.subtitle = message;
             errorDialog.open();
         }
 
-        function onMiscError(message) {
+        function onMiscError(message: string): void {
             errorDialog.title = i18n("Error");
             errorDialog.subtitle = message;
             errorDialog.open();
         }
 
-        function onDalamudError(message) {
+        function onDalamudError(message: string): void {
             dalamudErrorDialog.subtitle = i18n("An error occured while updating Dalamud:\n\n%1.\n\nWould you like to disable Dalamud?", message);
             dalamudErrorDialog.open();
         }

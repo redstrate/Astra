@@ -45,7 +45,7 @@ Kirigami.ApplicationWindow {
         close.accepted = !LauncherCore.isPatching();
     }
 
-    function checkSetup() {
+    function checkSetup(): void {
         if (!LauncherCore.loadingFinished) {
             return
         }
@@ -73,13 +73,13 @@ Kirigami.ApplicationWindow {
         }
     }
 
-    function cancelAutoLogin() {
+    function cancelAutoLogin(): void {
         pageStack.clear();
         pageStack.layers.clear();
         pageStack.push(Qt.createComponent("zone.xiv.astra", "MainPage"));
     }
 
-    function pushDialogLayer(url) {
+    function pushDialogLayer(url: string): void {
         if (LauncherCore.isSteamDeck) {
             pageStack.layers.push(url)
         } else {
@@ -87,7 +87,7 @@ Kirigami.ApplicationWindow {
         }
     }
 
-    function openUrl(url) {
+    function openUrl(url: string): void {
         if (LauncherCore.isSteamDeck) {
             appWindow.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "BrowserPage"), {
                 url: url
@@ -100,11 +100,11 @@ Kirigami.ApplicationWindow {
     Connections {
         target: LauncherCore
 
-        function onLoadingFinished() {
+        function onLoadingFinished(): void {
             appWindow.checkSetup();
         }
 
-        function onSuccessfulLaunch() {
+        function onSuccessfulLaunch(): void {
             if (LauncherCore.settings.closeWhenLaunched) {
                 appWindow.hide();
             } else {
@@ -112,17 +112,17 @@ Kirigami.ApplicationWindow {
             }
         }
 
-        function onGameClosed() {
+        function onGameClosed(): void {
             if (!LauncherCore.settings.closeWhenLaunched) {
                 appWindow.checkSetup();
             }
         }
 
-        function onCurrentProfileChanged() {
+        function onCurrentProfileChanged(): void {
             appWindow.checkSetup();
         }
 
-        function onShowWindow() {
+        function onShowWindow(): void {
             appWindow.show();
         }
     }
@@ -130,7 +130,7 @@ Kirigami.ApplicationWindow {
     Connections {
         target: LauncherCore.settings
 
-        function onShowNewsChanged() {
+        function onShowNewsChanged(): void {
             // workaround annoying Qt layout bug
             // TODO: see if this changed in Qt7
             appWindow.pageStack.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))

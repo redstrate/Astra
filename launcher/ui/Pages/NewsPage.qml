@@ -29,7 +29,7 @@ QQC2.Control {
     Connections {
         target: LauncherCore
 
-        function onNewsChanged() {
+        function onNewsChanged(): void {
             page.currentBannerIndex = 0
             page.numBannerImages = LauncherCore.headline.banners.length
         }

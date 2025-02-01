@@ -70,11 +70,11 @@ FormCard.FormCardPage {
         enabled: page.installer !== null
         target: page.installer
 
-        function onInstallFinished() {
-            applicationWindow().pageStack.layers.pop()
+        function onInstallFinished(): void {
+            applicationWindow().pageStack.layers.pop();
         }
 
-        function onError(message) {
+        function onError(message: string): void {
             page.errorDialog.subtitle = message;
             page.errorDialog.open();
         }

@@ -38,12 +38,12 @@ Kirigami.Page {
     Connections {
         target: page.benchmarkInstaller
 
-        function onInstallFinished() {
+        function onInstallFinished(): void {
             // Prevents it from failing to push the page if the install happens too quickly.
             Qt.callLater(() => applicationWindow().checkSetup());
         }
 
-        function onError(message) {
+        function onError(message: string): void {
             errorDialog.subtitle = i18n("An error has occurred while installing the benchmark:\n\n%1", message);
             errorDialog.open();
         }

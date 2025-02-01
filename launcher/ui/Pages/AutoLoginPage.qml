@@ -60,9 +60,9 @@ Kirigami.Page {
     Connections {
         target: LauncherCore
 
-        function onLoginError(message) {
-            errorDialog.subtitle = message
-            errorDialog.open()
+        function onLoginError(message: string): void {
+            errorDialog.subtitle = message;
+            errorDialog.open();
         }
     }
 }

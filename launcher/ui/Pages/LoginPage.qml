@@ -62,7 +62,7 @@ QQC2.Control {
         return !LauncherCore.currentProfile.loggedIn;
     }
 
-    function updateFields() {
+    function updateFields(): void {
         usernameField.text = LauncherCore.currentProfile.account.name;
         passwordField.text = !LauncherCore.currentProfile.account.needsPassword && LauncherCore.currentProfile.account.rememberPassword ? LauncherCore.currentProfile.account.getPassword() : "";
         if (LauncherCore.currentProfile.account.rememberOTP) {
@@ -75,7 +75,7 @@ QQC2.Control {
     Connections {
         target: LauncherCore.currentProfile
 
-        function onAccountChanged() {
+        function onAccountChanged(): void {
             page.updateFields();
 
             if (LauncherCore.currentProfile.account.needsPassword) {
