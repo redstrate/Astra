@@ -71,6 +71,7 @@ jobs:
             gettext \
             gamemode-dev \
             libunshield-dev \
+            libsecret-1-dev
 
       - name: Cache Prefix
         id: cache-prefix-restore
