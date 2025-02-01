@@ -322,21 +322,23 @@ QQC2.Control {
 
             Layout.alignment: Qt.AlignBottom
 
-            FormCard.FormButtonDelegate {
+            FormCard.FormLinkDelegate {
                 text: i18nc("@action:button", "The Lodestone")
                 icon.name: "internet-services-symbolic"
                 visible: !LauncherCore.currentProfile.account.isSapphire
                 // TODO: how do we link to a "worldwide" lodestone, if that even exists?
-                onClicked: applicationWindow().openUrl('https://na.finalfantasyxiv.com/lodestone/')
+                url: 'https://na.finalfantasyxiv.com/lodestone/'
+                onClicked: applicationWindow().openUrl(url)
             }
 
             FormCard.FormDelegateSeparator {}
 
-            FormCard.FormButtonDelegate {
+            FormCard.FormLinkDelegate {
                 text: i18nc("@action:button", "Mog Station")
                 icon.name: "internet-services-symbolic"
                 visible: !LauncherCore.currentProfile.account.isSapphire
-                onClicked: applicationWindow().openUrl('https://secure.square-enix.com/account/app/svc/mogstation/')
+                url: 'https://secure.square-enix.com/account/app/svc/mogstation/'
+                onClicked: applicationWindow().openUrl(url)
             }
         }
     }
