@@ -2,12 +2,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import QtQuick
+import QtQuick.Window
 
 import org.kde.kirigami as Kirigami
 
 import zone.xiv.astra
 
 Kirigami.Page {
+    id: root
+
     property var gameInstaller
 
     title: i18n("Logging in...")
@@ -34,8 +37,8 @@ Kirigami.Page {
         showCloseButton: false
         standardButtons: Kirigami.Dialog.Ok
 
-        onAccepted: applicationWindow().pageStack.layers.pop()
-        onRejected: applicationWindow().pageStack.layers.pop()
+        onAccepted: applicationWindow().checkSetup()
+        onRejected: applicationWindow().checkSetup()
     }
 
     Kirigami.PromptDialog {
@@ -47,9 +50,9 @@ Kirigami.Page {
 
         onAccepted: {
             LauncherCore.currentProfile.dalamudEnabled = false;
-            applicationWindow().pageStack.layers.pop()
+            applicationWindow().checkSetup();
         }
-        onRejected: applicationWindow().pageStack.layers.pop()
+        onRejected: applicationWindow().checkSetup()
     }
 
     Connections {

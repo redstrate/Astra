@@ -393,6 +393,7 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
                 std::string bodyStd = body.toStdString();
                 const bool hasPatched = co_await m_patcher->patch(physis_parse_patchlist(PatchListType::Game, bodyStd.c_str()));
                 m_patcher->deleteLater();
+                qInfo() << hasPatched;
                 if (!hasPatched) {
                     co_return false;
                 }
