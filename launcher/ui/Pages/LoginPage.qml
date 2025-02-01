@@ -106,6 +106,7 @@ QQC2.Control {
             source: "file://" + LauncherCore.cachedLogoImage
             verticalAlignment: Image.AlignTop
             sourceClipRect: Qt.rect(0, sourceSize.height / 2, sourceSize.width, sourceSize.height / 2)
+            mipmap: true
 
             Component.onCompleted: LauncherCore.refreshLogoImage()
             Layout.preferredWidth: parent.width
