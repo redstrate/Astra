@@ -39,7 +39,7 @@ KirigamiSettings.CategorizedSettings {
         KirigamiSettings.SettingAction {
             actionName: "profiles"
             text: i18n("Profiles")
-            icon.name: "preferences-desktop-gaming-symbolic"
+            icon.name: "applications-games-symbolic"
             page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/ProfilesPage.qml")
         },
         KirigamiSettings.SettingAction {
