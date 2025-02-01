@@ -127,15 +127,5 @@ Kirigami.ApplicationWindow {
         }
     }
 
-    Connections {
-        target: LauncherCore.settings
-
-        function onShowNewsChanged(): void {
-            // workaround annoying Qt layout bug
-            // TODO: see if this changed in Qt7
-            appWindow.pageStack.replace(Qt.createComponent("zone.xiv.astra", "MainPage"))
-        }
-    }
-
     Component.onCompleted: checkSetup()
 }

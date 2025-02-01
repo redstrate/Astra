@@ -23,20 +23,6 @@ void LauncherSettings::setCloseWhenLaunched(const bool value)
     }
 }
 
-bool LauncherSettings::showNews() const
-{
-    return m_config->showNews();
-}
-
-void LauncherSettings::setShowNews(const bool value)
-{
-    if (value != m_config->showNews()) {
-        m_config->setShowNews(value);
-        m_config->save();
-        Q_EMIT showNewsChanged();
-    }
-}
-
 bool LauncherSettings::showDevTools() const
 {
     return m_config->showDevTools();

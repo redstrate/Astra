@@ -13,9 +13,6 @@ SPDX-License-Identifier: CC0-1.0
     <entry name="CloseWhenLaunched" type="bool">
       <default>true</default>
     </entry>
-    <entry name="ShowNews" type="bool">
-      <default>true</default>
-    </entry>
     <entry name="AutoLogin" type="string">
     </entry>
     <entry name="ShowDevTools" type="bool">

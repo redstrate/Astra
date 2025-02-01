@@ -31,24 +31,6 @@ FormCard.FormCardPage {
 
         FormCard.FormDelegateSeparator {
             above: closeAstraDelegate
-            below: showNewsDelegate
-        }
-
-        FormCard.FormCheckDelegate {
-            id: showNewsDelegate
-
-            text: i18n("Enable and show news")
-            checked: LauncherCore.settings.showNews
-            onCheckedChanged: {
-                LauncherCore.settings.showNews = checked;
-                if (page.Window.window !== null) {
-                    page.Window.window.close(); // if we don't close the dialog it crashes!
-                }
-            }
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: showNewsDelegate
             below: showDevToolsDelegate
         }
 

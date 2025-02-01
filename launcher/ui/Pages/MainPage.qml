@@ -41,8 +41,7 @@ Kirigami.Page {
             id: loginPage
 
             Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-            Layout.minimumWidth: LauncherCore.settings.showNews ? Kirigami.Units.gridUnit * 26 : 0
-            Layout.fillWidth: !LauncherCore.settings.showNews
+            Layout.minimumWidth: Kirigami.Units.gridUnit * 26
             Layout.topMargin: Kirigami.Units.largeSpacing
             Layout.fillHeight: true
         }
@@ -52,8 +51,6 @@ Kirigami.Page {
         }
 
         Loader {
-            active: LauncherCore.settings.showNews
-
             Layout.fillWidth: true
             Layout.fillHeight: true
 
