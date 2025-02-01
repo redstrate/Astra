@@ -37,6 +37,10 @@ modules:
     cleanup:
       - /lib/debug
   - name: unshield
+    cleanup:
+      - /bin
+      - /include
+      - /lib/pkgconfig
     buildsystem: cmake-ninja
     sources:
       - type: git
@@ -45,6 +49,8 @@ modules:
   - name: libsecret
     cleanup:
       - /bin
+      - /include
+      - /lib/pkgconfig
     config-opts:
       - -Dmanpage=false
       - -Dvapi=false
