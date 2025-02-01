@@ -50,11 +50,10 @@ jobs:
           submodules: true
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: "${{ env.QT_VERSION }}.*"
           cache: true
-          modules: 'qtshadertools'
 
       - name: Set reusable strings
         id: strings
