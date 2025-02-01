@@ -39,18 +39,18 @@ KirigamiSettings.CategorizedSettings {
         KirigamiSettings.SettingAction {
             actionName: "profiles"
             text: i18n("Profiles")
-            icon.name: "preferences-desktop-gaming"
+            icon.name: "preferences-desktop-gaming-symbolic"
             page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/ProfilesPage.qml")
         },
         KirigamiSettings.SettingAction {
             actionName: "accounts"
             text: i18n("Accounts")
-            icon.name: "preferences-system-users"
+            icon.name: "preferences-system-users-symbolic"
             page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/AccountsPage.qml")
         },
         KirigamiSettings.SettingAction {
             actionName: "sync"
-            text: i18n("Sync")
+            text: i18n("Synchronization")
             icon.name: "state-sync-symbolic"
             page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/SyncSettings.qml")
             visible: LauncherCore.supportsSync()
@@ -58,21 +58,21 @@ KirigamiSettings.CategorizedSettings {
         KirigamiSettings.SettingAction {
             actionName: "compattool"
             text: i18n("Compatibility Tool")
-            icon.name: "system-run"
+            icon.name: "system-run-symbolic"
             page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/CompatibilityToolSetup.qml")
             visible: !LauncherCore.isWindows
         },
         KirigamiSettings.SettingAction {
             actionName: "devtool"
             text: i18n("Developer Settings")
-            icon.name: "preferences-others"
+            icon.name: "preferences-others-symbolic"
             page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/DeveloperSettings.qml")
             visible: LauncherCore.settings.showDevTools
         },
         KirigamiSettings.SettingAction {
             actionName: "about"
             text: i18n("About Astra")
-            icon.name: "help-about"
+            icon.name: "help-about-symbolic"
             page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/AboutPage.qml")
         }
     ]
