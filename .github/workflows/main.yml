@@ -9,9 +9,9 @@ on:
 env:
   CMAKE_BUILD_PARALLEL_LEVEL: 2
   MAKEFLAGS: '-j 2'
-  QT_VERSION: 6.6 # Keep in sync with CMakeLists.txt
-  KF_VERSION: v6.4.0 # Ditto
-  KIRIGAMI_ADDONS_VERSION: v1.2.1 # Ditto x2
+  QT_VERSION: 6.8 # Keep in sync with CMakeLists.txt
+  KF_VERSION: v6.10.0 # Ditto
+  KIRIGAMI_ADDONS_VERSION: v1.7.0 # Ditto x2
 
 jobs:
   reuse:
