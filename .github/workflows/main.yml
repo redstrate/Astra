@@ -9,7 +9,7 @@ on:
 env:
   CMAKE_BUILD_PARALLEL_LEVEL: 2
   MAKEFLAGS: '-j 2'
-  QT_VERSION: 6.8 # Keep in sync with CMakeLists.txt
+  QT_VERSION: 6.8.1 # Keep in sync with CMakeLists.txt
   KF_VERSION: v6.10.0 # Ditto
   KIRIGAMI_ADDONS_VERSION: v1.7.0 # Ditto x2
 
@@ -52,7 +52,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version: "${{ env.QT_VERSION }}.*"
+          version: "${{ env.QT_VERSION }}"
           cache: true
 
       - name: Set reusable strings
