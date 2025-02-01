@@ -19,7 +19,7 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(QT_MIN_VERSION 6.7)
+set(QT_MIN_VERSION 6.8)
 set(KF_MIN_VERSION 6.10)
 
 find_package(ECM ${KF_MIN_VERSION} REQUIRED NO_MODULE)
@@ -64,6 +64,7 @@ if (BUILD_SYNC)
 endif()
 
 qt_policy(SET QTP0001 NEW)
+qt_policy(SET QTP0004 NEW)
 
 if (ENABLE_GAMEMODE)
     find_package(PkgConfig REQUIRED)
