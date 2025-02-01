@@ -35,7 +35,7 @@ FormCard.FormCardPage {
     ]
 
     FormCard.FormCard {
-        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.topMargin: Kirigami.Units.largeSpacing * 4
         visible: repeater.count !== 0
 
         Repeater {

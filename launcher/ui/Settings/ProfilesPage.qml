@@ -31,7 +31,7 @@ FormCard.FormCardPage {
 
     FormCard.FormCard {
         Layout.fillWidth: true
-        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.topMargin: Kirigami.Units.largeSpacing * 4
 
         FormCard.FormButtonDelegate {
             text: i18n("Auto-login Profile")

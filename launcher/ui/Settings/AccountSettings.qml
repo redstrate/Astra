@@ -61,7 +61,7 @@ FormCard.FormCardPage {
         visible: generalAction.checked
 
         Layout.fillWidth: true
-        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.topMargin: Kirigami.Units.largeSpacing * 4
 
         FormCard.FormTextFieldDelegate {
             id: usernameDelegate
@@ -105,7 +105,7 @@ FormCard.FormCardPage {
         visible: accountAction.checked && !page.account.isSapphire
 
         Layout.fillWidth: true
-        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.topMargin: Kirigami.Units.largeSpacing * 4
 
         FormCard.FormComboBoxDelegate {
             id: licenseField
@@ -178,7 +178,7 @@ FormCard.FormCardPage {
         visible: accountAction.checked && page.account.isSapphire
 
         Layout.fillWidth: true
-        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.topMargin: Kirigami.Units.largeSpacing * 4
 
         FormCard.FormTextFieldDelegate {
             id: lobbyURLDelegate
@@ -195,7 +195,7 @@ FormCard.FormCardPage {
         visible: loginAction.checked
 
         Layout.fillWidth: true
-        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.topMargin: Kirigami.Units.largeSpacing * 4
 
         FormCard.FormCheckDelegate {
             id: rememberPasswordDelegate

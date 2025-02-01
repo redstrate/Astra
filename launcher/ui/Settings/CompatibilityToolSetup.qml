@@ -18,7 +18,7 @@ FormCard.FormCardPage {
 
     FormCard.FormCard {
         Layout.fillWidth: true
-        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.topMargin: Kirigami.Units.largeSpacing * 4
 
         FormCard.FormTextDelegate {
             text: i18n("Press the button below to install the compatibility tool for Steam.")

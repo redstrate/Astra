@@ -62,7 +62,7 @@ FormCard.FormCardPage {
         visible: generalAction.checked
 
         Layout.fillWidth: true
-        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.topMargin: Kirigami.Units.largeSpacing * 4
 
         FormCard.FormTextFieldDelegate {
             id: nameDelegate
@@ -115,7 +115,7 @@ FormCard.FormCardPage {
         visible: wineAction.checked
 
         Layout.fillWidth: true
-        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.topMargin: Kirigami.Units.largeSpacing * 4
 
         FormCard.FormComboBoxDelegate {
             id: wineTypeDelegate
@@ -166,7 +166,7 @@ FormCard.FormCardPage {
         visible: toolsAction.checked
 
         Layout.fillWidth: true
-        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.topMargin: Kirigami.Units.largeSpacing * 4
 
         FormCard.FormCheckDelegate {
             text: i18n("Enable Gamescope")
@@ -236,7 +236,7 @@ FormCard.FormCardPage {
         visible: dalamudAction.checked
 
         Layout.fillWidth: true
-        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.topMargin: Kirigami.Units.largeSpacing * 4
 
         FormCard.FormCheckDelegate {
             id: enableDalamudDelegate
