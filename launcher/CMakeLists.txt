@@ -194,12 +194,6 @@ if (BUILD_WEBVIEW)
 endif ()
 
 if (WIN32)
-    target_link_libraries(astra PRIVATE
-            KF6::BreezeIcons
-    )
-endif ()
-
-if (WIN32)
     set_target_properties(astra PROPERTIES
             WIN32_EXECUTABLE TRUE
             OUTPUT_NAME "Astra")

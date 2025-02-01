@@ -20,11 +20,6 @@
 #include "physis_logger.h"
 #include "utility.h"
 
-#ifdef Q_OS_WIN
-#include <BreezeIcons/BreezeIcons>
-#include <QIcon>
-#endif
-
 using namespace Qt::StringLiterals;
 
 int main(int argc, char *argv[])

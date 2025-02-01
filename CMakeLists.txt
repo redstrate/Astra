@@ -73,11 +73,6 @@ endif ()
 
 find_package(Qt6Keychain REQUIRED)
 
-# TODO: we should really do this on all platforms anyway
-if (WIN32)
-    find_package(KF6BreezeIcons REQUIRED)
-endif ()
-
 add_subdirectory(external)
 add_subdirectory(launcher)
 
