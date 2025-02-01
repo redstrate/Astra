@@ -276,7 +276,6 @@ jobs:
         run: |
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/intl-8.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/iconv.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
-          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/zlib.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/q6keychain.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6I18n.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6ConfigGui.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
@@ -287,6 +286,7 @@ jobs:
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6ConfigCore.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libgpg-error6-0.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/zlib1.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/z.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libwinpthread-1.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libcrypto-1_1-x64.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6BreezeIcons.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
