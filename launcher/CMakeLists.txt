@@ -122,6 +122,7 @@ if (BUILD_SYNC)
     target_link_libraries(astra_static PRIVATE QuotientQt6)
 endif ()
 
+# For screensaver inhibition on Linux
 if (TARGET Qt6::DBus)
     target_link_libraries(astra_static PRIVATE Qt6::DBus)
     target_compile_definitions(astra_static PRIVATE -DHAS_DBUS)
