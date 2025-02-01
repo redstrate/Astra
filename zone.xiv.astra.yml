@@ -127,6 +127,8 @@ modules:
       - -DRust_COMPILER=/usr/lib/sdk/rust-stable/bin/rustc
       - -DENABLE_GAMEMODE=OFF
       - -DBUILD_FLATPAK=ON
+      - -DCMAKE_INSTALL_LIBDIR=/app/lib
+      - -DLIB_INSTALL_DIR=/app/lib
     build-options:
       build-args:
         - --share=network # needed for cargo unfortunately, flatpak has no native support (yet)
