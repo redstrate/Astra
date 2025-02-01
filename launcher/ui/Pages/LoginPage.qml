@@ -227,10 +227,9 @@ QQC2.Control {
                 below: passwordField
             }
 
-            FormCard.FormTextFieldDelegate {
+            FormCard.FormPasswordFieldDelegate {
                 id: passwordField
                 label: LauncherCore.currentProfile.account.isSapphire ? i18n("Password") : i18n("Square Enix Password")
-                echoMode: TextInput.Password
                 focus: true
                 onAccepted: {
                     if (otpField.visible) {
