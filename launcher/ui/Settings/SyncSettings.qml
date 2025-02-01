@@ -64,11 +64,10 @@ FormCard.FormCardPage {
             below: passwordDelegate
         }
 
-        FormCard.FormTextFieldDelegate {
+        FormCard.FormPasswordFieldDelegate {
             id: passwordDelegate
 
             label: i18n("Password:")
-            echoMode: TextInput.Password
         }
 
         FormCard.FormDelegateSeparator {
