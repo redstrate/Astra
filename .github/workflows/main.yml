@@ -311,3 +311,21 @@ jobs:
         with:
           name: ${{ runner.os }}-package
           path: ${{ steps.strings.outputs.build-output-dir }}/bin
+
+  build-flatpak:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install \
+            flatpak-builder \
+
+      - name: Build Flatpak
+        run: |
+          ./scripts/build-flatpak.sh
