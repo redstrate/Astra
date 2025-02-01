@@ -290,6 +290,7 @@ jobs:
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libwinpthread-1.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libcrypto-1_1-x64.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6BreezeIcons.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6IconThemes.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
 
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/Kirigami.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiDelegates.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
