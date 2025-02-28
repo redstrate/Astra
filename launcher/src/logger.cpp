@@ -90,6 +90,9 @@ Q_GLOBAL_STATIC(Logger, logger)
 
 void handler(const QtMsgType type, const QMessageLogContext &context, const QString &message)
 {
+    if (!logger.exists()) {
+        return;
+    }
     switch (type) {
     case QtDebugMsg:
     case QtInfoMsg:
