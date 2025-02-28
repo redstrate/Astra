@@ -60,7 +60,8 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
     if (neededSpace > 0) {
         KFormat format;
         QString neededSpaceStr = format.formatByteSize(neededSpace);
-        Q_EMIT m_launcher.miscError(i18n("There is not enough space available on disk to update the game. You need %1 of free space.", neededSpaceStr));
+        Q_EMIT m_launcher.miscError(
+            i18n("There isn't enough space available on disk to update the game. You need %1 more of free space to continue.", neededSpaceStr));
         co_return false;
     }
 
@@ -81,7 +82,8 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
     if (neededInstallSpace > 0) {
         KFormat format;
         QString neededSpaceStr = format.formatByteSize(neededInstallSpace);
-        Q_EMIT m_launcher.miscError(i18n("There is not enough space available on disk to update the game. You need %1 of free space.", neededSpaceStr));
+        Q_EMIT m_launcher.miscError(
+            i18n("There is not enough space available on disk to update the game. You need %1 more of free space to continue.", neededSpaceStr));
         co_return false;
     }
 
