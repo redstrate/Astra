@@ -49,7 +49,8 @@ struct LoginAuth {
     int maxExpansion = 1;
 
     // if empty, don't set on the client
-    QString lobbyhost, frontierHost;
+    QString lobbyHost, frontierHost;
+    int lobbyHostPort;
 };
 
 class LauncherCore : public QObject

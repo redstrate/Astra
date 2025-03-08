@@ -26,6 +26,8 @@ class LauncherSettings : public QObject
     Q_PROPERTY(bool argumentsEncrypted READ argumentsEncrypted WRITE setArgumentsEncrypted NOTIFY encryptedArgumentsChanged)
     Q_PROPERTY(bool enableRenderDocCapture READ enableRenderDocCapture WRITE setEnableRenderDocCapture NOTIFY enableRenderDocCaptureChanged)
     Q_PROPERTY(bool enableSync READ enableSync WRITE setEnableSync NOTIFY enableSyncChanged)
+    Q_PROPERTY(QString customGameServer READ customGameServer WRITE setCustomGameServer NOTIFY customGameServerChanged)
+    Q_PROPERTY(int customGameServerPort READ customGameServerPort WRITE setCustomGameServerPort NOTIFY customGameServerPortChanged)
 
 public:
     explicit LauncherSettings(QObject *parent = nullptr);
@@ -74,6 +76,12 @@ public:
     [[nodiscard]] bool enableSync() const;
     void setEnableSync(bool enabled);
 
+    [[nodiscard]] QString customGameServer() const;
+    void setCustomGameServer(const QString &value);
+
+    [[nodiscard]] int customGameServerPort() const;
+    void setCustomGameServerPort(int port);
+
     Config *config();
 
 Q_SIGNALS:
@@ -89,6 +97,8 @@ Q_SIGNALS:
     void encryptedArgumentsChanged();
     void enableRenderDocCaptureChanged();
     void enableSyncChanged();
+    void customGameServerChanged();
+    void customGameServerPortChanged();
 
 private:
     Config *m_config = nullptr;

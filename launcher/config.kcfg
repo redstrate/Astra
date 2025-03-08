@@ -54,5 +54,11 @@ SPDX-License-Identifier: CC0-1.0
     <entry key="EnableRenderDocCapture" type="bool">
       <default>false</default>
     </entry>
+    <entry name="CustomGameServer" type="String">
+      <default></default>
+    </entry>
+    <entry name="CustomGameServerPort" type="int">
+      <default>7000</default>
+    </entry>
   </group>
 </kcfg>

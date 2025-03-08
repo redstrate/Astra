@@ -180,5 +180,33 @@ FormCard.FormCardPage {
             text: LauncherCore.settings.mainServer
             onTextChanged: LauncherCore.settings.mainServer = text
         }
+
+        FormCard.FormDelegateSeparator {
+            above: mainServerDelegate
+            below: gameServerDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: gameServerDelegate
+
+            label: i18n("Game Server (leave blank for default)")
+            text: LauncherCore.settings.customGameServer
+            onTextChanged: LauncherCore.settings.customGameServer = text
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: gameServerDelegate
+            below: gameServerPortDelegate
+        }
+
+        FormCard.FormSpinBoxDelegate {
+            id: gameServerPortDelegate
+
+            label: i18n("Game Server Port")
+            value: LauncherCore.settings.customGameServerPort
+            onValueChanged: LauncherCore.settings.customGameServerPort = value
+            from: 1
+            to: 999999
+        }
     }
 }

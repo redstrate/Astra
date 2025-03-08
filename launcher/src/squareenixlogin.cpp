@@ -71,6 +71,13 @@ QCoro::Task<std::optional<LoginAuth>> SquareEnixLogin::login(LoginInformation *i
         co_return std::nullopt;
     }
 
+    // Inject custom game server if set
+    if (!m_launcher.settings()->customGameServer().isEmpty()) {
+        m_auth.frontierHost = m_launcher.settings()->customGameServer();
+        m_auth.lobbyHost = m_launcher.settings()->customGameServer();
+        m_auth.lobbyHostPort = m_launcher.settings()->customGameServerPort();
+    }
+
     co_return m_auth;
 }
 

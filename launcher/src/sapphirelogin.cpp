@@ -40,8 +40,9 @@ QCoro::Task<std::optional<LoginAuth>> SapphireLogin::login(const QString &lobbyU
     if (!document.isEmpty()) {
         LoginAuth auth;
         auth.SID = document["sId"_L1].toString();
-        auth.lobbyhost = document["lobbyHost"_L1].toString();
+        auth.lobbyHost = document["lobbyHost"_L1].toString();
         auth.frontierHost = document["frontierHost"_L1].toString();
+        auth.lobbyHostPort = 54994; // TODO: where did this come from?
         auth.region = 3;
 
         co_return auth;
@@ -67,7 +68,7 @@ void SapphireLogin::registerAccount(const QString &lobbyUrl, const LoginInformat
 
         LoginAuth auth;
         auth.SID = document["sId"_L1].toString();
-        auth.lobbyhost = document["lobbyHost"_L1].toString();
+        auth.lobbyHost = document["lobbyHost"_L1].toString();
         auth.frontierHost = document["frontierHost"_L1].toString();
         auth.region = 3;
 

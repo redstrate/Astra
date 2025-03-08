@@ -228,11 +228,11 @@ QString GameRunner::getGameArgs(const Profile &profile, const std::optional<Logi
         Utility::createPathIfNeeded(profile.winePrefixPath());
 
     if (auth) {
-        if (!auth->lobbyhost.isEmpty()) {
+        if (!auth->lobbyHost.isEmpty()) {
             gameArgs.push_back({QStringLiteral("DEV.GMServerHost"), auth->frontierHost});
             for (int i = 1; i < 9; i++) {
-                gameArgs.push_back({QStringLiteral("DEV.LobbyHost0%1").arg(QString::number(i)), auth->lobbyhost});
-                gameArgs.push_back({QStringLiteral("DEV.LobbyPort0%1").arg(QString::number(i)), QString::number(54994)});
+                gameArgs.push_back({QStringLiteral("DEV.LobbyHost0%1").arg(QString::number(i)), auth->lobbyHost});
+                gameArgs.push_back({QStringLiteral("DEV.LobbyPort0%1").arg(QString::number(i)), QString::number(auth->lobbyHostPort)});
             }
         }
 

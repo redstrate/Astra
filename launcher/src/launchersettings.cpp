@@ -214,6 +214,34 @@ void LauncherSettings::setEnableSync(const bool enabled)
     }
 }
 
+QString LauncherSettings::customGameServer() const
+{
+    return m_config->customGameServer();
+}
+
+void LauncherSettings::setCustomGameServer(const QString &value)
+{
+    if (m_config->customGameServer() != value) {
+        m_config->setCustomGameServer(value);
+        m_config->save();
+        Q_EMIT customGameServerChanged();
+    }
+}
+
+int LauncherSettings::customGameServerPort() const
+{
+    return m_config->customGameServerPort();
+}
+
+void LauncherSettings::setCustomGameServerPort(const int port)
+{
+    if (m_config->customGameServerPort() != port) {
+        m_config->setCustomGameServerPort(port);
+        m_config->save();
+        Q_EMIT customGameServerPortChanged();
+    }
+}
+
 Config *LauncherSettings::config()
 {
     return m_config;
