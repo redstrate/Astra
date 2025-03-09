@@ -536,7 +536,7 @@ QCoro::Task<> LauncherCore::fetchNews()
     const auto bannerDocument = QJsonDocument::fromJson(bannerReply->readAll());
 
     const auto headline = new Headline(this);
-    if (document.isEmpty() || bannerDocument.isEmpty()) {
+    if (document.isEmpty() && bannerDocument.isEmpty()) {
         headline->failedToLoad = true;
     } else {
         const auto parseNews = [](QJsonObject object) -> News {
