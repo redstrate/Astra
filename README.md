@@ -27,8 +27,7 @@ Please refer to the [building document](BUILDING.md) for instructions on how to 
 
 ## Contributing & Support
 
-The best way you can help is by [monetarily supporting me](https://redstrate.com/fund/) or by submitting patches to
-help fix bugs or add functionality. Filing issues is appreciated, but I do this in my free time so please don't expect professional support.
+Submitting patches to help fix bugs or add functionality is always appreciated. Filing issues is good too, but I do this in my free time so please don't expect professional support.
 
 Please refer to the [contributing document](CONTRIBUTING.md) for everything you need to know to get started contributing to Astra.
 
