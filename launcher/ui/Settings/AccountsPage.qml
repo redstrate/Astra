@@ -52,12 +52,12 @@ FormCard.FormCardPage {
                 spacing: 0
 
                 FormCard.FormButtonDelegate {
-                    text: layout.account.name
-                    description: layout.account.isSapphire ? i18n("Sapphire") : i18n("Square Enix")
+                    text: layout.account.config.name
+                    description: layout.account.config.isSapphire ? i18n("Sapphire") : i18n("Square Enix")
 
                     leading: Components.Avatar
                     {
-                        name: layout.account.name
+                        name: layout.account.config.name
                         source: layout.account.avatarUrl
                     }
 

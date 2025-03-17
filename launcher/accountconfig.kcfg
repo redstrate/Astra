@@ -11,6 +11,7 @@ SPDX-License-Identifier: CC0-1.0
     <kcfgfile name="astrastaterc" stateConfig="true">
       <parameter name="uuid"/>
     </kcfgfile>
+    <include>account.h</include>
     <group name="account-$(uuid)">
       <entry key="Name" type="string">
       </entry>
@@ -50,7 +51,7 @@ SPDX-License-Identifier: CC0-1.0
       <default>false</default>
       </entry>
       <entry name="License" type="Enum">
-        <choices>
+        <choices name="Account::GameLicense">
           <choice name="WindowsStandalone">
           </choice>
           <choice name="WindowsSteam">

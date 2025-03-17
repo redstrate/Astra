@@ -7,6 +7,7 @@
 #include <gamemode_client.h>
 #endif
 
+#include "accountconfig.h"
 #include "astra_log.h"
 #include "encryptedarg.h"
 #include "launchercore.h"
@@ -156,7 +157,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
                       QStringLiteral("--dalamud-configuration-path=") + Utility::toWindowsPath(dalamudConfigPath),
                       QStringLiteral("--dalamud-plugin-directory=") + Utility::toWindowsPath(dalamudPluginDir),
                       QStringLiteral("--dalamud-asset-directory=") + Utility::toWindowsPath(dalamudAssetDir),
-                      QStringLiteral("--dalamud-client-language=") + QString::number(profile.account()->language()),
+                      QStringLiteral("--dalamud-client-language=") + QString::number(profile.account()->config()->language()),
                       QStringLiteral("--dalamud-delay-initialize=") + QString::number(profile.dalamudInjectDelay()),
                       QStringLiteral("--logpath=") + Utility::toWindowsPath(logDir),
                       QStringLiteral("--"),
@@ -206,7 +207,7 @@ QString GameRunner::getGameArgs(const Profile &profile, const std::optional<Logi
         gameArgs.push_back({QStringLiteral("DEV.UseSqPack"), QString::number(1)});
         gameArgs.push_back({QStringLiteral("ver"), profile.baseGameVersion()});
         gameArgs.push_back({QStringLiteral("resetconfig"), QStringLiteral("0")});
-        gameArgs.push_back({QStringLiteral("language"), QString::number(profile.account()->language())});
+        gameArgs.push_back({QStringLiteral("language"), QString::number(profile.account()->config()->language())});
         gameArgs.push_back({QStringLiteral("UserPath"), Utility::toWindowsPath(profile.account()->getConfigDir().absolutePath())});
 
         Utility::createPathIfNeeded(profile.account()->getConfigDir().absolutePath());
@@ -236,7 +237,7 @@ QString GameRunner::getGameArgs(const Profile &profile, const std::optional<Logi
             }
         }
 
-        if (profile.account()->license() == Account::GameLicense::WindowsSteam) {
+        if (profile.account()->config()->license() == Account::GameLicense::WindowsSteam) {
             gameArgs.push_back({QStringLiteral("IsSteam"), QString::number(1)});
         }
     }
@@ -260,7 +261,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
         // FFXIV detects this as a "macOS" build by checking if Wine shows up
         if (!profile.isBenchmark()) {
-            const int value = profile.account()->license() == Account::GameLicense::macOS ? 0 : 1;
+            const int value = profile.account()->config()->license() == Account::GameLicense::macOS ? 0 : 1;
             addRegistryKey(profile, QStringLiteral("HKEY_CURRENT_USER\\Software\\Wine"), QStringLiteral("HideWineExports"), QString::number(value));
         }
 
@@ -348,7 +349,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     arguments.push_back(profile.winePath());
 #endif
 
-    if (!profile.isBenchmark() && profile.account()->license() == Account::GameLicense::WindowsSteam) {
+    if (!profile.isBenchmark() && profile.account()->config()->license() == Account::GameLicense::WindowsSteam) {
         env.insert(QStringLiteral("IS_FFXIV_LAUNCH_FROM_STEAM"), QStringLiteral("1"));
     }
 

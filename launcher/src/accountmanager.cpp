@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "accountmanager.h"
+#include "accountconfig.h"
 #include "astra_log.h"
 
 #include <KSharedConfig>
@@ -57,10 +58,10 @@ QHash<int, QByteArray> AccountManager::roleNames() const
 Account *AccountManager::createSquareEnixAccount(const QString &username, const int licenseType, const bool isFreeTrial)
 {
     const auto account = new Account(QUuid::createUuid().toString(), this);
-    account->setIsSapphire(false);
-    account->setLicense(static_cast<Account::GameLicense>(licenseType));
-    account->setIsFreeTrial(isFreeTrial);
-    account->setName(username);
+    account->config()->setIsSapphire(false);
+    account->config()->setLicense(static_cast<Account::GameLicense>(licenseType));
+    account->config()->setIsFreeTrial(isFreeTrial);
+    account->config()->setName(username);
 
     insertAccount(account);
 
@@ -70,9 +71,9 @@ Account *AccountManager::createSquareEnixAccount(const QString &username, const 
 Account *AccountManager::createSapphireAccount(const QString &lobbyUrl, const QString &username)
 {
     const auto account = new Account(QUuid::createUuid().toString(), this);
-    account->setIsSapphire(true);
-    account->setName(username);
-    account->setLobbyUrl(lobbyUrl);
+    account->config()->setIsSapphire(true);
+    account->config()->setName(username);
+    account->config()->setLobbyUrl(lobbyUrl);
 
     insertAccount(account);
 

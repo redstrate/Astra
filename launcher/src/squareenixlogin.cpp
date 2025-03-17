@@ -14,6 +14,7 @@
 #include <qcoronetworkreply.h>
 
 #include "account.h"
+#include "accountconfig.h"
 #include "astra_log.h"
 #include "launchercore.h"
 #include "utility.h"
@@ -176,7 +177,7 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
     url.setQuery(query);
 
     auto request = QNetworkRequest(url);
-    if (m_info->profile->account()->license() == Account::GameLicense::macOS) {
+    if (m_info->profile->account()->config()->license() == Account::GameLicense::macOS) {
         request.setHeader(QNetworkRequest::KnownHeaders::UserAgentHeader, macosPatchUserAgent);
     } else {
         request.setHeader(QNetworkRequest::KnownHeaders::UserAgentHeader, patchUserAgent);
@@ -225,12 +226,12 @@ QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStor
     query.addQueryItem(QStringLiteral("lng"), QStringLiteral("en"));
     // for some reason, we always use region 3. the actual region is acquired later
     query.addQueryItem(QStringLiteral("rgn"), QString::number(3));
-    query.addQueryItem(QStringLiteral("isft"), QString::number(m_info->profile->account()->isFreeTrial() ? 1 : 0));
+    query.addQueryItem(QStringLiteral("isft"), QString::number(m_info->profile->account()->config()->isFreeTrial() ? 1 : 0));
     query.addQueryItem(QStringLiteral("cssmode"), QString::number(1));
     query.addQueryItem(QStringLiteral("isnew"), QString::number(1));
     query.addQueryItem(QStringLiteral("launchver"), QString::number(3));
 
-    if (m_info->profile->account()->license() == Account::GameLicense::WindowsSteam) {
+    if (m_info->profile->account()->config()->license() == Account::GameLicense::WindowsSteam) {
         query.addQueryItem(QStringLiteral("issteam"), QString::number(1));
 
         // TODO: get steam ticket information from steam api
@@ -255,7 +256,7 @@ QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStor
     const QString str = QString::fromUtf8(reply->readAll());
 
     // fetches Steam username
-    if (m_info->profile->account()->license() == Account::GameLicense::WindowsSteam) {
+    if (m_info->profile->account()->config()->license() == Account::GameLicense::WindowsSteam) {
         const static QRegularExpression re(QStringLiteral(R"lit(<input name=""sqexid"" type=""hidden"" value=""(?<sqexid>.*)""\/>)lit"));
         const QRegularExpressionMatch match = re.match(str);
 

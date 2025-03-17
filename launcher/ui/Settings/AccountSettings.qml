@@ -67,8 +67,8 @@ FormCard.FormCardPage {
             id: usernameDelegate
 
             label: i18n("Username")
-            text: page.account.name
-            onTextChanged: page.account.name = text
+            text: page.account.config.name
+            onTextChanged: page.account.config.name = text
         }
 
         FormCard.FormDelegateSeparator {
@@ -81,8 +81,8 @@ FormCard.FormCardPage {
 
             text: i18n("Account type")
             model: ["Square Enix", "Sapphire"]
-            currentIndex: page.account.isSapphire ? 1 : 0
-            onCurrentIndexChanged: page.account.isSapphire = (currentIndex === 1)
+            currentIndex: page.account.config.isSapphire ? 1 : 0
+            onCurrentIndexChanged: page.account.config.isSapphire = (currentIndex === 1)
         }
 
         FormCard.FormDelegateSeparator {
@@ -96,13 +96,13 @@ FormCard.FormCardPage {
             text: i18n("Language")
             description: i18n("The language used in the game client.")
             model: ["Japanese", "English", "German", "French"]
-            currentIndex: page.account.language
-            onCurrentIndexChanged: page.account.language = currentIndex
+            currentIndex: page.account.config.language
+            onCurrentIndexChanged: page.account.config.language = currentIndex
         }
     }
 
     FormCard.FormCard {
-        visible: accountAction.checked && !page.account.isSapphire
+        visible: accountAction.checked && !page.account.config.isSapphire
 
         Layout.fillWidth: true
         Layout.topMargin: Kirigami.Units.largeSpacing * 4
@@ -113,8 +113,8 @@ FormCard.FormCardPage {
             text: i18n("License")
             description: i18n("If the account holds multiple licenses, choose the preferred one.")
             model: ["Windows", "Steam", "macOS"]
-            currentIndex: page.account.license
-            onCurrentIndexChanged: page.account.license = currentIndex
+            currentIndex: page.account.config.license
+            onCurrentIndexChanged: page.account.config.license = currentIndex
         }
 
         FormCard.FormDelegateSeparator {
@@ -126,8 +126,8 @@ FormCard.FormCardPage {
             id: freeTrialField
             text: i18n("Free trial")
             description: i18n("If the account has a free trial license.")
-            checked: page.account.isFreeTrial
-            onCheckedChanged: page.account.isFreeTrial = checked
+            checked: page.account.config.isFreeTrial
+            onCheckedChanged: page.account.config.isFreeTrial = checked
         }
 
         FormCard.FormDelegateSeparator {
@@ -140,8 +140,8 @@ FormCard.FormCardPage {
 
             text: i18n("Needs a one-time password")
             description: i18n("Prompt for the one-time password when logging in.")
-            checked: page.account.useOTP
-            onCheckedChanged: page.account.useOTP = checked
+            checked: page.account.config.useOTP
+            onCheckedChanged: page.account.config.useOTP = checked
         }
 
         FormCard.FormDelegateSeparator {
@@ -161,11 +161,11 @@ FormCard.FormCardPage {
 
                 standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
 
-                onAccepted: page.account.lodestoneId = lodestoneIdField.text
+                onAccepted: page.account.config.lodestoneId = lodestoneIdField.text
 
                 QQC2.TextField {
                     id: lodestoneIdField
-                    text: page.account.lodestoneId
+                    text: page.account.config.lodestoneId
                     placeholderText: qsTr("123456...")
                 }
             }
@@ -175,7 +175,7 @@ FormCard.FormCardPage {
     }
 
     FormCard.FormCard {
-        visible: accountAction.checked && page.account.isSapphire
+        visible: accountAction.checked && page.account.config.isSapphire
 
         Layout.fillWidth: true
         Layout.topMargin: Kirigami.Units.largeSpacing * 4
@@ -184,9 +184,9 @@ FormCard.FormCardPage {
             id: lobbyURLDelegate
 
             label: i18n("Lobby URL")
-            text: page.account.lobbyUrl
-            onTextChanged: page.account.lobbyUrl = text
-            visible: page.account.isSapphire
+            text: page.account.config.lobbyUrl
+            onTextChanged: page.account.config.lobbyUrl = text
+            visible: page.account.config.isSapphire
             placeholderText: "neolobby0X.ffxiv.com"
         }
     }
@@ -202,8 +202,8 @@ FormCard.FormCardPage {
 
             text: i18n("Remember password")
             description: i18n("Stores the password on the device, using it's existing secure credential storage.")
-            checked: page.account.rememberPassword
-            onCheckedChanged: page.account.rememberPassword = checked
+            checked: page.account.config.rememberPassword
+            onCheckedChanged: page.account.config.rememberPassword = checked
         }
 
         FormCard.FormDelegateSeparator {
@@ -217,10 +217,10 @@ FormCard.FormCardPage {
             text: i18n("Automatically generate one-time passwords")
             description: i18n("Stores the one-time password secret on this device, making it inherently insecure. Only use this feature if you understand the risks.")
 
-            checked: page.account.rememberOTP
-            onCheckedChanged: page.account.rememberOTP = checked
-            enabled: page.account.useOTP
-            visible: !page.account.isSapphire
+            checked: page.account.config.rememberOTP
+            onCheckedChanged: page.account.config.rememberOTP = checked
+            enabled: page.account.config.useOTP
+            visible: !page.account.config.isSapphire
         }
 
         FormCard.FormDelegateSeparator {
@@ -235,7 +235,7 @@ FormCard.FormCardPage {
 
             text: i18n("Enter OTP Secret")
             icon.name: "list-add-symbolic"
-            enabled: page.account.rememberOTP
+            enabled: page.account.config.rememberOTP
             visible: generateOTPField.visible
             Kirigami.PromptDialog {
                 id: otpDialog

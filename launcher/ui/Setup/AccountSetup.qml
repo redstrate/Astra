@@ -45,7 +45,7 @@ FormCard.FormCardPage {
             FormCard.FormButtonDelegate {
                 required property var account
 
-                text: account.name
+                text: account.config.name
 
                 onClicked: {
                     page.profile.account = account

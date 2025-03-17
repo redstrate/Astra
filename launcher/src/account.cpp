@@ -7,6 +7,7 @@
 #include <qcorocore.h>
 #include <qt6keychain/keychain.h>
 
+#include "accountconfig.h"
 #include "astra_log.h"
 #include "utility.h"
 
@@ -14,7 +15,7 @@ using namespace Qt::StringLiterals;
 
 Account::Account(const QString &key, QObject *parent)
     : QObject(parent)
-    , m_config(key)
+    , m_config(new AccountConfig(key))
     , m_key(key)
 {
     fetchPassword();
@@ -25,149 +26,9 @@ QString Account::uuid() const
     return m_key;
 }
 
-QString Account::name() const
-{
-    return m_config.name();
-}
-
-void Account::setName(const QString &name)
-{
-    if (m_config.name() != name) {
-        m_config.setName(name);
-        m_config.save();
-        Q_EMIT nameChanged();
-    }
-}
-
-int Account::language() const
-{
-    return m_config.language();
-}
-
-void Account::setLanguage(const int value)
-{
-    if (m_config.language() != value) {
-        m_config.setLanguage(value);
-        m_config.save();
-        Q_EMIT languageChanged();
-    }
-}
-
-QString Account::lodestoneId() const
-{
-    return m_config.lodestoneId();
-}
-
-void Account::setLodestoneId(const QString &id)
-{
-    if (m_config.lodestoneId() != id) {
-        m_config.setLodestoneId(id);
-        m_config.save();
-        Q_EMIT lodestoneIdChanged();
-    }
-}
-
 QString Account::avatarUrl() const
 {
     return m_avatarUrl;
-}
-
-bool Account::isSapphire() const
-{
-    return m_config.isSapphire();
-}
-
-void Account::setIsSapphire(const bool value)
-{
-    if (m_config.isSapphire() != value) {
-        m_config.setIsSapphire(value);
-        m_config.save();
-        Q_EMIT isSapphireChanged();
-    }
-}
-
-QString Account::lobbyUrl() const
-{
-    return m_config.lobbyUrl();
-}
-
-void Account::setLobbyUrl(const QString &url)
-{
-    if (m_config.lobbyUrl() != url) {
-        m_config.setLobbyUrl(url);
-        m_config.save();
-        Q_EMIT lobbyUrlChanged();
-    }
-}
-
-bool Account::rememberPassword() const
-{
-    return m_config.rememberPassword();
-}
-
-void Account::setRememberPassword(const bool value)
-{
-    if (m_config.rememberPassword() != value) {
-        m_config.setRememberPassword(value);
-        m_config.save();
-        Q_EMIT rememberPasswordChanged();
-    }
-}
-
-bool Account::rememberOTP() const
-{
-    return m_config.rememberOTP();
-}
-
-void Account::setRememberOTP(const bool value)
-{
-    if (m_config.rememberOTP() != value) {
-        m_config.setRememberOTP(value);
-        m_config.save();
-        Q_EMIT rememberOTPChanged();
-    }
-}
-
-bool Account::useOTP() const
-{
-    return m_config.useOTP();
-}
-
-void Account::setUseOTP(const bool value)
-{
-    if (m_config.useOTP() != value) {
-        m_config.setUseOTP(value);
-        m_config.save();
-        Q_EMIT useOTPChanged();
-    }
-}
-
-Account::GameLicense Account::license() const
-{
-    return static_cast<GameLicense>(m_config.license());
-}
-
-void Account::setLicense(const GameLicense license)
-{
-    if (static_cast<GameLicense>(m_config.license()) != license) {
-        m_config.setLicense(static_cast<int>(license));
-        m_config.save();
-        Q_EMIT licenseChanged();
-    }
-}
-
-bool Account::isFreeTrial() const
-{
-    return m_config.isFreeTrial();
-}
-
-void Account::setIsFreeTrial(const bool value)
-{
-    if (m_config.isFreeTrial() != value) {
-        m_config.setIsFreeTrial(value);
-        m_config.save();
-        Q_EMIT isFreeTrialChanged();
-    }
 }
 
 QString Account::getPassword()
@@ -289,6 +150,11 @@ QCoro::Task<> Account::fetchPassword()
     Q_EMIT needsPasswordChanged();
 
     co_return;
+}
+
+AccountConfig *Account::config() const
+{
+    return m_config;
 }
 
 #include "moc_account.cpp"

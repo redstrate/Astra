@@ -31,7 +31,7 @@ QQC2.Control {
             return i18n("Password is required.");
         }
 
-        if (LauncherCore.currentProfile.account.useOTP && !LauncherCore.currentProfile.account.rememberOTP && otpField.text.length === 0) {
+        if (LauncherCore.currentProfile.account.config.useOTP && !LauncherCore.currentProfile.account.config.rememberOTP && otpField.text.length === 0) {
             return i18n("OTP is required.");
         }
 
@@ -55,7 +55,7 @@ QQC2.Control {
             return false;
         }
 
-        if (LauncherCore.currentProfile.account.useOTP && !LauncherCore.currentProfile.account.rememberOTP && otpField.text.length === 0) {
+        if (LauncherCore.currentProfile.account.config.useOTP && !LauncherCore.currentProfile.account.config.rememberOTP && otpField.text.length === 0) {
             return false;
         }
 
@@ -63,9 +63,9 @@ QQC2.Control {
     }
 
     function updateFields(): void {
-        usernameField.text = LauncherCore.currentProfile.account.name;
-        passwordField.text = !LauncherCore.currentProfile.account.needsPassword && LauncherCore.currentProfile.account.rememberPassword ? LauncherCore.currentProfile.account.getPassword() : "";
-        if (LauncherCore.currentProfile.account.rememberOTP) {
+        usernameField.text = LauncherCore.currentProfile.account.config.name;
+        passwordField.text = !LauncherCore.currentProfile.account.needsPassword && LauncherCore.currentProfile.account.config.rememberPassword ? LauncherCore.currentProfile.account.getPassword() : "";
+        if (LauncherCore.currentProfile.account.config.rememberOTP) {
             otpField.text = "Auto-generated";
         } else {
             otpField.text = "";
@@ -83,7 +83,7 @@ QQC2.Control {
                 return;
             }
 
-            if (LauncherCore.currentProfile.account.useOTP) {
+            if (LauncherCore.currentProfile.account.config.useOTP) {
                 otpField.forceActiveFocus();
                 return;
             }
@@ -165,13 +165,13 @@ QQC2.Control {
                 id: currentAccountDelegate
 
                 enabled: LauncherCore.accountManager.numAccounts > 1
-                text: LauncherCore.currentProfile.account.name
+                text: LauncherCore.currentProfile.account.config.name
 
                 leading: Components.Avatar {
                     implicitWidth: Kirigami.Units.iconSizes.medium
                     implicitHeight: Kirigami.Units.iconSizes.medium
 
-                    name: LauncherCore.currentProfile.account.name
+                    name: LauncherCore.currentProfile.account.config.name
                     source: LauncherCore.currentProfile.account.avatarUrl
                 }
 
@@ -191,7 +191,7 @@ QQC2.Control {
                             required property var account
 
                             QQC2.MenuItem {
-                                text: menuItem.account.name
+                                text: menuItem.account.config.name
                                 icon.name: menuItem.account.avatarUrl.length === 0 ? "actor" : ""
                                 icon.source: menuItem.account.avatarUrl
 
@@ -214,8 +214,8 @@ QQC2.Control {
 
             FormCard.FormTextFieldDelegate {
                 id: usernameField
-                label: LauncherCore.currentProfile.account.isSapphire ? i18n("Username") : i18n("Square Enix ID")
-                text: LauncherCore.currentProfile.account.name
+                label: LauncherCore.currentProfile.account.config.isSapphire ? i18n("Username") : i18n("Square Enix ID")
+                text: LauncherCore.currentProfile.account.config.name
                 enabled: false
 
                 QQC2.ToolTip.text: i18n("The username can only be changed under account settings.")
@@ -230,7 +230,7 @@ QQC2.Control {
 
             FormCard.FormPasswordFieldDelegate {
                 id: passwordField
-                label: LauncherCore.currentProfile.account.isSapphire ? i18n("Password") : i18n("Square Enix Password")
+                label: LauncherCore.currentProfile.account.config.isSapphire ? i18n("Password") : i18n("Square Enix Password")
                 focus: true
                 onAccepted: {
                     if (otpField.visible) {
@@ -243,15 +243,15 @@ QQC2.Control {
 
             FormCard.FormDelegateSeparator {
                 above: passwordField
-                below: LauncherCore.currentProfile.account.useOTP ? otpField : loginButton
+                below: LauncherCore.currentProfile.account.config.useOTP ? otpField : loginButton
             }
 
             FormCard.FormTextFieldDelegate {
                 id: otpField
 
-                enabled: !LauncherCore.currentProfile.account.rememberOTP
+                enabled: !LauncherCore.currentProfile.account.config.rememberOTP
                 label: i18n("One-time Password")
-                visible: LauncherCore.currentProfile.account.useOTP
+                visible: LauncherCore.currentProfile.account.config.useOTP
                 onAccepted: {
                     if (page.isLoginValid) {
                         loginButton.clicked()
@@ -260,9 +260,9 @@ QQC2.Control {
             }
 
             FormCard.FormDelegateSeparator {
-                above: LauncherCore.currentProfile.account.useOTP ? otpField : passwordField
+                above: LauncherCore.currentProfile.account.config.useOTP ? otpField : passwordField
                 below: loginButton
-                visible: LauncherCore.currentProfile.account.useOTP
+                visible: LauncherCore.currentProfile.account.config.useOTP
             }
 
             FormCard.FormButtonDelegate {
@@ -281,7 +281,7 @@ QQC2.Control {
             FormCard.FormDelegateSeparator {
                 above: loginButton
                 below: forgotPasswordButton
-                visible: !LauncherCore.currentProfile.account.isSapphire
+                visible: !LauncherCore.currentProfile.account.config.isSapphire
             }
 
             FormCard.FormButtonDelegate {
@@ -289,7 +289,7 @@ QQC2.Control {
 
                 text: i18n("Forgot ID or Password")
                 icon.name: "question-symbolic"
-                visible: !LauncherCore.currentProfile.account.isSapphire
+                visible: !LauncherCore.currentProfile.account.config.isSapphire
                 onClicked: applicationWindow().openUrl('https://secure.square-enix.com/account/app/svc/reminder')
             }
         }
@@ -325,7 +325,7 @@ QQC2.Control {
             FormCard.FormLinkDelegate {
                 text: i18nc("@action:button", "The Lodestone")
                 icon.name: "internet-services-symbolic"
-                visible: !LauncherCore.currentProfile.account.isSapphire
+                visible: !LauncherCore.currentProfile.account.config.isSapphire
                 // TODO: how do we link to a "worldwide" lodestone, if that even exists?
                 url: 'https://na.finalfantasyxiv.com/lodestone/'
                 onClicked: applicationWindow().openUrl(url)
@@ -336,7 +336,7 @@ QQC2.Control {
             FormCard.FormLinkDelegate {
                 text: i18nc("@action:button", "Mog Station")
                 icon.name: "internet-services-symbolic"
-                visible: !LauncherCore.currentProfile.account.isSapphire
+                visible: !LauncherCore.currentProfile.account.config.isSapphire
                 url: 'https://secure.square-enix.com/account/app/svc/mogstation/'
                 onClicked: applicationWindow().openUrl(url)
             }

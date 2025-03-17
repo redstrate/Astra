@@ -90,10 +90,10 @@ target_link_libraries(astra_static PUBLIC
         QCoro::Core
         QCoro::Network
         QCoro::Qml)
-kconfig_target_kcfg_file(astra_static FILE config.kcfg CLASS_NAME Config MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR QML_REGISTRATION QML_UNCREATABLE)
-kconfig_target_kcfg_file(astra_static FILE accountconfig.kcfg CLASS_NAME AccountConfig MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR QML_REGISTRATION QML_UNCREATABLE)
+kconfig_target_kcfg_file(astra_static FILE config.kcfg CLASS_NAME Config MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR QML_REGISTRATION QML_UNCREATABLE USE_ENUM_TYPES)
+kconfig_target_kcfg_file(astra_static FILE accountconfig.kcfg CLASS_NAME AccountConfig MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR QML_REGISTRATION QML_UNCREATABLE USE_ENUM_TYPES)
 kconfig_target_kcfg_file(astra_static FILE profileconfig.kcfg CLASS_NAME ProfileConfig MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR QML_REGISTRATION QML_UNCREATABLE)
-target_include_directories(astra_static PUBLIC include ${CMAKE_BINARY_DIR})
+target_include_directories(astra_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_BINARY_DIR})
 
 if (NOT MSVC)
     target_compile_options(astra_static PUBLIC -fexceptions)

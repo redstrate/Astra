@@ -12,6 +12,7 @@
 #include <qcoronetworkreply.h>
 
 #include "account.h"
+#include "accountconfig.h"
 #include "assetupdater.h"
 #include "astra_log.h"
 #include "benchmarkinstaller.h"
@@ -100,7 +101,7 @@ void LauncherCore::login(Profile *profile, const QString &username, const QStrin
         loginInformation->password = password;
         loginInformation->oneTimePassword = oneTimePassword;
 
-        if (profile->account()->rememberPassword()) {
+        if (profile->account()->config()->rememberPassword()) {
             profile->account()->setPassword(password);
         }
     }
@@ -113,8 +114,8 @@ bool LauncherCore::autoLogin(Profile *profile)
     Q_ASSERT(profile != nullptr);
 
     QString otp;
-    if (profile->account()->useOTP()) {
-        if (!profile->account()->rememberOTP()) {
+    if (profile->account()->config()->useOTP()) {
+        if (!profile->account()->config()->rememberOTP()) {
             Q_EMIT loginError(i18n("This account does not have an OTP secret set, but requires it for login."));
             return false;
         }
@@ -126,7 +127,7 @@ bool LauncherCore::autoLogin(Profile *profile)
         }
     }
 
-    login(profile, profile->account()->name(), profile->account()->getPassword(), otp);
+    login(profile, profile->account()->config()->name(), profile->account()->getPassword(), otp);
     return true;
 }
 
@@ -172,21 +173,21 @@ BenchmarkInstaller *LauncherCore::createBenchmarkInstallerFromExisting(Profile *
 
 void LauncherCore::fetchAvatar(Account *account)
 {
-    if (account->lodestoneId().isEmpty()) {
+    if (account->config()->lodestoneId().isEmpty()) {
         return;
     }
 
     const QString cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + QStringLiteral("/avatars");
     Utility::createPathIfNeeded(cacheLocation);
 
-    const QString filename = QStringLiteral("%1/%2.jpg").arg(cacheLocation, account->lodestoneId());
+    const QString filename = QStringLiteral("%1/%2.jpg").arg(cacheLocation, account->config()->lodestoneId());
     if (!QFile(filename).exists()) {
-        qDebug(ASTRA_LOG) << "Did not find lodestone character " << account->lodestoneId() << " in cache, fetching from Lodestone.";
+        qDebug(ASTRA_LOG) << "Did not find lodestone character " << account->config()->lodestoneId() << " in cache, fetching from Lodestone.";
 
         QUrl url;
         url.setScheme(config()->preferredProtocol());
         url.setHost(QStringLiteral("na.%1").arg(config()->mainServer())); // TODO: NA isnt the only thing in the world...
-        url.setPath(QStringLiteral("/lodestone/character/%1").arg(account->lodestoneId()));
+        url.setPath(QStringLiteral("/lodestone/character/%1").arg(account->config()->lodestoneId()));
 
         const QNetworkRequest request(url);
         Utility::printRequest(QStringLiteral("GET"), request);
@@ -347,7 +348,7 @@ void LauncherCore::buildRequest(const Profile &settings, QNetworkRequest &reques
 {
     Utility::setSSL(request);
 
-    if (settings.account()->license() == Account::GameLicense::macOS) {
+    if (settings.account()->config()->license() == Account::GameLicense::macOS) {
         request.setHeader(QNetworkRequest::UserAgentHeader, QByteArrayLiteral("macSQEXAuthor/2.0.0(MacOSX; ja-jp)"));
     } else {
         request.setHeader(QNetworkRequest::UserAgentHeader,
@@ -468,8 +469,8 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 
     std::optional<LoginAuth> auth;
     if (!info.profile->isBenchmark()) {
-        if (info.profile->account()->isSapphire()) {
-            auth = co_await m_sapphireLogin->login(info.profile->account()->lobbyUrl(), info);
+        if (info.profile->account()->config()->isSapphire()) {
+            auth = co_await m_sapphireLogin->login(info.profile->account()->config()->lobbyUrl(), info);
         } else {
             auth = co_await m_squareEnixLogin->login(&info);
         }
