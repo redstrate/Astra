@@ -22,7 +22,7 @@ CharacterSync::CharacterSync(Account &account, LauncherCore &launcher, QObject *
 
 QCoro::Task<bool> CharacterSync::sync(const bool initialSync)
 {
-    if (!launcher.settings()->enableSync()) {
+    if (!launcher.config()->enableSync()) {
         co_return true;
     }
 

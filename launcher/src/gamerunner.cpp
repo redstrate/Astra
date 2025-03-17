@@ -241,14 +241,14 @@ QString GameRunner::getGameArgs(const Profile &profile, const std::optional<Logi
         }
     }
 
-    const QString argFormat = !profile.isBenchmark() && m_launcher.settings()->argumentsEncrypted() ? QStringLiteral(" /%1 =%2") : QStringLiteral(" %1=%2");
+    const QString argFormat = !profile.isBenchmark() && m_launcher.config()->encryptArguments() ? QStringLiteral(" /%1 =%2") : QStringLiteral(" %1=%2");
 
     QString argJoined;
     for (const auto &[key, value] : gameArgs) {
         argJoined += argFormat.arg(key, value);
     }
 
-    return !profile.isBenchmark() && m_launcher.settings()->argumentsEncrypted() ? encryptGameArg(argJoined) : argJoined;
+    return !profile.isBenchmark() && m_launcher.config()->encryptArguments() ? encryptGameArg(argJoined) : argJoined;
 }
 
 void GameRunner::launchExecutable(const Profile &profile, QProcess *process, const QStringList &args, bool isGame, bool needsRegistrySetup)
@@ -322,7 +322,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     }
 #endif
 
-    if (m_launcher.settings()->enableRenderDocCapture()) {
+    if (m_launcher.config()->enableRenderDocCapture()) {
         env.insert(QStringLiteral("VK_LAYER_RENDERDOC_Capture"), QStringLiteral("VK_LAYER_RENDERDOC_Capture"));
         env.insert(QStringLiteral("ENABLE_VULKAN_RENDERDOC_CAPTURE"), QString::number(1));
     }

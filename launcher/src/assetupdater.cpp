@@ -399,8 +399,8 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
 QUrl AssetUpdater::dalamudVersionManifestUrl() const
 {
     QUrl url;
-    url.setScheme(launcher.settings()->preferredProtocol());
-    url.setHost(launcher.settings()->dalamudDistribServer());
+    url.setScheme(launcher.config()->preferredProtocol());
+    url.setHost(launcher.config()->dalamudDistribServer());
     url.setPath(QStringLiteral("/Dalamud/Release/VersionInfo"));
 
     return url;
@@ -409,8 +409,8 @@ QUrl AssetUpdater::dalamudVersionManifestUrl() const
 QUrl AssetUpdater::dalamudAssetManifestUrl() const
 {
     QUrl url;
-    url.setScheme(launcher.settings()->preferredProtocol());
-    url.setHost(launcher.settings()->dalamudDistribServer());
+    url.setScheme(launcher.config()->preferredProtocol());
+    url.setHost(launcher.config()->dalamudDistribServer());
     url.setPath(QStringLiteral("/Dalamud/Asset/Meta"));
 
     return url;
@@ -419,8 +419,8 @@ QUrl AssetUpdater::dalamudAssetManifestUrl() const
 QUrl AssetUpdater::dotnetRuntimePackageUrl(const QString &version) const
 {
     QUrl url;
-    url.setScheme(launcher.settings()->preferredProtocol());
-    url.setHost(launcher.settings()->dalamudDistribServer());
+    url.setScheme(launcher.config()->preferredProtocol());
+    url.setHost(launcher.config()->dalamudDistribServer());
     url.setPath(QStringLiteral("/Dalamud/Release/Runtime/DotNet/%1").arg(version));
 
     return url;
@@ -429,8 +429,8 @@ QUrl AssetUpdater::dotnetRuntimePackageUrl(const QString &version) const
 QUrl AssetUpdater::dotnetDesktopPackageUrl(const QString &version) const
 {
     QUrl url;
-    url.setScheme(launcher.settings()->preferredProtocol());
-    url.setHost(launcher.settings()->dalamudDistribServer());
+    url.setScheme(launcher.config()->preferredProtocol());
+    url.setHost(launcher.config()->dalamudDistribServer());
     url.setPath(QStringLiteral("/Dalamud/Release/Runtime/WindowsDesktop/%1").arg(version));
 
     return url;

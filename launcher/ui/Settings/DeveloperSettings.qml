@@ -28,8 +28,8 @@ FormCard.FormCardPage {
 
             text: i18n("Keep Patches")
             description: i18n("Do not delete patches after they're used. Astra will not download patch data, if found.")
-            checked: LauncherCore.settings.keepPatches
-            onCheckedChanged: LauncherCore.settings.keepPatches = checked
+            checked: LauncherCore.config.keepPatches
+            onCheckedChanged: LauncherCore.config.keepPatches = checked
         }
     }
 
@@ -59,8 +59,8 @@ FormCard.FormCardPage {
 
             text: i18n("Encrypt Game Arguments")
             description: i18n("Disable encryption if you want to inspect the raw arguments passed to the game.")
-            checked: LauncherCore.settings.argumentsEncrypted
-            onCheckedChanged: LauncherCore.settings.argumentsEncrypted = checked
+            checked: LauncherCore.config.argumentsEncrypted
+            onCheckedChanged: LauncherCore.config.argumentsEncrypted = checked
         }
 
         FormCard.FormDelegateSeparator {
@@ -73,8 +73,8 @@ FormCard.FormCardPage {
 
             text: i18n("Allow RenderDoc Capture")
             description: i18n("Inject the RenderDoc capture layer.")
-            checked: LauncherCore.settings.enableRenderDocCapture
-            onCheckedChanged: LauncherCore.settings.enableRenderDocCapture = checked
+            checked: LauncherCore.config.enableRenderDocCapture
+            onCheckedChanged: LauncherCore.config.enableRenderDocCapture = checked
         }
     }
 
@@ -91,11 +91,11 @@ FormCard.FormCardPage {
             text: i18n("Reset to Defaults")
 
             onClicked: {
-                preferredProtocolDelegate.text = LauncherCore.settings.defaultPreferredProtocol();
-                dalamudServerDelegate.text = LauncherCore.settings.defaultDalamudDistribServer();
-                squareMainServerDelegate.text = LauncherCore.settings.defaultSquareEnixServer();
-                loginServerDelegate.text = LauncherCore.settings.defaultSquareEnixLoginServer();
-                mainServerDelegate.text = LauncherCore.settings.defaultMainServer();
+                preferredProtocolDelegate.text = LauncherCore.config.defaultPreferredProtocol();
+                dalamudServerDelegate.text = LauncherCore.config.defaultDalamudDistribServer();
+                squareMainServerDelegate.text = LauncherCore.config.defaultSquareEnixServer();
+                loginServerDelegate.text = LauncherCore.config.defaultSquareEnixLoginServer();
+                mainServerDelegate.text = LauncherCore.config.defaultMainServer();
             }
         }
 
@@ -125,8 +125,8 @@ FormCard.FormCardPage {
             id: preferredProtocolDelegate
 
             label: i18n("Preferred Protocol")
-            text: LauncherCore.settings.preferredProtocol
-            onTextChanged: LauncherCore.settings.preferredProtocol = text
+            text: LauncherCore.config.preferredProtocol
+            onTextChanged: LauncherCore.config.preferredProtocol = text
         }
 
         FormCard.FormDelegateSeparator {
@@ -138,8 +138,8 @@ FormCard.FormCardPage {
             id: dalamudServerDelegate
 
             label: i18n("Dalamud Distribution Server")
-            text: LauncherCore.settings.dalamudDistribServer
-            onTextChanged: LauncherCore.settings.dalamudDistribServer = text
+            text: LauncherCore.config.dalamudDistribServer
+            onTextChanged: LauncherCore.config.dalamudDistribServer = text
         }
 
         FormCard.FormDelegateSeparator {
@@ -151,8 +151,8 @@ FormCard.FormCardPage {
             id: squareMainServerDelegate
 
             label: i18n("SE Main Server (ffxiv.com)")
-            text: LauncherCore.settings.squareEnixServer
-            onTextChanged: LauncherCore.settings.squareEnixServer = text
+            text: LauncherCore.config.squareEnixServer
+            onTextChanged: LauncherCore.config.squareEnixServer = text
         }
 
         FormCard.FormDelegateSeparator {
@@ -164,8 +164,8 @@ FormCard.FormCardPage {
             id: loginServerDelegate
 
             label: i18n("SE Login Server (square-enix.com)")
-            text: LauncherCore.settings.squareEnixLoginServer
-            onTextChanged: LauncherCore.settings.squareEnixLoginServer = text
+            text: LauncherCore.config.squareEnixLoginServer
+            onTextChanged: LauncherCore.config.squareEnixLoginServer = text
         }
 
         FormCard.FormDelegateSeparator {
@@ -177,8 +177,8 @@ FormCard.FormCardPage {
             id: mainServerDelegate
 
             label: i18n("Main Server (finalfantasyxiv.com)")
-            text: LauncherCore.settings.mainServer
-            onTextChanged: LauncherCore.settings.mainServer = text
+            text: LauncherCore.config.mainServer
+            onTextChanged: LauncherCore.config.mainServer = text
         }
 
         FormCard.FormDelegateSeparator {
@@ -190,8 +190,8 @@ FormCard.FormCardPage {
             id: gameServerDelegate
 
             label: i18n("Game Server (leave blank for default)")
-            text: LauncherCore.settings.customGameServer
-            onTextChanged: LauncherCore.settings.customGameServer = text
+            text: LauncherCore.config.customGameServer
+            onTextChanged: LauncherCore.config.customGameServer = text
         }
 
         FormCard.FormDelegateSeparator {
@@ -203,8 +203,8 @@ FormCard.FormCardPage {
             id: gameServerPortDelegate
 
             label: i18n("Game Server Port")
-            value: LauncherCore.settings.customGameServerPort
-            onValueChanged: LauncherCore.settings.customGameServerPort = value
+            value: LauncherCore.config.customGameServerPort
+            onValueChanged: LauncherCore.config.customGameServerPort = value
             from: 1
             to: 999999
         }

@@ -105,7 +105,7 @@ Kirigami.ApplicationWindow {
         }
 
         function onSuccessfulLaunch(): void {
-            if (LauncherCore.settings.closeWhenLaunched) {
+            if (LauncherCore.config.closeWhenLaunched) {
                 appWindow.hide();
             } else {
                 appWindow.checkSetup();
@@ -113,7 +113,7 @@ Kirigami.ApplicationWindow {
         }
 
         function onGameClosed(): void {
-            if (!LauncherCore.settings.closeWhenLaunched) {
+            if (!LauncherCore.config.closeWhenLaunched) {
                 appWindow.checkSetup();
             }
         }

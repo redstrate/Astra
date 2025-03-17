@@ -47,7 +47,6 @@ target_sources(astra_static PRIVATE
         include/gameinstaller.h
         include/headline.h
         include/launchercore.h
-        include/launchersettings.h
         include/patcher.h
         include/processlogger.h
         include/sapphirelogin.h
@@ -64,7 +63,6 @@ target_sources(astra_static PRIVATE
         src/headline.cpp
         src/gameinstaller.cpp
         src/launchercore.cpp
-        src/launchersettings.cpp
         src/account.cpp
         src/processwatcher.cpp
         src/profilemanager.cpp
@@ -92,9 +90,9 @@ target_link_libraries(astra_static PUBLIC
         QCoro::Core
         QCoro::Network
         QCoro::Qml)
-kconfig_target_kcfg_file(astra_static FILE config.kcfg CLASS_NAME Config MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR)
-kconfig_target_kcfg_file(astra_static FILE accountconfig.kcfg CLASS_NAME AccountConfig MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR)
-kconfig_target_kcfg_file(astra_static FILE profileconfig.kcfg CLASS_NAME ProfileConfig MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR)
+kconfig_target_kcfg_file(astra_static FILE config.kcfg CLASS_NAME Config MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR QML_REGISTRATION QML_UNCREATABLE)
+kconfig_target_kcfg_file(astra_static FILE accountconfig.kcfg CLASS_NAME AccountConfig MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR QML_REGISTRATION QML_UNCREATABLE)
+kconfig_target_kcfg_file(astra_static FILE profileconfig.kcfg CLASS_NAME ProfileConfig MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR QML_REGISTRATION QML_UNCREATABLE)
 target_include_directories(astra_static PUBLIC include ${CMAKE_BINARY_DIR})
 
 if (NOT MSVC)

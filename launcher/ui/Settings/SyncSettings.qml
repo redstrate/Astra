@@ -38,8 +38,8 @@ FormCard.FormCardPage {
 
             text: i18n("Enable Sync")
             description: i18n("Syncing will occur before login, and after the game exits.")
-            checked: LauncherCore.settings.enableSync
-            onCheckedChanged: LauncherCore.settings.enableSync = checked
+            checked: LauncherCore.config.enableSync
+            onCheckedChanged: LauncherCore.config.enableSync = checked
         }
     }
 
@@ -50,7 +50,7 @@ FormCard.FormCardPage {
         Layout.topMargin: Kirigami.Units.largeSpacing
 
         visible: !LauncherCore.syncManager.connected
-        enabled: LauncherCore.settings.enableSync
+        enabled: LauncherCore.config.enableSync
 
         FormCard.FormTextFieldDelegate {
             id: usernameDelegate

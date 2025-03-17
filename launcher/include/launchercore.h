@@ -8,8 +8,8 @@
 #include <qcorotask.h>
 
 #include "accountmanager.h"
+#include "config.h"
 #include "headline.h"
-#include "launchersettings.h"
 #include "profile.h"
 #include "profilemanager.h"
 #include "steamapi.h"
@@ -63,7 +63,7 @@ class LauncherCore : public QObject
     Q_PROPERTY(bool isSteam READ isSteam CONSTANT)
     Q_PROPERTY(bool isSteamDeck READ isSteamDeck CONSTANT)
     Q_PROPERTY(bool isWindows READ isWindows CONSTANT)
-    Q_PROPERTY(LauncherSettings *settings READ settings CONSTANT)
+    Q_PROPERTY(Config *config READ config CONSTANT)
     Q_PROPERTY(ProfileManager *profileManager READ profileManager CONSTANT)
     Q_PROPERTY(AccountManager *accountManager READ accountManager CONSTANT)
     Q_PROPERTY(Headline *headline READ headline NOTIFY newsChanged)
@@ -77,6 +77,7 @@ class LauncherCore : public QObject
 
 public:
     LauncherCore();
+    ~LauncherCore() override;
 
     /// Initializes the Steamworks API.
     void initializeSteam();
@@ -128,7 +129,7 @@ public:
     [[nodiscard]] Q_INVOKABLE bool supportsSync() const;
 
     [[nodiscard]] QNetworkAccessManager *mgr();
-    [[nodiscard]] LauncherSettings *settings();
+    [[nodiscard]] Config *config() const;
     [[nodiscard]] ProfileManager *profileManager();
     [[nodiscard]] AccountManager *accountManager();
     [[nodiscard]] Headline *headline() const;
@@ -175,6 +176,8 @@ private:
     /// Tell the system we can allow the screen to turn off
     void uninhibitSleep();
 
+    QString currentProfileId() const;
+
     SteamAPI *m_steamApi = nullptr;
 
     bool m_loadingFinished = false;
@@ -187,7 +190,7 @@ private:
 
     QNetworkAccessManager *m_mgr = nullptr;
     Headline *m_headline = nullptr;
-    LauncherSettings *m_settings = nullptr;
+    Config *m_config = nullptr;
     GameRunner *m_runner = nullptr;
     QString m_cachedLogoImage;
 

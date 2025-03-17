@@ -38,7 +38,7 @@ using namespace Qt::StringLiterals;
 LauncherCore::LauncherCore()
     : QObject()
 {
-    m_settings = new LauncherSettings(this);
+    m_config = new Config(KSharedConfig::openConfig(QStringLiteral("astrarc"), KConfig::SimpleConfig, QStandardPaths::AppConfigLocation), this);
     m_mgr = new QNetworkAccessManager(this);
     m_sapphireLogin = new SapphireLogin(*this, this);
     m_squareEnixLogin = new SquareEnixLogin(*this, this);
@@ -66,12 +66,17 @@ LauncherCore::LauncherCore()
     }
 
     // set default profile, if found
-    if (const auto profile = m_profileManager->getProfileByUUID(m_settings->currentProfile())) {
+    if (const auto profile = m_profileManager->getProfileByUUID(currentProfileId())) {
         setCurrentProfile(profile);
     }
 
     m_loadingFinished = true;
     Q_EMIT loadingFinished();
+}
+
+LauncherCore::~LauncherCore()
+{
+    m_config->save();
 }
 
 void LauncherCore::initializeSteam()
@@ -179,8 +184,8 @@ void LauncherCore::fetchAvatar(Account *account)
         qDebug(ASTRA_LOG) << "Did not find lodestone character " << account->lodestoneId() << " in cache, fetching from Lodestone.";
 
         QUrl url;
-        url.setScheme(settings()->preferredProtocol());
-        url.setHost(QStringLiteral("na.%1").arg(settings()->mainServer())); // TODO: NA isnt the only thing in the world...
+        url.setScheme(config()->preferredProtocol());
+        url.setHost(QStringLiteral("na.%1").arg(config()->mainServer())); // TODO: NA isnt the only thing in the world...
         url.setPath(QStringLiteral("/lodestone/character/%1").arg(account->lodestoneId()));
 
         const QNetworkRequest request(url);
@@ -301,37 +306,40 @@ void LauncherCore::setCurrentProfile(const Profile *profile)
     const int newIndex = m_profileManager->getProfileIndex(profile->uuid());
     if (newIndex != m_currentProfileIndex) {
         m_currentProfileIndex = newIndex;
-        m_settings->setCurrentProfile(profile->uuid());
-        m_settings->config()->save();
+
+        auto stateConfig = KSharedConfig::openStateConfig();
+        stateConfig->group(QStringLiteral("General")).writeEntry(QStringLiteral("CurrentProfile"), profile->uuid());
+        stateConfig->sync();
+
         Q_EMIT currentProfileChanged();
     }
 }
 
 [[nodiscard]] QString LauncherCore::autoLoginProfileName() const
 {
-    return m_settings->config()->autoLoginProfile();
+    return config()->autoLoginProfile();
 }
 
 [[nodiscard]] Profile *LauncherCore::autoLoginProfile() const
 {
-    if (m_settings->config()->autoLoginProfile().isEmpty()) {
+    if (config()->autoLoginProfile().isEmpty()) {
         return nullptr;
     }
-    return m_profileManager->getProfileByUUID(m_settings->config()->autoLoginProfile());
+    return m_profileManager->getProfileByUUID(config()->autoLoginProfile());
 }
 
 void LauncherCore::setAutoLoginProfile(const Profile *profile)
 {
     if (profile != nullptr) {
         auto uuid = profile->uuid();
-        if (uuid != m_settings->config()->autoLoginProfile()) {
-            m_settings->config()->setAutoLoginProfile(uuid);
+        if (uuid != config()->autoLoginProfile()) {
+            config()->setAutoLoginProfile(uuid);
         }
     } else {
-        m_settings->config()->setAutoLoginProfile({});
+        config()->setAutoLoginProfile({});
     }
 
-    m_settings->config()->save();
+    config()->save();
     Q_EMIT autoLoginProfileChanged();
 }
 
@@ -357,7 +365,7 @@ void LauncherCore::setupIgnoreSSL(QNetworkReply *reply)
 {
     Q_ASSERT(reply != nullptr);
 
-    if (m_settings->preferredProtocol() == QStringLiteral("http")) {
+    if (config()->preferredProtocol() == QStringLiteral("http")) {
         connect(reply, &QNetworkReply::sslErrors, this, [reply](const QList<QSslError> &errors) {
             reply->ignoreSslErrors(errors);
         });
@@ -412,9 +420,9 @@ QNetworkAccessManager *LauncherCore::mgr()
     return m_mgr;
 }
 
-LauncherSettings *LauncherCore::settings()
+Config *LauncherCore::config() const
 {
-    return m_settings;
+    return m_config;
 }
 
 ProfileManager *LauncherCore::profileManager()
@@ -495,8 +503,8 @@ QCoro::Task<> LauncherCore::fetchNews()
     query.addQueryItem(QStringLiteral("media"), QStringLiteral("pcapp"));
 
     QUrl headlineUrl;
-    headlineUrl.setScheme(m_settings->preferredProtocol());
-    headlineUrl.setHost(QStringLiteral("frontier.%1").arg(m_settings->squareEnixServer()));
+    headlineUrl.setScheme(config()->preferredProtocol());
+    headlineUrl.setHost(QStringLiteral("frontier.%1").arg(config()->squareEnixServer()));
     headlineUrl.setPath(QStringLiteral("/news/headline.json"));
     headlineUrl.setQuery(query);
 
@@ -514,8 +522,8 @@ QCoro::Task<> LauncherCore::fetchNews()
     co_await headlineReply;
 
     QUrl bannerUrl;
-    bannerUrl.setScheme(m_settings->preferredProtocol());
-    bannerUrl.setHost(QStringLiteral("frontier.%1").arg(m_settings->squareEnixServer()));
+    bannerUrl.setScheme(config()->preferredProtocol());
+    bannerUrl.setHost(QStringLiteral("frontier.%1").arg(config()->squareEnixServer()));
     bannerUrl.setPath(QStringLiteral("/v2/topics/%1/banner.json").arg(QStringLiteral("en-us")));
     bannerUrl.setQuery(query);
 
@@ -586,7 +594,7 @@ QCoro::Task<> LauncherCore::handleGameExit(const Profile *profile)
 
 #ifdef BUILD_SYNC
     // TODO: once we have Steam API support we can tell Steam to delay putting the Deck to sleep until our upload is complete
-    if (m_settings->enableSync()) {
+    if (config()->enableSync()) {
         Q_EMIT showWindow();
 
         qCDebug(ASTRA_LOG) << "Game closed! Uploading character data...";
@@ -600,7 +608,7 @@ QCoro::Task<> LauncherCore::handleGameExit(const Profile *profile)
     }
 #endif
     // Otherwise, quit when everything is finished.
-    if (m_settings->closeWhenLaunched()) {
+    if (config()->closeWhenLaunched()) {
         QCoreApplication::exit();
     }
 
@@ -625,7 +633,7 @@ void LauncherCore::updateConfig(const Account *account)
     // Ensure that the opening cutscene movie never plays, since it's broken in most versions of Wine
     physis_cfg_set_value(cfgFile, "CutsceneMovieOpening", "1");
 
-    const auto screenshotDir = settings()->screenshotDir();
+    const auto screenshotDir = config()->screenshotDir();
     Utility::createPathIfNeeded(screenshotDir);
 
     const auto screenshotDirWin = Utility::toWindowsPath(screenshotDir);
@@ -676,6 +684,11 @@ void LauncherCore::uninhibitSleep()
     screenSaverDbusCookie = 0;
     QDBusConnection::sessionBus().send(message);
 #endif
+}
+
+QString LauncherCore::currentProfileId() const
+{
+    return KSharedConfig::openStateConfig()->group(QStringLiteral("General")).readEntry(QStringLiteral("CurrentProfile"));
 }
 
 #include "moc_launchercore.cpp"

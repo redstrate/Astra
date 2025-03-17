@@ -256,7 +256,7 @@ FormCard.FormCardPage {
             id: dalamudChannelDelegate
 
             text: i18n("Update Channel")
-            model: LauncherCore.settings.showDevTools ? [i18n("Stable"), i18n("Staging"), i18n("Local")] : [i18n("Stable"), i18n("Staging")]
+            model: LauncherCore.config.showDevTools ? [i18n("Stable"), i18n("Staging"), i18n("Local")] : [i18n("Stable"), i18n("Staging")]
             currentIndex: page.profile.dalamudChannel
             onCurrentIndexChanged: page.profile.dalamudChannel = currentIndex
             enabled: page.profile.dalamudEnabled
@@ -265,13 +265,13 @@ FormCard.FormCardPage {
         FormCard.FormDelegateSeparator {
             above: dalamudChannelDelegate
             below: dalamudInjectDelegate
-            visible: LauncherCore.settings.showDevTools
+            visible: LauncherCore.config.showDevTools
         }
 
         FormCard.FormComboBoxDelegate {
             id: dalamudInjectDelegate
 
-            visible: LauncherCore.settings.showDevTools
+            visible: LauncherCore.config.showDevTools
             text: i18n("Injection Method")
             description: "It shouldn't be nessecary to change this setting, unless you're running into issues injecting Dalamud."
             model: ["Entrypoint", "DLL Injection"]
@@ -288,7 +288,7 @@ FormCard.FormCardPage {
         FormCard.FormSpinBoxDelegate {
             id: dalamudDelayDelegate
 
-            visible: LauncherCore.settings.showDevTools
+            visible: LauncherCore.config.showDevTools
             label: i18n("Injection Delay")
             value: page.profile.dalamudInjectDelay
             onValueChanged: page.profile.dalamudInjectDelay = value

@@ -271,7 +271,7 @@ void Patcher::processPatch(const QueuedPatch &patch)
 
     Utility::writeVersion(verFilePath, patch.version);
 
-    if (!m_launcher.settings()->keepPatches()) {
+    if (!m_launcher.config()->keepPatches()) {
         QFile::remove(patch.path);
     }
 }
