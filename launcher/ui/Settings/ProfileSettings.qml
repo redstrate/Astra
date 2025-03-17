@@ -171,8 +171,8 @@ FormCard.FormCardPage {
         FormCard.FormCheckDelegate {
             text: i18n("Enable Gamescope")
             description: i18n("A micro-compositor that uses Wayland to create a nested session.\nIf you use fullscreen mode, it may improve input handling.")
-            checked: page.profile.config.gamescopeEnabled
-            onCheckedChanged: page.profile.config.gamescopeEnabled = checked
+            checked: page.profile.config.useGamescope
+            onCheckedChanged: page.profile.config.useGamescope = checked
         }
 
         FormCard.FormDelegateSeparator {}
@@ -180,7 +180,7 @@ FormCard.FormCardPage {
         FormCard.FormButtonDelegate {
             text: i18n("Configure Gamescope...")
             icon.name: "configure"
-            enabled: page.profile.config.gamescopeEnabled
+            enabled: page.profile.config.useGamescope
             Kirigami.PromptDialog {
                 id: gamescopeSettingsDialog
                 title: i18n("Configure Gamescope")
@@ -227,8 +227,8 @@ FormCard.FormCardPage {
 
             text: i18n("Enable Gamemode")
             description: i18n("A special game performance tool, that tunes your CPU scheduler among other things.")
-            checked: page.profile.config.gamemodeEnabled
-            onCheckedChanged: page.profile.config.gamemodeEnabled = checked
+            checked: page.profile.config.useGamemode
+            onCheckedChanged: page.profile.config.useGamemode = checked
         }
     }
 
@@ -300,7 +300,7 @@ FormCard.FormCardPage {
         }
 
         FormCard.FormTextDelegate {
-            description: page.profile.config.dalamudVersionText
+            description: page.profile.dalamudVersionText
         }
     }
 

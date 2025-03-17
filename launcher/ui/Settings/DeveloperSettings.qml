@@ -59,8 +59,8 @@ FormCard.FormCardPage {
 
             text: i18n("Encrypt Game Arguments")
             description: i18n("Disable encryption if you want to inspect the raw arguments passed to the game.")
-            checked: LauncherCore.config.argumentsEncrypted
-            onCheckedChanged: LauncherCore.config.argumentsEncrypted = checked
+            checked: LauncherCore.config.encryptArguments
+            onCheckedChanged: LauncherCore.config.encryptArguments = checked
         }
 
         FormCard.FormDelegateSeparator {
