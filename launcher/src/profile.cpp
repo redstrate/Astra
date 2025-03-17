@@ -19,7 +19,7 @@ using namespace Qt::StringLiterals;
 Profile::Profile(const QString &key, QObject *parent)
     : QObject(parent)
     , m_uuid(key)
-    , m_config(new ProfileConfig(key))
+    , m_config(new ProfileConfig(key, this))
 {
     readGameVersion();
     readWineInfo();
@@ -28,6 +28,11 @@ Profile::Profile(const QString &key, QObject *parent)
     connect(m_config, &ProfileConfig::WineTypeChanged, this, &Profile::readWineInfo);
     connect(m_config, &ProfileConfig::GamePathChanged, this, &Profile::readGameVersion);
     connect(m_config, &ProfileConfig::GamePathChanged, this, &Profile::hasDirectx9Changed);
+}
+
+Profile::~Profile()
+{
+    m_config->save();
 }
 
 void Profile::readDalamudInfo()

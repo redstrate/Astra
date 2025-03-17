@@ -29,6 +29,7 @@ class Profile : public QObject
 
 public:
     explicit Profile(const QString &key, QObject *parent = nullptr);
+    ~Profile() override;
 
     enum WineType {
         BuiltIn,

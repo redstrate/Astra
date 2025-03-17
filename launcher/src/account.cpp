@@ -15,10 +15,15 @@ using namespace Qt::StringLiterals;
 
 Account::Account(const QString &key, QObject *parent)
     : QObject(parent)
-    , m_config(new AccountConfig(key))
+    , m_config(new AccountConfig(key, this))
     , m_key(key)
 {
     fetchPassword();
+}
+
+Account::~Account()
+{
+    m_config->save();
 }
 
 QString Account::uuid() const

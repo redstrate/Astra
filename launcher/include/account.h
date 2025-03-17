@@ -20,6 +20,7 @@ class Account : public QObject
 
 public:
     explicit Account(const QString &key, QObject *parent = nullptr);
+    ~Account() override;
 
     enum GameLicense {
         WindowsStandalone,
