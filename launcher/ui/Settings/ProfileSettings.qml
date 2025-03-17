@@ -327,8 +327,16 @@ FormCard.FormCardPage {
         standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
         showCloseButton: false
 
+        QQC2.Switch {
+            id: deleteFilesSwitch
+
+            checked: true
+
+            text: i18n("Delete Files")
+        }
+
         onAccepted: {
-            LauncherCore.profileManager.deleteProfile(page.profile);
+            LauncherCore.profileManager.deleteProfile(page.profile, deleteFilesSwitch.checked);
             page.Window.window.pageStack.layers.pop();
         }
     }

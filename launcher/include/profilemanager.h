@@ -35,7 +35,7 @@ public:
 
     int getProfileIndex(const QString &name);
     Q_INVOKABLE Profile *addProfile();
-    Q_INVOKABLE void deleteProfile(Profile *profile);
+    Q_INVOKABLE void deleteProfile(Profile *profile, bool deleteFiles);
 
     [[nodiscard]] QList<Profile *> profiles() const;
     [[nodiscard]] int numProfiles() const;

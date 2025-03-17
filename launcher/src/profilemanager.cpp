@@ -51,11 +51,16 @@ Profile *ProfileManager::addProfile()
     return newProfile;
 }
 
-void ProfileManager::deleteProfile(Profile *profile)
+void ProfileManager::deleteProfile(Profile *profile, const bool deleteFiles)
 {
     auto config = KSharedConfig::openStateConfig();
     config->deleteGroup(QStringLiteral("profile-%1").arg(profile->uuid()));
     config->sync();
+
+    // delete files if requested
+    if (deleteFiles) {
+        QDir(profile->config()->gamePath()).removeRecursively();
+    }
 
     const int row = static_cast<int>(m_profiles.indexOf(profile));
     beginRemoveRows(QModelIndex(), row, row);
