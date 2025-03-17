@@ -17,6 +17,7 @@
 #include "accountconfig.h"
 #include "astra_log.h"
 #include "launchercore.h"
+#include "profileconfig.h"
 #include "utility.h"
 
 const QString platform = QStringLiteral("win32");
@@ -194,7 +195,7 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
         if (!patchList.isEmpty()) {
             qDebug(ASTRA_LOG) << "Boot patch list:" << patchList;
 
-            m_patcher = new Patcher(m_launcher, m_info->profile->gamePath() + QStringLiteral("/boot"), *m_info->profile->bootData(), this);
+            m_patcher = new Patcher(m_launcher, m_info->profile->config()->gamePath() + QStringLiteral("/boot"), *m_info->profile->bootData(), this);
             const std::string patchListStd = patchList.toStdString();
             const bool hasPatched = co_await m_patcher->patch(physis_parse_patchlist(PatchListType::Boot, patchListStd.c_str()));
             if (hasPatched) {
@@ -397,7 +398,7 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
             if (!body.isEmpty()) {
                 qDebug(ASTRA_LOG) << "Game patch list:" << body;
 
-                m_patcher = new Patcher(m_launcher, m_info->profile->gamePath() + QStringLiteral("/game"), *m_info->profile->gameData(), this);
+                m_patcher = new Patcher(m_launcher, m_info->profile->config()->gamePath() + QStringLiteral("/game"), *m_info->profile->gameData(), this);
                 std::string bodyStd = body.toStdString();
                 const bool hasPatched = co_await m_patcher->patch(physis_parse_patchlist(PatchListType::Game, bodyStd.c_str()));
                 m_patcher->deleteLater();
@@ -444,7 +445,7 @@ QCoro::Task<QString> SquareEnixLogin::getBootHash() const
                                      QStringLiteral("ffxivupdater64.exe")};
 
     const auto hashFuture = QtConcurrent::mapped(fileList, [this](const auto &filename) -> QString {
-        return getFileHash(m_info->profile->gamePath() + QStringLiteral("/boot/") + filename);
+        return getFileHash(m_info->profile->config()->gamePath() + QStringLiteral("/boot/") + filename);
     });
 
     co_await hashFuture;

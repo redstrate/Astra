@@ -23,7 +23,7 @@ FormCard.FormCardPage {
         id: dialog
 
         onAccepted: {
-            page.profile.gamePath = decodeURIComponent(selectedFolder.toString().replace("file://", ""));
+            page.profile.config.gamePath = decodeURIComponent(selectedFolder.toString().replace("file://", ""));
             applicationWindow().checkSetup();
         }
     }
@@ -43,7 +43,7 @@ FormCard.FormCardPage {
                 description: type
 
                 onClicked: {
-                    page.profile.gamePath = path;
+                    page.profile.config.gamePath = path;
                     applicationWindow().checkSetup();
                 }
             }

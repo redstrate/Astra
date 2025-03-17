@@ -122,7 +122,7 @@ QQC2.Control {
             FormCard.FormButtonDelegate {
                 id: currentProfileDelegate
 
-                text: LauncherCore.currentProfile.name
+                text: LauncherCore.currentProfile.config.name
 
                 QQC2.Menu {
                     id: profileMenu
@@ -138,7 +138,7 @@ QQC2.Control {
                             required property var profile
 
                             QQC2.MenuItem {
-                                text: profileMenuItem.profile.name
+                                text: profileMenuItem.profile.config.name
 
                                 onClicked: {
                                     LauncherCore.currentProfile = profileMenuItem.profile;
@@ -156,7 +156,7 @@ QQC2.Control {
         FormCard.FormCard {
             id: regularLoginCard
 
-            visible: !LauncherCore.currentProfile.isBenchmark
+            visible: !LauncherCore.currentProfile.config.isBenchmark
             maximumWidth: Kirigami.Units.gridUnit * 25
 
             Layout.fillWidth: true
@@ -297,7 +297,7 @@ QQC2.Control {
         FormCard.FormCard {
             id: benchmarkLaunchCard
 
-            visible: LauncherCore.currentProfile.isBenchmark
+            visible: LauncherCore.currentProfile.config.isBenchmark
             maximumWidth: Kirigami.Units.gridUnit * 25
 
             Layout.fillWidth: true

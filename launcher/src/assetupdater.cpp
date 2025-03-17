@@ -3,6 +3,7 @@
 
 #include "assetupdater.h"
 #include "astra_log.h"
+#include "profileconfig.h"
 #include "utility.h"
 
 #include <KLocalizedString>
@@ -14,8 +15,6 @@
 #include <QStandardPaths>
 #include <qcorofuture.h>
 #include <qcoronetworkreply.h>
-
-#include <QtConcurrentRun>
 
 using namespace Qt::StringLiterals;
 
@@ -40,17 +39,17 @@ QCoro::Task<bool> AssetUpdater::update()
         Utility::createPathIfNeeded(m_wineDir);
         Utility::createPathIfNeeded(m_dxvkDir);
 
-        if (m_profile.wineType() == Profile::WineType::BuiltIn && !co_await checkRemoteCompatibilityToolVersion()) {
+        if (m_profile.config()->wineType() == Profile::WineType::BuiltIn && !co_await checkRemoteCompatibilityToolVersion()) {
             co_return false;
         }
 
         // TODO: should DXVK be tied to this setting...?
-        if (m_profile.wineType() == Profile::WineType::BuiltIn && !co_await checkRemoteDxvkVersion()) {
+        if (m_profile.config()->wineType() == Profile::WineType::BuiltIn && !co_await checkRemoteDxvkVersion()) {
             co_return false;
         }
     }
 
-    if (!m_profile.dalamudEnabled()) {
+    if (!m_profile.config()->dalamudEnabled()) {
         co_return true;
     }
 
@@ -65,7 +64,7 @@ QCoro::Task<bool> AssetUpdater::update()
     Utility::createPathIfNeeded(m_dalamudAssetDir);
     Utility::createPathIfNeeded(m_dalamudRuntimeDir);
 
-    if (m_profile.dalamudChannel() != Profile::DalamudChannel::Local) {
+    if (m_profile.config()->dalamudChannel() != Profile::DalamudChannel::Local) {
         if (!co_await checkRemoteDalamudAssetVersion()) {
             co_return false;
         }

@@ -24,6 +24,10 @@ Profile::Profile(const QString &key, QObject *parent)
     readGameVersion();
     readWineInfo();
     readDalamudInfo();
+
+    connect(m_config, &ProfileConfig::WineTypeChanged, this, &Profile::readWineInfo);
+    connect(m_config, &ProfileConfig::GamePathChanged, this, &Profile::readGameVersion);
+    connect(m_config, &ProfileConfig::GamePathChanged, this, &Profile::hasDirectx9Changed);
 }
 
 void Profile::readDalamudInfo()
@@ -111,38 +115,9 @@ void Profile::readWineInfo()
     wineProcess->waitForFinished();
 }
 
-QString Profile::name() const
-{
-    return m_config->name();
-}
-
-void Profile::setName(const QString &name)
-{
-    if (m_config->name() != name) {
-        m_config->setName(name);
-        m_config->save();
-        Q_EMIT nameChanged();
-    }
-}
-
-QString Profile::gamePath() const
-{
-    return m_config->gamePath();
-}
-
-void Profile::setGamePath(const QString &path)
-{
-    if (m_config->gamePath() != path) {
-        m_config->setGamePath(path);
-        m_config->save();
-        readGameVersion();
-        Q_EMIT gamePathChanged();
-    }
-}
-
 QString Profile::winePath() const
 {
-    switch (wineType()) {
+    switch (config()->wineType()) {
     case WineType::BuiltIn: {
         const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
         const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
@@ -162,226 +137,14 @@ void Profile::setWinePath(const QString &path)
 {
     if (m_config->winePath() != path) {
         m_config->setWinePath(path);
-        m_config->save();
         Q_EMIT winePathChanged();
-    }
-}
-
-QString Profile::winePrefixPath() const
-{
-    return m_config->winePrefixPath();
-}
-
-void Profile::setWinePrefixPath(const QString &path)
-{
-    if (m_config->winePrefixPath() != path) {
-        m_config->setWinePrefixPath(path);
-        m_config->save();
-        Q_EMIT winePrefixPathChanged();
-    }
-}
-
-Profile::WineType Profile::wineType() const
-{
-    return static_cast<WineType>(m_config->wineType());
-}
-
-void Profile::setWineType(const WineType type)
-{
-    if (static_cast<WineType>(m_config->wineType()) != type) {
-        m_config->setWineType(static_cast<int>(type));
-        m_config->save();
-        Q_EMIT wineTypeChanged();
-        readWineInfo();
-    }
-}
-
-bool Profile::gamescopeEnabled() const
-{
-    return m_config->useGamescope();
-}
-
-void Profile::setGamescopeEnabled(const bool value)
-{
-    if (m_config->useGamescope() != value) {
-        m_config->setUseGamescope(value);
-        m_config->save();
-        Q_EMIT useGamescopeChanged();
-    }
-}
-
-bool Profile::gamemodeEnabled() const
-{
-    return m_config->useGamemode();
-}
-
-void Profile::setGamemodeEnabled(const bool value)
-{
-    if (m_config->useGamemode() != value) {
-        m_config->setUseGamemode(value);
-        m_config->save();
-        Q_EMIT useGamemodeChanged();
-    }
-}
-
-bool Profile::directx9Enabled() const
-{
-    return m_config->useDX9();
-}
-
-void Profile::setDirectX9Enabled(const bool value)
-{
-    if (m_config->useDX9() != value) {
-        m_config->setUseDX9(value);
-        m_config->save();
-        Q_EMIT useDX9Changed();
     }
 }
 
 bool Profile::hasDirectx9() const
 {
-    const QDir gameDir(gamePath());
+    const QDir gameDir(config()->gamePath());
     return QFileInfo::exists(gameDir.absoluteFilePath(QStringLiteral("game/ffxiv.exe")));
-}
-
-bool Profile::gamescopeFullscreen() const
-{
-    return m_config->gamescopeFullscreen();
-}
-
-void Profile::setGamescopeFullscreen(const bool value)
-{
-    if (m_config->gamescopeFullscreen() != value) {
-        m_config->setGamescopeFullscreen(value);
-        m_config->save();
-        Q_EMIT gamescopeFullscreenChanged();
-    }
-}
-
-bool Profile::gamescopeBorderless() const
-{
-    return m_config->gamescopeBorderless();
-}
-
-void Profile::setGamescopeBorderless(const bool value)
-{
-    if (m_config->gamescopeBorderless() != value) {
-        m_config->setGamescopeBorderless(value);
-        m_config->save();
-        Q_EMIT gamescopeBorderlessChanged();
-    }
-}
-
-int Profile::gamescopeWidth() const
-{
-    return m_config->gamescopeWidth();
-}
-
-void Profile::setGamescopeWidth(const int value)
-{
-    if (m_config->gamescopeWidth() != value) {
-        m_config->setGamescopeWidth(value);
-        m_config->save();
-        Q_EMIT gamescopeWidthChanged();
-    }
-}
-
-int Profile::gamescopeHeight() const
-{
-    return m_config->gamescopeHeight();
-}
-
-void Profile::setGamescopeHeight(const int value)
-{
-    if (m_config->gamescopeHeight() != value) {
-        m_config->setGamescopeHeight(value);
-        m_config->save();
-        Q_EMIT gamescopeHeightChanged();
-    }
-}
-
-int Profile::gamescopeRefreshRate() const
-{
-    return m_config->gamescopeRefreshRate();
-}
-
-void Profile::setGamescopeRefreshRate(const int value)
-{
-    if (m_config->gamescopeRefreshRate() != value) {
-        m_config->setGamescopeRefreshRate(value);
-        m_config->save();
-        Q_EMIT gamescopeRefreshRateChanged();
-    }
-}
-
-bool Profile::dalamudEnabled() const
-{
-    return m_config->dalamudEnabled();
-}
-
-void Profile::setDalamudEnabled(const bool value)
-{
-    if (m_config->dalamudEnabled() != value) {
-        m_config->setDalamudEnabled(value);
-        m_config->save();
-        Q_EMIT dalamudEnabledChanged();
-    }
-}
-
-Profile::DalamudChannel Profile::dalamudChannel() const
-{
-    return static_cast<DalamudChannel>(m_config->dalamudChannel());
-}
-
-void Profile::setDalamudChannel(const DalamudChannel channel)
-{
-    if (static_cast<DalamudChannel>(m_config->dalamudChannel()) != channel) {
-        m_config->setDalamudChannel(static_cast<int>(channel));
-        m_config->save();
-        Q_EMIT dalamudChannelChanged();
-    }
-}
-
-Profile::DalamudInjectMethod Profile::dalamudInjectMethod() const
-{
-    return static_cast<DalamudInjectMethod>(m_config->dalamudInjectMethod());
-}
-
-void Profile::setDalamudInjectMethod(const Profile::DalamudInjectMethod value)
-{
-    if (static_cast<DalamudInjectMethod>(m_config->dalamudInjectMethod()) != value) {
-        m_config->setDalamudInjectMethod(static_cast<int>(value));
-        m_config->save();
-        Q_EMIT dalamudInjectMethodChanged();
-    }
-}
-
-int Profile::dalamudInjectDelay() const
-{
-    return m_config->dalamudInjectDelay();
-}
-
-void Profile::setDalamudInjectDelay(const int value)
-{
-    if (m_config->dalamudInjectDelay() != value) {
-        m_config->setDalamudInjectDelay(static_cast<int>(value));
-        m_config->save();
-        Q_EMIT dalamudInjectDelayChanged();
-    }
-}
-
-bool Profile::isBenchmark() const
-{
-    return m_config->isBenchmark();
-}
-
-void Profile::setIsBenchmark(const bool value)
-{
-    if (m_config->isBenchmark() != value) {
-        m_config->setIsBenchmark(value);
-        m_config->save();
-        Q_EMIT isBenchmarkChanged();
-    }
 }
 
 Account *Profile::account() const
@@ -391,24 +154,19 @@ Account *Profile::account() const
 
 void Profile::setAccount(Account *account)
 {
-    if (account != m_account) {
-        m_account = account;
-        if (account->uuid() != m_config->account()) {
-            m_config->setAccount(account->uuid());
-            m_config->save();
-        }
-        Q_EMIT accountChanged();
-    }
+    m_account = account;
+    m_config->setAccount(account->uuid());
+    Q_EMIT accountChanged();
 }
 
 void Profile::readGameVersion()
 {
-    if (gamePath().isEmpty()) {
+    if (config()->gamePath().isEmpty()) {
         return;
     }
 
-    m_gameData = physis_gamedata_initialize(QString(gamePath() + QStringLiteral("/game")).toStdString().c_str());
-    m_bootData = physis_bootdata_initialize(QString(gamePath() + QStringLiteral("/boot")).toStdString().c_str());
+    m_gameData = physis_gamedata_initialize(QString(config()->gamePath() + QStringLiteral("/game")).toStdString().c_str());
+    m_bootData = physis_bootdata_initialize(QString(config()->gamePath() + QStringLiteral("/boot")).toStdString().c_str());
 
     if (m_bootData != nullptr) {
         m_bootVersion = physis_bootdata_get_version(m_bootData);
@@ -420,17 +178,12 @@ void Profile::readGameVersion()
     }
 
     // Extract frontier url if possible
-    const auto launcherPath = QString(gamePath() + QStringLiteral("/boot/ffxivlauncher64.exe"));
+    const auto launcherPath = QString(config()->gamePath() + QStringLiteral("/boot/ffxivlauncher64.exe"));
     if (QFile::exists(launcherPath)) {
         m_frontierUrl = QString::fromUtf8(physis_extract_frontier_url(launcherPath.toStdString().c_str()));
     }
 
     Q_EMIT gameInstallChanged();
-}
-
-QString Profile::accountUuid() const
-{
-    return m_config->account();
 }
 
 QString Profile::expansionVersionText() const
@@ -493,7 +246,7 @@ QString Profile::wineVersionText() const
 
 QString Profile::dalamudChannelName() const
 {
-    switch (dalamudChannel()) {
+    switch (config()->dalamudChannel()) {
     case DalamudChannel::Stable:
         return QStringLiteral("stable");
     case DalamudChannel::Staging:
@@ -581,7 +334,7 @@ void Profile::setDalamudApplicable(const bool applicable)
 bool Profile::dalamudShouldLaunch() const
 {
     // Local Dalamud installations can always run
-    return dalamudEnabled() && (dalamudChannel() != DalamudChannel::Local ? m_dalamudApplicable : true);
+    return config()->dalamudEnabled() && (config()->dalamudChannel() != DalamudChannel::Local ? m_dalamudApplicable : true);
 }
 
 QString Profile::compatibilityToolVersion() const
@@ -619,7 +372,7 @@ void Profile::setLoggedIn(const bool value)
 
 QString Profile::subtitle() const
 {
-    if (isBenchmark()) {
+    if (config()->isBenchmark()) {
         return i18n("Benchmark");
     } else if (m_repositories.repositories_count > 0) {
         const unsigned int latestExpansion = m_repositories.repositories_count - 1;
@@ -632,6 +385,11 @@ QString Profile::subtitle() const
     } else {
         return i18n("Unknown");
     }
+}
+
+ProfileConfig *Profile::config() const
+{
+    return m_config;
 }
 
 #include "moc_profile.cpp"

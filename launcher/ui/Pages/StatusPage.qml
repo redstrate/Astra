@@ -49,7 +49,7 @@ Kirigami.Page {
         standardButtons: Kirigami.Dialog.Yes | Kirigami.Dialog.Cancel
 
         onAccepted: {
-            LauncherCore.currentProfile.dalamudEnabled = false;
+            LauncherCore.currentProfile.config.dalamudEnabled = false;
             applicationWindow().checkSetup();
         }
         onRejected: applicationWindow().checkSetup()

@@ -68,8 +68,8 @@ FormCard.FormCardPage {
             id: nameDelegate
 
             label: i18n("Name")
-            text: page.profile.name
-            onTextChanged: page.profile.name = text
+            text: page.profile.config.name
+            onTextChanged: page.profile.config.name = text
         }
 
         FormCard.FormDelegateSeparator {
@@ -81,9 +81,9 @@ FormCard.FormCardPage {
             id: gamePathDelegate
 
             text: i18n("Game Folder")
-            folder: page.profile.gamePath
+            folder: page.profile.config.gamePath
 
-            onAccepted: (folder) => page.profile.gamePath = folder
+            onAccepted: (folder) => page.profile.config.gamePath = folder
         }
 
         FormCard.FormDelegateSeparator {
@@ -96,8 +96,8 @@ FormCard.FormCardPage {
 
             text: i18n("DirectX Version")
             model: ["DirectX 11", "DirectX 9"]
-            currentIndex: page.profile.directx9Enabled ? 1 : 0
-            onCurrentIndexChanged: page.profile.directx9Enabled = (currentIndex === 1)
+            currentIndex: page.profile.config.directx9Enabled ? 1 : 0
+            onCurrentIndexChanged: page.profile.config.directx9Enabled = (currentIndex === 1)
             visible: page.profile.hasDirectx9
         }
 
@@ -122,8 +122,8 @@ FormCard.FormCardPage {
 
             text: i18n("Wine Type")
             model: [i18n("Built-in"), i18n("Custom")]
-            currentIndex: page.profile.wineType
-            onCurrentIndexChanged: page.profile.wineType = currentIndex
+            currentIndex: page.profile.config.wineType
+            onCurrentIndexChanged: page.profile.config.wineType = currentIndex
         }
 
         FormCard.FormDelegateSeparator {
@@ -136,7 +136,7 @@ FormCard.FormCardPage {
 
             text: i18n("Wine Executable")
             file: page.profile.winePath
-            enabled: page.profile.wineType !== Profile.BuiltIn
+            enabled: page.profile.config.wineType !== Profile.BuiltIn
 
             onAccepted: (path) => page.profile.winePath = path
         }
@@ -150,7 +150,7 @@ FormCard.FormCardPage {
             id: winePrefixPathDelegate
 
             text: i18n("Wine Prefix Folder")
-            folder: page.profile.winePrefixPath
+            folder: page.profile.config.winePrefixPath
         }
 
         FormCard.FormDelegateSeparator {
@@ -171,8 +171,8 @@ FormCard.FormCardPage {
         FormCard.FormCheckDelegate {
             text: i18n("Enable Gamescope")
             description: i18n("A micro-compositor that uses Wayland to create a nested session.\nIf you use fullscreen mode, it may improve input handling.")
-            checked: page.profile.gamescopeEnabled
-            onCheckedChanged: page.profile.gamescopeEnabled = checked
+            checked: page.profile.config.gamescopeEnabled
+            onCheckedChanged: page.profile.config.gamescopeEnabled = checked
         }
 
         FormCard.FormDelegateSeparator {}
@@ -180,7 +180,7 @@ FormCard.FormCardPage {
         FormCard.FormButtonDelegate {
             text: i18n("Configure Gamescope...")
             icon.name: "configure"
-            enabled: page.profile.gamescopeEnabled
+            enabled: page.profile.config.gamescopeEnabled
             Kirigami.PromptDialog {
                 id: gamescopeSettingsDialog
                 title: i18n("Configure Gamescope")
@@ -188,31 +188,31 @@ FormCard.FormCardPage {
                 Kirigami.FormLayout {
                     QQC2.CheckBox {
                         Kirigami.FormData.label: "Fullscreen:"
-                        checked: page.profile.gamescopeFullscreen
-                        onCheckedChanged: page.profile.gamescopeFullscreen = checked
+                        checked: page.profile.config.gamescopeFullscreen
+                        onCheckedChanged: page.profile.config.gamescopeFullscreen = checked
                     }
                     QQC2.CheckBox {
                         Kirigami.FormData.label: "Borderless:"
-                        checked: page.profile.gamescopeBorderless
-                        onCheckedChanged: page.profile.gamescopeBorderless = checked
+                        checked: page.profile.config.gamescopeBorderless
+                        onCheckedChanged: page.profile.config.gamescopeBorderless = checked
                     }
                     QQC2.SpinBox {
                         Kirigami.FormData.label: "Width:"
                         to: 4096
-                        value: page.profile.gamescopeWidth
-                        onValueModified: page.profile.gamescopeWidth = value
+                        value: page.profile.config.gamescopeWidth
+                        onValueModified: page.profile.config.gamescopeWidth = value
                     }
                     QQC2.SpinBox {
                         Kirigami.FormData.label: "Height:"
                         to: 4096
-                        value: page.profile.gamescopeHeight
-                        onValueModified: page.profile.gamescopeHeight = value
+                        value: page.profile.config.gamescopeHeight
+                        onValueModified: page.profile.config.gamescopeHeight = value
                     }
                     QQC2.SpinBox {
                         Kirigami.FormData.label: "Refresh Rate:"
                         to: 512
-                        value: page.profile.gamescopeRefreshRate
-                        onValueModified: page.profile.gamescopeRefreshRate = value
+                        value: page.profile.config.gamescopeRefreshRate
+                        onValueModified: page.profile.config.gamescopeRefreshRate = value
                     }
                 }
             }
@@ -227,8 +227,8 @@ FormCard.FormCardPage {
 
             text: i18n("Enable Gamemode")
             description: i18n("A special game performance tool, that tunes your CPU scheduler among other things.")
-            checked: page.profile.gamemodeEnabled
-            onCheckedChanged: page.profile.gamemodeEnabled = checked
+            checked: page.profile.config.gamemodeEnabled
+            onCheckedChanged: page.profile.config.gamemodeEnabled = checked
         }
     }
 
@@ -243,8 +243,8 @@ FormCard.FormCardPage {
 
             text: i18n("Enable Dalamud")
             description: i18n("Dalamud extends the game with useful plugins, but use at your own risk.")
-            checked: page.profile.dalamudEnabled
-            onCheckedChanged: page.profile.dalamudEnabled = checked
+            checked: page.profile.config.dalamudEnabled
+            onCheckedChanged: page.profile.config.dalamudEnabled = checked
         }
 
         FormCard.FormDelegateSeparator {
@@ -257,9 +257,9 @@ FormCard.FormCardPage {
 
             text: i18n("Update Channel")
             model: LauncherCore.config.showDevTools ? [i18n("Stable"), i18n("Staging"), i18n("Local")] : [i18n("Stable"), i18n("Staging")]
-            currentIndex: page.profile.dalamudChannel
-            onCurrentIndexChanged: page.profile.dalamudChannel = currentIndex
-            enabled: page.profile.dalamudEnabled
+            currentIndex: page.profile.config.dalamudChannel
+            onCurrentIndexChanged: page.profile.config.dalamudChannel = currentIndex
+            enabled: page.profile.config.dalamudEnabled
         }
 
         FormCard.FormDelegateSeparator {
@@ -275,9 +275,9 @@ FormCard.FormCardPage {
             text: i18n("Injection Method")
             description: "It shouldn't be nessecary to change this setting, unless you're running into issues injecting Dalamud."
             model: ["Entrypoint", "DLL Injection"]
-            currentIndex: page.profile.dalamudInjectMethod
-            onCurrentIndexChanged: page.profile.dalamudInjectMethod = currentIndex
-            enabled: page.profile.dalamudEnabled
+            currentIndex: page.profile.config.dalamudInjectMethod
+            onCurrentIndexChanged: page.profile.config.dalamudInjectMethod = currentIndex
+            enabled: page.profile.config.dalamudEnabled
         }
 
         FormCard.FormDelegateSeparator {
@@ -290,9 +290,9 @@ FormCard.FormCardPage {
 
             visible: LauncherCore.config.showDevTools
             label: i18n("Injection Delay")
-            value: page.profile.dalamudInjectDelay
-            onValueChanged: page.profile.dalamudInjectDelay = value
-            enabled: page.profile.dalamudEnabled
+            value: page.profile.config.dalamudInjectDelay
+            onValueChanged: page.profile.config.dalamudInjectDelay = value
+            enabled: page.profile.config.dalamudEnabled
         }
 
         FormCard.FormDelegateSeparator {
@@ -300,7 +300,7 @@ FormCard.FormCardPage {
         }
 
         FormCard.FormTextDelegate {
-            description: page.profile.dalamudVersionText
+            description: page.profile.config.dalamudVersionText
         }
     }
 

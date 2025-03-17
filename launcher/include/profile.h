@@ -16,105 +16,47 @@ class Profile : public QObject
     QML_ELEMENT
     QML_UNCREATABLE("Use from ProfileManager")
 
-    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(QString gamePath READ gamePath WRITE setGamePath NOTIFY gamePathChanged)
     Q_PROPERTY(QString winePath READ winePath WRITE setWinePath NOTIFY winePathChanged)
-    Q_PROPERTY(QString winePrefixPath READ winePrefixPath WRITE setWinePrefixPath NOTIFY winePrefixPathChanged)
-    Q_PROPERTY(WineType wineType READ wineType WRITE setWineType NOTIFY wineTypeChanged)
-    Q_PROPERTY(bool gamescopeEnabled READ gamescopeEnabled WRITE setGamescopeEnabled NOTIFY useGamescopeChanged)
-    Q_PROPERTY(bool gamemodeEnabled READ gamemodeEnabled WRITE setGamemodeEnabled NOTIFY useGamemodeChanged)
-    Q_PROPERTY(bool directx9Enabled READ directx9Enabled WRITE setDirectX9Enabled NOTIFY useDX9Changed)
-    Q_PROPERTY(bool hasDirectx9 READ hasDirectx9 NOTIFY gamePathChanged)
-    Q_PROPERTY(bool gamescopeFullscreen READ gamescopeFullscreen WRITE setGamescopeFullscreen NOTIFY gamescopeFullscreenChanged)
-    Q_PROPERTY(bool gamescopeBorderless READ gamescopeBorderless WRITE setGamescopeBorderless NOTIFY gamescopeBorderlessChanged)
-    Q_PROPERTY(int gamescopeWidth READ gamescopeWidth WRITE setGamescopeWidth NOTIFY gamescopeWidthChanged)
-    Q_PROPERTY(int gamescopeHeight READ gamescopeHeight WRITE setGamescopeHeight NOTIFY gamescopeHeightChanged)
-    Q_PROPERTY(int gamescopeRefreshRate READ gamescopeRefreshRate WRITE setGamescopeRefreshRate NOTIFY gamescopeRefreshRateChanged)
-    Q_PROPERTY(bool dalamudEnabled READ dalamudEnabled WRITE setDalamudEnabled NOTIFY dalamudEnabledChanged)
-    Q_PROPERTY(DalamudInjectMethod dalamudInjectMethod READ dalamudInjectMethod WRITE setDalamudInjectMethod NOTIFY dalamudInjectMethodChanged)
-    Q_PROPERTY(int dalamudInjectDelay READ dalamudInjectDelay WRITE setDalamudInjectDelay NOTIFY dalamudInjectDelayChanged)
-    Q_PROPERTY(DalamudChannel dalamudChannel READ dalamudChannel WRITE setDalamudChannel NOTIFY dalamudChannelChanged)
+    Q_PROPERTY(bool hasDirectx9 READ hasDirectx9 NOTIFY hasDirectx9Changed)
     Q_PROPERTY(bool isGameInstalled READ isGameInstalled NOTIFY gameInstallChanged)
     Q_PROPERTY(Account *account READ account WRITE setAccount NOTIFY accountChanged)
     Q_PROPERTY(QString expansionVersionText READ expansionVersionText NOTIFY gameInstallChanged)
     Q_PROPERTY(QString dalamudVersionText READ dalamudVersionText NOTIFY gameInstallChanged)
     Q_PROPERTY(QString wineVersionText READ wineVersionText NOTIFY wineChanged)
     Q_PROPERTY(bool loggedIn READ loggedIn NOTIFY loggedInChanged)
-    Q_PROPERTY(bool isBenchmark READ isBenchmark WRITE setIsBenchmark NOTIFY isBenchmarkChanged)
     Q_PROPERTY(QString subtitle READ subtitle NOTIFY gameInstallChanged)
+    Q_PROPERTY(ProfileConfig *config READ config CONSTANT)
 
 public:
     explicit Profile(const QString &key, QObject *parent = nullptr);
 
-    enum class WineType { BuiltIn, Custom };
+    enum WineType {
+        BuiltIn,
+        Custom
+    };
     Q_ENUM(WineType)
 
-    enum class DalamudChannel { Stable, Staging, Local };
+    enum DalamudChannel {
+        Stable,
+        Staging,
+        Local
+    };
     Q_ENUM(DalamudChannel)
 
-    enum class DalamudInjectMethod { Entrypoint, DLLInject };
+    enum DalamudInjectMethod {
+        Entrypoint,
+        DLLInject
+    };
     Q_ENUM(DalamudInjectMethod)
 
     [[nodiscard]] QString uuid() const;
 
-    [[nodiscard]] QString name() const;
-    void setName(const QString &name);
-
-    [[nodiscard]] QString gamePath() const;
-    void setGamePath(const QString &path);
-
     [[nodiscard]] QString winePath() const;
     void setWinePath(const QString &path);
 
-    [[nodiscard]] QString winePrefixPath() const;
-    void setWinePrefixPath(const QString &path);
-
-    [[nodiscard]] WineType wineType() const;
-    void setWineType(WineType type);
-
-    [[nodiscard]] bool gamescopeEnabled() const;
-    void setGamescopeEnabled(bool value);
-
-    [[nodiscard]] bool gamemodeEnabled() const;
-    void setGamemodeEnabled(bool value);
-
-    [[nodiscard]] bool directx9Enabled() const;
-    void setDirectX9Enabled(bool value);
-
     [[nodiscard]] bool hasDirectx9() const;
 
-    [[nodiscard]] bool gamescopeFullscreen() const;
-    void setGamescopeFullscreen(bool value);
-
-    [[nodiscard]] bool gamescopeBorderless() const;
-    void setGamescopeBorderless(bool value);
-
-    [[nodiscard]] int gamescopeWidth() const;
-    void setGamescopeWidth(int value);
-
-    [[nodiscard]] int gamescopeHeight() const;
-    void setGamescopeHeight(int value);
-
-    [[nodiscard]] int gamescopeRefreshRate() const;
-    void setGamescopeRefreshRate(int value);
-
-    [[nodiscard]] bool dalamudEnabled() const;
-    void setDalamudEnabled(bool value);
-
-    [[nodiscard]] DalamudChannel dalamudChannel() const;
-    void setDalamudChannel(DalamudChannel channel);
-
-    [[nodiscard]] DalamudInjectMethod dalamudInjectMethod() const;
-    void setDalamudInjectMethod(DalamudInjectMethod value);
-
-    [[nodiscard]] int dalamudInjectDelay() const;
-    void setDalamudInjectDelay(int value);
-
-    [[nodiscard]] bool isBenchmark() const;
-    void setIsBenchmark(bool value);
-
     [[nodiscard]] Account *account() const;
-    [[nodiscard]] QString accountUuid() const;
     void setAccount(Account *account);
 
     void readGameVersion();
@@ -161,29 +103,15 @@ public:
 
     [[nodiscard]] QString subtitle() const;
 
+    ProfileConfig *config() const;
+
 Q_SIGNALS:
     void gameInstallChanged();
-    void nameChanged();
-    void gamePathChanged();
     void winePathChanged();
-    void winePrefixPathChanged();
-    void wineTypeChanged();
-    void useGamescopeChanged();
-    void useGamemodeChanged();
-    void useDX9Changed();
-    void gamescopeFullscreenChanged();
-    void gamescopeBorderlessChanged();
-    void gamescopeWidthChanged();
-    void gamescopeHeightChanged();
-    void gamescopeRefreshRateChanged();
-    void dalamudEnabledChanged();
-    void dalamudChannelChanged();
-    void dalamudInjectMethodChanged();
-    void dalamudInjectDelayChanged();
-    void isBenchmarkChanged();
     void accountChanged();
     void wineChanged();
     void loggedInChanged();
+    void hasDirectx9Changed();
 
 private:
     void readGameData();

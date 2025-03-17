@@ -19,6 +19,7 @@
 #include "compatibilitytoolinstaller.h"
 #include "gamerunner.h"
 #include "launchercore.h"
+#include "profileconfig.h"
 #include "sapphirelogin.h"
 #include "squareenixlogin.h"
 #include "utility.h"
@@ -61,7 +62,7 @@ LauncherCore::LauncherCore()
 
     // restore profile -> account connections
     for (const auto profile : m_profileManager->profiles()) {
-        if (const auto account = m_accountManager->getByUuid(profile->accountUuid())) {
+        if (const auto account = m_accountManager->getByUuid(profile->config()->account())) {
             profile->setAccount(account);
         }
     }
@@ -96,7 +97,7 @@ void LauncherCore::login(Profile *profile, const QString &username, const QStrin
     loginInformation->profile = profile;
 
     // Benchmark never has to login, of course
-    if (!profile->isBenchmark()) {
+    if (!profile->config()->isBenchmark()) {
         loginInformation->username = username;
         loginInformation->password = password;
         loginInformation->oneTimePassword = oneTimePassword;
@@ -456,7 +457,7 @@ SyncManager *LauncherCore::syncManager() const
 QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 {
     // Hmm, I don't think we're set up for this yet?
-    if (!info.profile->isBenchmark()) {
+    if (!info.profile->config()->isBenchmark()) {
         updateConfig(info.profile->account());
     }
 
@@ -468,7 +469,7 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 #endif
 
     std::optional<LoginAuth> auth;
-    if (!info.profile->isBenchmark()) {
+    if (!info.profile->config()->isBenchmark()) {
         if (info.profile->account()->config()->isSapphire()) {
             auth = co_await m_sapphireLogin->login(info.profile->account()->config()->lobbyUrl(), info);
         } else {
@@ -479,7 +480,7 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
     const auto assetUpdater = new AssetUpdater(*info.profile, *this, this);
     if (co_await assetUpdater->update()) {
         // If we expect an auth ticket, don't continue if missing
-        if (!info.profile->isBenchmark() && auth == std::nullopt) {
+        if (!info.profile->config()->isBenchmark() && auth == std::nullopt) {
             co_return;
         }
 

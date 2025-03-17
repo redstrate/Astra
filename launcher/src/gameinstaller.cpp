@@ -12,6 +12,7 @@
 #include "astra_log.h"
 #include "launchercore.h"
 #include "profile.h"
+#include "profileconfig.h"
 #include "utility.h"
 
 const auto installerUrl = QStringLiteral("https://download.finalfantasyxiv.com/inst/ffxivsetup.exe");
@@ -70,7 +71,7 @@ void GameInstaller::start()
 
 void GameInstaller::installGame()
 {
-    const QDir installDirectory = m_profile.gamePath();
+    const QDir installDirectory = m_profile.config()->gamePath();
 
     const std::string installDirectoryStd = installDirectory.absolutePath().toStdString();
     const std::string fileNameStd = m_localInstallerPath.toStdString();

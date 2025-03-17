@@ -25,7 +25,7 @@ FormCard.FormCardPage {
         FormCard.FormTextDelegate {
             id: helpTextDelegate
 
-            text: i18n("Select an account to use for '%1'.", LauncherCore.currentProfile.name)
+            text: i18n("Select an account to use for '%1'.", LauncherCore.currentProfile.config.name)
         }
     }
 

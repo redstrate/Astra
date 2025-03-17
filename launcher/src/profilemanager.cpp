@@ -3,6 +3,7 @@
 
 #include "profilemanager.h"
 #include "astra_log.h"
+#include "profileconfig.h"
 
 #include <KSharedConfig>
 #include <QDir>
@@ -43,7 +44,7 @@ Profile *ProfileManager::getProfileByUUID(const QString &uuid)
 Profile *ProfileManager::addProfile()
 {
     const auto newProfile = new Profile(QUuid::createUuid().toString(), this);
-    newProfile->setName(QStringLiteral("New Profile"));
+    newProfile->config()->setName(QStringLiteral("New Profile"));
 
     insertProfile(newProfile);
 

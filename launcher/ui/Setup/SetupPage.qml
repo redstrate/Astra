@@ -22,7 +22,7 @@ FormCard.FormCardPage {
     data: FolderDialog {
         id: installFolderDialog
 
-        onAccepted: page.profile.gamePath = decodeURIComponent(selectedFolder.toString().replace("file://", ""))
+        onAccepted: page.profile.config.gamePath = decodeURIComponent(selectedFolder.toString().replace("file://", ""))
     }
 
     Image {
@@ -47,7 +47,7 @@ FormCard.FormCardPage {
                 if (page.isInitialSetup) {
                     return i18n("You must have a legitimate installation of FFXIV to continue.");
                 } else {
-                    return i18n("Select a game installation for '%1'.", page.profile.name);
+                    return i18n("Select a game installation for '%1'.", page.profile.config.name);
                 }
             }
         }
@@ -62,7 +62,7 @@ FormCard.FormCardPage {
 
             icon.name: "document-open-folder"
             text: i18n("Select Install Folder")
-            description: profile.gamePath
+            description: profile.config.gamePath
 
             onClicked: installFolderDialog.open()
         }
@@ -94,12 +94,12 @@ FormCard.FormCardPage {
             FormCard.FormButtonDelegate {
                 required property var profile
 
-                text: profile.name
-                description: profile.gamePath
+                text: profile.config.name
+                description: profile.config.gamePath
                 visible: profile.isGameInstalled
 
                 onClicked: {
-                    LauncherCore.currentProfile.gamePath = profile.gamePath;
+                    LauncherCore.currentProfile.config.gamePath = profile.config.gamePath;
                     applicationWindow().checkSetup();
                 }
             }

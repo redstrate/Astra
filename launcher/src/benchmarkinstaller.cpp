@@ -10,6 +10,7 @@
 #include "astra_log.h"
 #include "launchercore.h"
 #include "profile.h"
+#include "profileconfig.h"
 #include "utility.h"
 
 // TODO: this should be dynamically grabbed from the webpage to avoid hardcoding it
@@ -62,7 +63,7 @@ void BenchmarkInstaller::start()
 
 void BenchmarkInstaller::installGame()
 {
-    const QDir installDirectory = m_profile.gamePath();
+    const QDir installDirectory = m_profile.config()->gamePath();
 
     KZip archive(m_localInstallerPath);
     if (!archive.open(QIODevice::ReadOnly)) {

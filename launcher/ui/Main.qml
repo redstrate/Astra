@@ -58,7 +58,7 @@ Kirigami.ApplicationWindow {
             pageStack.push(Qt.createComponent("zone.xiv.astra", "SetupPage"), {
                 profile: LauncherCore.currentProfile
             })
-        } else if (!LauncherCore.currentProfile.account && !LauncherCore.currentProfile.isBenchmark) {
+        } else if (!LauncherCore.currentProfile.account && !LauncherCore.currentProfile.config.isBenchmark) {
             // User must select an account for the profile
             pageStack.push(Qt.createComponent("zone.xiv.astra", "AccountSetup"), {
                 profile: LauncherCore.currentProfile

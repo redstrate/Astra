@@ -35,7 +35,7 @@ FormCard.FormCardPage {
 
         FormCard.FormButtonDelegate {
             text: i18n("Auto-login Profile")
-            description: LauncherCore.autoLoginProfile ? LauncherCore.autoLoginProfile.name : i18n("Disabled")
+            description: LauncherCore.autoLoginProfile ? LauncherCore.autoLoginProfile.config.name : i18n("Disabled")
 
             QQC2.Menu {
                 id: profileMenu
@@ -55,7 +55,7 @@ FormCard.FormCardPage {
                     QQC2.MenuItem {
                         required property var profile
 
-                        text: profile.name
+                        text: profile.config.name
 
                         onClicked: {
                             LauncherCore.autoLoginProfile = profile;
@@ -87,7 +87,7 @@ FormCard.FormCardPage {
                 FormCard.FormButtonDelegate {
                     id: buttonDelegate
 
-                    text: layout.profile.name
+                    text: layout.profile.config.name
                     description: layout.profile.subtitle
                     onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ProfileSettings"), {
                         profile: layout.profile

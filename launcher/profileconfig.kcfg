@@ -11,6 +11,7 @@ SPDX-License-Identifier: CC0-1.0
     <kcfgfile name="astrastaterc" stateConfig="true">
       <parameter name="uuid"/>
     </kcfgfile>
+    <include>profile.h</include>
     <group name="profile-$(uuid)">
       <entry key="Name" type="string">
       </entry>
@@ -25,7 +26,7 @@ SPDX-License-Identifier: CC0-1.0
         <default code="true">ProfileManager::getDefaultWinePrefixPath(mParamuuid)</default>
       </entry>
       <entry key="WineType" type="Enum">
-        <choices>
+        <choices name="Profile::WineType">
           <choice name="BuiltIn">
           </choice>
           <choice name="Custom">
@@ -61,7 +62,7 @@ SPDX-License-Identifier: CC0-1.0
         <default>false</default>
       </entry>
       <entry key="DalamudChannel" type="Enum">
-        <choices>
+        <choices name="Profile::DalamudChannel">
           <choice name="Stable">
           </choice>
           <choice name="Staging">
@@ -72,7 +73,7 @@ SPDX-License-Identifier: CC0-1.0
         <default>Stable</default>
       </entry>
       <entry key="DalamudInjectMethod" type="Enum">
-        <choices>
+        <choices name="Profile::DalamudInjectMethod">
           <choice name="Entrypoint">
           </choice>
           <choice name="DLLInject">

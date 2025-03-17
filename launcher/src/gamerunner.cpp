@@ -13,6 +13,7 @@
 #include "launchercore.h"
 #include "processlogger.h"
 #include "processwatcher.h"
+#include "profileconfig.h"
 #include "utility.h"
 
 #include <KProcessList>
@@ -28,10 +29,10 @@ GameRunner::GameRunner(LauncherCore &launcher, QObject *parent)
 void GameRunner::beginGameExecutable(Profile &profile, const std::optional<LoginAuth> &auth)
 {
     QString gameExectuable;
-    if (profile.directx9Enabled() && profile.hasDirectx9()) {
-        gameExectuable = profile.gamePath() + QStringLiteral("/game/ffxiv.exe");
+    if (profile.config()->useDX9() && profile.hasDirectx9()) {
+        gameExectuable = profile.config()->gamePath() + QStringLiteral("/game/ffxiv.exe");
     } else {
-        gameExectuable = profile.gamePath() + QStringLiteral("/game/ffxiv_dx11.exe");
+        gameExectuable = profile.config()->gamePath() + QStringLiteral("/game/ffxiv_dx11.exe");
     }
 
     if (profile.dalamudShouldLaunch()) {
@@ -147,30 +148,31 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
 
     const auto args = getGameArgs(profile, auth);
 
-    launchExecutable(profile,
-                     dalamudProcess,
-                     {Utility::toWindowsPath(dalamudInjector),
-                      QStringLiteral("launch"),
-                      QStringLiteral("-m"),
-                      profile.dalamudInjectMethod() == Profile::DalamudInjectMethod::Entrypoint ? QStringLiteral("entrypoint") : QStringLiteral("inject"),
-                      QStringLiteral("--game=") + Utility::toWindowsPath(gameExecutablePath),
-                      QStringLiteral("--dalamud-configuration-path=") + Utility::toWindowsPath(dalamudConfigPath),
-                      QStringLiteral("--dalamud-plugin-directory=") + Utility::toWindowsPath(dalamudPluginDir),
-                      QStringLiteral("--dalamud-asset-directory=") + Utility::toWindowsPath(dalamudAssetDir),
-                      QStringLiteral("--dalamud-client-language=") + QString::number(profile.account()->config()->language()),
-                      QStringLiteral("--dalamud-delay-initialize=") + QString::number(profile.dalamudInjectDelay()),
-                      QStringLiteral("--logpath=") + Utility::toWindowsPath(logDir),
-                      QStringLiteral("--"),
-                      args},
-                     true,
-                     true);
+    launchExecutable(
+        profile,
+        dalamudProcess,
+        {Utility::toWindowsPath(dalamudInjector),
+         QStringLiteral("launch"),
+         QStringLiteral("-m"),
+         profile.config()->dalamudInjectMethod() == Profile::DalamudInjectMethod::Entrypoint ? QStringLiteral("entrypoint") : QStringLiteral("inject"),
+         QStringLiteral("--game=") + Utility::toWindowsPath(gameExecutablePath),
+         QStringLiteral("--dalamud-configuration-path=") + Utility::toWindowsPath(dalamudConfigPath),
+         QStringLiteral("--dalamud-plugin-directory=") + Utility::toWindowsPath(dalamudPluginDir),
+         QStringLiteral("--dalamud-asset-directory=") + Utility::toWindowsPath(dalamudAssetDir),
+         QStringLiteral("--dalamud-client-language=") + QString::number(profile.account()->config()->language()),
+         QStringLiteral("--dalamud-delay-initialize=") + QString::number(profile.config()->dalamudInjectDelay()),
+         QStringLiteral("--logpath=") + Utility::toWindowsPath(logDir),
+         QStringLiteral("--"),
+         args},
+        true,
+        true);
 }
 
 QString GameRunner::getGameArgs(const Profile &profile, const std::optional<LoginAuth> &auth) const
 {
     QList<std::pair<QString, QString>> gameArgs;
 
-    if (profile.isBenchmark()) {
+    if (profile.config()->isBenchmark()) {
         gameArgs.push_back({QStringLiteral("SYS.Language"), QString::number(1)});
         gameArgs.push_back({QStringLiteral("SYS.Fps"), QString::number(0)});
         gameArgs.push_back({QStringLiteral("SYS.WaterWet_DX11"), QString::number(1)});
@@ -226,7 +228,7 @@ QString GameRunner::getGameArgs(const Profile &profile, const std::optional<Logi
 
     // FIXME: this should belong somewhere else...
     if (LauncherCore::needsCompatibilityTool())
-        Utility::createPathIfNeeded(profile.winePrefixPath());
+        Utility::createPathIfNeeded(profile.config()->winePrefixPath());
 
     if (auth) {
         if (!auth->lobbyHost.isEmpty()) {
@@ -242,14 +244,15 @@ QString GameRunner::getGameArgs(const Profile &profile, const std::optional<Logi
         }
     }
 
-    const QString argFormat = !profile.isBenchmark() && m_launcher.config()->encryptArguments() ? QStringLiteral(" /%1 =%2") : QStringLiteral(" %1=%2");
+    const QString argFormat =
+        !profile.config()->isBenchmark() && m_launcher.config()->encryptArguments() ? QStringLiteral(" /%1 =%2") : QStringLiteral(" %1=%2");
 
     QString argJoined;
     for (const auto &[key, value] : gameArgs) {
         argJoined += argFormat.arg(key, value);
     }
 
-    return !profile.isBenchmark() && m_launcher.config()->encryptArguments() ? encryptGameArg(argJoined) : argJoined;
+    return !profile.config()->isBenchmark() && m_launcher.config()->encryptArguments() ? encryptGameArg(argJoined) : argJoined;
 }
 
 void GameRunner::launchExecutable(const Profile &profile, QProcess *process, const QStringList &args, bool isGame, bool needsRegistrySetup)
@@ -260,7 +263,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     if (needsRegistrySetup) {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
         // FFXIV detects this as a "macOS" build by checking if Wine shows up
-        if (!profile.isBenchmark()) {
+        if (!profile.config()->isBenchmark()) {
             const int value = profile.account()->config()->license() == Account::GameLicense::macOS ? 0 : 1;
             addRegistryKey(profile, QStringLiteral("HKEY_CURRENT_USER\\Software\\Wine"), QStringLiteral("HideWineExports"), QString::number(value));
         }
@@ -276,7 +279,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
         const QDir dxvkDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("dxvk"));
         const QDir dxvk64Dir = dxvkDir.absoluteFilePath(QStringLiteral("x64"));
 
-        const QDir winePrefix = profile.winePrefixPath();
+        const QDir winePrefix = profile.config()->winePrefixPath();
         const QDir driveC = winePrefix.absoluteFilePath(QStringLiteral("drive_c"));
         const QDir windows = driveC.absoluteFilePath(QStringLiteral("windows"));
         const QDir system32 = windows.absoluteFilePath(QStringLiteral("system32"));
@@ -290,35 +293,35 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 #endif
     }
 
-    if (isGame && profile.gamescopeEnabled()) {
+    if (isGame && profile.config()->useGamescope()) {
         arguments.push_back(QStringLiteral("gamescope"));
 
-        if (profile.gamescopeFullscreen())
+        if (profile.config()->gamescopeFullscreen())
             arguments.push_back(QStringLiteral("-f"));
 
-        if (profile.gamescopeBorderless())
+        if (profile.config()->gamescopeBorderless())
             arguments.push_back(QStringLiteral("-b"));
 
-        if (profile.gamescopeWidth() > 0) {
+        if (profile.config()->gamescopeWidth() > 0) {
             arguments.push_back(QStringLiteral("-w"));
-            arguments.push_back(QString::number(profile.gamescopeWidth()));
+            arguments.push_back(QString::number(profile.config()->gamescopeWidth()));
         }
 
-        if (profile.gamescopeHeight() > 0) {
+        if (profile.config()->gamescopeHeight() > 0) {
             arguments.push_back(QStringLiteral("-h"));
-            arguments.push_back(QString::number(profile.gamescopeHeight()));
+            arguments.push_back(QString::number(profile.config()->gamescopeHeight()));
         }
 
-        if (profile.gamescopeRefreshRate() > 0) {
+        if (profile.config()->gamescopeRefreshRate() > 0) {
             arguments.push_back(QStringLiteral("-r"));
-            arguments.push_back(QString::number(profile.gamescopeRefreshRate()));
+            arguments.push_back(QString::number(profile.config()->gamescopeRefreshRate()));
         }
 
         arguments.push_back(QStringLiteral("--"));
     }
 
 #ifdef ENABLE_GAMEMODE
-    if (isGame && profile.gamemodeEnabled()) {
+    if (isGame && profile.config()->useGamemode()) {
         gamemode_request_start();
     }
 #endif
@@ -340,16 +343,16 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 #endif
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
-    env.insert(QStringLiteral("WINEPREFIX"), profile.winePrefixPath());
+    env.insert(QStringLiteral("WINEPREFIX"), profile.config()->winePrefixPath());
 
-    if (profile.wineType() == Profile::WineType::BuiltIn) {
+    if (profile.config()->wineType() == Profile::WineType::BuiltIn) {
         env.insert(QStringLiteral("WINEDLLOVERRIDES"), QStringLiteral("msquic=,mscoree=n,b;d3d9,d3d11,d3d10core,dxgi=n,b"));
     }
 
     arguments.push_back(profile.winePath());
 #endif
 
-    if (!profile.isBenchmark() && profile.account()->config()->license() == Account::GameLicense::WindowsSteam) {
+    if (!profile.config()->isBenchmark() && profile.account()->config()->license() == Account::GameLicense::WindowsSteam) {
         env.insert(QStringLiteral("IS_FFXIV_LAUNCH_FROM_STEAM"), QStringLiteral("1"));
     }
 
@@ -358,11 +361,11 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     const QString executable = arguments.takeFirst();
 
     if (isGame) {
-        if (profile.isBenchmark()) {
+        if (profile.config()->isBenchmark()) {
             // Benchmarks usually have some data located in the root
-            process->setWorkingDirectory(profile.gamePath());
+            process->setWorkingDirectory(profile.config()->gamePath());
         } else {
-            process->setWorkingDirectory(profile.gamePath() + QStringLiteral("/game/"));
+            process->setWorkingDirectory(profile.config()->gamePath() + QStringLiteral("/game/"));
         }
     }
 
