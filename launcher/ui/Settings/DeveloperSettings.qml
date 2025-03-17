@@ -111,8 +111,8 @@ FormCard.FormCardPage {
 
             onClicked: {
                 preferredProtocolDelegate.text = "http";
-                squareMainServerDelegate.text = "ffxiv.local";
-                loginServerDelegate.text = "square.local";
+                squareMainServerDelegate.text = "ffxiv.localhost";
+                loginServerDelegate.text = "square.localhost";
             }
         }
 
