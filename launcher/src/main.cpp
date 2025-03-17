@@ -5,7 +5,7 @@
 #include <KIconTheme>
 #include <KLocalizedContext>
 #include <KLocalizedString>
-#include <QGuiApplication> // NOTE: do not remove this, if your IDE suggests to do so
+#include <QApplication> // NOTE: do not remove this, if your IDE suggests to do so
 #include <QQuickStyle>
 #include <kdsingleapplication.h>
 #include <qcoroqml.h>
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
     KIconTheme::initTheme();
 
-    const QGuiApplication app(argc, argv);
+    const QApplication app(argc, argv);
 
     const KDSingleApplication singleApplication;
     if (!singleApplication.isPrimaryInstance()) {
