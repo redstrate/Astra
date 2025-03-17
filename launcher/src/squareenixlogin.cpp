@@ -195,6 +195,12 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
         if (!patchList.isEmpty()) {
             qDebug(ASTRA_LOG) << "Boot patch list:" << patchList;
 
+            if (!m_info->profile->config()->allowPatching()) {
+                Q_EMIT m_launcher.loginError(
+                    i18n("You require an update to play, but you have the “Allow Updates” option checked - so the login was canceled."));
+                co_return false;
+            }
+
             m_patcher = new Patcher(m_launcher, m_info->profile->config()->gamePath() + QStringLiteral("/boot"), *m_info->profile->bootData(), this);
             const std::string patchListStd = patchList.toStdString();
             const bool hasPatched = co_await m_patcher->patch(physis_parse_patchlist(PatchListType::Boot, patchListStd.c_str()));
@@ -398,11 +404,16 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
             if (!body.isEmpty()) {
                 qDebug(ASTRA_LOG) << "Game patch list:" << body;
 
+                if (!m_info->profile->config()->allowPatching()) {
+                    Q_EMIT m_launcher.loginError(
+                        i18n("You require an update to play, but you have the “Allow Updates” option checked - so the login was canceled."));
+                    co_return false;
+                }
+
                 m_patcher = new Patcher(m_launcher, m_info->profile->config()->gamePath() + QStringLiteral("/game"), *m_info->profile->gameData(), this);
                 std::string bodyStd = body.toStdString();
                 const bool hasPatched = co_await m_patcher->patch(physis_parse_patchlist(PatchListType::Game, bodyStd.c_str()));
                 m_patcher->deleteLater();
-                qInfo() << hasPatched;
                 if (!hasPatched) {
                     co_return false;
                 }

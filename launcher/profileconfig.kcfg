@@ -87,5 +87,8 @@ SPDX-License-Identifier: CC0-1.0
       <entry key="IsBenchmark" type="bool">
         <default>false</default>
       </entry>
+      <entry key="AllowPatching" type="bool">
+        <default>true</default>
+      </entry>
     </group>
 </kcfg>

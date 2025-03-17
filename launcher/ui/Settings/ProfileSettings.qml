@@ -106,6 +106,21 @@ FormCard.FormCardPage {
             visible: page.profile.hasDirectx9
         }
 
+        FormCard.FormSwitchDelegate {
+            id: allowUpdatesDelegate
+
+            text: i18n("Allow Updating")
+            description: i18n("If unchecked, Astra won't try to update the game automatically.")
+            checked: page.profile.config.allowPatching
+            onCheckedChanged: page.profile.config.allowPatching = checked
+            visible: LauncherCore.config.showDevTools
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: allowUpdatesDelegate
+            visible: LauncherCore.config.showDevTools
+        }
+
         FormCard.FormTextDelegate {
             description: page.profile.expansionVersionText
         }
