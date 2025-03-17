@@ -36,15 +36,6 @@ SPDX-License-Identifier: CC0-1.0
     <entry name="DalamudDistribServer" type="String">
       <default>kamori.goats.dev</default>
     </entry>
-    <entry name="SquareEnixServer" type="String">
-      <default>ffxiv.com</default>
-    </entry>
-    <entry name="SquareEnixLoginServer" type="String">
-      <default>square-enix.com</default>
-    </entry>
-    <entry name="MainServer" type="String">
-      <default>finalfantasyxiv.com</default>
-    </entry>
     <entry name="PreferredProtocol" type="String">
       <default>https</default>
     </entry>
@@ -53,12 +44,6 @@ SPDX-License-Identifier: CC0-1.0
     </entry>
     <entry key="EnableRenderDocCapture" type="bool">
       <default>false</default>
-    </entry>
-    <entry name="CustomGameServer" type="String">
-      <default></default>
-    </entry>
-    <entry name="CustomGameServerPort" type="int">
-      <default>7000</default>
     </entry>
   </group>
 </kcfg>

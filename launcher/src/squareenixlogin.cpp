@@ -74,10 +74,10 @@ QCoro::Task<std::optional<LoginAuth>> SquareEnixLogin::login(LoginInformation *i
     }
 
     // Inject custom game server if set
-    if (!m_launcher.config()->customGameServer().isEmpty()) {
-        m_auth.frontierHost = m_launcher.config()->customGameServer();
-        m_auth.lobbyHost = m_launcher.config()->customGameServer();
-        m_auth.lobbyHostPort = m_launcher.config()->customGameServerPort();
+    if (!info->profile->account()->config()->lobbyHost().isEmpty()) {
+        m_auth.frontierHost = info->profile->account()->config()->gMServerHost();
+        m_auth.lobbyHost = info->profile->account()->config()->lobbyHost();
+        m_auth.lobbyHostPort = info->profile->account()->config()->lobbyHostPort();
     }
 
     co_return m_auth;
@@ -89,8 +89,8 @@ QCoro::Task<bool> SquareEnixLogin::checkGateStatus() const
     qInfo(ASTRA_LOG) << "Checking if the gate is open...";
 
     QUrl url;
-    url.setScheme(m_launcher.config()->preferredProtocol());
-    url.setHost(QStringLiteral("frontier.%1").arg(m_launcher.config()->squareEnixServer()));
+    url.setScheme(m_info->profile->account()->config()->preferredProtocol());
+    url.setHost(QStringLiteral("frontier.%1").arg(m_info->profile->account()->config()->squareEnixServer()));
     url.setPath(QStringLiteral("/worldStatus/gate_status.json"));
     url.setQuery(QString::number(QDateTime::currentMSecsSinceEpoch()));
 
@@ -130,8 +130,8 @@ QCoro::Task<bool> SquareEnixLogin::checkLoginStatus() const
     qInfo(ASTRA_LOG) << "Checking if login is open...";
 
     QUrl url;
-    url.setScheme(m_launcher.config()->preferredProtocol());
-    url.setHost(QStringLiteral("frontier.%1").arg(m_launcher.config()->squareEnixServer()));
+    url.setScheme(m_info->profile->account()->config()->preferredProtocol());
+    url.setHost(QStringLiteral("frontier.%1").arg(m_info->profile->account()->config()->squareEnixServer()));
     url.setPath(QStringLiteral("/worldStatus/login_status.json"));
     url.setQuery(QString::number(QDateTime::currentMSecsSinceEpoch()));
 
@@ -153,7 +153,7 @@ QCoro::Task<bool> SquareEnixLogin::checkLoginStatus() const
         qInfo(ASTRA_LOG) << "Login is open!";
         co_return true;
     } else {
-        qInfo(ASTRA_LOG) << "Lgoin is closed!";
+        qInfo(ASTRA_LOG) << "Login is closed!";
         Q_EMIT m_launcher.loginError(i18n("The login gate is closed, the game may be under maintenance.\n\n%1", reply->errorString()));
         co_return false;
     }
@@ -173,7 +173,7 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
 
     QUrl url;
     url.setScheme(QStringLiteral("http"));
-    url.setHost(QStringLiteral("patch-bootver.%1").arg(m_launcher.config()->squareEnixServer()));
+    url.setHost(QStringLiteral("patch-bootver.%1").arg(m_info->profile->account()->config()->squareEnixServer()));
     url.setPath(QStringLiteral("/http/%1/%2/%3/").arg(platform, bootUpdateChannel, m_info->profile->bootVersion()));
     url.setQuery(query);
 
@@ -184,7 +184,7 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
         request.setHeader(QNetworkRequest::KnownHeaders::UserAgentHeader, patchUserAgent);
     }
 
-    request.setRawHeader(QByteArrayLiteral("Host"), QStringLiteral("patch-bootver.%1").arg(m_launcher.config()->squareEnixServer()).toUtf8());
+    request.setRawHeader(QByteArrayLiteral("Host"), QStringLiteral("patch-bootver.%1").arg(m_info->profile->account()->config()->squareEnixServer()).toUtf8());
     Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = m_launcher.mgr()->get(request);
@@ -241,8 +241,8 @@ QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStor
     }
 
     QUrl url;
-    url.setScheme(m_launcher.config()->preferredProtocol());
-    url.setHost(QStringLiteral("ffxiv-login.%1").arg(m_launcher.config()->squareEnixLoginServer()));
+    url.setScheme(m_info->profile->account()->config()->preferredProtocol());
+    url.setHost(QStringLiteral("ffxiv-login.%1").arg(m_info->profile->account()->config()->squareEnixLoginServer()));
     url.setPath(QStringLiteral("/oauth/ffxivarr/login/top"));
     url.setQuery(query);
 
@@ -299,8 +299,8 @@ QCoro::Task<bool> SquareEnixLogin::loginOAuth()
     postData.addQueryItem(QStringLiteral("otppw"), m_info->oneTimePassword);
 
     QUrl url;
-    url.setScheme(m_launcher.config()->preferredProtocol());
-    url.setHost(QStringLiteral("ffxiv-login.%1").arg(m_launcher.config()->squareEnixLoginServer()));
+    url.setScheme(m_info->profile->account()->config()->preferredProtocol());
+    url.setHost(QStringLiteral("ffxiv-login.%1").arg(m_info->profile->account()->config()->squareEnixLoginServer()));
     url.setPath(QStringLiteral("/oauth/ffxivarr/login/login.send"));
 
     QNetworkRequest request(url);
@@ -360,8 +360,8 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
     qInfo(ASTRA_LOG) << "Registering the session...";
 
     QUrl url;
-    url.setScheme(m_launcher.config()->preferredProtocol());
-    url.setHost(QStringLiteral("patch-gamever.%1").arg(m_launcher.config()->squareEnixServer()));
+    url.setScheme(m_info->profile->account()->config()->preferredProtocol());
+    url.setHost(QStringLiteral("patch-gamever.%1").arg(m_info->profile->account()->config()->squareEnixServer()));
     url.setPath(QStringLiteral("/http/%1/%2/%3/%4").arg(platform, gameUpdateChannel, m_info->profile->baseGameVersion(), m_SID));
 
     auto request = QNetworkRequest(url);

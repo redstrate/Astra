@@ -186,8 +186,8 @@ void LauncherCore::fetchAvatar(Account *account)
         qDebug(ASTRA_LOG) << "Did not find lodestone character " << account->config()->lodestoneId() << " in cache, fetching from Lodestone.";
 
         QUrl url;
-        url.setScheme(config()->preferredProtocol());
-        url.setHost(QStringLiteral("na.%1").arg(config()->mainServer())); // TODO: NA isnt the only thing in the world...
+        url.setScheme(account->config()->preferredProtocol());
+        url.setHost(QStringLiteral("na.%1").arg(account->config()->mainServer())); // TODO: NA isnt the only thing in the world...
         url.setPath(QStringLiteral("/lodestone/character/%1").arg(account->config()->lodestoneId()));
 
         const QNetworkRequest request(url);
@@ -367,7 +367,7 @@ void LauncherCore::setupIgnoreSSL(QNetworkReply *reply)
 {
     Q_ASSERT(reply != nullptr);
 
-    if (config()->preferredProtocol() == QStringLiteral("http")) {
+    if (reply->request().url().scheme() == QStringLiteral("http")) {
         connect(reply, &QNetworkReply::sslErrors, this, [reply](const QList<QSslError> &errors) {
             reply->ignoreSslErrors(errors);
         });
@@ -471,7 +471,7 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
     std::optional<LoginAuth> auth;
     if (!info.profile->config()->isBenchmark()) {
         if (info.profile->account()->config()->isSapphire()) {
-            auth = co_await m_sapphireLogin->login(info.profile->account()->config()->lobbyUrl(), info);
+            auth = co_await m_sapphireLogin->login(info.profile->account()->config()->lobbyHost(), info);
         } else {
             auth = co_await m_squareEnixLogin->login(&info);
         }
@@ -505,8 +505,8 @@ QCoro::Task<> LauncherCore::fetchNews()
     query.addQueryItem(QStringLiteral("media"), QStringLiteral("pcapp"));
 
     QUrl headlineUrl;
-    headlineUrl.setScheme(config()->preferredProtocol());
-    headlineUrl.setHost(QStringLiteral("frontier.%1").arg(config()->squareEnixServer()));
+    headlineUrl.setScheme(currentProfile()->account()->config()->preferredProtocol());
+    headlineUrl.setHost(QStringLiteral("frontier.%1").arg(currentProfile()->account()->config()->squareEnixServer()));
     headlineUrl.setPath(QStringLiteral("/news/headline.json"));
     headlineUrl.setQuery(query);
 
@@ -524,8 +524,8 @@ QCoro::Task<> LauncherCore::fetchNews()
     co_await headlineReply;
 
     QUrl bannerUrl;
-    bannerUrl.setScheme(config()->preferredProtocol());
-    bannerUrl.setHost(QStringLiteral("frontier.%1").arg(config()->squareEnixServer()));
+    bannerUrl.setScheme(currentProfile()->account()->config()->preferredProtocol());
+    bannerUrl.setHost(QStringLiteral("frontier.%1").arg(currentProfile()->account()->config()->squareEnixServer()));
     bannerUrl.setPath(QStringLiteral("/v2/topics/%1/banner.json").arg(QStringLiteral("en-us")));
     bannerUrl.setQuery(query);
 

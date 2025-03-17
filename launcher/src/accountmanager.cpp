@@ -73,7 +73,7 @@ Account *AccountManager::createSapphireAccount(const QString &lobbyUrl, const QS
     const auto account = new Account(QUuid::createUuid().toString(), this);
     account->config()->setIsSapphire(true);
     account->config()->setName(username);
-    account->config()->setLobbyUrl(lobbyUrl);
+    account->config()->setLobbyHost(lobbyUrl);
 
     insertAccount(account);
 

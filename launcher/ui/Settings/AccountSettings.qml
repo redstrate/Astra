@@ -51,6 +51,10 @@ FormCard.FormCardPage {
             Kirigami.Action {
                 id: loginAction
                 text: i18n("Login")
+            },
+            Kirigami.Action {
+                id: developerAction
+                text: i18n("Developer")
             }
         ]
 
@@ -252,6 +256,101 @@ FormCard.FormCardPage {
             }
 
             onClicked: otpDialog.open()
+        }
+    }
+
+    FormCard.FormCard {
+        visible: developerAction.checked
+
+        Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing * 4
+
+        FormCard.FormTextFieldDelegate {
+            id: preferredProtocolDelegate
+
+            label: i18n("Preferred Protocol")
+            text: page.account.config.preferredProtocol
+            onTextChanged: page.account.config.preferredProtocol = text
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: preferredProtocolDelegate
+            below: squareMainServerDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: squareMainServerDelegate
+
+            label: i18n("SE Main Server (ffxiv.com)")
+            text: page.account.config.squareEnixServer
+            onTextChanged: page.account.config.squareEnixServer = text
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: squareMainServerDelegate
+            below: loginServerDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: loginServerDelegate
+
+            label: i18n("SE Login Server (square-enix.com)")
+            text: page.account.config.squareEnixLoginServer
+            onTextChanged: page.account.config.squareEnixLoginServer = text
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: loginServerDelegate
+            below: mainServerDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: mainServerDelegate
+
+            label: i18n("Main Server (finalfantasyxiv.com)")
+            text: page.account.config.mainServer
+            onTextChanged: page.account.config.mainServer = text
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: mainServerDelegate
+            below: gmServerDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: gmServerDelegate
+
+            label: i18n("GM Server (leave blank for default)")
+            text: page.account.config.gMServerHost
+            onTextChanged: page.account.config.gMServerHost = text
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: gmServerDelegate
+            below: gameServerDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: gameServerDelegate
+
+            label: i18n("Lobby Server (leave blank for default)")
+            text: page.account.config.lobbyHost
+            onTextChanged: page.account.config.lobbyHost = text
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: gameServerDelegate
+            below: gameServerPortDelegate
+        }
+
+        FormCard.FormSpinBoxDelegate {
+            id: gameServerPortDelegate
+
+            label: i18n("Lobby Server Port")
+            value: page.account.config.lobbyHostPort
+            onValueChanged: page.account.config.lobbyHostPort = value
+            from: 1
+            to: 999999
         }
     }
 

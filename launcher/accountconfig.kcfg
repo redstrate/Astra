@@ -39,8 +39,6 @@ SPDX-License-Identifier: CC0-1.0
       <entry key="IsSapphire" type="bool">
       <default>false</default>
       </entry>
-      <entry key="LobbyUrl" type="string">
-      </entry>
       <entry key="RememberPassword" type="bool">
       <default>false</default>
       </entry>
@@ -62,6 +60,27 @@ SPDX-License-Identifier: CC0-1.0
         <default>WindowsStandalone</default>
       </entry>
       <entry key="IsFreeTrial" type="bool">
+      </entry>
+      <entry name="PreferredProtocol" type="String">
+        <default>https</default>
+      </entry>
+      <entry name="GMServerHost" type="String">
+        <default></default>
+      </entry>
+      <entry name="LobbyHost" type="String">
+        <default></default>
+      </entry>
+      <entry name="LobbyHostPort" type="int">
+        <default>7000</default>
+      </entry>
+      <entry name="SquareEnixServer" type="String">
+        <default>ffxiv.com</default>
+      </entry>
+      <entry name="SquareEnixLoginServer" type="String">
+        <default>square-enix.com</default>
+      </entry>
+      <entry name="MainServer" type="String">
+        <default>finalfantasyxiv.com</default>
       </entry>
     </group>
 </kcfg>

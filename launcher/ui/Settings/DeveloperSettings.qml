@@ -85,42 +85,6 @@ FormCard.FormCardPage {
     FormCard.FormCard {
         Layout.fillWidth: true
 
-        FormCard.FormButtonDelegate {
-            id: resetToDefaultsDelegate
-
-            text: i18n("Reset to Defaults")
-
-            onClicked: {
-                preferredProtocolDelegate.text = LauncherCore.config.defaultPreferredProtocol();
-                dalamudServerDelegate.text = LauncherCore.config.defaultDalamudDistribServer();
-                squareMainServerDelegate.text = LauncherCore.config.defaultSquareEnixServer();
-                loginServerDelegate.text = LauncherCore.config.defaultSquareEnixLoginServer();
-                mainServerDelegate.text = LauncherCore.config.defaultMainServer();
-            }
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: resetToDefaultsDelegate
-            below: localServerDelegate
-        }
-
-        FormCard.FormButtonDelegate {
-            id: localServerDelegate
-
-            text: i18n("Set to localhost")
-
-            onClicked: {
-                preferredProtocolDelegate.text = "http";
-                squareMainServerDelegate.text = "ffxiv.localhost";
-                loginServerDelegate.text = "square.localhost";
-            }
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: localServerDelegate
-            below: preferredProtocolDelegate
-        }
-
         FormCard.FormTextFieldDelegate {
             id: preferredProtocolDelegate
 
@@ -140,73 +104,6 @@ FormCard.FormCardPage {
             label: i18n("Dalamud Distribution Server")
             text: LauncherCore.config.dalamudDistribServer
             onTextChanged: LauncherCore.config.dalamudDistribServer = text
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: dalamudServerDelegate
-            below: squareMainServerDelegate
-        }
-
-        FormCard.FormTextFieldDelegate {
-            id: squareMainServerDelegate
-
-            label: i18n("SE Main Server (ffxiv.com)")
-            text: LauncherCore.config.squareEnixServer
-            onTextChanged: LauncherCore.config.squareEnixServer = text
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: squareMainServerDelegate
-            below: loginServerDelegate
-        }
-
-        FormCard.FormTextFieldDelegate {
-            id: loginServerDelegate
-
-            label: i18n("SE Login Server (square-enix.com)")
-            text: LauncherCore.config.squareEnixLoginServer
-            onTextChanged: LauncherCore.config.squareEnixLoginServer = text
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: loginServerDelegate
-            below: mainServerDelegate
-        }
-
-        FormCard.FormTextFieldDelegate {
-            id: mainServerDelegate
-
-            label: i18n("Main Server (finalfantasyxiv.com)")
-            text: LauncherCore.config.mainServer
-            onTextChanged: LauncherCore.config.mainServer = text
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: mainServerDelegate
-            below: gameServerDelegate
-        }
-
-        FormCard.FormTextFieldDelegate {
-            id: gameServerDelegate
-
-            label: i18n("Game Server (leave blank for default)")
-            text: LauncherCore.config.customGameServer
-            onTextChanged: LauncherCore.config.customGameServer = text
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: gameServerDelegate
-            below: gameServerPortDelegate
-        }
-
-        FormCard.FormSpinBoxDelegate {
-            id: gameServerPortDelegate
-
-            label: i18n("Game Server Port")
-            value: LauncherCore.config.customGameServerPort
-            onValueChanged: LauncherCore.config.customGameServerPort = value
-            from: 1
-            to: 999999
         }
     }
 }
