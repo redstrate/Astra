@@ -55,7 +55,7 @@ private Q_SLOTS:
         QCOMPARE(profileManager.numProfiles(), 2);
         QVERIFY(profileManager.canDelete(profileManager.getProfile(1)));
 
-        profileManager.deleteProfile(profileManager.getProfile(1));
+        profileManager.deleteProfile(profileManager.getProfile(1), false);
 
         QCOMPARE(profileManager.rowCount({}), 1);
         QCOMPARE(profileManager.numProfiles(), 1);

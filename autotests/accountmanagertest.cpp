@@ -36,14 +36,6 @@ private Q_SLOTS:
         QVERIFY(!accountManager.canDelete(nullptr));
     }
 
-    void testAccountManagement_data()
-    {
-        QTest::addColumn<bool>("isSapphire");
-
-        QTest::addRow("se") << false;
-        QTest::addRow("sapphire") << true;
-    }
-
     void testAccountManagement()
     {
         AccountManager accountManager;
@@ -61,13 +53,7 @@ private Q_SLOTS:
         QCOMPARE(accountAddedSpy.count(), 0);
         QVERIFY(!accountManager.hasAnyAccounts());
 
-        QFETCH(bool, isSapphire);
-
-        if (isSapphire) {
-            accountManager.createSapphireAccount(QStringLiteral("foo.com"), QStringLiteral("foo"));
-        } else {
-            accountManager.createSquareEnixAccount(QStringLiteral("foo"), static_cast<int>(Account::GameLicense::WindowsStandalone), true);
-        }
+        accountManager.createSquareEnixAccount(QStringLiteral("foo"), static_cast<int>(Account::GameLicense::WindowsStandalone), true);
 
         QCOMPARE(accountsChangedSpy.count(), 1);
         QCOMPARE(accountAddedSpy.count(), 1);
