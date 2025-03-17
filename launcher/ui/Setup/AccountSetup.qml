@@ -74,21 +74,5 @@ FormCard.FormCardPage {
                 profile: page.profile
             })
         }
-
-        FormCard.FormDelegateSeparator {
-            above: addSquareEnixButton
-            below: addSapphireButton
-        }
-
-        FormCard.FormButtonDelegate {
-            id: addSapphireButton
-
-            text: i18n("Sapphire Account…")
-            description: i18n("Only for Sapphire servers, don't select this if unless you need to connect to one.")
-            icon.name: "list-add-symbolic"
-            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSapphire"), {
-                profile: page.profile
-            })
-        }
     }
 }

@@ -29,7 +29,6 @@ public:
     [[nodiscard]] QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE Account *createSquareEnixAccount(const QString &username, int licenseType, bool isFreeTrial);
-    Q_INVOKABLE Account *createSapphireAccount(const QString &lobbyUrl, const QString &username);
 
     [[nodiscard]] Account *getByUuid(const QString &uuid) const;
 

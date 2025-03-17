@@ -58,22 +58,9 @@ QHash<int, QByteArray> AccountManager::roleNames() const
 Account *AccountManager::createSquareEnixAccount(const QString &username, const int licenseType, const bool isFreeTrial)
 {
     const auto account = new Account(QUuid::createUuid().toString(), this);
-    account->config()->setIsSapphire(false);
     account->config()->setLicense(static_cast<Account::GameLicense>(licenseType));
     account->config()->setIsFreeTrial(isFreeTrial);
     account->config()->setName(username);
-
-    insertAccount(account);
-
-    return account;
-}
-
-Account *AccountManager::createSapphireAccount(const QString &lobbyUrl, const QString &username)
-{
-    const auto account = new Account(QUuid::createUuid().toString(), this);
-    account->config()->setIsSapphire(true);
-    account->config()->setName(username);
-    account->config()->setLobbyHost(lobbyUrl);
 
     insertAccount(account);
 

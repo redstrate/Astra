@@ -77,20 +77,6 @@ FormCard.FormCardPage {
 
         FormCard.FormDelegateSeparator {
             above: usernameDelegate
-            below: accountTypeDelegate
-        }
-
-        FormCard.FormComboBoxDelegate {
-            id: accountTypeDelegate
-
-            text: i18n("Account type")
-            model: ["Square Enix", "Sapphire"]
-            currentIndex: page.account.config.isSapphire ? 1 : 0
-            onCurrentIndexChanged: page.account.config.isSapphire = (currentIndex === 1)
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: accountTypeDelegate
             below: languageDelegate
         }
 
@@ -106,7 +92,7 @@ FormCard.FormCardPage {
     }
 
     FormCard.FormCard {
-        visible: accountAction.checked && !page.account.config.isSapphire
+        visible: accountAction.checked
 
         Layout.fillWidth: true
         Layout.topMargin: Kirigami.Units.largeSpacing * 4
@@ -179,23 +165,6 @@ FormCard.FormCardPage {
     }
 
     FormCard.FormCard {
-        visible: accountAction.checked && page.account.config.isSapphire
-
-        Layout.fillWidth: true
-        Layout.topMargin: Kirigami.Units.largeSpacing * 4
-
-        FormCard.FormTextFieldDelegate {
-            id: lobbyURLDelegate
-
-            label: i18n("Lobby URL")
-            text: page.account.config.lobbyUrl
-            onTextChanged: page.account.config.lobbyUrl = text
-            visible: page.account.config.isSapphire
-            placeholderText: "neolobby0X.ffxiv.com"
-        }
-    }
-
-    FormCard.FormCard {
         visible: loginAction.checked
 
         Layout.fillWidth: true
@@ -224,7 +193,6 @@ FormCard.FormCardPage {
             checked: page.account.config.rememberOTP
             onCheckedChanged: page.account.config.rememberOTP = checked
             enabled: page.account.config.useOTP
-            visible: !page.account.config.isSapphire
         }
 
         FormCard.FormDelegateSeparator {

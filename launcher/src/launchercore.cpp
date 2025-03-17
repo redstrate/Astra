@@ -20,7 +20,6 @@
 #include "gamerunner.h"
 #include "launchercore.h"
 #include "profileconfig.h"
-#include "sapphirelogin.h"
 #include "squareenixlogin.h"
 #include "utility.h"
 
@@ -42,7 +41,6 @@ LauncherCore::LauncherCore()
 {
     m_config = new Config(KSharedConfig::openConfig(QStringLiteral("astrarc"), KConfig::SimpleConfig, QStandardPaths::AppConfigLocation), this);
     m_mgr = new QNetworkAccessManager(this);
-    m_sapphireLogin = new SapphireLogin(*this, this);
     m_squareEnixLogin = new SquareEnixLogin(*this, this);
     m_profileManager = new ProfileManager(this);
     m_accountManager = new AccountManager(this);
@@ -470,11 +468,7 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 
     std::optional<LoginAuth> auth;
     if (!info.profile->config()->isBenchmark()) {
-        if (info.profile->account()->config()->isSapphire()) {
-            auth = co_await m_sapphireLogin->login(info.profile->account()->config()->lobbyHost(), info);
-        } else {
-            auth = co_await m_squareEnixLogin->login(&info);
-        }
+        auth = co_await m_squareEnixLogin->login(&info);
     }
 
     const auto assetUpdater = new AssetUpdater(*info.profile, *this, this);

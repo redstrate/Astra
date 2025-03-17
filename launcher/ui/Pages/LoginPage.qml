@@ -214,7 +214,7 @@ QQC2.Control {
 
             FormCard.FormTextFieldDelegate {
                 id: usernameField
-                label: LauncherCore.currentProfile.account.config.isSapphire ? i18n("Username") : i18n("Square Enix ID")
+                label: i18n("Square Enix ID")
                 text: LauncherCore.currentProfile.account.config.name
                 enabled: false
 
@@ -230,7 +230,7 @@ QQC2.Control {
 
             FormCard.FormPasswordFieldDelegate {
                 id: passwordField
-                label: LauncherCore.currentProfile.account.config.isSapphire ? i18n("Password") : i18n("Square Enix Password")
+                label: i18n("Square Enix Password")
                 focus: true
                 onAccepted: {
                     if (otpField.visible) {
@@ -281,7 +281,6 @@ QQC2.Control {
             FormCard.FormDelegateSeparator {
                 above: loginButton
                 below: forgotPasswordButton
-                visible: !LauncherCore.currentProfile.account.config.isSapphire
             }
 
             FormCard.FormButtonDelegate {
@@ -289,7 +288,6 @@ QQC2.Control {
 
                 text: i18n("Forgot ID or Password")
                 icon.name: "question-symbolic"
-                visible: !LauncherCore.currentProfile.account.config.isSapphire
                 onClicked: applicationWindow().openUrl('https://secure.square-enix.com/account/app/svc/reminder')
             }
         }
@@ -325,7 +323,6 @@ QQC2.Control {
             FormCard.FormLinkDelegate {
                 text: i18nc("@action:button", "The Lodestone")
                 icon.name: "internet-services-symbolic"
-                visible: !LauncherCore.currentProfile.account.config.isSapphire
                 // TODO: how do we link to a "worldwide" lodestone, if that even exists?
                 url: 'https://na.finalfantasyxiv.com/lodestone/'
                 onClicked: applicationWindow().openUrl(url)
@@ -336,7 +333,6 @@ QQC2.Control {
             FormCard.FormLinkDelegate {
                 text: i18nc("@action:button", "Mog Station")
                 icon.name: "internet-services-symbolic"
-                visible: !LauncherCore.currentProfile.account.config.isSapphire
                 url: 'https://secure.square-enix.com/account/app/svc/mogstation/'
                 onClicked: applicationWindow().openUrl(url)
             }

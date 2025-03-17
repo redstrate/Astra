@@ -49,7 +49,6 @@ target_sources(astra_static PRIVATE
         include/launchercore.h
         include/patcher.h
         include/processlogger.h
-        include/sapphirelogin.h
         include/squareenixlogin.h
         include/steamapi.h
 
@@ -70,7 +69,6 @@ target_sources(astra_static PRIVATE
         src/utility.cpp
         src/patcher.cpp
         src/processlogger.cpp
-        src/sapphirelogin.cpp
         src/squareenixlogin.cpp
         src/steamapi.cpp)
 target_include_directories(astra_static PUBLIC include)
@@ -156,7 +154,6 @@ qt_target_qml_sources(astra_static
         ui/Settings/SettingsPage.qml
         ui/Settings/SyncSettings.qml
         ui/Setup/AccountSetup.qml
-        ui/Setup/AddSapphire.qml
         ui/Setup/AddSquareEnix.qml
         ui/Setup/BenchmarkInstallProgress.qml
         ui/Setup/ExistingSetup.qml

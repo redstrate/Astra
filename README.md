@@ -13,7 +13,7 @@ plugins!
 * Encrypted Arguments: Game arguments are encrypted out of the box, and is as secure as other launchers.
 * Secure Password Storage: Login information is encrypted using your system keychain and is never stored plain-text.
 * Game Patching Support: Can patch the game without the need to boot into the official launcher.
-* Alternative Server Support: Can log into Sapphire servers and use alternative domains. 
+* Alternative Server Support: Can use alternative servers in case the official ones ever disappear. 
 
 **Note:** Steam-linked Square Enix accounts are not currently supported. You will have to use the official launcher or XIVLauncher.Core.
 

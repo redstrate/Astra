@@ -22,15 +22,7 @@ FormCard.FormCardPage {
         Kirigami.Action {
             text: i18n("Add Account…")
             icon.name: "list-add-symbolic"
-
-            Kirigami.Action {
-                text: i18n("Square Enix")
-                onTriggered: root.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"))
-            }
-            Kirigami.Action {
-                text: i18n("Sapphire")
-                onTriggered: root.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSapphire"))
-            }
+            onTriggered: root.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"))
         }
     ]
 
@@ -53,7 +45,7 @@ FormCard.FormCardPage {
 
                 FormCard.FormButtonDelegate {
                     text: layout.account.config.name
-                    description: layout.account.config.isSapphire ? i18n("Sapphire") : i18n("Square Enix")
+                    description: i18n("Square Enix")
 
                     leading: Components.Avatar
                     {

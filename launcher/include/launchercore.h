@@ -14,7 +14,6 @@
 #include "profilemanager.h"
 #include "steamapi.h"
 
-class SapphireLogin;
 class SquareEnixLogin;
 class AssetUpdater;
 class GameInstaller;
@@ -82,7 +81,7 @@ public:
     /// Initializes the Steamworks API.
     void initializeSteam();
 
-    /// Begins the login process, and may call SquareBoot or SapphireLauncher depending on the profile type.
+    /// Begins the login process.
     /// It's designed to be opaque as possible to the caller.
     /// \note The login process is asynchronous.
     Q_INVOKABLE void login(Profile *profile, const QString &username, const QString &password, const QString &oneTimePassword);
@@ -185,7 +184,6 @@ private:
     ProfileManager *m_profileManager = nullptr;
     AccountManager *m_accountManager = nullptr;
 
-    SapphireLogin *m_sapphireLogin = nullptr;
     SquareEnixLogin *m_squareEnixLogin = nullptr;
 
     QNetworkAccessManager *m_mgr = nullptr;
