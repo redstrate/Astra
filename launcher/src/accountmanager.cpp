@@ -61,6 +61,7 @@ Account *AccountManager::createSquareEnixAccount(const QString &username, const 
     account->config()->setLicense(static_cast<Account::GameLicense>(licenseType));
     account->config()->setIsFreeTrial(isFreeTrial);
     account->config()->setName(username);
+    account->config()->save();
 
     insertAccount(account);
 

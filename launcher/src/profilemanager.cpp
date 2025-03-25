@@ -45,6 +45,7 @@ Profile *ProfileManager::addProfile()
 {
     const auto newProfile = new Profile(QUuid::createUuid().toString(), this);
     newProfile->config()->setName(QStringLiteral("New Profile"));
+    newProfile->config()->save();
 
     insertProfile(newProfile);
 
