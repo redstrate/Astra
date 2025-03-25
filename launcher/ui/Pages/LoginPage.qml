@@ -35,10 +35,6 @@ QQC2.Control {
             return i18n("OTP is required.");
         }
 
-        if (LauncherCore.currentProfile.loggedIn) {
-            return i18n("Already logged in.");
-        }
-
         return "";
     }
 
@@ -59,7 +55,7 @@ QQC2.Control {
             return false;
         }
 
-        return !LauncherCore.currentProfile.loggedIn;
+        return true;
     }
 
     function updateFields(): void {

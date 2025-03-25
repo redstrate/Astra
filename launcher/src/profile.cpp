@@ -362,19 +362,6 @@ GameData *Profile::gameData() const
     return m_gameData;
 }
 
-bool Profile::loggedIn() const
-{
-    return m_loggedIn;
-}
-
-void Profile::setLoggedIn(const bool value)
-{
-    if (m_loggedIn != value) {
-        m_loggedIn = value;
-        Q_EMIT loggedInChanged();
-    }
-}
-
 QString Profile::subtitle() const
 {
     if (config()->isBenchmark()) {

@@ -46,12 +46,9 @@ void GameRunner::beginGameExecutable(Profile &profile, const std::optional<Login
 
 void GameRunner::beginVanillaGame(const QString &gameExecutablePath, Profile &profile, const std::optional<LoginAuth> &auth)
 {
-    profile.setLoggedIn(true);
-
     const auto gameProcess = new QProcess(this);
     gameProcess->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     connect(gameProcess, &QProcess::finished, this, [this, &profile](const int exitCode) {
-        profile.setLoggedIn(false);
         Q_UNUSED(exitCode)
         Q_EMIT m_launcher.gameClosed(&profile);
     });
@@ -65,8 +62,6 @@ void GameRunner::beginVanillaGame(const QString &gameExecutablePath, Profile &pr
 
 void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &profile, const std::optional<LoginAuth> &auth)
 {
-    profile.setLoggedIn(true);
-
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     const QDir configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     const QDir dalamudDir = dataDir.absoluteFilePath(QStringLiteral("dalamud"));
@@ -124,15 +119,13 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
 #endif
                 auto watcher = new ProcessWatcher(PID);
                 connect(watcher, &ProcessWatcher::finished, this, [this, &profile] {
-                    profile.setLoggedIn(false);
                     Q_EMIT m_launcher.gameClosed(&profile);
                 });
                 return;
             }
         }
 
-        // If Dalamud didn't give a valid PID, OK. Let's just do our previous status quo and inidcate we did log out.
-        profile.setLoggedIn(false);
+        // If Dalamud didn't give a valid PID, OK. Let's just do our previous status quo and indicate we did log out.
         Q_EMIT m_launcher.gameClosed(&profile);
     });
 

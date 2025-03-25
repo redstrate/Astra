@@ -23,7 +23,6 @@ class Profile : public QObject
     Q_PROPERTY(QString expansionVersionText READ expansionVersionText NOTIFY gameInstallChanged)
     Q_PROPERTY(QString dalamudVersionText READ dalamudVersionText NOTIFY gameInstallChanged)
     Q_PROPERTY(QString wineVersionText READ wineVersionText NOTIFY wineChanged)
-    Q_PROPERTY(bool loggedIn READ loggedIn NOTIFY loggedInChanged)
     Q_PROPERTY(QString subtitle READ subtitle NOTIFY gameInstallChanged)
     Q_PROPERTY(ProfileConfig *config READ config CONSTANT)
 
@@ -99,9 +98,6 @@ public:
     BootData *bootData() const;
     GameData *gameData() const;
 
-    [[nodiscard]] bool loggedIn() const;
-    void setLoggedIn(bool value);
-
     [[nodiscard]] QString subtitle() const;
 
     ProfileConfig *config() const;
@@ -111,7 +107,6 @@ Q_SIGNALS:
     void winePathChanged();
     void accountChanged();
     void wineChanged();
-    void loggedInChanged();
     void hasDirectx9Changed();
 
 private:
@@ -139,6 +134,4 @@ private:
     bool m_dalamudApplicable = false;
 
     QString m_frontierUrl;
-
-    bool m_loggedIn = false;
 };
