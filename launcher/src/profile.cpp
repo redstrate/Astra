@@ -255,7 +255,7 @@ QString Profile::dalamudChannelName() const
     case DalamudChannel::Stable:
         return QStringLiteral("stable");
     case DalamudChannel::Staging:
-        return QStringLiteral("staging");
+        return QStringLiteral("stg");
     case DalamudChannel::Local:
         return QStringLiteral("local");
     }
