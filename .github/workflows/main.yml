@@ -106,13 +106,6 @@ jobs:
           Invoke-WebRequest https://xiv.zone/distrib/dependencies/libcrypto.zip -OutFile libcrypto.zip
           unzip libcrypto.zip -d ${{ steps.strings.outputs.prefix-dir }}/bin
 
-      - name: Build zlib
-        if: (runner.os == 'Windows') && (steps.cache-prefix-restore.outputs.cache-hit != 'true')
-        run: |
-          git clone https://github.com/madler/zlib.git
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}-zlib -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S zlib -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DBUILD_TESTING=OFF
-          cmake --build ${{ steps.strings.outputs.build-output-dir }}-zlib --config ${{ matrix.build_type }} --target install
-
       - name: Build Extra CMake Modules
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
         run: |
@@ -284,8 +277,6 @@ jobs:
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libgcrypt-20.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6ConfigCore.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libgpg-error6-0.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
-          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/zlib1.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
-          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/z.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libwinpthread-1.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libcrypto-1_1-x64.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6BreezeIcons.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
