@@ -98,8 +98,15 @@ void Profile::readGameData()
     if (exh != nullptr) {
         const physis_EXD exd = physis_gamedata_read_excel_sheet(m_gameData, "ExVersion", exh, Language::English, 0);
 
-        for (unsigned int i = 0; i < exd.row_count; i++) {
-            m_expansionNames.push_back(QString::fromLatin1(exd.row_data[i].column_data[0].string._0));
+        // TODO: bad API, we should instead get a list of row ids from libphysis but that API doesn't exist yet.
+        for (unsigned int i = 1; i < exd.row_count + 1; i++) {
+            auto rows = physis_exd_read_row(&exd, i);
+            for (int j = 0; j < rows.row_count; j++) {
+                auto row = rows.row_data[j];
+                if (row.column_data != nullptr) {
+                    m_expansionNames.push_back(QString::fromLatin1(row.column_data[0].string._0));
+                }
+            }
         }
 
         physis_gamedata_free_sheet(exd);
