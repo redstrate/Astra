@@ -7,14 +7,13 @@ on:
     branches: [ "main" ]
 
 env:
-  CMAKE_BUILD_PARALLEL_LEVEL: 2
-  MAKEFLAGS: '-j 2'
-  QT_VERSION: 6.8.1 # Keep in sync with CMakeLists.txt
-  KF_VERSION: v6.10.0 # Ditto
+  QT_VERSION: 6.8.2 # Keep in sync with CMakeLists.txt
+  KF_VERSION: v6.13.0 # Ditto
   KIRIGAMI_ADDONS_VERSION: v1.7.0 # Ditto x2
 
 jobs:
   reuse:
+    name: "REUSE"
     runs-on: ubuntu-latest
 
     steps:
@@ -23,6 +22,7 @@ jobs:
       uses: fsfe/reuse-action@v5
 
   build:
+    name: "Build"
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -312,30 +312,23 @@ jobs:
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
+        if: runner.os == 'Windows'
         with:
           name: ${{ runner.os }}-package
           path: ${{ steps.strings.outputs.build-output-dir }}/bin
 
-  #build-flatpak:
-  #  runs-on: ubuntu-latest
-
-  #  steps:
-  #    - uses: actions/checkout@v4
-  #      with:
-  #        submodules: true
-
-  #    - name: Setup Linux dependencies
-  #      run: |
-  #        sudo apt-get update
-  #        sudo apt-get install \
-  #          flatpak-builder \
-
-  #    - name: Build Flatpak
-  #      run: |
-  #        ./scripts/build-flatpak.sh
-
-  #    - name: Archive artifacts
-  #      uses: actions/upload-artifact@v4
-  #      with:
-  #        name: flatpak
-  #        path: astra.flatpak
+  flatpak:
+    name: "Flatpak"
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: astra.flatpak
+          manifest-path: zone.xiv.astra.yml
+          cache-key: flatpak-builder-${{ github.sha }}
