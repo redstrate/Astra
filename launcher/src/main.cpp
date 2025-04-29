@@ -61,22 +61,22 @@ int main(int argc, char *argv[])
                     QUrl(QStringLiteral("https://redstrate.com/rss-image.png")));
     about.setHomepage(QStringLiteral("https://xiv.zone/astra"));
     about.addComponent(QStringLiteral("physis"),
-                       i18n("Library to access FFXIV data"),
+                       i18n("Library for reading and writing FFXIV data."),
                        QString::fromLatin1(physis_get_physis_version()),
                        QStringLiteral("https://xiv.zone/physis"),
                        KAboutLicense::GPL_V3);
     about.addComponent(QStringLiteral("libphysis"),
-                       i18n("C bindings for physis"),
+                       i18n("C/C++ bindings for Physis."),
                        QString::fromLatin1(physis_get_libphysis_version()),
                        QStringLiteral("https://github.com/redstrate/libphysis"),
                        KAboutLicense::GPL_V3);
     about.addComponent(QStringLiteral("KDSingleApplication"),
-                       i18n("Helper class for single-instance policy applications "),
+                       i18n("Helper class for single-instance policy applications."),
                        QStringLiteral("1.1.1"),
                        QStringLiteral("https://github.com/KDAB/KDSingleApplication"),
                        KAboutLicense::MIT);
     about.addComponent(QStringLiteral("libcotp"),
-                       i18n(" C library that generates TOTP and HOTP "),
+                       i18n(" C library that generates TOTP and HOTP."),
                        QStringLiteral("3.0.0"),
                        QStringLiteral("https://github.com/paolostivanin/libcotp"),
                        KAboutLicense::Unknown);
