@@ -39,7 +39,7 @@ Kirigami.Page {
         target: page.gameInstaller
 
         function onInstallFinished(): void {
-            // Prevents it from failing to push the page if the install happens too quickly.
+            // Prevents it from failing to push the page if the installation happens too quickly.
             Qt.callLater(() => applicationWindow().checkSetup());
         }
 

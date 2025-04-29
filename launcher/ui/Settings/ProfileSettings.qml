@@ -288,7 +288,7 @@ FormCard.FormCardPage {
 
             visible: LauncherCore.config.showDevTools
             text: i18n("Injection Method")
-            description: "It shouldn't be nessecary to change this setting, unless you're running into issues injecting Dalamud."
+            description: "It shouldn't be necessary to change this setting, unless you're running into issues injecting Dalamud."
             model: ["Entrypoint", "DLL Injection"]
             currentIndex: page.profile.config.dalamudInjectMethod
             onCurrentIndexChanged: page.profile.config.dalamudInjectMethod = currentIndex

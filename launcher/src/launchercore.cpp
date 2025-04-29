@@ -94,7 +94,7 @@ void LauncherCore::login(Profile *profile, const QString &username, const QStrin
     const auto loginInformation = new LoginInformation(this);
     loginInformation->profile = profile;
 
-    // Benchmark never has to login, of course
+    // Benchmark never has to log in, of course
     if (!profile->config()->isBenchmark()) {
         loginInformation->username = username;
         loginInformation->password = password;

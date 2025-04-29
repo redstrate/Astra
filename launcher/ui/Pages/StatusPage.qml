@@ -87,7 +87,7 @@ Kirigami.Page {
         }
 
         function onDalamudError(message: string): void {
-            dalamudErrorDialog.subtitle = i18n("An error occured while updating Dalamud:\n\n%1.\n\nWould you like to disable Dalamud?", message);
+            dalamudErrorDialog.subtitle = i18n("An error occurred while updating Dalamud:\n\n%1.\n\nWould you like to disable Dalamud?", message);
             dalamudErrorDialog.open();
         }
     }

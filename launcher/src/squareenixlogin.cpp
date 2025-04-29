@@ -41,7 +41,7 @@ QCoro::Task<std::optional<LoginAuth>> SquareEnixLogin::login(LoginInformation *i
     m_info = info;
 
     // First, let's check for boot updates. While not technically required for us, it's needed for later hash checking.
-    // It's also a really good idea anyway, in case the official launcher is needed.
+    // It's also a good idea anyway, in case the official launcher is needed.
     while (m_lastRunHasPatched) {
         // There seems to be a limitation in their boot patching system.
         // Their server can only give one patch a time, so the boot process must keep trying to patch until
@@ -66,7 +66,7 @@ QCoro::Task<std::optional<LoginAuth>> SquareEnixLogin::login(LoginInformation *i
         co_return std::nullopt;
     }
 
-    // Finally, double check the *world* status to make sure we don't try to log in during maintenance.
+    // Finally, double-check the *world* status to make sure we don't try to log in during maintenance.
     // Doing it late here ensures we handle cases where the patch is available during maintenance (like during expansion launches)
     // but stops before trying to log in when you're not supposed to.
     if (!co_await checkGateStatus()) {
@@ -107,7 +107,7 @@ QCoro::Task<bool> SquareEnixLogin::checkGateStatus() const
 
     const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
     if (document.isEmpty()) {
-        Q_EMIT m_launcher.loginError(i18n("An error occured when checking login gate status:\n\n%1", reply->errorString()));
+        Q_EMIT m_launcher.loginError(i18n("An error occurred when checking login gate status:\n\n%1", reply->errorString()));
         co_return false;
     }
 

@@ -9,7 +9,7 @@ plugins!
 
 * Wine Support: Handles launching Wine for you.
 * Dalamud Support: You can use Dalamud plugins out of the box!
-* Multiple Profiles: Customizable per-profile settings for users that need multiple game installs.
+* Multiple Profiles: Customizable per-profile settings for users that need multiple game installations.
 * Encrypted Arguments: Game arguments are encrypted out of the box, and is as secure as other launchers.
 * Secure Password Storage: Login information is encrypted using your system keychain and is never stored plain-text.
 * Game Patching Support: Can patch the game without the need to boot into the official launcher.

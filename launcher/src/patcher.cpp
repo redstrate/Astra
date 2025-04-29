@@ -65,7 +65,7 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
         co_return false;
     }
 
-    // If we do, we want to make sure we have enough space for all of the repositories we download
+    // If we do, we want to make sure we have enough space for all the repositories we download
     QMap<QString, int64_t> repositorySizes;
     for (int i = 0; i < patchList.num_entries; i++) {
         // Record the largest byte size for the repository
@@ -103,7 +103,7 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
         const int ourIndex = patchIndex++;
 
         const QString filename = QStringLiteral("%1.patch").arg(QLatin1String(patch.version));
-        const QString tempFilename = QStringLiteral("%1.patch~").arg(QLatin1String(patch.version)); // tilde afterwards to hide it easily
+        const QString tempFilename = QStringLiteral("%1.patch~").arg(QLatin1String(patch.version)); // tilde afterward to hide it easily
 
         const QString repository = Utility::repositoryFromPatchUrl(QLatin1String(patch.url));
         const QDir repositoryDir = m_patchesDir.absoluteFilePath(repository);
@@ -153,7 +153,7 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
             });
 
             connect(patchReply, &QNetworkReply::readyRead, this, [this, tempPatchPath, patchReply] {
-                // TODO: don't open the file each time we recieve data
+                // TODO: don't open the file each time we receive data
                 QFile file(tempPatchPath);
                 file.open(QIODevice::WriteOnly | QIODevice::Append);
                 file.write(patchReply->readAll());
