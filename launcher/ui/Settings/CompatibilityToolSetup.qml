@@ -57,7 +57,7 @@ FormCard.FormCardPage {
     readonly property Kirigami.PromptDialog errorDialog: Kirigami.PromptDialog {
         showCloseButton: false
         standardButtons: Kirigami.Dialog.Ok
-        parent: page.QQC2.Overlay.overlay
+        parent: page
     }
 
     data: Connections {

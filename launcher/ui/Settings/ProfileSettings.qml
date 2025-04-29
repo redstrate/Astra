@@ -199,6 +199,7 @@ FormCard.FormCardPage {
             Kirigami.PromptDialog {
                 id: gamescopeSettingsDialog
                 title: i18n("Configure Gamescope")
+                parent: page
 
                 Kirigami.FormLayout {
                     QQC2.CheckBox {
@@ -326,6 +327,7 @@ FormCard.FormCardPage {
         subtitle: i18nc("@label", "Are you sure you want to delete this profile?")
         standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
         showCloseButton: false
+        parent: page
 
         QQC2.Switch {
             id: deleteFilesSwitch

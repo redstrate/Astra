@@ -148,8 +148,8 @@ FormCard.FormCardPage {
             Kirigami.PromptDialog {
                 id: lodestoneDialog
                 title: i18n("Enter Lodestone Id")
-
                 standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
+                parent: page
 
                 onAccepted: page.account.config.lodestoneId = lodestoneIdField.text
 
@@ -212,6 +212,7 @@ FormCard.FormCardPage {
             Kirigami.PromptDialog {
                 id: otpDialog
                 title: i18n("Enter OTP Secret")
+                parent: page
 
                 standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
 
@@ -329,6 +330,7 @@ FormCard.FormCardPage {
         subtitle: i18nc("@label", "Are you sure you want to delete this account?")
         standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
         showCloseButton: false
+        parent: page
 
         onAccepted: {
             LauncherCore.accountManager.deleteAccount(page.account);

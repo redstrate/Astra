@@ -136,8 +136,8 @@ FormCard.FormCardPage {
     Kirigami.PromptDialog {
         id: errorDialog
         title: i18n("Login Error")
-
         showCloseButton: false
         standardButtons: Kirigami.Dialog.Ok
+        parent: page
     }
 }
