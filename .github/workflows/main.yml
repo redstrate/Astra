@@ -8,7 +8,7 @@ on:
 
 env:
   QT_VERSION: 6.8.2 # Keep in sync with CMakeLists.txt
-  KF_VERSION: v6.10.0 # Ditto
+  KF_VERSION: v6.13.0 # Ditto
   KIRIGAMI_ADDONS_VERSION: v1.7.0 # Ditto x2
 
 jobs:
