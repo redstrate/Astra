@@ -99,7 +99,7 @@ void Profile::readGameData()
         const physis_EXD exd = physis_gamedata_read_excel_sheet(m_gameData, "ExVersion", exh, Language::English, 0);
 
         // TODO: bad API, we should instead get a list of row ids from libphysis but that API doesn't exist yet.
-        for (unsigned int i = 1; i < exd.row_count + 1; i++) {
+        for (unsigned int i = 0; i < exd.row_count; i++) {
             auto rows = physis_exd_read_row(&exd, i);
             for (int j = 0; j < rows.row_count; j++) {
                 auto row = rows.row_data[j];
