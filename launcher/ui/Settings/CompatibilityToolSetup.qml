@@ -24,22 +24,18 @@ FormCard.FormCardPage {
         FormCard.FormTextDelegate {
             text: i18n("Press the button below to install the compatibility tool for Steam.")
         }
+    }
 
-        FormCard.FormDelegateSeparator {
-            below: installToolButton
-        }
+    FormCard.FormCard {
+        Layout.topMargin: Kirigami.Units.largeSpacing
 
         FormCard.FormButtonDelegate {
             id: installToolButton
 
             text: i18n("Install Tool")
             icon.name: "install"
+            visible: !page.installer.isInstalled
             onClicked: page.installer.installCompatibilityTool()
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: installToolButton
-            below: removeToolButton
         }
 
         FormCard.FormButtonDelegate {
@@ -47,6 +43,7 @@ FormCard.FormCardPage {
 
             text: i18n("Remove Tool")
             icon.name: "delete"
+            visible: page.installer.isInstalled
             onClicked: page.installer.removeCompatibilityTool()
         }
     }

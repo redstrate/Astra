@@ -86,6 +86,7 @@ void CompatibilityToolInstaller::installCompatibilityTool()
     compatibilityToolFile.close();
 
     Q_EMIT installFinished();
+    Q_EMIT isInstalledChanged();
 }
 
 void CompatibilityToolInstaller::removeCompatibilityTool()
@@ -108,6 +109,21 @@ void CompatibilityToolInstaller::removeCompatibilityTool()
     }
 
     Q_EMIT removalFinished();
+    Q_EMIT isInstalledChanged();
+}
+
+bool CompatibilityToolInstaller::isInstalled() const
+{
+    const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::HomeLocation)[0];
+    const QDir steamDir = appDataDir.absoluteFilePath(QStringLiteral(".steam"));
+    const QDir steamSteamDir = steamDir.absoluteFilePath(QStringLiteral("steam"));
+    if (!steamSteamDir.exists()) {
+        return false;
+    }
+
+    const QDir compatToolDir = steamSteamDir.absoluteFilePath(QStringLiteral("compatibilitytools.d"));
+    const QDir astraToolDir = compatToolDir.absoluteFilePath(QStringLiteral("astra"));
+    return astraToolDir.exists();
 }
 
 #include "moc_compatibilitytoolinstaller.cpp"
