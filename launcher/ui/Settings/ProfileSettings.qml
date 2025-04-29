@@ -146,7 +146,7 @@ FormCard.FormCardPage {
 
             text: i18n("Wine Executable")
             file: page.profile.winePath
-            enabled: page.profile.config.wineType !== Profile.BuiltIn
+            visible: page.profile.config.wineType !== Profile.BuiltIn
 
             onAccepted: (path) => page.profile.winePath = path
         }
@@ -154,6 +154,7 @@ FormCard.FormCardPage {
         FormCard.FormDelegateSeparator {
             above: winePathDelegate
             below: winePrefixPathDelegate
+            visible: winePathDelegate.visible
         }
 
         FormFolderDelegate {
