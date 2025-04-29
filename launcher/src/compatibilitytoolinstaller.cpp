@@ -105,7 +105,7 @@ void CompatibilityToolInstaller::removeCompatibilityTool()
         astraToolDir.removeRecursively();
     }
 
-    Q_EMIT installFinished();
+    Q_EMIT removalFinished();
 }
 
 #include "moc_compatibilitytoolinstaller.cpp"

@@ -3,6 +3,7 @@
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls as QQC2
 
 import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.formcard as FormCard
@@ -12,7 +13,7 @@ import zone.xiv.astra
 FormCard.FormCardPage {
     id: page
 
-    property var installer: null
+    readonly property CompatibilityToolInstaller installer: LauncherCore.createCompatInstaller()
 
     title: i18nc("@title:window", "Compatibility Tool")
 
@@ -33,10 +34,7 @@ FormCard.FormCardPage {
 
             text: i18n("Install Tool")
             icon.name: "install"
-            onClicked: {
-                page.installer = LauncherCore.createCompatInstaller();
-                page.installer.installCompatibilityTool();
-            }
+            onClicked: page.installer.installCompatibilityTool()
         }
 
         FormCard.FormDelegateSeparator {
@@ -49,33 +47,34 @@ FormCard.FormCardPage {
 
             text: i18n("Remove Tool")
             icon.name: "delete"
-            onClicked: {
-                page.installer = LauncherCore.createCompatInstaller();
-                page.installer.removeCompatibilityTool();
-            }
+            onClicked: page.installer.removeCompatibilityTool()
         }
     }
 
-    property Kirigami.PromptDialog errorDialog: Kirigami.PromptDialog {
-        title: i18n("Install error")
-
+    readonly property Kirigami.PromptDialog errorDialog: Kirigami.PromptDialog {
         showCloseButton: false
         standardButtons: Kirigami.Dialog.Ok
-
-        onAccepted: applicationWindow().pageStack.layers.pop()
-        onRejected: applicationWindow().pageStack.layers.pop()
+        parent: page.QQC2.Overlay.overlay
     }
 
     data: Connections {
-        enabled: page.installer !== null
         target: page.installer
 
         function onInstallFinished(): void {
-            applicationWindow().pageStack.layers.pop();
+            page.errorDialog.title = i18n("Install Success");
+            page.errorDialog.subtitle = i18n("Compatibility tool successfully installed!");
+            page.errorDialog.open();
         }
 
         function onError(message: string): void {
+            page.errorDialog.title = i18n("Install Error");
             page.errorDialog.subtitle = message;
+            page.errorDialog.open();
+        }
+
+        function onRemovalFinished(): void {
+            page.errorDialog.title = i18n("Removal Success");
+            page.errorDialog.subtitle = i18n("Compatibility tool successfully removed!");
             page.errorDialog.open();
         }
     }
