@@ -126,4 +126,12 @@ bool CompatibilityToolInstaller::isInstalled() const
     return astraToolDir.exists();
 }
 
+bool CompatibilityToolInstaller::hasSteam() const
+{
+    const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::HomeLocation)[0];
+    const QDir steamDir = appDataDir.absoluteFilePath(QStringLiteral(".steam"));
+    const QDir steamSteamDir = steamDir.absoluteFilePath(QStringLiteral("steam"));
+    return steamSteamDir.exists();
+}
+
 #include "moc_compatibilitytoolinstaller.cpp"

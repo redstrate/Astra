@@ -34,7 +34,7 @@ FormCard.FormCardPage {
 
             text: i18n("Install Tool")
             icon.name: "install"
-            visible: !page.installer.isInstalled
+            visible: page.installer.hasSteam && !page.installer.isInstalled
             onClicked: page.installer.installCompatibilityTool()
         }
 
@@ -43,8 +43,14 @@ FormCard.FormCardPage {
 
             text: i18n("Remove Tool")
             icon.name: "delete"
-            visible: page.installer.isInstalled
+            visible: page.installer.hasSteam && page.installer.isInstalled
             onClicked: page.installer.removeCompatibilityTool()
+        }
+
+        FormCard.FormTextDelegate {
+            text: i18n("Steam is not installed.")
+            visible: !page.installer.hasSteam
+            textItem.color: Kirigami.Theme.disabledTextColor
         }
     }
 

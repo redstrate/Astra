@@ -14,6 +14,7 @@ class CompatibilityToolInstaller : public QObject
     QML_UNCREATABLE("Use LauncherCore.createCompatInstaller")
 
     Q_PROPERTY(bool isInstalled READ isInstalled NOTIFY isInstalledChanged)
+    Q_PROPERTY(bool hasSteam READ hasSteam CONSTANT)
 
 public:
     explicit CompatibilityToolInstaller(LauncherCore &launcher, QObject *parent = nullptr);
@@ -22,6 +23,7 @@ public:
     Q_INVOKABLE void removeCompatibilityTool();
 
     bool isInstalled() const;
+    bool hasSteam() const;
 
 Q_SIGNALS:
     void installFinished();
