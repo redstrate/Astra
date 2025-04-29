@@ -40,6 +40,36 @@ void GameRunner::beginGameExecutable(Profile &profile, const std::optional<Login
     Q_EMIT m_launcher.successfulLaunch();
 }
 
+void GameRunner::openOfficialLauncher(Profile &profile)
+{
+    const auto process = new QProcess(this);
+    process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+
+    new ProcessLogger(QStringLiteral("ffxivlauncher"), process);
+
+    launchExecutable(profile, process, {profile.config()->gamePath() + QStringLiteral("/boot/ffxivboot64.exe")}, true, true);
+}
+
+void GameRunner::openConfigBackup(Profile &profile)
+{
+    const auto process = new QProcess(this);
+    process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+
+    new ProcessLogger(QStringLiteral("ffxivconfig"), process);
+
+    launchExecutable(profile, process, {profile.config()->gamePath() + QStringLiteral("/boot/ffxivconfig64.exe")}, true, true);
+}
+
+void GameRunner::openSystemInfo(Profile &profile)
+{
+    const auto process = new QProcess(this);
+    process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+
+    new ProcessLogger(QStringLiteral("ffxivsysinfo"), process);
+
+    launchExecutable(profile, process, {profile.config()->gamePath() + QStringLiteral("/boot/ffxivsysinfo64.exe")}, true, true);
+}
+
 void GameRunner::beginVanillaGame(const QString &gameExecutablePath, Profile &profile, const std::optional<LoginAuth> &auth)
 {
     const auto gameProcess = new QProcess(this);

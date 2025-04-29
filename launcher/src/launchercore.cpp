@@ -687,4 +687,22 @@ QString LauncherCore::currentProfileId() const
     return KSharedConfig::openStateConfig()->group(QStringLiteral("General")).readEntry(QStringLiteral("CurrentProfile"));
 }
 
+void LauncherCore::openOfficialLauncher(Profile *profile)
+{
+    Q_ASSERT(profile != nullptr);
+    m_runner->openOfficialLauncher(*profile);
+}
+
+void LauncherCore::openSystemInfo(Profile *profile)
+{
+    Q_ASSERT(profile != nullptr);
+    m_runner->openSystemInfo(*profile);
+}
+
+void LauncherCore::openConfigBackup(Profile *profile)
+{
+    Q_ASSERT(profile != nullptr);
+    m_runner->openConfigBackup(*profile);
+}
+
 #include "moc_launchercore.cpp"

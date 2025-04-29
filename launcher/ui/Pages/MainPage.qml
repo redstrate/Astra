@@ -26,6 +26,27 @@ Kirigami.Page {
             onTriggered: applicationWindow().openUrl('https://na.finalfantasyxiv.com/lodestone/worldstatus/')
         },
         Kirigami.Action {
+            text: i18nc("@action:menu", "Tools")
+            icon.name: "tools"
+            visible: !LauncherCore.currentProfile.config.isBenchmark
+
+            Kirigami.Action {
+                text: i18nc("@action:inmenu", "Official Launcher")
+                icon.name: "application-x-executable"
+                onTriggered: LauncherCore.openOfficialLauncher(LauncherCore.currentProfile)
+            }
+            Kirigami.Action {
+                text: i18nc("@action:inmenu", "System Info")
+                icon.name: "application-x-executable"
+                onTriggered: LauncherCore.openSystemInfo(LauncherCore.currentProfile)
+            }
+            Kirigami.Action {
+                text: i18nc("@action:inmenu", "Config Backup")
+                icon.name: "application-x-executable"
+                onTriggered: LauncherCore.openConfigBackup(LauncherCore.currentProfile)
+            }
+        },
+        Kirigami.Action {
             text: i18nc("@action:button", "Settings")
             icon.name: "configure"
             onTriggered: Qt.createComponent("zone.xiv.astra", "SettingsPage").createObject(page, { window: applicationWindow() }).open()

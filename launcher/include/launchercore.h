@@ -134,6 +134,21 @@ public:
     [[nodiscard]] Headline *headline() const;
     [[nodiscard]] QString cachedLogoImage() const;
 
+    /**
+     * @brief Opens the official launcher. Useful if Astra decides not to work that day!
+     */
+    Q_INVOKABLE void openOfficialLauncher(Profile *profile);
+
+    /**
+     * @brief Opens the official system information executable.
+     */
+    Q_INVOKABLE void openSystemInfo(Profile *profile);
+
+    /**
+     * @brief Opens the config backup tool.
+     */
+    Q_INVOKABLE void openConfigBackup(Profile *profile);
+
 #ifdef BUILD_SYNC
     [[nodiscard]] SyncManager *syncManager() const;
 #endif
