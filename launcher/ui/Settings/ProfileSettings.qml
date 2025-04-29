@@ -235,17 +235,6 @@ FormCard.FormCardPage {
 
             onClicked: gamescopeSettingsDialog.open()
         }
-
-        FormCard.FormDelegateSeparator {}
-
-        FormCard.FormCheckDelegate {
-            id: gamemodeDelegate
-
-            text: i18n("Enable Gamemode")
-            description: i18n("A special game performance tool, that tunes your CPU scheduler among other things.")
-            checked: page.profile.config.useGamemode
-            onCheckedChanged: page.profile.config.useGamemode = checked
-        }
     }
 
     FormCard.FormCard {

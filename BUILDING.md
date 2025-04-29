@@ -42,8 +42,6 @@ These are optional dependencies, that will be used if found on your system.
 
 * Steamworks SDK
   * You must specify `STEAMWORKS_INCLUDE_DIRS` and `STEAMWORKS_LIBRARIES` yourself.
-* Gamemode
-  * Turn on `ENABLE_GAMEMODE` to enable integration.
 
 ### Getting source code
 
@@ -71,7 +69,7 @@ $ cmake -S . -B build
 This command will create a new build directory and configure the source directory (`.`). If you want to enable more options, pass them now:
 
 ```bash
-$ cmake -S . -B build -DENABLE_GAMEMODE=ON
+$ cmake -S . -B build
 ```
 
 ## Building

@@ -11,11 +11,6 @@ option(BUILD_WEBVIEW "Build support for the integrated web browser. Only used on
 # TODO: phase out once all supported builds can turn on this option
 option(BUILD_SYNC "Build Matrix sync support." OFF)
 
-# options for features you may want or need
-if (NOT WIN32 AND NOT APPLE)
-    option(ENABLE_GAMEMODE "Build with Feral GameMode support, requires the daemon to be installed." ON)
-endif()
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -65,11 +60,6 @@ endif()
 
 qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)
-
-if (ENABLE_GAMEMODE)
-    find_package(PkgConfig REQUIRED)
-    pkg_search_module(GAMEMODE REQUIRED gamemode)
-endif ()
 
 find_package(Qt6Keychain REQUIRED)
 

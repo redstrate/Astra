@@ -101,11 +101,6 @@ if (BUILD_FLATPAK)
     target_compile_definitions(astra_static PUBLIC FLATPAK)
 endif ()
 
-if (ENABLE_GAMEMODE)
-    target_link_libraries(astra_static PUBLIC ${GAMEMODE_LIBRARIES})
-    target_compile_definitions(astra_static PUBLIC ENABLE_GAMEMODE)
-endif ()
-
 if (BUILD_SYNC)
     target_sources(astra_static PRIVATE
             include/charactersync.h

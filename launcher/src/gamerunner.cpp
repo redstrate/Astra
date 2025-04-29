@@ -3,10 +3,6 @@
 
 #include "gamerunner.h"
 
-#ifdef ENABLE_GAMEMODE
-#include <gamemode_client.h>
-#endif
-
 #include "accountconfig.h"
 #include "astra_log.h"
 #include "encryptedarg.h"
@@ -312,12 +308,6 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
         arguments.push_back(QStringLiteral("--"));
     }
-
-#ifdef ENABLE_GAMEMODE
-    if (isGame && profile.config()->useGamemode()) {
-        gamemode_request_start();
-    }
-#endif
 
     if (m_launcher.config()->enableRenderDocCapture()) {
         env.insert(QStringLiteral("VK_LAYER_RENDERDOC_Capture"), QStringLiteral("VK_LAYER_RENDERDOC_Capture"));

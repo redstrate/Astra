@@ -69,7 +69,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install \
             gettext \
-            gamemode-dev \
             libunshield-dev \
             libsecret-1-dev
 
