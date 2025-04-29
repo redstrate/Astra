@@ -28,7 +28,7 @@ Kirigami.Page {
         Kirigami.Action {
             text: i18nc("@action:button", "Settings")
             icon.name: "configure"
-            onTriggered: Qt.createComponent("zone.xiv.astra", "SettingsPage").createObject().open()
+            onTriggered: Qt.createComponent("zone.xiv.astra", "SettingsPage").createObject(page, { window: applicationWindow() }).open()
         }
     ]
 
