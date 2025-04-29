@@ -9,71 +9,54 @@ import org.kde.kirigamiaddons.components as KirigamiComponents
 
 import zone.xiv.astra
 
-KirigamiSettings.CategorizedSettings {
+KirigamiSettings.ConfigurationView {
     id: settingsPage
 
-    KirigamiComponents.FloatingButton {
-        anchors {
-            right: parent.right
-            bottom: parent.bottom
-        }
-
-        z: 100
-        margins: Kirigami.Units.largeSpacing
-        visible: LauncherCore.isSteamDeck
-
-        action: Kirigami.Action {
-            text: i18nc("@action:button", "Close Settings")
-            icon.name: "dialog-close-symbolic"
-            onTriggered: pageStack.layers.pop()
-        }
-    }
-
-    actions: [
-        KirigamiSettings.SettingAction {
-            actionName: "general"
+    modules: [
+        KirigamiSettings.ConfigurationModule {
+            moduleId: "general"
             text: i18n("General")
             icon.name: "zone.xiv.astra"
-            page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/GeneralSettings.qml")
+            page: () => Qt.createComponent("zone.xiv.astra", "GeneralSettings")
         },
-        KirigamiSettings.SettingAction {
-            actionName: "profiles"
+        KirigamiSettings.ConfigurationModule {
+            moduleId: "profiles"
             text: i18n("Profiles")
             icon.name: "applications-games-symbolic"
-            page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/ProfilesPage.qml")
+            page: () => Qt.createComponent("zone.xiv.astra", "ProfilesPage")
         },
-        KirigamiSettings.SettingAction {
-            actionName: "accounts"
+        KirigamiSettings.ConfigurationModule {
+            moduleId: "accounts"
             text: i18n("Accounts")
             icon.name: "preferences-system-users-symbolic"
-            page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/AccountsPage.qml")
+            page: () => Qt.createComponent("zone.xiv.astra", "AccountsPage")
         },
-        KirigamiSettings.SettingAction {
-            actionName: "sync"
+        KirigamiSettings.ConfigurationModule {
+            moduleId: "sync"
             text: i18n("Synchronization")
             icon.name: "state-sync-symbolic"
-            page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/SyncSettings.qml")
+            page: () => Qt.createComponent("zone.xiv.astra", "SyncSettings")
             visible: LauncherCore.supportsSync()
         },
-        KirigamiSettings.SettingAction {
-            actionName: "compattool"
+        KirigamiSettings.ConfigurationModule {
+            moduleId: "compattool"
             text: i18n("Compatibility Tool")
             icon.name: "system-run-symbolic"
-            page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/CompatibilityToolSetup.qml")
+            page: () => Qt.createComponent("zone.xiv.astra", "CompatibilityToolSetup")
             visible: !LauncherCore.isWindows
         },
-        KirigamiSettings.SettingAction {
-            actionName: "devtool"
+        KirigamiSettings.ConfigurationModule {
+            moduleId: "devtool"
             text: i18n("Developer Settings")
             icon.name: "preferences-others-symbolic"
-            page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/DeveloperSettings.qml")
+            page: () => Qt.createComponent("zone.xiv.astra", "DeveloperSettings")
             visible: LauncherCore.config.showDevTools
         },
-        KirigamiSettings.SettingAction {
-            actionName: "about"
+        KirigamiSettings.ConfigurationModule {
+            moduleId: "about"
             text: i18n("About Astra")
             icon.name: "help-about-symbolic"
-            page: Qt.resolvedUrl("/qt/qml/zone/xiv/astra/ui/Settings/AboutPage.qml")
+            page: () => Qt.createComponent("zone.xiv.astra", "AboutPage")
         }
     ]
 }
