@@ -3,7 +3,7 @@
 Linux FFXIV launcher that supports profiles, multiple accounts and [Dalamud](https://github.com/goatcorp/Dalamud)
 plugins!
 
-![Main Screenshot](https://xiv.zone/astra/main-screenshot.png)
+![Main Screenshot](https://xiv.zone/software/astra/main-screenshot.png)
 
 ## Features
 
