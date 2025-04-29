@@ -32,5 +32,7 @@ Q_SIGNALS:
     void isInstalledChanged();
 
 private:
+    QDir steamDir() const;
+
     LauncherCore &m_launcher;
 };

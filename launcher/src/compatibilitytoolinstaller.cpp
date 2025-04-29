@@ -16,9 +16,7 @@ CompatibilityToolInstaller::CompatibilityToolInstaller(LauncherCore &launcher, Q
 
 void CompatibilityToolInstaller::installCompatibilityTool()
 {
-    const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::HomeLocation)[0];
-    const QDir steamDir = appDataDir.absoluteFilePath(QStringLiteral(".steam"));
-    const QDir steamSteamDir = steamDir.absoluteFilePath(QStringLiteral("steam"));
+    const QDir steamSteamDir = steamDir();
     if (!steamSteamDir.exists()) {
         Q_EMIT error(i18n("Could not find a Steam installation."));
         return;
@@ -91,9 +89,7 @@ void CompatibilityToolInstaller::installCompatibilityTool()
 
 void CompatibilityToolInstaller::removeCompatibilityTool()
 {
-    const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::HomeLocation)[0];
-    const QDir steamDir = appDataDir.absoluteFilePath(QStringLiteral(".steam"));
-    const QDir steamSteamDir = steamDir.absoluteFilePath(QStringLiteral("steam"));
+    const QDir steamSteamDir = steamDir();
     if (!steamSteamDir.exists()) {
         Q_EMIT error(i18n("Could not find a Steam installation."));
         return;
@@ -114,24 +110,21 @@ void CompatibilityToolInstaller::removeCompatibilityTool()
 
 bool CompatibilityToolInstaller::isInstalled() const
 {
-    const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::HomeLocation)[0];
-    const QDir steamDir = appDataDir.absoluteFilePath(QStringLiteral(".steam"));
-    const QDir steamSteamDir = steamDir.absoluteFilePath(QStringLiteral("steam"));
-    if (!steamSteamDir.exists()) {
-        return false;
-    }
-
-    const QDir compatToolDir = steamSteamDir.absoluteFilePath(QStringLiteral("compatibilitytools.d"));
+    const QDir compatToolDir = steamDir().absoluteFilePath(QStringLiteral("compatibilitytools.d"));
     const QDir astraToolDir = compatToolDir.absoluteFilePath(QStringLiteral("astra"));
     return astraToolDir.exists();
 }
 
 bool CompatibilityToolInstaller::hasSteam() const
 {
+    return steamDir().exists();
+}
+
+QDir CompatibilityToolInstaller::steamDir() const
+{
     const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::HomeLocation)[0];
     const QDir steamDir = appDataDir.absoluteFilePath(QStringLiteral(".steam"));
-    const QDir steamSteamDir = steamDir.absoluteFilePath(QStringLiteral("steam"));
-    return steamSteamDir.exists();
+    return steamDir.absoluteFilePath(QStringLiteral("steam"));
 }
 
 #include "moc_compatibilitytoolinstaller.cpp"
