@@ -45,11 +45,6 @@ FormCard.FormCardPage {
                 visible: !LauncherCore.isWindows
             },
             Kirigami.Action {
-                id: toolsAction
-                text: i18n("Tools")
-                visible: !LauncherCore.isWindows
-            },
-            Kirigami.Action {
                 id: dalamudAction
                 text: i18n("Dalamud")
             }
@@ -174,66 +169,6 @@ FormCard.FormCardPage {
 
         FormCard.FormTextDelegate {
             description: page.profile.wineVersionText
-        }
-    }
-
-    FormCard.FormCard {
-        visible: toolsAction.checked
-
-        Layout.fillWidth: true
-        Layout.topMargin: Kirigami.Units.largeSpacing * 4
-
-        FormCard.FormCheckDelegate {
-            text: i18n("Enable Gamescope")
-            description: i18n("A micro-compositor that uses Wayland to create a nested session.\nIf you use fullscreen mode, it may improve input handling.")
-            checked: page.profile.config.useGamescope
-            onCheckedChanged: page.profile.config.useGamescope = checked
-        }
-
-        FormCard.FormDelegateSeparator {}
-
-        FormCard.FormButtonDelegate {
-            text: i18n("Configure Gamescope...")
-            icon.name: "configure"
-            enabled: page.profile.config.useGamescope
-            Kirigami.PromptDialog {
-                id: gamescopeSettingsDialog
-                title: i18n("Configure Gamescope")
-                parent: page
-
-                Kirigami.FormLayout {
-                    QQC2.CheckBox {
-                        Kirigami.FormData.label: "Fullscreen:"
-                        checked: page.profile.config.gamescopeFullscreen
-                        onCheckedChanged: page.profile.config.gamescopeFullscreen = checked
-                    }
-                    QQC2.CheckBox {
-                        Kirigami.FormData.label: "Borderless:"
-                        checked: page.profile.config.gamescopeBorderless
-                        onCheckedChanged: page.profile.config.gamescopeBorderless = checked
-                    }
-                    QQC2.SpinBox {
-                        Kirigami.FormData.label: "Width:"
-                        to: 4096
-                        value: page.profile.config.gamescopeWidth
-                        onValueModified: page.profile.config.gamescopeWidth = value
-                    }
-                    QQC2.SpinBox {
-                        Kirigami.FormData.label: "Height:"
-                        to: 4096
-                        value: page.profile.config.gamescopeHeight
-                        onValueModified: page.profile.config.gamescopeHeight = value
-                    }
-                    QQC2.SpinBox {
-                        Kirigami.FormData.label: "Refresh Rate:"
-                        to: 512
-                        value: page.profile.config.gamescopeRefreshRate
-                        onValueModified: page.profile.config.gamescopeRefreshRate = value
-                    }
-                }
-            }
-
-            onClicked: gamescopeSettingsDialog.open()
         }
     }
 

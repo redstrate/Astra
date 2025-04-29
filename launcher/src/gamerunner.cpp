@@ -259,9 +259,6 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
         setWindowsVersion(profile, QStringLiteral("win7"));
 
-        // TODO: band-aid fix to wait for wine to exit, otherwise gamescope will collide
-        QThread::sleep(2);
-
         // copy DXVK
         const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
         const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
@@ -280,33 +277,6 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
             QFile::copy(entry.absoluteFilePath(), system32.absoluteFilePath(entry.fileName()));
         }
 #endif
-    }
-
-    if (isGame && profile.config()->useGamescope()) {
-        arguments.push_back(QStringLiteral("gamescope"));
-
-        if (profile.config()->gamescopeFullscreen())
-            arguments.push_back(QStringLiteral("-f"));
-
-        if (profile.config()->gamescopeBorderless())
-            arguments.push_back(QStringLiteral("-b"));
-
-        if (profile.config()->gamescopeWidth() > 0) {
-            arguments.push_back(QStringLiteral("-w"));
-            arguments.push_back(QString::number(profile.config()->gamescopeWidth()));
-        }
-
-        if (profile.config()->gamescopeHeight() > 0) {
-            arguments.push_back(QStringLiteral("-h"));
-            arguments.push_back(QString::number(profile.config()->gamescopeHeight()));
-        }
-
-        if (profile.config()->gamescopeRefreshRate() > 0) {
-            arguments.push_back(QStringLiteral("-r"));
-            arguments.push_back(QString::number(profile.config()->gamescopeRefreshRate()));
-        }
-
-        arguments.push_back(QStringLiteral("--"));
     }
 
     if (m_launcher.config()->enableRenderDocCapture()) {
