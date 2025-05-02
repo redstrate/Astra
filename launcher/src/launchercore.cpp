@@ -185,7 +185,7 @@ void LauncherCore::fetchAvatar(Account *account)
 
         QUrl url;
         url.setScheme(account->config()->preferredProtocol());
-        url.setHost(QStringLiteral("na.%1").arg(account->config()->mainServer())); // TODO: NA isnt the only thing in the world...
+        url.setHost(QStringLiteral("na.%1").arg(account->config()->newServer()));
         url.setPath(QStringLiteral("/lodestone/character/%1").arg(account->config()->lodestoneId()));
 
         const QNetworkRequest request(url);
@@ -500,7 +500,7 @@ QCoro::Task<> LauncherCore::fetchNews()
 
     QUrl headlineUrl;
     headlineUrl.setScheme(currentProfile()->account()->config()->preferredProtocol());
-    headlineUrl.setHost(QStringLiteral("frontier.%1").arg(currentProfile()->account()->config()->squareEnixServer()));
+    headlineUrl.setHost(QStringLiteral("frontier.%1").arg(currentProfile()->account()->config()->oldServer()));
     headlineUrl.setPath(QStringLiteral("/news/headline.json"));
     headlineUrl.setQuery(query);
 
@@ -519,7 +519,7 @@ QCoro::Task<> LauncherCore::fetchNews()
 
     QUrl bannerUrl;
     bannerUrl.setScheme(currentProfile()->account()->config()->preferredProtocol());
-    bannerUrl.setHost(QStringLiteral("frontier.%1").arg(currentProfile()->account()->config()->squareEnixServer()));
+    bannerUrl.setHost(QStringLiteral("frontier.%1").arg(currentProfile()->account()->config()->oldServer()));
     bannerUrl.setPath(QStringLiteral("/v2/topics/%1/banner.json").arg(QStringLiteral("en-us")));
     bannerUrl.setQuery(query);
 

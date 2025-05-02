@@ -250,12 +250,29 @@ QString GameRunner::getGameArgs(const Profile &profile, const std::optional<Logi
         Utility::createPathIfNeeded(profile.config()->winePrefixPath());
 
     if (auth) {
-        if (!auth->lobbyHost.isEmpty()) {
-            gameArgs.push_back({QStringLiteral("DEV.GMServerHost"), auth->frontierHost});
-            for (int i = 1; i < 9; i++) {
-                gameArgs.push_back({QStringLiteral("DEV.LobbyHost0%1").arg(QString::number(i)), auth->lobbyHost});
-                gameArgs.push_back({QStringLiteral("DEV.LobbyPort0%1").arg(QString::number(i)), QString::number(auth->lobbyHostPort)});
+        auto config = auth->account->config();
+        if (!config->frontierServer().isEmpty()) {
+            gameArgs.push_back({QStringLiteral("DEV.GMServerHost"), config->frontierServer()});
+        }
+
+        if (!config->lobbyServer().isEmpty()) {
+            for (int i = 1; i < 13; i++) {
+                gameArgs.push_back({QStringLiteral("DEV.LobbyHost%1").arg(QString::number(i), 2, '0'_L1), config->lobbyServer()});
+                gameArgs.push_back({QStringLiteral("DEV.LobbyPort%1").arg(QString::number(i), 2, '0'_L1), QString::number(config->lobbyPort())});
             }
+
+            // the special server!!
+            gameArgs.push_back({QStringLiteral("DEV.LobbyHost98"), config->lobbyServer()});
+            gameArgs.push_back({QStringLiteral("DEV.LobbyPort98"), QString::number(config->lobbyPort())});
+        }
+
+        if (!config->saveDataBankServer().isEmpty()) {
+            gameArgs.push_back({QStringLiteral("DEV.SaveDataBankHost"), config->saveDataBankServer()});
+            gameArgs.push_back({QStringLiteral("DEV.SaveDataBankPort"), QString::number(config->saveDataBankPort())});
+        }
+
+        if (!config->dataCenterTravelServer().isEmpty()) {
+            gameArgs.push_back({QStringLiteral("DEV.DktWebHost"), config->dataCenterTravelServer()});
         }
 
         if (profile.account()->config()->license() == Account::GameLicense::WindowsSteam) {

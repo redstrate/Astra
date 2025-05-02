@@ -46,10 +46,7 @@ struct LoginAuth {
     QString SID;
     int region = 2; // america?
     int maxExpansion = 1;
-
-    // if empty, don't set on the client
-    QString lobbyHost, frontierHost;
-    int lobbyHostPort;
+    Account *account = nullptr;
 };
 
 class LauncherCore : public QObject

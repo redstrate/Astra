@@ -250,9 +250,10 @@ FormCard.FormCardPage {
         FormCard.FormTextFieldDelegate {
             id: squareMainServerDelegate
 
-            label: i18n("SE Main Server (ffxiv.com)")
-            text: page.account.config.squareEnixServer
-            onTextChanged: page.account.config.squareEnixServer = text
+            label: i18n("Old Server")
+            text: page.account.config.oldServer
+            placeholderText: "ffxiv.com"
+            onTextChanged: page.account.config.oldServer = text
         }
 
         FormCard.FormDelegateSeparator {
@@ -263,9 +264,10 @@ FormCard.FormCardPage {
         FormCard.FormTextFieldDelegate {
             id: loginServerDelegate
 
-            label: i18n("SE Login Server (square-enix.com)")
-            text: page.account.config.squareEnixLoginServer
-            onTextChanged: page.account.config.squareEnixLoginServer = text
+            label: i18n("Login Server")
+            text: page.account.config.loginServer
+            placeholderText: "square-enix.com"
+            onTextChanged: page.account.config.loginServer = text
         }
 
         FormCard.FormDelegateSeparator {
@@ -276,35 +278,24 @@ FormCard.FormCardPage {
         FormCard.FormTextFieldDelegate {
             id: mainServerDelegate
 
-            label: i18n("Main Server (finalfantasyxiv.com)")
-            text: page.account.config.mainServer
-            onTextChanged: page.account.config.mainServer = text
+            label: i18n("New Server")
+            text: page.account.config.newServer
+            placeholderText: "finalfantasyxiv.com"
+            onTextChanged: page.account.config.newServer = text
         }
 
         FormCard.FormDelegateSeparator {
             above: mainServerDelegate
-            below: gmServerDelegate
-        }
-
-        FormCard.FormTextFieldDelegate {
-            id: gmServerDelegate
-
-            label: i18n("GM Server (leave blank for default)")
-            text: page.account.config.gMServerHost
-            onTextChanged: page.account.config.gMServerHost = text
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: gmServerDelegate
             below: gameServerDelegate
         }
 
         FormCard.FormTextFieldDelegate {
             id: gameServerDelegate
 
-            label: i18n("Lobby Server (leave blank for default)")
-            text: page.account.config.lobbyHost
-            onTextChanged: page.account.config.lobbyHost = text
+            label: i18n("Lobby Server")
+            text: page.account.config.lobbyServer
+            placeholderText: i18nc("@info:placeholder", "(Default value in client)")
+            onTextChanged: page.account.config.lobbyServer = text
         }
 
         FormCard.FormDelegateSeparator {
@@ -315,11 +306,68 @@ FormCard.FormCardPage {
         FormCard.FormSpinBoxDelegate {
             id: gameServerPortDelegate
 
-            label: i18n("Lobby Server Port")
-            value: page.account.config.lobbyHostPort
-            onValueChanged: page.account.config.lobbyHostPort = value
-            from: 1
+            label: i18n("Lobby Port")
+            value: page.account.config.lobbyPort
+            onValueChanged: page.account.config.lobbyPort = value
+            from: 0
             to: 999999
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: gameServerPortDelegate
+            below: frontierServerDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: frontierServerDelegate
+
+            label: i18n("Frontier Server")
+            text: page.account.config.frontierServer
+            placeholderText: i18nc("@info:placeholder", "(Default value in client)")
+            onTextChanged: page.account.config.frontierServer = text
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: frontierServerDelegate
+            below: saveDataBankServerDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: saveDataBankServerDelegate
+
+            label: i18n("Save Data Bank Server")
+            text: page.account.config.saveDataBankServer
+            placeholderText: i18nc("@info:placeholder", "(Default value in client)")
+            onTextChanged: page.account.config.saveDataBankServer = text
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: saveDataBankServerDelegate
+            below: saveDataBankPortDelegate
+        }
+
+        FormCard.FormSpinBoxDelegate {
+            id: saveDataBankPortDelegate
+
+            label: i18n("Save Data Bank Port")
+            value: page.account.config.saveDataBankPort
+            onValueChanged: page.account.config.saveDataBankPort = value
+            from: 0
+            to: 999999
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: saveDataBankPortDelegate
+            below: dataCenterTravelServerDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: dataCenterTravelServerDelegate
+
+            label: i18n("Data Center Travel Server")
+            text: page.account.config.dataCenterTravelServer
+            placeholderText: i18nc("@info:placeholder", "(Default value in client)")
+            onTextChanged: page.account.config.dataCenterTravelServer = text
         }
     }
 

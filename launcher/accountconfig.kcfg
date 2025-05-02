@@ -61,23 +61,35 @@ SPDX-License-Identifier: CC0-1.0
       <entry name="PreferredProtocol" type="String">
         <default>https</default>
       </entry>
-      <entry name="GMServerHost" type="String">
+      <entry name="GMServer" type="String">
         <default></default>
       </entry>
-      <entry name="LobbyHost" type="String">
+      <entry name="LobbyServer" type="String">
         <default></default>
       </entry>
-      <entry name="LobbyHostPort" type="int">
-        <default>7000</default>
+      <entry name="LobbyPort" type="int">
+        <default></default>
       </entry>
-      <entry name="SquareEnixServer" type="String">
+      <entry name="OldServer" type="String">
         <default>ffxiv.com</default>
       </entry>
-      <entry name="SquareEnixLoginServer" type="String">
+      <entry name="LoginServer" type="String">
         <default>square-enix.com</default>
       </entry>
-      <entry name="MainServer" type="String">
+      <entry name="NewServer" type="String">
         <default>finalfantasyxiv.com</default>
+      </entry>
+      <entry name="FrontierServer" type="String">
+         <default></default>
+      </entry>
+      <entry name="SaveDataBankServer" type="String">
+        <default></default>
+      </entry>
+      <entry name="SaveDataBankPort" type="int">
+        <default></default>
+      </entry>
+      <entry name="DataCenterTravelServer" type="String">
+        <default></default>
       </entry>
     </group>
 </kcfg>
