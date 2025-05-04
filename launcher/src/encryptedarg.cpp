@@ -139,7 +139,7 @@ std::pair<QString, int> encryptSteamTicket(QString ticket, qint64 time)
     binaryWriter.append(garbage);
 
     char blowfishKey[17]{};
-    sprintf(blowfishKey, "%08x#un@e=x>", time);
+    sprintf(blowfishKey, "%08llx#un@e=x>", time);
 
     binaryWriter.remove(0, 4);
     binaryWriter.insert(0, reinterpret_cast<const char *>(&badSum), sizeof(uint));
