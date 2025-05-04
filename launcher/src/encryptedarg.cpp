@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "encryptedarg.h"
+#include "crtrand.h"
 
+#include <QDebug>
 #include <physis.hpp>
 
 #if defined(Q_OS_MAC)
@@ -83,4 +85,80 @@ QString encryptGameArg(const QString &arg)
     physis_blowfish_free(blowfish);
 
     return QStringLiteral("//**sqex0003%1%2**//").arg(base64, QString(QLatin1Char(checksum)));
+}
+
+// Based off of the XIVQuickLauncher implementation
+constexpr auto SQEX_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
+constexpr int SPLIT_SIZE = 300;
+
+QStringList intoChunks(const QString &str, const int maxChunkSize)
+{
+    QStringList chunks;
+    for (int i = 0; i < str.length(); i += maxChunkSize) {
+        chunks.push_back(str.mid(i, std::min(static_cast<qlonglong>(maxChunkSize), str.length() - i)));
+    }
+
+    return chunks;
+}
+
+QString encryptSteamTicket(const QByteArray &ticket, uint32_t time)
+{
+    // Round the time down
+    time -= 5;
+    time -= time % 60;
+
+    auto ticketString = QString::fromLatin1(ticket.toHex()).remove(QLatin1Char('-')).toLower();
+    auto rawTicketBytes = ticketString.toLatin1();
+    rawTicketBytes.append('\0');
+
+    ushort ticketSum = 0;
+    for (const auto b : rawTicketBytes) {
+        ticketSum += b;
+    }
+
+    QByteArray binaryWriter;
+    binaryWriter.append(reinterpret_cast<const char *>(&ticketSum), sizeof(ushort));
+    binaryWriter.append(rawTicketBytes);
+
+    const int castTicketSum = static_cast<short>(ticketSum);
+    const auto seed = time ^ castTicketSum;
+    auto rand = CrtRand(seed);
+
+    const auto numRandomBytes = (static_cast<ulong>(rawTicketBytes.length() + 9) & 0xFFFFFFFFFFFFFFF8) - 2 - static_cast<ulong>(rawTicketBytes.length());
+    auto garbage = QByteArray();
+    garbage.resize(numRandomBytes);
+
+    uint badSum = *reinterpret_cast<uint32_t *>(binaryWriter.data());
+
+    for (auto i = 0u; i < numRandomBytes; i++) {
+        const auto randChar = SQEX_ALPHABET[static_cast<int>(badSum + rand.next()) & 0x3F];
+        garbage[i] = static_cast<char>(randChar);
+        badSum += randChar;
+    }
+
+    binaryWriter.append(garbage);
+
+    char blowfishKey[17]{};
+    sprintf(blowfishKey, "%08x#un@e=x>", time);
+
+    binaryWriter.remove(0, 4);
+    binaryWriter.insert(0, reinterpret_cast<const char *>(&badSum), sizeof(uint));
+
+    // swap first two bytes
+    auto finalBytes = binaryWriter;
+    std::swap(finalBytes[0], finalBytes[1]);
+
+    SteamTicketBlowfish *blowfish = miscel_steamticket_blowfish_initialize(reinterpret_cast<uint8_t *>(blowfishKey), 16);
+
+    miscel_steamticket_blowfish_encrypt(blowfish, reinterpret_cast<uint8_t *>(finalBytes.data()), finalBytes.size());
+    Q_ASSERT(finalBytes.length() % 8 == 0);
+
+    miscel_steamticket_physis_blowfish_free(blowfish);
+
+    auto encoded = finalBytes.toBase64(QByteArray::Base64Option::Base64UrlEncoding | QByteArray::Base64Option::KeepTrailingEquals);
+    encoded.replace('+', '-');
+    encoded.replace('/', '_');
+    encoded.replace('=', '*');
+
+    return intoChunks(QString::fromLatin1(encoded), SPLIT_SIZE).join(QLatin1Char(','));
 }

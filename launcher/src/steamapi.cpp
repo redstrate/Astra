@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "steamapi.h"
+#include "encryptedarg.h"
 #include "launchercore.h"
 
 #include <QCoroNetwork>
@@ -41,7 +42,8 @@ QCoro::Task<QString> SteamAPI::getTicket()
     url.setPort(50481);
     url.setPath(QStringLiteral("/ticket"));
 
-    auto reply = co_await m_qnam.get(QNetworkRequest(url));
+    const auto reply = co_await m_qnam.get(QNetworkRequest(url));
+    const auto ticketBytes = reply->readAll();
 
-    co_return QStringLiteral("todo");
+    co_return encryptSteamTicket(ticketBytes, 5); // TOOD: get time
 }
