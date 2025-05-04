@@ -47,5 +47,5 @@ QCoro::Task<std::pair<QString, int>> SteamAPI::getTicket()
 
     const QJsonDocument document = QJsonDocument::fromJson(ticketBytes);
 
-    co_return encryptSteamTicket(document[QStringLiteral("ticket")].toString(), document[QStringLiteral("ticket")].toInteger());
+    co_return encryptSteamTicket(document[QStringLiteral("ticket")].toString(), document[QStringLiteral("time")].toInteger());
 }
