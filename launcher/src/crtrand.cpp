@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2025 Joshua Goins <josh@redstrate.com>
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "crtrand.h"
 
 CrtRand::CrtRand(const uint32_t seed)
