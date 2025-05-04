@@ -12,3 +12,6 @@ export/
 # Windows
 local/
 prefix/
+.cache/
+.kateproject.build
+compile_commands.json
