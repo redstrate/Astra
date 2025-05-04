@@ -69,5 +69,14 @@ SPDX-License-Identifier: CC0-1.0
       <entry key="AllowPatching" type="bool">
         <default>true</default>
       </entry>
+      <entry key="Platform" type="String">
+        <default>win32</default>
+      </entry>
+      <entry key="BootUpdateChannel" type="String">
+        <default>ffxivneo_release_boot</default>
+      </entry>
+      <entry key="GameUpdateChannel" type="String">
+        <default>ffxivneo_release_game</default>
+      </entry>
     </group>
 </kcfg>

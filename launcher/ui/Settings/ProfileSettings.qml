@@ -47,6 +47,10 @@ FormCard.FormCardPage {
             Kirigami.Action {
                 id: dalamudAction
                 text: i18n("Dalamud")
+            },
+            Kirigami.Action {
+                id: developerAction
+                text: i18n("Developer")
             }
         ]
 
@@ -242,6 +246,47 @@ FormCard.FormCardPage {
 
         FormCard.FormTextDelegate {
             description: page.profile.dalamudVersionText
+        }
+    }
+
+    FormCard.FormCard {
+        visible: developerAction.checked
+
+        Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing * 4
+
+        FormCard.FormTextFieldDelegate {
+            id: platformDelegate
+
+            label: i18n("Platform")
+            text: page.profile.config.platform
+            onTextChanged: page.profile.config.platform = text
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: platformDelegate
+            below: bootUpdateChannel
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: bootUpdateChannel
+
+            label: i18n("Boot Update Channel")
+            text: page.profile.config.bootUpdateChannel
+            onTextChanged: page.profile.config.bootUpdateChannel = text
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: bootUpdateChannel
+            below: gameUpdateChannel
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: gameUpdateChannel
+
+            label: i18n("Game Update Channel")
+            text: page.profile.config.gameUpdateChannel
+            onTextChanged: page.profile.config.gameUpdateChannel = text
         }
     }
 

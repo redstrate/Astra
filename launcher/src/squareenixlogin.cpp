@@ -20,10 +20,6 @@
 #include "profileconfig.h"
 #include "utility.h"
 
-const QString platform = QStringLiteral("win32");
-const QString bootUpdateChannel = QStringLiteral("ffxivneo_release_boot");
-const QString gameUpdateChannel = QStringLiteral("ffxivneo_release_game");
-
 const QByteArray patchUserAgent = QByteArrayLiteral("FFXIV PATCH CLIENT");
 const QByteArray macosPatchUserAgent = QByteArrayLiteral("FFXIV-MAC PATCH CLIEN");
 
@@ -168,7 +164,8 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
     QUrl url;
     url.setScheme(QStringLiteral("http"));
     url.setHost(QStringLiteral("patch-bootver.%1").arg(m_info->profile->account()->config()->oldServer()));
-    url.setPath(QStringLiteral("/http/%1/%2/%3/").arg(platform, bootUpdateChannel, m_info->profile->bootVersion()));
+    url.setPath(QStringLiteral("/http/%1/%2/%3/")
+                    .arg(m_info->profile->config()->platform(), m_info->profile->config()->bootUpdateChannel(), m_info->profile->bootVersion()));
     url.setQuery(query);
 
     auto request = QNetworkRequest(url);
@@ -362,7 +359,8 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
     QUrl url;
     url.setScheme(m_info->profile->account()->config()->preferredProtocol());
     url.setHost(QStringLiteral("patch-gamever.%1").arg(m_info->profile->account()->config()->oldServer()));
-    url.setPath(QStringLiteral("/http/%1/%2/%3/%4").arg(platform, gameUpdateChannel, m_info->profile->baseGameVersion(), m_SID));
+    url.setPath(QStringLiteral("/http/%1/%2/%3/%4")
+                    .arg(m_info->profile->config()->platform(), m_info->profile->config()->gameUpdateChannel(), m_info->profile->baseGameVersion(), m_SID));
 
     auto request = QNetworkRequest(url);
     Utility::setSSL(request);
