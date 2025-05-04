@@ -101,7 +101,7 @@ QStringList intoChunks(const QString &str, const int maxChunkSize)
     return chunks;
 }
 
-std::pair<QString, int> encryptSteamTicket(QString ticket, uint32_t time)
+std::pair<QString, int> encryptSteamTicket(QString ticket, qint64 time)
 {
     // Round the time down
     time -= 5;
