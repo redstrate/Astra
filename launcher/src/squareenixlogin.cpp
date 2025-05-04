@@ -234,7 +234,7 @@ QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStor
         query.addQueryItem(QStringLiteral("issteam"), QString::number(1));
 
         // initialize the steam api
-        co_await m_launcher.steamApi()->initialize();
+        co_await m_launcher.steamApi()->initialize(m_info->profile->account()->config()->isFreeTrial());
 
         // grab an auth ticket
         auto [ticket, ticketSize] = co_await m_launcher.steamApi()->getTicket();

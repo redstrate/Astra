@@ -12,13 +12,17 @@ SteamAPI::SteamAPI(QObject *parent)
 {
 }
 
-QCoro::Task<> SteamAPI::initialize()
+QCoro::Task<> SteamAPI::initialize(const bool freeTrial)
 {
+    QUrlQuery query;
+    query.addQueryItem(QStringLiteral("ft"), QString::number(freeTrial ? 1 : 0));
+
     QUrl url;
     url.setScheme(QStringLiteral("http"));
     url.setHost(QStringLiteral("127.0.0.1"));
     url.setPort(50481);
     url.setPath(QStringLiteral("/init"));
+    url.setQuery(query);
 
     Q_UNUSED(co_await m_qnam.post(QNetworkRequest(url), QByteArray{}))
 }
