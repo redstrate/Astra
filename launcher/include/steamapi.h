@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <QCoroTask>
+#include <QNetworkAccessManager>
 #include <QObject>
 
 class LauncherCore;
@@ -12,7 +14,10 @@ class SteamAPI : public QObject
 public:
     explicit SteamAPI(QObject *parent = nullptr);
 
-    void setLauncherMode(bool isLauncher);
+    QCoro::Task<> initialize();
+    QCoro::Task<> shutdown();
+    QCoro::Task<std::pair<QString, int>> getTicket();
 
-    [[nodiscard]] bool isDeck() const;
+private:
+    QNetworkAccessManager m_qnam;
 };

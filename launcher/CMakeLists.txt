@@ -51,6 +51,7 @@ target_sources(astra_static PRIVATE
         include/processlogger.h
         include/squareenixlogin.h
         include/steamapi.h
+        include/crtrand.h
 
         src/accountmanager.cpp
         src/assetupdater.cpp
@@ -70,7 +71,8 @@ target_sources(astra_static PRIVATE
         src/patcher.cpp
         src/processlogger.cpp
         src/squareenixlogin.cpp
-        src/steamapi.cpp)
+        src/steamapi.cpp
+        src/crtrand.cpp)
 target_include_directories(astra_static PUBLIC include)
 target_link_libraries(astra_static PUBLIC
         physis

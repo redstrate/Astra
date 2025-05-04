@@ -24,3 +24,15 @@ ecm_add_test(utilitytest.cpp
         LINK_LIBRARIES astra_static Qt::Test
         NAME_PREFIX "astra-"
 )
+
+ecm_add_test(crtrandtest.cpp
+        TEST_NAME crtrandtest
+        LINK_LIBRARIES astra_static Qt::Test
+        NAME_PREFIX "astra-"
+)
+
+ecm_add_test(encryptedargtest.cpp
+        TEST_NAME encryptedargtest
+        LINK_LIBRARIES astra_static Qt::Test
+        NAME_PREFIX "astra-"
+)

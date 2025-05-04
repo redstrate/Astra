@@ -133,11 +133,6 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    const auto core = engine.singletonInstance<LauncherCore *>(QStringLiteral("zone.xiv.astra"), QStringLiteral("LauncherCore"));
-    if (parser.isSet(steamOption)) {
-        core->initializeSteam();
-    }
-
     engine.rootContext()->setContextObject(new KLocalizedContext(&engine));
     QObject::connect(&engine, &QQmlApplicationEngine::quit, &app, &QCoreApplication::quit);
 

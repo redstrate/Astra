@@ -15,8 +15,6 @@ plugins!
 * Game Patching Support: Can patch the game without the need to boot into the official launcher.
 * Alternative Server Support: Can use alternative servers in case the official ones ever disappear. 
 
-**Note:** Steam-linked Square Enix accounts are not currently supported. You will have to use the official launcher or XIVLauncher.Core.
-
 ## Get It
 
 Details on where to find stable releases of Astra can be found on its [homepage](https://xiv.zone/astra/install).

@@ -75,9 +75,6 @@ public:
     LauncherCore();
     ~LauncherCore() override;
 
-    /// Initializes the Steamworks API.
-    void initializeSteam();
-
     /// Begins the login process.
     /// It's designed to be opaque as possible to the caller.
     /// \note The login process is asynchronous.
@@ -130,6 +127,7 @@ public:
     [[nodiscard]] AccountManager *accountManager();
     [[nodiscard]] Headline *headline() const;
     [[nodiscard]] QString cachedLogoImage() const;
+    [[nodiscard]] SteamAPI *steamApi() const;
 
     /**
      * @brief Opens the official launcher. Useful if Astra decides not to work that day!

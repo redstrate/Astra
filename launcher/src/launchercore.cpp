@@ -45,6 +45,7 @@ LauncherCore::LauncherCore()
     m_profileManager = new ProfileManager(this);
     m_accountManager = new AccountManager(this);
     m_runner = new GameRunner(*this, this);
+    m_steamApi = new SteamAPI(this);
 
     connect(m_accountManager, &AccountManager::accountAdded, this, &LauncherCore::fetchAvatar);
     connect(m_accountManager, &AccountManager::accountLodestoneIdChanged, this, &LauncherCore::fetchAvatar);
@@ -77,12 +78,6 @@ LauncherCore::LauncherCore()
 LauncherCore::~LauncherCore()
 {
     m_config->save();
-}
-
-void LauncherCore::initializeSteam()
-{
-    m_steamApi = new SteamAPI(this);
-    m_steamApi->setLauncherMode(true);
 }
 
 void LauncherCore::login(Profile *profile, const QString &username, const QString &password, const QString &oneTimePassword)
@@ -445,6 +440,11 @@ QString LauncherCore::cachedLogoImage() const
     return m_cachedLogoImage;
 }
 
+SteamAPI *LauncherCore::steamApi() const
+{
+    return m_steamApi;
+}
+
 #ifdef BUILD_SYNC
 SyncManager *LauncherCore::syncManager() const
 {
@@ -479,10 +479,6 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
         }
 
         Q_EMIT stageChanged(i18n("Launching game..."));
-
-        if (isSteam()) {
-            m_steamApi->setLauncherMode(false);
-        }
 
         m_runner->beginGameExecutable(*info.profile, auth);
     }

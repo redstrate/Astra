@@ -232,9 +232,13 @@ QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStor
     if (m_info->profile->account()->config()->license() == Account::GameLicense::WindowsSteam) {
         query.addQueryItem(QStringLiteral("issteam"), QString::number(1));
 
-        // TODO: get steam ticket information from steam api
-        query.addQueryItem(QStringLiteral("session_ticket"), QString::number(1));
-        query.addQueryItem(QStringLiteral("ticket_size"), QString::number(1));
+        // initialize the steam api
+        co_await m_launcher.steamApi()->initialize();
+
+        // grab an auth ticket
+        auto [ticket, ticketSize] = co_await m_launcher.steamApi()->getTicket();
+        query.addQueryItem(QStringLiteral("session_ticket"), ticket);
+        query.addQueryItem(QStringLiteral("ticket_size"), QString::number(ticketSize));
     }
 
     QUrl url;
@@ -251,22 +255,9 @@ QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStor
     const auto reply = m_launcher.mgr()->get(request);
     co_await reply;
 
+    m_username = m_info->username;
+
     const QString str = QString::fromUtf8(reply->readAll());
-
-    // fetches Steam username
-    if (m_info->profile->account()->config()->license() == Account::GameLicense::WindowsSteam) {
-        const static QRegularExpression re(QStringLiteral(R"lit(<input name=""sqexid"" type=""hidden"" value=""(?<sqexid>.*)""\/>)lit"));
-        const QRegularExpressionMatch match = re.match(str);
-
-        if (match.hasMatch()) {
-            m_username = match.captured(1);
-        } else {
-            Q_EMIT m_launcher.loginError(i18n("Could not get Steam username, have you attached your account?"));
-        }
-    } else {
-        m_username = m_info->username;
-    }
-
     const static QRegularExpression re(QStringLiteral(R"lit(\t<\s*input .* name="_STORED_" value="(?<stored>.*)">)lit"));
     const QRegularExpressionMatch match = re.match(str);
     if (match.hasMatch()) {

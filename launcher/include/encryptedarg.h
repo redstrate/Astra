@@ -6,3 +6,4 @@
 #include <QString>
 
 QString encryptGameArg(const QString &arg);
+std::pair<QString, int> encryptSteamTicket(QString ticket, qint64 time);
