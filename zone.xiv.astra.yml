@@ -86,7 +86,7 @@ modules:
     sources:
       - type: file
         url: https://xiv.zone/distrib/steamwrap/steamwrap
-        sha256: b6c8a398fdf88787000df5de133c748b896b1ba3a2a9892f2e10e0f8e02627af
+        sha256: 86f798109366a8cb483c2cbd40116e2f34f533021eae18480c0ab7bd20fdf572
   - name: steamapi
     buildsystem: simple
     build-commands:
@@ -94,7 +94,7 @@ modules:
     sources:
       - type: file
         url: https://xiv.zone/distrib/steamwrap/libsteam_api.so
-        sha256: b50b9d313eb554792216762f5cc0b972cfae14149f720440e0f0d6c4563c951f
+        sha256: 0f2c41c20644503c17e13498203986493332fc8296dbd78493bc1fed352ec0cc
   - name: qt6-qtwebview
     buildsystem: cmake-ninja
     cleanup-platform:

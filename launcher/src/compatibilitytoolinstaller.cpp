@@ -32,7 +32,19 @@ void CompatibilityToolInstaller::installCompatibilityTool()
     Q_UNUSED(QDir().mkpath(astraToolDir.absolutePath()))
 
     // we need a run script to escape the compatibility tool quirk where it runs everything in the current directory
-    const auto runScriptContents = QStringLiteral("#!/bin/sh\nexec \"$@\"");
+    const auto wrapperScriptContents = QStringLiteral("#!/bin/sh\nexec \"$@\"");
+
+    QFile wrapperScriptFile(astraToolDir.absoluteFilePath(QStringLiteral("wrapper.sh")));
+    wrapperScriptFile.open(QIODevice::WriteOnly | QIODevice::Text);
+    wrapperScriptFile.write(wrapperScriptContents.toUtf8());
+    wrapperScriptFile.close();
+
+    QProcess::execute(QStringLiteral("chmod"), {QStringLiteral("+x"), astraToolDir.absoluteFilePath(QStringLiteral("wrapper.sh"))});
+
+    // we need a run script to escape the compatibility tool quirk where it runs everything in the current directory
+    const auto runScriptContents = QStringLiteral(
+        "$STEAM_COMPAT_CLIENT_INSTALL_PATH/compatibilitytools.d/astra/steamwrap & p1=$!\nflatpak run zone.xiv.astra --steam \"$@\" & p2=$!\nwait -n\n[ \"$?\" "
+        "-gt 1 ] || kill \"$p1\" \"$p2\"\nwait");
 
     QFile runScriptFile(astraToolDir.absoluteFilePath(QStringLiteral("run.sh")));
     runScriptFile.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -41,21 +53,17 @@ void CompatibilityToolInstaller::installCompatibilityTool()
 
     QProcess::execute(QStringLiteral("chmod"), {QStringLiteral("+x"), astraToolDir.absoluteFilePath(QStringLiteral("run.sh"))});
 
-    QString command;
-    if (KSandbox::isFlatpak()) {
-        command = QStringLiteral("flatpak run zone.xiv.astra");
-    } else {
-        command = QCoreApplication::applicationFilePath();
-    }
+    // copy required files
+    QFile::copy(QStringLiteral("/app/bin/steamwrap"), astraToolDir.absoluteFilePath(QStringLiteral("steamwrap")));
+    QFile::copy(QStringLiteral("/app/bin/libsteam_api.so"), astraToolDir.absoluteFilePath(QStringLiteral("libsteam_api.so")));
 
-    const QString toolManifestContents =
-        QStringLiteral(
-            "\"manifest\"\n"
-            "{\n"
-            "  \"version\" \"2\"\n"
-            "  \"commandline\" \"/run.sh \\\"$STEAM_RUNTIME/scripts/switch-runtime.sh\\\" --runtime=\\\"\\\" -- %1 --steam %verb%\"\n"
-            "}")
-            .arg(command);
+    const QString toolManifestContents = QStringLiteral(
+        "\"manifest\"\n"
+        "{\n"
+        "  \"version\" \"2\"\n"
+        "  \"commandline\" \"/shell.sh \\\"$STEAM_RUNTIME/scripts/switch-runtime.sh\\\" --runtime=\\\"\\\" -- "
+        "$STEAM_COMPAT_CLIENT_INSTALL_PATH/compatibilitytools.d/astra/run.sh %verb%\"\n"
+        "}");
 
     QFile toolManifestFile(astraToolDir.absoluteFilePath(QStringLiteral("toolmanifest.vdf")));
     toolManifestFile.open(QIODevice::WriteOnly | QIODevice::Text);

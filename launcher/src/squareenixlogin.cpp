@@ -4,6 +4,7 @@
 #include "squareenixlogin.h"
 
 #include <KLocalizedString>
+#include <KSandbox>
 #include <QDesktopServices>
 #include <QFile>
 #include <QNetworkReply>
