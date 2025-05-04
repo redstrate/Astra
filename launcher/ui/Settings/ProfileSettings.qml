@@ -337,7 +337,7 @@ FormCard.FormCardPage {
         subtitle: i18nc("@label", "Are you sure you want to delete this profile?")
         standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
         showCloseButton: false
-        parent: page
+        parent: page.QQC2.Overlay.overlay
 
         QQC2.Switch {
             id: deleteFilesSwitch

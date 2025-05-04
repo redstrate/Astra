@@ -3,6 +3,7 @@
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls as QQC2
 
 import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.formcard as FormCard
@@ -141,6 +142,6 @@ FormCard.FormCardPage {
         title: i18n("Login Error")
         showCloseButton: false
         standardButtons: Kirigami.Dialog.Ok
-        parent: page
+        parent: page.QQC2.Overlay.overlay
     }
 }
