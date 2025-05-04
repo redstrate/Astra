@@ -51,6 +51,7 @@ FormCard.FormCardPage {
             Kirigami.Action {
                 id: developerAction
                 text: i18n("Developer")
+                visible: LauncherCore.config.showDevTools
             }
         ]
 
