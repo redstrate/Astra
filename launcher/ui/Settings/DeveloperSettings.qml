@@ -29,7 +29,10 @@ FormCard.FormCardPage {
             text: i18n("Keep Patches")
             description: i18n("Do not delete patches after they're used. Astra will not download patch data, if found.")
             checked: LauncherCore.config.keepPatches
-            onCheckedChanged: LauncherCore.config.keepPatches = checked
+            onCheckedChanged: {
+                LauncherCore.config.keepPatches = checked;
+                LauncherCore.config.save();
+            }
         }
     }
 
@@ -60,7 +63,10 @@ FormCard.FormCardPage {
             text: i18n("Encrypt Game Arguments")
             description: i18n("Disable encryption if you want to inspect the raw arguments passed to the game.")
             checked: LauncherCore.config.encryptArguments
-            onCheckedChanged: LauncherCore.config.encryptArguments = checked
+            onCheckedChanged: {
+                LauncherCore.config.encryptArguments = checked;
+                LauncherCore.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -74,7 +80,10 @@ FormCard.FormCardPage {
             text: i18n("Allow RenderDoc Capture")
             description: i18n("Inject the RenderDoc capture layer.")
             checked: LauncherCore.config.enableRenderDocCapture
-            onCheckedChanged: LauncherCore.config.enableRenderDocCapture = checked
+            onCheckedChanged: {
+                LauncherCore.config.enableRenderDocCapture = checked;
+                LauncherCore.config.save();
+            }
         }
     }
 
@@ -90,7 +99,10 @@ FormCard.FormCardPage {
 
             label: i18n("Preferred Protocol")
             text: LauncherCore.config.preferredProtocol
-            onTextChanged: LauncherCore.config.preferredProtocol = text
+            onTextChanged: {
+                LauncherCore.config.preferredProtocol = text;
+                LauncherCore.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -103,7 +115,10 @@ FormCard.FormCardPage {
 
             label: i18n("Dalamud Distribution Server")
             text: LauncherCore.config.dalamudDistribServer
-            onTextChanged: LauncherCore.config.dalamudDistribServer = text
+            onTextChanged: {
+                LauncherCore.config.dalamudDistribServer = text;
+                LauncherCore.config.save();
+            }
         }
     }
 }

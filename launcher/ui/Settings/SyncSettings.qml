@@ -39,7 +39,10 @@ FormCard.FormCardPage {
             text: i18n("Enable Sync")
             description: i18n("Syncing will occur before login, and after the game exits.")
             checked: LauncherCore.config.enableSync
-            onCheckedChanged: LauncherCore.config.enableSync = checked
+            onCheckedChanged: {
+                LauncherCore.config.enableSync = checked
+                LauncherCore.config.save();
+            }
         }
     }
 

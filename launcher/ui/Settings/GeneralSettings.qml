@@ -26,7 +26,10 @@ FormCard.FormCardPage {
 
             text: i18n("Hide Astra when game is launched")
             checked: LauncherCore.config.closeWhenLaunched
-            onCheckedChanged: LauncherCore.config.closeWhenLaunched = checked
+            onCheckedChanged: {
+                LauncherCore.config.closeWhenLaunched = checked;
+                LauncherCore.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -40,7 +43,10 @@ FormCard.FormCardPage {
             text: i18n("Show Developer Settings")
             description: i18n("Enable settings that are useful for developers and tinkerers.")
             checked: LauncherCore.config.showDevTools
-            onCheckedChanged: LauncherCore.config.showDevTools = checked
+            onCheckedChanged: {
+                LauncherCore.config.showDevTools = checked;
+                LauncherCore.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -54,7 +60,10 @@ FormCard.FormCardPage {
             text: i18n("Screenshots Folder")
             folder: LauncherCore.config.screenshotDir
 
-            onAccepted: (folder) => LauncherCore.config.screenshotDir = folder
+            onAccepted: (folder) => {
+                LauncherCore.config.screenshotDir = folder;
+                LauncherCore.config.save();
+            }
         }
     }
 

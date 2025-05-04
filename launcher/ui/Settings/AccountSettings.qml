@@ -73,7 +73,10 @@ FormCard.FormCardPage {
 
             label: i18n("Username")
             text: page.account.config.name
-            onTextChanged: page.account.config.name = text
+            onTextChanged: {
+                page.account.config.name = text;
+                page.account.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -88,7 +91,10 @@ FormCard.FormCardPage {
             description: i18n("The language used in the game client.")
             model: ["Japanese", "English", "German", "French"]
             currentIndex: page.account.config.language
-            onCurrentIndexChanged: page.account.config.language = currentIndex
+            onCurrentIndexChanged: {
+                page.account.config.language = currentIndex;
+                page.account.config.save();
+            }
         }
     }
 
@@ -105,7 +111,10 @@ FormCard.FormCardPage {
             description: i18n("If the account holds multiple licenses, choose the preferred one.")
             model: ["Windows", "Steam", "macOS"]
             currentIndex: page.account.config.license
-            onCurrentIndexChanged: page.account.config.license = currentIndex
+            onCurrentIndexChanged: {
+                page.account.config.license = currentIndex;
+                page.account.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -118,7 +127,10 @@ FormCard.FormCardPage {
             text: i18n("Free trial")
             description: i18n("If the account has a free trial license.")
             checked: page.account.config.isFreeTrial
-            onCheckedChanged: page.account.config.isFreeTrial = checked
+            onCheckedChanged: {
+                page.account.config.isFreeTrial = checked;
+                page.account.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -132,7 +144,10 @@ FormCard.FormCardPage {
             text: i18n("Needs a one-time password")
             description: i18n("Prompt for the one-time password when logging in.")
             checked: page.account.config.useOTP
-            onCheckedChanged: page.account.config.useOTP = checked
+            onCheckedChanged: {
+                page.account.config.useOTP = checked;
+                page.account.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -152,7 +167,10 @@ FormCard.FormCardPage {
                 standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
                 parent: page
 
-                onAccepted: page.account.config.lodestoneId = lodestoneIdField.text
+                onAccepted: {
+                    page.account.config.lodestoneId = lodestoneIdField.text;
+                    page.account.config.save();
+                }
 
                 QQC2.TextField {
                     id: lodestoneIdField
@@ -177,7 +195,10 @@ FormCard.FormCardPage {
             text: i18n("Remember password")
             description: i18n("Stores the password on the device, using it's existing secure credential storage.")
             checked: page.account.config.rememberPassword
-            onCheckedChanged: page.account.config.rememberPassword = checked
+            onCheckedChanged: {
+                page.account.config.rememberPassword = checked;
+                page.account.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -192,7 +213,10 @@ FormCard.FormCardPage {
             description: i18n("Stores the one-time password secret on this device, making it inherently insecure. Only use this feature if you understand the risks.")
 
             checked: page.account.config.rememberOTP
-            onCheckedChanged: page.account.config.rememberOTP = checked
+            onCheckedChanged: {
+                page.account.config.rememberOTP = checked;
+                page.account.config.save();
+            }
             enabled: page.account.config.useOTP
         }
 
@@ -240,7 +264,10 @@ FormCard.FormCardPage {
 
             label: i18n("Preferred Protocol")
             text: page.account.config.preferredProtocol
-            onTextChanged: page.account.config.preferredProtocol = text
+            onTextChanged: {
+                page.account.config.preferredProtocol = text;
+                page.account.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -254,7 +281,10 @@ FormCard.FormCardPage {
             label: i18n("Old Server")
             text: page.account.config.oldServer
             placeholderText: "ffxiv.com"
-            onTextChanged: page.account.config.oldServer = text
+            onTextChanged: {
+                page.account.config.oldServer = text;
+                page.account.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -268,7 +298,10 @@ FormCard.FormCardPage {
             label: i18n("Login Server")
             text: page.account.config.loginServer
             placeholderText: "square-enix.com"
-            onTextChanged: page.account.config.loginServer = text
+            onTextChanged: {
+                page.account.config.loginServer = text;
+                page.account.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -282,7 +315,10 @@ FormCard.FormCardPage {
             label: i18n("New Server")
             text: page.account.config.newServer
             placeholderText: "finalfantasyxiv.com"
-            onTextChanged: page.account.config.newServer = text
+            onTextChanged: {
+                page.account.config.newServer = text;
+                page.account.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -296,7 +332,10 @@ FormCard.FormCardPage {
             label: i18n("Lobby Server")
             text: page.account.config.lobbyServer
             placeholderText: i18nc("@info:placeholder", "(Default value in client)")
-            onTextChanged: page.account.config.lobbyServer = text
+            onTextChanged: {
+                page.account.config.lobbyServer = text;
+                page.account.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -309,7 +348,10 @@ FormCard.FormCardPage {
 
             label: i18n("Lobby Port")
             value: page.account.config.lobbyPort
-            onValueChanged: page.account.config.lobbyPort = value
+            onValueChanged: {
+                page.account.config.lobbyPort = value;
+                page.account.config.save();
+            }
             from: 0
             to: 999999
         }
@@ -325,7 +367,10 @@ FormCard.FormCardPage {
             label: i18n("Frontier Server")
             text: page.account.config.frontierServer
             placeholderText: i18nc("@info:placeholder", "(Default value in client)")
-            onTextChanged: page.account.config.frontierServer = text
+            onTextChanged: {
+                page.account.config.frontierServer = text;
+                page.account.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -339,7 +384,10 @@ FormCard.FormCardPage {
             label: i18n("Save Data Bank Server")
             text: page.account.config.saveDataBankServer
             placeholderText: i18nc("@info:placeholder", "(Default value in client)")
-            onTextChanged: page.account.config.saveDataBankServer = text
+            onTextChanged: {
+                page.account.config.saveDataBankServer = text;
+                page.account.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -352,7 +400,10 @@ FormCard.FormCardPage {
 
             label: i18n("Save Data Bank Port")
             value: page.account.config.saveDataBankPort
-            onValueChanged: page.account.config.saveDataBankPort = value
+            onValueChanged: {
+                page.account.config.saveDataBankPort = value;
+                page.account.config.save();
+            }
             from: 0
             to: 999999
         }
@@ -368,7 +419,10 @@ FormCard.FormCardPage {
             label: i18n("Data Center Travel Server")
             text: page.account.config.dataCenterTravelServer
             placeholderText: i18nc("@info:placeholder", "(Default value in client)")
-            onTextChanged: page.account.config.dataCenterTravelServer = text
+            onTextChanged: {
+                page.account.config.dataCenterTravelServer = text;
+                page.account.config.save();
+            }
         }
     }
 

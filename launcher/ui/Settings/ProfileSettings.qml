@@ -69,7 +69,10 @@ FormCard.FormCardPage {
 
             label: i18n("Name")
             text: page.profile.config.name
-            onTextChanged: page.profile.config.name = text
+            onTextChanged: {
+                page.profile.config.name = text;
+                page.profile.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -83,7 +86,10 @@ FormCard.FormCardPage {
             text: i18n("Game Folder")
             folder: page.profile.config.gamePath
 
-            onAccepted: (folder) => page.profile.config.gamePath = folder
+            onAccepted: (folder) => {
+                page.profile.config.gamePath = folder;
+                page.profile.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -97,7 +103,10 @@ FormCard.FormCardPage {
             text: i18n("DirectX Version")
             model: ["DirectX 11", "DirectX 9"]
             currentIndex: page.profile.config.directx9Enabled ? 1 : 0
-            onCurrentIndexChanged: page.profile.config.directx9Enabled = (currentIndex === 1)
+            onCurrentIndexChanged: {
+                page.profile.config.directx9Enabled = (currentIndex === 1);
+                page.profile.config.save();
+            }
             visible: page.profile.hasDirectx9
         }
 
@@ -112,7 +121,10 @@ FormCard.FormCardPage {
             text: i18n("Allow Updating")
             description: i18n("If unchecked, Astra won't try to update the game automatically.")
             checked: page.profile.config.allowPatching
-            onCheckedChanged: page.profile.config.allowPatching = checked
+            onCheckedChanged: {
+                page.profile.config.allowPatching = checked;
+                page.profile.config.save();
+            }
             visible: LauncherCore.config.showDevTools
         }
 
@@ -138,7 +150,10 @@ FormCard.FormCardPage {
             text: i18n("Wine Type")
             model: [i18n("Built-in"), i18n("Custom")]
             currentIndex: page.profile.config.wineType
-            onCurrentIndexChanged: page.profile.config.wineType = currentIndex
+            onCurrentIndexChanged: {
+                page.profile.config.wineType = currentIndex;
+                page.profile.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -153,7 +168,10 @@ FormCard.FormCardPage {
             file: page.profile.winePath
             visible: page.profile.config.wineType !== Profile.BuiltIn
 
-            onAccepted: (path) => page.profile.winePath = path
+            onAccepted: (path) => {
+                page.profile.winePath = path;
+                page.profile.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -190,7 +208,10 @@ FormCard.FormCardPage {
             text: i18n("Enable Dalamud")
             description: i18n("Dalamud extends the game with useful plugins, but use at your own risk.")
             checked: page.profile.config.dalamudEnabled
-            onCheckedChanged: page.profile.config.dalamudEnabled = checked
+            onCheckedChanged: {
+                page.profile.config.dalamudEnabled = checked;
+                page.profile.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -204,7 +225,10 @@ FormCard.FormCardPage {
             text: i18n("Update Channel")
             model: LauncherCore.config.showDevTools ? [i18n("Stable"), i18n("Staging"), i18n("Local")] : [i18n("Stable"), i18n("Staging")]
             currentIndex: page.profile.config.dalamudChannel
-            onCurrentIndexChanged: page.profile.config.dalamudChannel = currentIndex
+            onCurrentIndexChanged: {
+                page.profile.config.dalamudChannel = currentIndex;
+                page.profile.config.save();
+            }
             enabled: page.profile.config.dalamudEnabled
         }
 
@@ -222,7 +246,10 @@ FormCard.FormCardPage {
             description: "It shouldn't be necessary to change this setting, unless you're running into issues injecting Dalamud."
             model: ["Entrypoint", "DLL Injection"]
             currentIndex: page.profile.config.dalamudInjectMethod
-            onCurrentIndexChanged: page.profile.config.dalamudInjectMethod = currentIndex
+            onCurrentIndexChanged: {
+                page.profile.config.dalamudInjectMethod = currentIndex;
+                page.profile.config.save();
+            }
             enabled: page.profile.config.dalamudEnabled
         }
 
@@ -237,7 +264,10 @@ FormCard.FormCardPage {
             visible: LauncherCore.config.showDevTools
             label: i18n("Injection Delay")
             value: page.profile.config.dalamudInjectDelay
-            onValueChanged: page.profile.config.dalamudInjectDelay = value
+            onValueChanged: {
+                page.profile.config.dalamudInjectDelay = value;
+                page.profile.config.save();
+            }
             enabled: page.profile.config.dalamudEnabled
         }
 
@@ -261,7 +291,10 @@ FormCard.FormCardPage {
 
             label: i18n("Platform")
             text: page.profile.config.platform
-            onTextChanged: page.profile.config.platform = text
+            onTextChanged: {
+                page.profile.config.platform = text;
+                page.profile.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -274,7 +307,10 @@ FormCard.FormCardPage {
 
             label: i18n("Boot Update Channel")
             text: page.profile.config.bootUpdateChannel
-            onTextChanged: page.profile.config.bootUpdateChannel = text
+            onTextChanged: {
+                page.profile.config.bootUpdateChannel = text;
+                page.profile.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
@@ -287,7 +323,10 @@ FormCard.FormCardPage {
 
             label: i18n("Game Update Channel")
             text: page.profile.config.gameUpdateChannel
-            onTextChanged: page.profile.config.gameUpdateChannel = text
+            onTextChanged: {
+                page.profile.config.gameUpdateChannel = text;
+                page.profile.config.save();
+            }
         }
     }
 
