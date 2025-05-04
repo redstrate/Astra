@@ -34,7 +34,7 @@ QCoro::Task<> SteamAPI::shutdown()
     Q_UNUSED(co_await m_qnam.post(QNetworkRequest(url), QByteArray{}))
 }
 
-QCoro::Task<QString> SteamAPI::getTicket()
+QCoro::Task<std::pair<QString, int>> SteamAPI::getTicket()
 {
     QUrl url;
     url.setScheme(QStringLiteral("http"));
@@ -45,5 +45,7 @@ QCoro::Task<QString> SteamAPI::getTicket()
     const auto reply = co_await m_qnam.get(QNetworkRequest(url));
     const auto ticketBytes = reply->readAll();
 
-    co_return encryptSteamTicket(ticketBytes, 5); // TOOD: get time
+    const QJsonDocument document = QJsonDocument::fromJson(ticketBytes);
+
+    co_return encryptSteamTicket(document[QStringLiteral("ticket")].toString(), document[QStringLiteral("ticket")].toInt());
 }

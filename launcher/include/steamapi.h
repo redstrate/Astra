@@ -16,7 +16,7 @@ public:
 
     QCoro::Task<> initialize();
     QCoro::Task<> shutdown();
-    QCoro::Task<QString> getTicket();
+    QCoro::Task<std::pair<QString, int>> getTicket();
 
 private:
     QNetworkAccessManager m_qnam;

@@ -12,30 +12,37 @@ class EncryptedArgTest : public QObject
 private Q_SLOTS:
     void steamTicket_data()
     {
-        QTest::addColumn<QByteArray>("ticketBytes");
+        QTest::addColumn<QString>("ticketBytes");
         QTest::addColumn<uint32_t>("time");
         QTest::addColumn<QString>("encryptedTicket");
+        QTest::addColumn<int>("encryptedLength");
 
-        QTest::addRow("test 1") << QByteArrayLiteral(
-            "caf59103e80d600b4a9233358c131a437cedcf8802eb705223cce84278e6cb4c3655a7accd98097c06748b33d340f9de79920754616e295b88b833d9d84412ffc6a4406c60a6691ce5"
-            "2c27b5b1c90d36a6a810cef4c81fdc3c75aaa87353433f2f3c7232c00d1198a79bb27df6edb89c5fd0a3a11e957c40")
-                                << static_cast<uint32_t>(1746386404)
-                                << QStringLiteral(
-                                       "jX6TeGNIJFgecYIQU4YLSnhkbCpTihoIBB6Dw5iw7rAWQiULVB-NhOsfJwLh7EHW5wYwU1XRJAy5dw6JCWQ6v0R5SwP_84DIVDT5gfET_"
-                                       "BoXmUr7rfXtJF62vpZ16XfwH2-P2KlaVRTaSYQ8xqTqC_fef6agOdYHvL_g-cNyjjv3xTMsekWnDCDhdG3Y1NvnPcXdAX9v0pjHUu5W5-"
-                                       "k8iZhUeTcTjYhMODBPNXz6uf7mKd1wkwAsTnDZoL89k8U1asq78hyaiWsFb4Nb39vK0n0TZfb20yFoXZh9NRO2VpgS,dSTy86oaqm2ZjKu7FnnHmFU6R_"
-                                       "lS8pk8EB6itIekPAfC37LYSBIEI1rT9cEvoXNkX6hIGnZ5sthiNPoi5nx9_HdjWYQ9R0Kar-Bgjeu77Av753T0GpVhJhYFyBkMe-"
-                                       "NAqGMEjkYFjRUwOX9pEJGEszEL3_mWEbryQ8wL4ZaYk5xu4HAXe5hRwk-JUv__BW8IpiR_OsphQUgeKtRmXUPw1eIU2NYdsd3AJLAP3tiiENaplJ_y8X_"
-                                       "OmC8tzvKCCdXapsas3-Won2R_ryQVJlB9j1tAARpNanIEwhOf9CHmbsYM,-8tTNfrKABIfOSlCdr2ajhLqF1i4hRiM-jSzISXAEmc-Nj75Rrg*");
+        QTest::addRow("real ticket")
+            << QStringLiteral(
+                   "140000009efb2c79d200f07599f633050100100195c517681800000001000000020000002c9ea991afec1a49f7e72d000b000000b8000000380000000400000099f63305010"
+                   "010012a990000c47323496501a8c000000000807a1268002a2e680100908400000100c5000400000000004e408e518c259b8b329b5fcfdb00903fadad36d7e088813dc9b174"
+                   "b06e08b69f8f46d083cf4118d1eb4062e009147906d9c80759af3eb221f7fbb8e28d402e11ba80e3cf4a101487f87ccce9688daf99dd412e6bcaab6e58f70030ff99323e4c8"
+                   "1824659f7aa89188fadc6402bcb540843e1578cd112d4536fd65c4bd926f754")
+            << static_cast<uint32_t>(1746389891)
+            << QStringLiteral(
+                   "Tjr8Lv1O0HjJ7U4dOfkA9BdLAnEaCl_TU0GnYGGLTBM06TV9Ggf-fYb7WMqD-Xv758Q1zzSPTeaJctl8au-"
+                   "imM4ACRgl0Y4LqJpLFfgBhkumd4dne2P9oM6qLzMnHfspPq8AFQFHXaiSicu2gSaCwpk36ZK-WX17DaTOkYFncIKl_rSZAkb8OzTpNX0aB_590hUpAf74-"
+                   "TU368A1fgXLw2aunwn0wBNvz0ywFEiAjmD8PfgUzA6IrvkP1eoKoY4A_NNBXnirca7CjWxOoguXRGaHjzq9vrDm8ABTk2o0u29R,Nqmz_4LN1Fj9cNhtyhHTXuV6huLxmsflb_"
+                   "6DR5B8dwk8IMYup0z5AXHhLww0BmZkDKKCWjVehxWvoHkz8FNViV9Oduwv7ZGyHUYs47HUpOIr1Wirp6LEvsxBcDBf-T_XOK945j-z_"
+                   "MtxXiNKqtAuaL8iw7OOIpVnXqIa77yGuOFFW-u2wv1cK1M3s_OqmgEdj0JZfoYbjT6lIEVsSXKMYwwf9zkAjx23K-gqrM8c8nStv4EYT7ZU6o_"
+                   "I0KZ6OJVnCFElYLamz82NIRiPdzyuJcPoslNCXpQV_vWlyGJ0OIoR,2MrkkwMnTNx7HR4FJ6ACh0cQZmdBEB2pM4eQSqpJEC367JtCMzM*")
+            << 652;
     }
 
     void steamTicket()
     {
-        QFETCH(QByteArray, ticketBytes);
+        QFETCH(QString, ticketBytes);
         QFETCH(uint32_t, time);
         QFETCH(QString, encryptedTicket);
+        QFETCH(int, encryptedLength);
 
-        QCOMPARE(encryptSteamTicket(ticketBytes, time), encryptedTicket);
+        auto pair = std::pair{encryptedTicket, encryptedLength};
+        QCOMPARE(encryptSteamTicket(ticketBytes, time), pair);
     }
 };
 

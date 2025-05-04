@@ -47,13 +47,6 @@ FormCard.FormCardPage {
             description: i18n("If the account holds multiple licenses, choose the preferred one.")
             model: ["Windows", "Steam", "macOS"]
             text: i18n("License")
-
-            onCurrentIndexChanged: {
-                if (currentIndex === 1) {
-                    currentIndex = 0;
-                    errorDialog.open();
-                }
-            }
         }
         FormCard.FormDelegateSeparator {
             above: licenseField
@@ -86,13 +79,5 @@ FormCard.FormCardPage {
                 }
             }
         }
-    }
-    Kirigami.PromptDialog {
-        id: errorDialog
-
-        showCloseButton: false
-        standardButtons: Kirigami.Dialog.Ok
-        title: i18n("Steam Warning")
-        subtitle: i18n("Steam linked Square Enix accounts are not currently supported. You will have to use another launcher that supports these, such as the official launcher or XIVLauncher.Core.")
     }
 }

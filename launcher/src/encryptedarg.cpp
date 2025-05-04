@@ -101,13 +101,13 @@ QStringList intoChunks(const QString &str, const int maxChunkSize)
     return chunks;
 }
 
-QString encryptSteamTicket(const QByteArray &ticket, uint32_t time)
+std::pair<QString, int> encryptSteamTicket(QString ticket, uint32_t time)
 {
     // Round the time down
     time -= 5;
     time -= time % 60;
 
-    auto ticketString = QString::fromLatin1(ticket.toHex()).remove(QLatin1Char('-')).toLower();
+    auto ticketString = ticket.remove(QLatin1Char('-')).toLower();
     auto rawTicketBytes = ticketString.toLatin1();
     rawTicketBytes.append('\0');
 
@@ -160,5 +160,8 @@ QString encryptSteamTicket(const QByteArray &ticket, uint32_t time)
     encoded.replace('/', '_');
     encoded.replace('=', '*');
 
-    return intoChunks(QString::fromLatin1(encoded), SPLIT_SIZE).join(QLatin1Char(','));
+    const auto parts = intoChunks(QString::fromLatin1(encoded), SPLIT_SIZE);
+    const auto finalString = parts.join(QLatin1Char(','));
+
+    return {finalString, finalString.length() - (parts.length() - 1)};
 }

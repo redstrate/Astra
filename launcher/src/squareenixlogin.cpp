@@ -232,12 +232,13 @@ QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStor
     if (m_info->profile->account()->config()->license() == Account::GameLicense::WindowsSteam) {
         query.addQueryItem(QStringLiteral("issteam"), QString::number(1));
 
+        // initialize the steam api
         co_await m_launcher.steamApi()->initialize();
 
-        auto ticket = co_await m_launcher.steamApi()->getTicket();
-
+        // grab an auth ticket
+        auto [ticket, ticketSize] = co_await m_launcher.steamApi()->getTicket();
         query.addQueryItem(QStringLiteral("session_ticket"), ticket);
-        query.addQueryItem(QStringLiteral("ticket_size"), QString::number(ticket.length()));
+        query.addQueryItem(QStringLiteral("ticket_size"), QString::number(ticketSize));
     }
 
     QUrl url;
