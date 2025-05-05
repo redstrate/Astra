@@ -33,7 +33,7 @@ FormCard.FormCardPage {
 
             icon.name: "document-open-folder"
             text: i18n("Select Install Folder")
-            description: profile.config.gamePath
+            description: profile.isGamePathDefault ? i18n("Default Location") : profile.config.gamePath
 
             onClicked: installFolderDialog.open()
         }

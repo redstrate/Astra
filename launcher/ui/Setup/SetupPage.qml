@@ -82,7 +82,7 @@ FormCard.FormCardPage {
                 required property var profile
 
                 text: profile.config.name
-                description: profile.config.gamePath
+                description: profile.isGamePathDefault ? i18n("Default Location") : profile.config.gamePath
                 visible: profile.isGameInstalled
 
                 onClicked: {

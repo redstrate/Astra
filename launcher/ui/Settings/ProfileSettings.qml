@@ -85,6 +85,7 @@ FormCard.FormCardPage {
 
             text: i18n("Game Folder")
             folder: page.profile.config.gamePath
+            displayText: page.profile.isGamePathDefault ? i18n("Default Location") : folder
 
             onAccepted: (folder) => {
                 page.profile.config.gamePath = folder;
@@ -185,6 +186,12 @@ FormCard.FormCardPage {
 
             text: i18n("Wine Prefix Folder")
             folder: page.profile.config.winePrefixPath
+            displayText: page.profile.isWinePrefixDefault ? i18n("Default Location") : folder
+
+            onAccepted: (path) => {
+                page.profile.config.winePrefixPath = path;
+                page.profile.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {
