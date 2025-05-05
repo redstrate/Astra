@@ -34,6 +34,8 @@ QVariant ExistingInstallModel::data(const QModelIndex &index, const int role) co
     }
     case PathRole:
         return install.path;
+    case VersionRole:
+        return install.version;
     default:
         return {};
     }
@@ -49,6 +51,7 @@ QHash<int, QByteArray> ExistingInstallModel::roleNames() const
     return {
         {TypeRole, "type"},
         {PathRole, "path"},
+        {VersionRole, "version"},
     };
 }
 
@@ -59,7 +62,9 @@ void ExistingInstallModel::fill()
         // We shouldn't be able to import our own game installs, that's handled elsewhere in the UI
         if (dirs.entries[i].install_type != ExistingInstallType::Astra) {
             beginInsertRows({}, m_existingInstalls.size(), m_existingInstalls.size());
-            m_existingInstalls.push_back(ExistingInstall{.type = dirs.entries[i].install_type, .path = QString::fromUtf8(dirs.entries[i].path)});
+            m_existingInstalls.push_back(ExistingInstall{.type = dirs.entries[i].install_type,
+                                                         .path = QString::fromUtf8(dirs.entries[i].path),
+                                                         .version = QString::fromUtf8(dirs.entries[i].version)});
             endInsertRows();
         }
     }

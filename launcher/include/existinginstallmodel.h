@@ -16,6 +16,7 @@ public:
     enum CustomRoles {
         TypeRole = Qt::UserRole,
         PathRole,
+        VersionRole,
     };
 
     explicit ExistingInstallModel(QObject *parent = nullptr);
@@ -30,6 +31,7 @@ private:
     struct ExistingInstall {
         ExistingInstallType type;
         QString path;
+        QString version;
     };
 
     QList<ExistingInstall> m_existingInstalls;

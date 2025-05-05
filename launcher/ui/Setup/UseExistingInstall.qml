@@ -49,11 +49,12 @@ FormCard.FormCardPage {
             model: ExistingInstallModel {}
 
             delegate: FormCard.FormButtonDelegate {
-                required property var path
-                required property var type
+                required property string path
+                required property string type
+                required property string version
 
-                text: path
-                description: type
+                text: type
+                description: i18nc("version (path)", "%1 (%2)", version, path)
 
                 onClicked: {
                     page.profile.config.gamePath = path;
