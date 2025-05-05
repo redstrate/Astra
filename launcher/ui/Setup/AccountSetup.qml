@@ -19,7 +19,7 @@ FormCard.FormCardPage {
     title: i18n("Account Setup")
 
     FormCard.FormCard {
-        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.topMargin: Kirigami.Units.largeSpacing * 4
         Layout.fillWidth: true
 
         FormCard.FormTextDelegate {

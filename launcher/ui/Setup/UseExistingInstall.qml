@@ -32,7 +32,7 @@ FormCard.FormCardPage {
         visible: existingInstallRepeater.count > 0
 
         Layout.fillWidth: true
-        Layout.topMargin: Kirigami.Units.largeSpacing
+        Layout.topMargin: Kirigami.Units.largeSpacing * 4
 
         FormCard.FormTextDelegate {
             id: foundTextDelegate
