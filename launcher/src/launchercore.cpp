@@ -598,6 +598,8 @@ QCoro::Task<> LauncherCore::handleGameExit(const Profile *profile)
 
         co_return;
     }
+#else
+    Q_UNUSED(profile)
 #endif
     // Otherwise, quit when everything is finished.
     if (config()->closeWhenLaunched()) {
