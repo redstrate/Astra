@@ -18,11 +18,12 @@ FormCard.FormCardPage {
     readonly property bool isInitialSetup: !LauncherCore.profileManager.hasAnyExistingInstallations()
 
     title: isInitialSetup ? i18n("Initial Setup") : i18n("Profile Setup")
-    globalToolBarStyle: Kirigami.ApplicationHeaderStyle.None
+    globalToolBarStyle: isInitialSetup ? Kirigami.ApplicationHeaderStyle.None : Kirigami.ApplicationHeaderStyle.ToolBar
 
-    header: Kirigami.Separator {
+    readonly property Kirigami.Separator prettySeparator: Kirigami.Separator {
         width: page.width
     }
+    header: isInitialSetup ? prettySeparator : null
 
     data: FolderDialog {
         id: installFolderDialog
