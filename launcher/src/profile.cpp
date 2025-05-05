@@ -230,7 +230,7 @@ QString Profile::dalamudVersionText() const
 {
     QString text;
     if (m_dalamudVersion.isEmpty()) {
-        text += i18n("Dalamud is not installed.");
+        text += i18n("Dalamud will be installed when you launch the game.");
     } else {
         text += QStringLiteral("Dalamud (%1)").arg(m_dalamudVersion);
     }
