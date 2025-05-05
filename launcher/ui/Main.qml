@@ -17,7 +17,7 @@ Kirigami.ApplicationWindow {
     minimumWidth: 800
     minimumHeight: 500
 
-    title: pageStack.currentItem !== undefined ? pageStack.currentItem.title : ""
+    title: pageStack.currentItem?.title ?? ""
 
     property bool checkedAutoLogin: false
 

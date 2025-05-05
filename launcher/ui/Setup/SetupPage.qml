@@ -21,7 +21,7 @@ FormCard.FormCardPage {
     globalToolBarStyle: Kirigami.ApplicationHeaderStyle.None
 
     header: Kirigami.Separator {
-        width: root.width
+        width: page.width
     }
 
     data: FolderDialog {
@@ -142,7 +142,7 @@ FormCard.FormCardPage {
     }
 
     FormCard.FormCard {
-        visible: root.isInitialSetup
+        visible: page.isInitialSetup
 
         Layout.topMargin: Kirigami.Units.largeSpacing
 
