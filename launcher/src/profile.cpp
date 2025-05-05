@@ -250,7 +250,11 @@ QString Profile::uuid() const
 QString Profile::wineVersionText() const
 {
     if (!isWineInstalled()) {
-        return i18n("Wine is not installed.");
+        if (config()->wineType() == Profile::WineType::BuiltIn) {
+            return i18n("Wine will be installed when you launch the game.");
+        } else {
+            return i18n("Wine is not installed.");
+        }
     } else {
         return m_wineVersion;
     }
