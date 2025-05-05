@@ -46,7 +46,7 @@ FormCard.FormCardPage {
 
             currentIndex: 0
             description: i18n("If the account holds multiple licenses, choose the preferred one.")
-            model: ["Windows", "Steam", "macOS"]
+            model: [i18n("Windows"), i18n("Steam"), i18n("macOS")]
             text: i18n("License")
         }
         FormCard.FormDelegateSeparator {
