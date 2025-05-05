@@ -288,6 +288,9 @@ QString Profile::bootVersion() const
 QString Profile::baseGameVersion() const
 {
     Q_ASSERT(m_repositories.repositories_count >= 1);
+    if (m_repositories.repositories_count == 0 || m_repositories.repositories[0].version == nullptr) {
+        return QStringLiteral("2012.01.01.0000.0000");
+    }
     return QString::fromLatin1(m_repositories.repositories[0].version);
 }
 
