@@ -72,6 +72,7 @@ FormCard.FormCardPage {
             id: helpTextDelegate
 
             text: i18n("If Astra did not detect your installation automatically, try selecting it manually below.")
+            textItem.wrapMode: Text.WordWrap
         }
         FormCard.FormDelegateSeparator {
             above: helpTextDelegate
