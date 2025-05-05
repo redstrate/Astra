@@ -67,13 +67,13 @@ Kirigami.ApplicationWindow {
                 });
             } else {
                 // They have no pre-existing accounts, and should be shoved into the new account page
-                pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"), {
+                pageStack.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"), {
                     profile: LauncherCore.currentProfile
                 });
             }
         } else {
             if (LauncherCore.autoLoginProfile && !checkedAutoLogin) {
-                pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AutoLoginPage"))
+                pageStack.push(Qt.createComponent("zone.xiv.astra", "AutoLoginPage"))
                 checkedAutoLogin = true;
             } else {
                 pageStack.push(Qt.createComponent("zone.xiv.astra", "MainPage"))
