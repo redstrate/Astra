@@ -67,8 +67,7 @@ FormCard.FormCardPage {
         FormCard.FormButtonDelegate {
             id: addSquareEnixButton
 
-            text: i18n("Square Enix Account…")
-            description: i18n("Used for logging into the official game servers.")
+            text: i18n("Add New Account…")
             icon.name: "list-add-symbolic"
             onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"), {
                 profile: page.profile

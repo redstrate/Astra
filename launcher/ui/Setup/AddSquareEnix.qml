@@ -16,7 +16,7 @@ FormCard.FormCardPage {
     readonly property bool isValid: usernameField.text.length !== 0
     property var profile
 
-    title: i18n("Add Square Enix Account")
+    title: i18n("Add New Account")
 
     FormCard.FormCard {
         Layout.fillWidth: true
