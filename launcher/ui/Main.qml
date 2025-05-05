@@ -60,9 +60,17 @@ Kirigami.ApplicationWindow {
             })
         } else if (!LauncherCore.currentProfile.account && !LauncherCore.currentProfile.config.isBenchmark) {
             // User must select an account for the profile
-            pageStack.push(Qt.createComponent("zone.xiv.astra", "AccountSetup"), {
-                profile: LauncherCore.currentProfile
-            })
+            if (LauncherCore.accountManager.hasAnyAccounts()) {
+                // They have another account they could select
+                pageStack.push(Qt.createComponent("zone.xiv.astra", "AccountSetup"), {
+                    profile: LauncherCore.currentProfile
+                });
+            } else {
+                // They have no pre-existing accounts, and should be shoved into the new account page
+                pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AddSquareEnix"), {
+                    profile: LauncherCore.currentProfile
+                });
+            }
         } else {
             if (LauncherCore.autoLoginProfile && !checkedAutoLogin) {
                 pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "AutoLoginPage"))
