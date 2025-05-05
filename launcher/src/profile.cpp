@@ -150,6 +150,7 @@ void Profile::setWinePath(const QString &path)
 {
     if (m_config->winePath() != path) {
         m_config->setWinePath(path);
+        m_config->save();
         Q_EMIT winePathChanged();
     }
 }
@@ -169,6 +170,7 @@ void Profile::setAccount(Account *account)
 {
     m_account = account;
     m_config->setAccount(account->uuid());
+    m_config->save();
     Q_EMIT accountChanged();
 }
 
