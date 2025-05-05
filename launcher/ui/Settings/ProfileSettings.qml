@@ -217,6 +217,7 @@ FormCard.FormCardPage {
         FormCard.FormDelegateSeparator {
             above: enableDalamudDelegate
             below: dalamudChannelDelegate
+            visible: page.profile.config.dalamudEnabled
         }
 
         FormCard.FormComboBoxDelegate {
@@ -230,18 +231,18 @@ FormCard.FormCardPage {
                 page.profile.config.save();
             }
             enabled: page.profile.config.dalamudEnabled
+            visible: page.profile.config.dalamudEnabled
         }
 
         FormCard.FormDelegateSeparator {
             above: dalamudChannelDelegate
             below: dalamudInjectDelegate
-            visible: LauncherCore.config.showDevTools
+            visible: LauncherCore.config.showDevTools && page.profile.config.dalamudEnabled
         }
 
         FormCard.FormComboBoxDelegate {
             id: dalamudInjectDelegate
 
-            visible: LauncherCore.config.showDevTools
             text: i18n("Injection Method")
             description: "It shouldn't be necessary to change this setting, unless you're running into issues injecting Dalamud."
             model: ["Entrypoint", "DLL Injection"]
@@ -251,17 +252,18 @@ FormCard.FormCardPage {
                 page.profile.config.save();
             }
             enabled: page.profile.config.dalamudEnabled
+            visible: LauncherCore.config.showDevTools && page.profile.config.dalamudEnabled
         }
 
         FormCard.FormDelegateSeparator {
             above: dalamudInjectDelegate
             below: dalamudDelayDelegate
+            visible: LauncherCore.config.showDevTools && page.profile.config.dalamudEnabled
         }
 
         FormCard.FormSpinBoxDelegate {
             id: dalamudDelayDelegate
 
-            visible: LauncherCore.config.showDevTools
             label: i18n("Injection Delay")
             value: page.profile.config.dalamudInjectDelay
             onValueChanged: {
@@ -269,14 +271,20 @@ FormCard.FormCardPage {
                 page.profile.config.save();
             }
             enabled: page.profile.config.dalamudEnabled
+            visible: LauncherCore.config.showDevTools && page.profile.config.dalamudEnabled
         }
 
         FormCard.FormDelegateSeparator {
             above: dalamudDelayDelegate
+            below: dalamudVersionTextDelegate
+            visible: page.profile.config.dalamudEnabled
         }
 
         FormCard.FormTextDelegate {
+            id: dalamudVersionTextDelegate
+
             description: page.profile.dalamudVersionText
+            visible: page.profile.config.dalamudEnabled
         }
     }
 
