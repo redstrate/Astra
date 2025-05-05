@@ -282,8 +282,11 @@ void Patcher::setupDirectories()
     dataDir.setPath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
 
     m_patchesDir.setPath(dataDir.absoluteFilePath(QStringLiteral("patch")));
-    m_patchesDirStorageInfo = QStorageInfo(m_patchesDir);
+    if (!m_patchesDir.exists()) {
+        QDir().mkpath(m_patchesDir.path());
+    }
 
+    m_patchesDirStorageInfo = QStorageInfo(m_patchesDir);
     m_baseDirStorageInfo = QStorageInfo(m_baseDirectory);
 }
 
