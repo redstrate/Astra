@@ -289,6 +289,9 @@ QString Profile::dalamudChannelName() const
 
 QString Profile::bootVersion() const
 {
+    if (m_bootVersion == nullptr || strlen(m_bootVersion) == 0) {
+        return QStringLiteral("2012.01.01.0000.0000");
+    }
     return QString::fromLatin1(m_bootVersion);
 }
 
