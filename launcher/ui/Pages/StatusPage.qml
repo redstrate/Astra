@@ -56,13 +56,16 @@ Kirigami.Page {
     }
 
     Kirigami.PromptDialog {
-        id: updateRequiredDialog
+        id: updateDialog
 
         showCloseButton: false
         standardButtons: Kirigami.Dialog.Yes | Kirigami.Dialog.Cancel
 
         onAccepted: LauncherCore.updateDecided(true)
-        onRejected: LauncherCore.updateDecided(false)
+        onRejected: {
+            LauncherCore.updateDecided(false);
+            applicationWindow().checkSetup();
+        }
     }
 
     Connections {
