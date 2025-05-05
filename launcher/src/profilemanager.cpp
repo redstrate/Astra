@@ -5,6 +5,7 @@
 #include "astra_log.h"
 #include "profileconfig.h"
 
+#include <KLocalizedString>
 #include <KSharedConfig>
 #include <QDir>
 #include <QUuid>
@@ -43,8 +44,15 @@ Profile *ProfileManager::getProfileByUUID(const QString &uuid)
 
 Profile *ProfileManager::addProfile()
 {
+    QString newProfileName;
+    if (m_profiles.size() == 0) {
+        newProfileName = i18n("Default");
+    } else {
+        newProfileName = i18n("New Profile (%1)", m_profiles.size());
+    }
+
     const auto newProfile = new Profile(QUuid::createUuid().toString(), this);
-    newProfile->config()->setName(QStringLiteral("New Profile"));
+    newProfile->config()->setName(newProfileName);
     newProfile->config()->save();
 
     insertProfile(newProfile);
