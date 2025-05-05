@@ -14,6 +14,7 @@ FormCard.AbstractFormDelegate {
     id: root
 
     property string folder
+    property string displayText: folder
 
     signal accepted(string folder)
 
@@ -34,7 +35,7 @@ FormCard.AbstractFormDelegate {
             }
 
             QQC2.Label {
-                text: root.folder
+                text: root.displayText
                 elide: Text.ElideRight
                 maximumLineCount: 1
                 color: Kirigami.Theme.disabledTextColor

@@ -25,6 +25,8 @@ class Profile : public QObject
     Q_PROPERTY(QString wineVersionText READ wineVersionText NOTIFY wineChanged)
     Q_PROPERTY(QString subtitle READ subtitle NOTIFY gameInstallChanged)
     Q_PROPERTY(ProfileConfig *config READ config CONSTANT)
+    Q_PROPERTY(bool isGamePathDefault READ isGamePathDefault NOTIFY gameInstallChanged)
+    Q_PROPERTY(bool isWinePrefixDefault READ isWinePrefixDefault NOTIFY winePrefixChanged)
 
 public:
     explicit Profile(const QString &key, QObject *parent = nullptr);
@@ -101,10 +103,13 @@ public:
     [[nodiscard]] QString subtitle() const;
 
     ProfileConfig *config() const;
+    bool isGamePathDefault() const;
+    bool isWinePrefixDefault() const;
 
 Q_SIGNALS:
     void gameInstallChanged();
     void winePathChanged();
+    void winePrefixChanged();
     void accountChanged();
     void wineChanged();
     void hasDirectx9Changed();
