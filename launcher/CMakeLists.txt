@@ -153,9 +153,11 @@ qt_target_qml_sources(astra_static
         ui/Setup/AccountSetup.qml
         ui/Setup/AddSquareEnix.qml
         ui/Setup/BenchmarkInstallProgress.qml
-        ui/Setup/ExistingSetup.qml
         ui/Setup/InstallProgress.qml
         ui/Setup/SetupPage.qml
+        ui/Setup/InstallBenchmark.qml
+        ui/Setup/InstallGame.qml
+        ui/Setup/UseExistingInstall.qml
         ui/Main.qml
 )
 
