@@ -52,6 +52,7 @@ FormCard.FormCardPage {
             onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "BenchmarkInstallProgress"), {
                 benchmarkInstaller: LauncherCore.createBenchmarkInstaller(page.profile)
             })
+            focus: true
         }
 
         FormCard.FormDelegateSeparator {
