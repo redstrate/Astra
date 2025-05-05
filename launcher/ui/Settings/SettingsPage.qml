@@ -12,6 +12,8 @@ import zone.xiv.astra
 KirigamiSettings.ConfigurationView {
     id: settingsPage
 
+    readonly property bool isInitialSetup: !LauncherCore.profileManager.hasAnyExistingInstallations()
+
     modules: [
         KirigamiSettings.ConfigurationModule {
             moduleId: "general"
@@ -24,12 +26,14 @@ KirigamiSettings.ConfigurationView {
             text: i18n("Profiles")
             icon.name: "applications-games-symbolic"
             page: () => Qt.createComponent("zone.xiv.astra", "ProfilesPage")
+            visible: !settingsPage.isInitialSetup
         },
         KirigamiSettings.ConfigurationModule {
             moduleId: "accounts"
             text: i18n("Accounts")
             icon.name: "preferences-system-users-symbolic"
             page: () => Qt.createComponent("zone.xiv.astra", "AccountsPage")
+            visible: !settingsPage.isInitialSetup
         },
         KirigamiSettings.ConfigurationModule {
             moduleId: "sync"
