@@ -3,8 +3,10 @@
 
 #include "squareenixlogin.h"
 
+#include <KFormat>
 #include <KLocalizedString>
 #include <KSandbox>
+#include <QCoroSignal>
 #include <QDesktopServices>
 #include <QFile>
 #include <QNetworkReply>
@@ -187,15 +189,27 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
         if (!patchList.isEmpty()) {
             qDebug(ASTRA_LOG) << "Boot patch list:" << patchList;
 
+            const std::string patchListStd = patchList.toStdString();
+            const auto parsedPatchList = physis_parse_patchlist(PatchListType::Boot, patchListStd.c_str());
+
             if (!m_info->profile->config()->allowPatching()) {
                 Q_EMIT m_launcher.loginError(
                     i18n("You require an update to play, but you have the “Allow Updates” option checked - so the login was canceled."));
                 co_return false;
             }
 
+            const qint64 neededSpace = parsedPatchList.patch_length;
+            KFormat format;
+            QString neededSpaceStr = format.formatByteSize(neededSpace);
+            Q_EMIT m_launcher.requiresUpdate(
+                i18n("The boot components require an update, which will download %1 of data. Do you still want to continue?", neededSpaceStr));
+            const bool wantsToUpdate = co_await qCoro(&m_launcher, &LauncherCore::updateDecided);
+            if (!wantsToUpdate) {
+                co_return false;
+            }
+
             m_patcher = new Patcher(m_launcher, m_info->profile->config()->gamePath() + QStringLiteral("/boot"), *m_info->profile->bootData(), this);
-            const std::string patchListStd = patchList.toStdString();
-            const bool hasPatched = co_await m_patcher->patch(physis_parse_patchlist(PatchListType::Boot, patchListStd.c_str()));
+            const bool hasPatched = co_await m_patcher->patch(parsedPatchList);
             if (hasPatched) {
                 // update game version information
                 m_info->profile->readGameVersion();
@@ -394,9 +408,21 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
                     co_return false;
                 }
 
-                m_patcher = new Patcher(m_launcher, m_info->profile->config()->gamePath() + QStringLiteral("/game"), *m_info->profile->gameData(), this);
                 std::string bodyStd = body.toStdString();
-                const bool hasPatched = co_await m_patcher->patch(physis_parse_patchlist(PatchListType::Game, bodyStd.c_str()));
+                const auto parsedPatchList = physis_parse_patchlist(PatchListType::Game, bodyStd.c_str());
+
+                const qint64 neededSpace = parsedPatchList.patch_length;
+                KFormat format;
+                QString neededSpaceStr = format.formatByteSize(neededSpace);
+                Q_EMIT m_launcher.requiresUpdate(
+                    i18n("The game require an update, which will download %1 of data. Do you still want to continue?", neededSpaceStr));
+                const bool wantsToUpdate = co_await qCoro(&m_launcher, &LauncherCore::updateDecided);
+                if (!wantsToUpdate) {
+                    co_return false;
+                }
+
+                m_patcher = new Patcher(m_launcher, m_info->profile->config()->gamePath() + QStringLiteral("/game"), *m_info->profile->gameData(), this);
+                const bool hasPatched = co_await m_patcher->patch(parsedPatchList);
                 m_patcher->deleteLater();
                 if (!hasPatched) {
                     co_return false;

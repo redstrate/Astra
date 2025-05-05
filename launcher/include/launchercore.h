@@ -163,6 +163,8 @@ Q_SIGNALS:
     void autoLoginProfileChanged();
     void cachedLogoImageChanged();
     void showWindow();
+    void requiresUpdate(QString message);
+    void updateDecided(bool allowUpdate);
 
 protected:
     friend class Patcher;

@@ -55,6 +55,16 @@ Kirigami.Page {
         onRejected: applicationWindow().checkSetup()
     }
 
+    Kirigami.PromptDialog {
+        id: updateRequiredDialog
+
+        showCloseButton: false
+        standardButtons: Kirigami.Dialog.Yes | Kirigami.Dialog.Cancel
+
+        onAccepted: LauncherCore.updateDecided(true)
+        onRejected: LauncherCore.updateDecided(false)
+    }
+
     Connections {
         target: LauncherCore
 
@@ -89,6 +99,12 @@ Kirigami.Page {
         function onDalamudError(message: string): void {
             dalamudErrorDialog.subtitle = i18n("An error occurred while updating Dalamud:\n\n%1.\n\nWould you like to disable Dalamud?", message);
             dalamudErrorDialog.open();
+        }
+
+        function onRequiresUpdate(message: string): void {
+            updateDialog.title = i18n("Update Required");
+            updateDialog.subtitle = message;
+            updateDialog.open();
         }
     }
 }
