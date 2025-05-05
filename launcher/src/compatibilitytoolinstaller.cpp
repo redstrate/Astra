@@ -25,7 +25,7 @@ void CompatibilityToolInstaller::installCompatibilityTool()
     const QDir compatToolDir = steamSteamDir.absoluteFilePath(QStringLiteral("compatibilitytools.d"));
     const QDir astraToolDir = compatToolDir.absoluteFilePath(QStringLiteral("astra"));
     if (astraToolDir.exists()) {
-        Q_EMIT error(i18n("The compatibility tool is already installed."));
+        Q_EMIT error(i18n("Astra's Compatibility Tool is already installed."));
         return;
     }
 
@@ -106,7 +106,7 @@ void CompatibilityToolInstaller::removeCompatibilityTool()
     const QDir compatToolDir = steamSteamDir.absoluteFilePath(QStringLiteral("compatibilitytools.d"));
     QDir astraToolDir = compatToolDir.absoluteFilePath(QStringLiteral("astra"));
     if (!astraToolDir.exists()) {
-        Q_EMIT error(i18n("The compatibility tool is not installed."));
+        Q_EMIT error(i18n("Astra's Compatibility Tool is not installed."));
         return;
     } else {
         astraToolDir.removeRecursively();
