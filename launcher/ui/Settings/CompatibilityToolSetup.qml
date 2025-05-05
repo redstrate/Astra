@@ -22,7 +22,8 @@ FormCard.FormCardPage {
         Layout.topMargin: Kirigami.Units.largeSpacing * 4
 
         FormCard.FormTextDelegate {
-            text: i18n("Press the button below to install the compatibility tool for Steam.")
+            text: i18n("Installing Astra as a Compatibility Tool in Steam lets you bypass the official launcher.\n\nThis is needed to use Astra with a Steam service account.")
+            textItem.wrapMode: Text.WordWrap
         }
     }
 
@@ -32,7 +33,7 @@ FormCard.FormCardPage {
         FormCard.FormButtonDelegate {
             id: installToolButton
 
-            text: i18n("Install Tool")
+            text: i18n("Install Compatibility Tool")
             icon.name: "install"
             visible: page.installer.hasSteam && !page.installer.isInstalled
             onClicked: page.installer.installCompatibilityTool()
@@ -41,7 +42,7 @@ FormCard.FormCardPage {
         FormCard.FormButtonDelegate {
             id: removeToolButton
 
-            text: i18n("Remove Tool")
+            text: i18n("Remove Compatibility Tool")
             icon.name: "delete"
             visible: page.installer.hasSteam && page.installer.isInstalled
             onClicked: page.installer.removeCompatibilityTool()
@@ -64,20 +65,20 @@ FormCard.FormCardPage {
         target: page.installer
 
         function onInstallFinished(): void {
-            page.errorDialog.title = i18n("Install Success");
-            page.errorDialog.subtitle = i18n("Compatibility tool successfully installed!");
+            page.errorDialog.title = i18n("Successful Installation");
+            page.errorDialog.subtitle = i18n("You need to relaunch Steam for Astra to show up as a Compatibility Tool.");
             page.errorDialog.open();
         }
 
         function onError(message: string): void {
-            page.errorDialog.title = i18n("Install Error");
+            page.errorDialog.title = i18n("Installation Error");
             page.errorDialog.subtitle = message;
             page.errorDialog.open();
         }
 
         function onRemovalFinished(): void {
-            page.errorDialog.title = i18n("Removal Success");
-            page.errorDialog.subtitle = i18n("Compatibility tool successfully removed!");
+            page.errorDialog.title = i18n("Successful Removal");
+            page.errorDialog.subtitle = i18n("You need to relaunch Steam for Astra to stop showing up as a Compatibility Tool.");
             page.errorDialog.open();
         }
     }
