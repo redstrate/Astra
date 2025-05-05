@@ -35,6 +35,7 @@ FormCard.FormCardPage {
             id: usernameField
 
             label: i18n("Username")
+            focus: true
         }
         FormCard.FormDelegateSeparator {
             above: usernameField
