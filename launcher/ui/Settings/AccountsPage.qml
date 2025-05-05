@@ -45,7 +45,6 @@ FormCard.FormCardPage {
 
                 FormCard.FormButtonDelegate {
                     text: layout.account.config.name
-                    description: i18n("Square Enix")
 
                     leading: Components.Avatar
                     {
