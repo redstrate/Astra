@@ -52,7 +52,7 @@ KirigamiSettings.ConfigurationView {
         KirigamiSettings.ConfigurationModule {
             moduleId: "devtool"
             text: i18n("Developer Settings")
-            icon.name: "preferences-others-symbolic"
+            icon.name: "applications-development-symbolic"
             page: () => Qt.createComponent("zone.xiv.astra", "DeveloperSettings")
             visible: LauncherCore.config.showDevTools
         },

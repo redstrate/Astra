@@ -38,20 +38,24 @@ FormCard.FormCardPage {
             Kirigami.Action {
                 id: generalAction
                 text: i18n("General")
+                icon.name: "configure-symbolic"
             },
             Kirigami.Action {
                 id: wineAction
                 text: i18n("Wine")
                 visible: !LauncherCore.isWindows
+                icon.name: "wine-symbolic"
             },
             Kirigami.Action {
                 id: dalamudAction
                 text: i18n("Dalamud")
+                icon.name: "extension-symbolic"
             },
             Kirigami.Action {
                 id: developerAction
                 text: i18n("Developer")
                 visible: LauncherCore.config.showDevTools
+                icon.name: "applications-development-symbolic"
             }
         ]
 

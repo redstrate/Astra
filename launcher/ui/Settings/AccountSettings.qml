@@ -43,19 +43,23 @@ FormCard.FormCardPage {
             Kirigami.Action {
                 id: generalAction
                 text: i18n("General")
+                icon.name: "configure-symbolic"
             },
             Kirigami.Action {
                 id: accountAction
                 text: i18n("Account")
+                icon.name: "user-symbolic"
             },
             Kirigami.Action {
                 id: loginAction
                 text: i18n("Login")
+                icon.name: "password-copy-symbolic"
             },
             Kirigami.Action {
                 id: developerAction
                 text: i18n("Developer")
                 visible: LauncherCore.config.showDevTools
+                icon.name: "applications-development-symbolic"
             }
         ]
 
