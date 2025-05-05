@@ -17,7 +17,7 @@ FormCard.FormCardPage {
 
     property var profile
 
-    title: i18n("Find Existing Installation")
+    title: i18n("Select Existing Installation")
 
     data: FolderDialog {
         id: dialog
@@ -29,10 +29,23 @@ FormCard.FormCardPage {
     }
 
     FormCard.FormCard {
+        visible: existingInstallRepeater.count > 0
+
         Layout.fillWidth: true
         Layout.topMargin: Kirigami.Units.largeSpacing
 
+        FormCard.FormTextDelegate {
+            id: foundTextDelegate
+
+            text: i18n("Astra has found the following installations:")
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: foundTextDelegate
+        }
+
         Repeater {
+            id: existingInstallRepeater
             model: ExistingInstallModel {}
 
             delegate: FormCard.FormButtonDelegate {
@@ -57,7 +70,7 @@ FormCard.FormCardPage {
         FormCard.FormTextDelegate {
             id: helpTextDelegate
 
-            text: i18n("If you can't find your existing game installation, manually select the folder below.")
+            text: i18n("If Astra did not detect your installation automatically, try selecting it manually below.")
         }
         FormCard.FormDelegateSeparator {
             above: helpTextDelegate
@@ -73,4 +86,3 @@ FormCard.FormCardPage {
         }
     }
 }
-

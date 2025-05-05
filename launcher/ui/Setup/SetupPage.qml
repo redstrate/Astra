@@ -18,6 +18,11 @@ FormCard.FormCardPage {
     readonly property bool isInitialSetup: !LauncherCore.profileManager.hasAnyExistingInstallations()
 
     title: isInitialSetup ? i18n("Initial Setup") : i18n("Profile Setup")
+    globalToolBarStyle: Kirigami.ApplicationHeaderStyle.None
+
+    header: Kirigami.Separator {
+        width: root.width
+    }
 
     data: FolderDialog {
         id: installFolderDialog
@@ -45,37 +50,19 @@ FormCard.FormCardPage {
 
             text: {
                 if (page.isInitialSetup) {
-                    return i18n("You must have a legitimate installation of FFXIV to continue.");
+                    return i18n("You have to setup the game to continue.");
                 } else {
-                    return i18n("Select a game installation for '%1'.", page.profile.config.name);
+                    return i18n("You need to select a game installation for '%1'.", page.profile.config.name);
                 }
             }
         }
-
-        FormCard.FormDelegateSeparator {
-            above: helpText
-            below: selectInstallFolder
-        }
-
-        FormCard.FormButtonDelegate {
-            id: selectInstallFolder
-
-            icon.name: "document-open-folder"
-            text: i18n("Select Install Folder")
-            description: profile.config.gamePath
-
-            onClicked: installFolderDialog.open()
-        }
     }
 
-    FormCard.FormHeader {
-        title: i18n("Existing Installation")
-        visible: LauncherCore.profileManager.hasAnyExistingInstallations()
-    }
 
     FormCard.FormCard {
         visible: LauncherCore.profileManager.hasAnyExistingInstallations()
 
+        Layout.topMargin: Kirigami.Units.largeSpacing
         Layout.fillWidth: true
 
         FormCard.FormTextDelegate {
@@ -104,118 +91,67 @@ FormCard.FormCardPage {
                 }
             }
         }
+    }
+
+    FormCard.FormCard {
+        Layout.topMargin: Kirigami.Units.largeSpacing
+
+        FormCard.FormButtonDelegate {
+            id: installGameDelegate
+
+            text: i18n("Install Game")
+            description: i18n("This installation will be managed by Astra.")
+            icon.name: "cloud-download"
+            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "InstallGame"), {
+                profile: page.profile
+            })
+        }
 
         FormCard.FormDelegateSeparator {
-            below: importDelegate
+            above: installGameDelegate
+            below: installBenchmarkDelegate
         }
 
         FormCard.FormButtonDelegate {
-            id: importDelegate
+            id: installBenchmarkDelegate
 
-            text: i18n("Import Existing Installation…")
-            description: i18n("Select an existing installation on disk or import from another launcher.")
+            text: i18n("Install Benchmark")
+            description: i18n("This installation will be managed by Astra.")
+            icon.name: "cloud-download"
+            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "InstallBenchmark"), {
+                profile: page.profile
+            })
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: installBenchmarkDelegate
+            below: useExistingDelegate
+        }
+
+        FormCard.FormButtonDelegate {
+            id: useExistingDelegate
+
+            text: i18n("Select an Existing Installation")
+            description: i18n("Use an existing installation from another launcher.")
             icon.name: "document-import-symbolic"
-            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "ExistingSetup"), {
+            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "UseExistingInstall"), {
                 profile: page.profile
             })
         }
     }
 
-    FormCard.FormHeader {
-        title: i18n("Retail Game")
-    }
-
     FormCard.FormCard {
+        visible: root.isInitialSetup
+
         Layout.topMargin: Kirigami.Units.largeSpacing
-        Layout.fillWidth: true
 
         FormCard.FormButtonDelegate {
-            id: downloadDelegate
+            id: settingsButton
 
-            text: i18n("Download & Install Game")
-            description: i18n("Download the retail installer online from Square Enix.")
-            icon.name: "cloud-download"
-            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "InstallProgress"), {
-                gameInstaller: LauncherCore.createInstaller(page.profile)
-            })
-        }
+            text: i18nc("@action:button Application settings", "Settings")
+            icon.name: "settings-configure"
 
-        FormCard.FormDelegateSeparator {
-            above: downloadDelegate
-            below: selectInstallDelegate
-        }
-
-        FormCard.FormButtonDelegate {
-            id: selectInstallDelegate
-
-            text: i18n("Select Existing Installer…")
-            description: i18n("Use a previously downloaded installer. Useful if offline or can't otherwise access the official servers.")
-            icon.name: "edit-find"
-
-            FileDialog {
-                id: dialog
-
-                currentFolder: StandardPaths.standardLocations(StandardPaths.DownloadLocation)[0]
-                nameFilters: [i18n("Windows executable (*.exe)")]
-
-                onAccepted: {
-                    const url = decodeURIComponent(selectedFile.toString().replace("file://", ""));
-                    page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "InstallProgress"), {
-                        gameInstaller: LauncherCore.createInstallerFromExisting(page.profile, url)
-                    });
-                }
-            }
-
-            onClicked: dialog.open()
-        }
-    }
-
-    FormCard.FormHeader {
-        title: i18n("Benchmark")
-    }
-
-    FormCard.FormCard {
-        Layout.topMargin: Kirigami.Units.largeSpacing
-        Layout.fillWidth: true
-
-        FormCard.FormButtonDelegate {
-            id: downloadBenchmark
-
-            text: i18n("Download & Install Benchmark")
-            description: i18n("Download the official benchmark from Square Enix.")
-            icon.name: "cloud-download"
-            onClicked: page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "BenchmarkInstallProgress"), {
-                benchmarkInstaller: LauncherCore.createBenchmarkInstaller(page.profile)
-            })
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: downloadBenchmark
-            below: selectBenchmark
-        }
-
-        FormCard.FormButtonDelegate {
-            id: selectBenchmark
-
-            text: i18n("Select Existing Benchmark…")
-            description: i18n("Use a previously downloaded benchmark. Useful if offline or can't otherwise access the official servers.")
-            icon.name: "edit-find"
-
-            FileDialog {
-                id: benchmarkDialog
-
-                currentFolder: StandardPaths.standardLocations(StandardPaths.DownloadLocation)[0]
-                nameFilters: [i18n("Benchmark zip archive (*.zip)")]
-
-                onAccepted: {
-                    const url = decodeURIComponent(selectedFile.toString().replace("file://", ""));
-                    page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "BenchmarkInstallProgress"), {
-                        benchmarkInstaller: LauncherCore.createBenchmarkInstallerFromExisting(page.profile, url)
-                    });
-                }
-            }
-
-            onClicked: benchmarkDialog.open()
+            onClicked: Qt.createComponent("zone.xiv.astra", "SettingsPage").createObject(page, { window: applicationWindow() }).open()
         }
     }
 }
