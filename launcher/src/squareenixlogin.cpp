@@ -198,7 +198,7 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
                 co_return false;
             }
 
-            const qint64 neededSpace = parsedPatchList.patch_length;
+            const qint64 neededSpace = parsedPatchList.total_size_downloaded;
             KFormat format;
             QString neededSpaceStr = format.formatByteSize(neededSpace);
             Q_EMIT m_launcher.requiresUpdate(
@@ -411,7 +411,7 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
                 std::string bodyStd = body.toStdString();
                 const auto parsedPatchList = physis_parse_patchlist(PatchListType::Game, bodyStd.c_str());
 
-                const qint64 neededSpace = parsedPatchList.patch_length;
+                const qint64 neededSpace = parsedPatchList.total_size_downloaded;
                 KFormat format;
                 QString neededSpaceStr = format.formatByteSize(neededSpace);
                 Q_EMIT m_launcher.requiresUpdate(
