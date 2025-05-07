@@ -88,7 +88,7 @@ modules:
     sources:
       - type: file
         url: https://xiv.zone/distrib/steamwrap/steamwrap
-        sha256: 86f798109366a8cb483c2cbd40116e2f34f533021eae18480c0ab7bd20fdf572
+        sha256: 196a7d07fcfa65dbb13a6cb37490926cd6c219875f0184f4c5aa156e99d2c454
   - name: steamapi
     buildsystem: simple
     build-commands:
