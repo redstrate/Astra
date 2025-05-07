@@ -9,6 +9,15 @@ build-options:
   append-path: /usr/lib/sdk/rust-stable/bin
   build-args:
     - --share=network
+cleanup:
+  # dev files
+  - /share/cmake
+  - /share/kdevappwizard
+  - /include
+  - /lib/cmake
+  - /lib/x86_64-linux-gnu/cmake
+  - /lib/x86_64-linux-gnu/pkgconfig
+  - /mkspecs
 finish-args:
   - --share=ipc
   - --socket=fallback-x11
