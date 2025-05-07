@@ -41,10 +41,19 @@ void CompatibilityToolInstaller::installCompatibilityTool()
 
     QProcess::execute(QStringLiteral("chmod"), {QStringLiteral("+x"), astraToolDir.absoluteFilePath(QStringLiteral("wrapper.sh"))});
 
-    // we need a run script to escape the compatibility tool quirk where it runs everything in the current directory
-    const auto runScriptContents = QStringLiteral(
-        "$STEAM_COMPAT_CLIENT_INSTALL_PATH/compatibilitytools.d/astra/steamwrap & p1=$!\nflatpak run zone.xiv.astra --steam \"$@\" & p2=$!\nwait -n\n[ \"$?\" "
-        "-gt 1 ] || kill \"$p1\" \"$p2\"\nwait");
+    QString runScriptContents;
+    if (steamType == SteamType::Flatpak) {
+        runScriptContents = QStringLiteral(
+            "$STEAM_COMPAT_CLIENT_INSTALL_PATH/compatibilitytools.d/astra/steamwrap & p1=$!\nflatpak-spawn --host -- flatpak run zone.xiv.astra --steam \"$@\" "
+            "& p2=$!\nwait -n\n[ \"$?\" "
+            "-gt 1 ] || kill \"$p1\" \"$p2\"\nwait");
+
+    } else {
+        runScriptContents = QStringLiteral(
+            "$STEAM_COMPAT_CLIENT_INSTALL_PATH/compatibilitytools.d/astra/steamwrap & p1=$!\nflatpak run zone.xiv.astra --steam \"$@\" & p2=$!\nwait -n\n[ "
+            "\"$?\" "
+            "-gt 1 ] || kill \"$p1\" \"$p2\"\nwait");
+    }
 
     QFile runScriptFile(astraToolDir.absoluteFilePath(QStringLiteral("run.sh")));
     runScriptFile.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -91,7 +100,7 @@ void CompatibilityToolInstaller::installCompatibilityTool()
     compatibilityToolFile.write(compatibilityToolContents.toUtf8());
     compatibilityToolFile.close();
 
-    Q_EMIT installFinished();
+    Q_EMIT installFinished(steamType == SteamType::Flatpak);
     Q_EMIT isInstalledChanged();
 }
 
