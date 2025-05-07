@@ -26,7 +26,7 @@ public:
     bool hasSteam() const;
 
 Q_SIGNALS:
-    void installFinished();
+    void installFinished(bool flatpak);
     void error(QString message);
     void removalFinished();
     void isInstalledChanged();

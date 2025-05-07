@@ -7,6 +7,7 @@ import QtQuick.Controls as QQC2
 
 import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.formcard as FormCard
+import org.kde.kquickcontrolsaddons as KQuickControlsAddons
 
 import zone.xiv.astra
 
@@ -61,12 +62,26 @@ FormCard.FormCardPage {
         parent: page.QQC2.Overlay.overlay
     }
 
+    readonly property Kirigami.Action copyCommandAction: Kirigami.Action {
+        icon.name: "edit-copy-symbolic"
+        text: i18n("Copy Command")
+        onTriggered: clipboard.content = "flatpak override com.valvesoftware.Steam --talk-name=org.freedesktop.Flatpak"
+    }
+
+    readonly property KQuickControlsAddons.Clipboard clipboard: KQuickControlsAddons.Clipboard {}
+
     data: Connections {
         target: page.installer
 
-        function onInstallFinished(): void {
+        function onInstallFinished(flatpak: bool): void {
             page.errorDialog.title = i18n("Successful Installation");
-            page.errorDialog.subtitle = i18n("You need to relaunch Steam for Astra to show up as a Compatibility Tool.");
+            if (flatpak) {
+                page.errorDialog.subtitle = i18n("You need to relaunch Steam for Astra to show up as a Compatibility Tool.\n\nSince you are using the Steam Flatpak, you must give it permissions to allow it to launch Astra:\nflatpak override com.valvesoftware.Steam --talk-name=org.freedesktop.Flatpak");
+                page.errorDialog.customFooterActions = [copyCommandAction];
+            } else {
+                page.errorDialog.subtitle = i18n("You need to relaunch Steam for Astra to show up as a Compatibility Tool.");
+                page.errorDialog.customFooterActions = [];
+            }
             page.errorDialog.open();
         }
 
