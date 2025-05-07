@@ -88,7 +88,6 @@ modules:
       - -DCMAKE_INSTALL_LIBDIR=/app/lib
       - -DLIB_INSTALL_DIR=/app/lib
       - -DBUILD_TRANSLATIONS=NO
-      - -DLIBSECRET_SUPPORT=OFF # TODO: Re-enable
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
     sources:
       - type: git
