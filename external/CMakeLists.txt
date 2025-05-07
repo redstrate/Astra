@@ -20,12 +20,11 @@ FetchContent_MakeAvailable(Corrosion)
 
 corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/libphysis/Cargo.toml
         NO_DEFAULT_FEATURES
-        FEATURES game_install logging
+        FEATURES logging
         CRATE_TYPES staticlib)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libphysis/logger EXCLUDE_FROM_ALL)
 
 target_include_directories(physis INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/libphysis/target/public)
-target_compile_definitions(physis INTERFACE ENABLE_GAME_INSTALL)
 
 set(KDSingleApplication_QT6 ON)
 set(KDSingleApplication_STATIC ON)
