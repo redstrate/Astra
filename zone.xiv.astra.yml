@@ -12,6 +12,7 @@ build-options:
 finish-args:
   - --share=ipc
   - --socket=fallback-x11
+  - --socket=wayland
   - --share=network
   - --filesystem=home
   # We need to install compatibility tools for Flatpak Steam
