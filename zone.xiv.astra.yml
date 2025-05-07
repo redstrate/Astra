@@ -39,7 +39,7 @@ modules:
   - name: kirigami-addons
     config-opts:
       - -DBUILD_TESTING=OFF
-      - -DCMAKE_BUILD_TYPE=Release
+      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
       - -DQT_MAJOR_VERSION=6
     buildsystem: cmake-ninja
     sources:
@@ -54,6 +54,8 @@ modules:
       - /include
       - /lib/pkgconfig
     buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
     sources:
       - type: git
         url: https://github.com/twogood/unshield.git
@@ -87,6 +89,7 @@ modules:
       - -DLIB_INSTALL_DIR=/app/lib
       - -DBUILD_TRANSLATIONS=NO
       - -DLIBSECRET_SUPPORT=OFF # TODO: Re-enable
+      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
     sources:
       - type: git
         url: https://github.com/frankosterfeld/qtkeychain.git
@@ -109,6 +112,9 @@ modules:
         sha256: 0f2c41c20644503c17e13498203986493332fc8296dbd78493bc1fed352ec0cc
   - name: qt6-qtwebview
     buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_INSTALL_LIBDIR=/app/lib
+      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
     cleanup-platform:
       - /bin
     sources:
@@ -141,6 +147,7 @@ modules:
       - -DCMAKE_INSTALL_LIBDIR=/app/lib
       - -DLIB_INSTALL_DIR=/app/lib
       - -DBUILD_TESTING=OFF
+      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
     build-options:
       build-args:
         - --share=network # needed for cargo unfortunately, flatpak has no native support (yet)
