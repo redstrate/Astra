@@ -32,7 +32,12 @@ Q_SIGNALS:
     void isInstalledChanged();
 
 private:
-    QDir steamDir() const;
+    enum class SteamType {
+        NotFound,
+        Native,
+        Flatpak,
+    };
+    std::pair<SteamType, QDir> findSteamType() const;
 
     LauncherCore &m_launcher;
 };

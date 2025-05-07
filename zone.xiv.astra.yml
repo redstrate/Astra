@@ -14,6 +14,8 @@ finish-args:
   - --socket=fallback-x11
   - --share=network
   - --filesystem=home
+  # We need to install compatibility tools for Flatpak Steam
+  - --filesystem=~/.var/app/com.valvesoftware.Steam/data/Steam/compatibilitytools.d/:rw
   - --socket=pulseaudio
   # Allow access to the GNOME secret service API and to talk to the GNOME keyring daemon
   - --talk-name=org.freedesktop.secrets
