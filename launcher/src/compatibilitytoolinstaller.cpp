@@ -16,13 +16,13 @@ CompatibilityToolInstaller::CompatibilityToolInstaller(LauncherCore &launcher, Q
 
 void CompatibilityToolInstaller::installCompatibilityTool()
 {
-    const QDir steamSteamDir = steamDir();
-    if (!steamSteamDir.exists()) {
+    const auto [steamType, steamDir] = findSteamType();
+    if (steamType == SteamType::NotFound) {
         Q_EMIT error(i18n("Could not find a Steam installation."));
         return;
     }
 
-    const QDir compatToolDir = steamSteamDir.absoluteFilePath(QStringLiteral("compatibilitytools.d"));
+    const QDir compatToolDir = steamDir.absoluteFilePath(QStringLiteral("compatibilitytools.d"));
     const QDir astraToolDir = compatToolDir.absoluteFilePath(QStringLiteral("astra"));
     if (astraToolDir.exists()) {
         Q_EMIT error(i18n("Astra's Compatibility Tool is already installed."));
@@ -97,13 +97,13 @@ void CompatibilityToolInstaller::installCompatibilityTool()
 
 void CompatibilityToolInstaller::removeCompatibilityTool()
 {
-    const QDir steamSteamDir = steamDir();
-    if (!steamSteamDir.exists()) {
+    const auto [steamType, steamDir] = findSteamType();
+    if (steamType == SteamType::NotFound) {
         Q_EMIT error(i18n("Could not find a Steam installation."));
         return;
     }
 
-    const QDir compatToolDir = steamSteamDir.absoluteFilePath(QStringLiteral("compatibilitytools.d"));
+    const QDir compatToolDir = steamDir.absoluteFilePath(QStringLiteral("compatibilitytools.d"));
     QDir astraToolDir = compatToolDir.absoluteFilePath(QStringLiteral("astra"));
     if (!astraToolDir.exists()) {
         Q_EMIT error(i18n("Astra's Compatibility Tool is not installed."));
@@ -118,21 +118,38 @@ void CompatibilityToolInstaller::removeCompatibilityTool()
 
 bool CompatibilityToolInstaller::isInstalled() const
 {
-    const QDir compatToolDir = steamDir().absoluteFilePath(QStringLiteral("compatibilitytools.d"));
+    const QDir compatToolDir = findSteamType().second.absoluteFilePath(QStringLiteral("compatibilitytools.d"));
     const QDir astraToolDir = compatToolDir.absoluteFilePath(QStringLiteral("astra"));
     return astraToolDir.exists();
 }
 
 bool CompatibilityToolInstaller::hasSteam() const
 {
-    return steamDir().exists();
+    return findSteamType().first != SteamType::NotFound;
 }
 
-QDir CompatibilityToolInstaller::steamDir() const
+std::pair<CompatibilityToolInstaller::SteamType, QDir> CompatibilityToolInstaller::findSteamType() const
 {
-    const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::HomeLocation)[0];
-    const QDir steamDir = appDataDir.absoluteFilePath(QStringLiteral(".steam"));
-    return steamDir.absoluteFilePath(QStringLiteral("steam"));
+    // prefer flatpak
+    {
+        const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::HomeLocation)[0];
+        const QDir flatpakDataDir = appDataDir.absoluteFilePath(QStringLiteral(".var/app/com.valvesoftware.Steam/data/Steam/"));
+        if (flatpakDataDir.exists()) {
+            return {SteamType::Flatpak, flatpakDataDir};
+        }
+    }
+
+    // fallback to native
+    {
+        const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::HomeLocation)[0];
+        const QDir steamDir = appDataDir.absoluteFilePath(QStringLiteral(".steam"));
+        const QDir steamDataDir = steamDir.absoluteFilePath(QStringLiteral("steam"));
+        if (steamDataDir.exists()) {
+            return {SteamType::Native, steamDataDir};
+        }
+    }
+
+    return {SteamType::NotFound, QDir()};
 }
 
 #include "moc_compatibilitytoolinstaller.cpp"
