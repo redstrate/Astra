@@ -85,7 +85,7 @@ modules:
   - name: steamwrap
     buildsystem: simple
     build-commands:
-        - install -D steamwrap /app/bin/steamwrap
+        - install -D steamwrap /app/libexec/steamwrap
     sources:
       - type: file
         url: https://xiv.zone/distrib/steamwrap/steamwrap
@@ -93,7 +93,7 @@ modules:
   - name: steamapi
     buildsystem: simple
     build-commands:
-        - install -D libsteam_api.so /app/bin/libsteam_api.so
+        - install -D libsteam_api.so /app/libexec/libsteam_api.so
     sources:
       - type: file
         url: https://xiv.zone/distrib/steamwrap/libsteam_api.so

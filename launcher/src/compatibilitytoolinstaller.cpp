@@ -64,7 +64,7 @@ void CompatibilityToolInstaller::installCompatibilityTool()
 
     // copy required files
     const QDir homeDir = QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first();
-    const QDir filesDir = homeDir.absoluteFilePath(QStringLiteral(".local/share/flatpak/app/zone.xiv.astra/current/active/files/bin/"));
+    const QDir filesDir = homeDir.absoluteFilePath(QStringLiteral(".local/share/flatpak/app/zone.xiv.astra/current/active/files/libexec/"));
 
     // we want to link these so they are updated when our flatpak updates
     QFile::link(filesDir.absoluteFilePath(QStringLiteral("steamwrap")), astraToolDir.absoluteFilePath(QStringLiteral("steamwrap")));
