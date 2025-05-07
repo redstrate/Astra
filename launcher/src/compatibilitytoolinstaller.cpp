@@ -61,7 +61,7 @@ void CompatibilityToolInstaller::installCompatibilityTool()
         "\"manifest\"\n"
         "{\n"
         "  \"version\" \"2\"\n"
-        "  \"commandline\" \"/shell.sh \\\"$STEAM_RUNTIME/scripts/switch-runtime.sh\\\" --runtime=\\\"\\\" -- "
+        "  \"commandline\" \"/wrapper.sh \\\"$STEAM_RUNTIME/scripts/switch-runtime.sh\\\" --runtime=\\\"\\\" -- "
         "$STEAM_COMPAT_CLIENT_INSTALL_PATH/compatibilitytools.d/astra/run.sh %verb%\"\n"
         "}");
 
