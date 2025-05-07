@@ -48,18 +48,6 @@ modules:
         branch: master
     cleanup:
       - /lib/debug
-  - name: unshield
-    cleanup:
-      - /bin
-      - /include
-      - /lib/pkgconfig
-    buildsystem: cmake-ninja
-    config-opts:
-      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
-    sources:
-      - type: git
-        url: https://github.com/twogood/unshield.git
-        branch: main
   - name: libsecret
     cleanup:
       - /bin

@@ -3,20 +3,13 @@
 
 #include "gameinstaller.h"
 
-#include <KLocalizedString>
 #include <QFile>
-#include <QNetworkReply>
-#include <QStandardPaths>
-#include <physis.hpp>
 
 #include "astra_log.h"
 #include "launchercore.h"
 #include "profile.h"
 #include "profileconfig.h"
 #include "utility.h"
-
-const auto installerUrl = QStringLiteral("https://download.finalfantasyxiv.com/inst/ffxivsetup.exe");
-const QByteArray installerSha256 = QByteArray::fromHex("cf70bfaaf4f429794358ef84acbcbdc4193bee109fa1b6aea81bd4de038e500e");
 
 GameInstaller::GameInstaller(LauncherCore &launcher, Profile &profile, QObject *parent)
     : QObject(parent)
@@ -33,50 +26,30 @@ GameInstaller::GameInstaller(LauncherCore &launcher, Profile &profile, const QSt
 
 void GameInstaller::start()
 {
-    if (m_localInstallerPath.isEmpty()) {
-        const auto request = QNetworkRequest(QUrl(installerUrl));
-        Utility::printRequest(QStringLiteral("GET"), request);
-
-        auto reply = m_launcher.mgr()->get(request);
-
-        QObject::connect(reply, &QNetworkReply::finished, [this, reply] {
-            if (reply->error() != QNetworkReply::NetworkError::NoError) {
-                Q_EMIT error(reply->errorString());
-                return;
-            }
-
-            const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-
-            const QByteArray data = reply->readAll();
-            QCryptographicHash hash(QCryptographicHash::Sha256);
-            hash.addData(data);
-
-            if (hash.result() != installerSha256) {
-                Q_EMIT error(i18n("The installer failed the integrity check!"));
-                return;
-            }
-
-            QFile file(dataDir.absoluteFilePath(QStringLiteral("ffxivsetup.exe")));
-            file.open(QIODevice::WriteOnly);
-            file.write(data);
-            file.close();
-
-            m_localInstallerPath = file.fileName();
-            installGame();
-        });
-    } else {
-        installGame();
-    }
+    installGame();
 }
 
 void GameInstaller::installGame()
 {
     const QDir installDirectory = m_profile.config()->gamePath();
 
-    const std::string installDirectoryStd = installDirectory.absolutePath().toStdString();
-    const std::string fileNameStd = m_localInstallerPath.toStdString();
+    const QDir bootDir = installDirectory.absoluteFilePath(QStringLiteral("boot"));
+    if (!bootDir.exists()) {
+        QDir().mkpath(bootDir.path());
+    }
 
-    physis_install_game(fileNameStd.c_str(), installDirectoryStd.c_str());
+    const QDir gameDir = installDirectory.absoluteFilePath(QStringLiteral("game"));
+    if (!gameDir.exists()) {
+        QDir().mkpath(gameDir.path());
+    }
+
+    QFile bootVerFile(bootDir.absoluteFilePath(QStringLiteral("ffxivboot.ver")));
+    bootVerFile.open(QIODevice::WriteOnly);
+    bootVerFile.write(QByteArrayLiteral("2012.01.01.0000.0000"));
+
+    QFile gameVerFile(gameDir.absoluteFilePath(QStringLiteral("ffxivgame.ver")));
+    gameVerFile.open(QIODevice::WriteOnly);
+    gameVerFile.write(QByteArrayLiteral("2012.01.01.0000.0000"));
 
     m_profile.readGameVersion();
 
