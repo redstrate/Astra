@@ -63,8 +63,12 @@ void CompatibilityToolInstaller::installCompatibilityTool()
     QProcess::execute(QStringLiteral("chmod"), {QStringLiteral("+x"), astraToolDir.absoluteFilePath(QStringLiteral("run.sh"))});
 
     // copy required files
-    QFile::copy(QStringLiteral("/app/bin/steamwrap"), astraToolDir.absoluteFilePath(QStringLiteral("steamwrap")));
-    QFile::copy(QStringLiteral("/app/bin/libsteam_api.so"), astraToolDir.absoluteFilePath(QStringLiteral("libsteam_api.so")));
+    const QDir homeDir = QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first();
+    const QDir filesDir = homeDir.absoluteFilePath(QStringLiteral(".local/share/flatpak/app/zone.xiv.astra/current/active/files/bin/"));
+
+    // we want to link these so they are updated when our flatpak updates
+    QFile::link(filesDir.absoluteFilePath(QStringLiteral("steamwrap")), astraToolDir.absoluteFilePath(QStringLiteral("steamwrap")));
+    QFile::link(filesDir.absoluteFilePath(QStringLiteral("libsteam_api.so")), astraToolDir.absoluteFilePath(QStringLiteral("libsteam_api.so")));
 
     const QString toolManifestContents = QStringLiteral(
         "\"manifest\"\n"
