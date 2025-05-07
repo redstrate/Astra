@@ -128,6 +128,7 @@ modules:
       - -DBUILD_FLATPAK=ON
       - -DCMAKE_INSTALL_LIBDIR=/app/lib
       - -DLIB_INSTALL_DIR=/app/lib
+      - -DBUILD_TESTING=OFF
     build-options:
       build-args:
         - --share=network # needed for cargo unfortunately, flatpak has no native support (yet)
