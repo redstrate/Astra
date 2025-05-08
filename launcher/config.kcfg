@@ -54,5 +54,8 @@ SPDX-License-Identifier: CC0-1.0
     <entry name="GithubApi" type="String">
       <default>api.github.com</default>
     </entry>
+    <entry name="EnableWayland" type="bool">
+      <default>false</default>
+    </entry>
   </group>
 </kcfg>

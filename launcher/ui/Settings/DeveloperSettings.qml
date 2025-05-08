@@ -85,6 +85,23 @@ FormCard.FormCardPage {
                 LauncherCore.config.save();
             }
         }
+
+        FormCard.FormDelegateSeparator {
+            above: renderDocCaptureDelegate
+            below: enableWaylandDelegate
+        }
+
+        FormCard.FormCheckDelegate {
+            id: enableWaylandDelegate
+
+            text: i18n("Run Game on Wayland")
+            description: i18n("Use the native Wine Wayland driver instead of going through XWayland.")
+            checked: LauncherCore.config.enableWayland
+            onCheckedChanged: {
+                LauncherCore.config.enableWayland = checked;
+                LauncherCore.config.save();
+            }
+        }
     }
 
     FormCard.FormHeader {
