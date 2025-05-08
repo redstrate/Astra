@@ -7,13 +7,13 @@ plugins!
 
 ## Features
 
-* **Wine Support**: Handles launching Wine for you.
+* **Wine Support**: Handles downloading and launching Wine for you. Of course, you always have the option of choosing your own Wine.
 * **Dalamud Support**: You can use Dalamud plugins out of the box!
-* **Multiple Profiles**: Customizable per-profile settings for users that need multiple game installations.
-* **Encrypted Arguments**: Game arguments are encrypted out of the box, and is as secure as other launchers.
-* **Secure Password Storage**: Login information is encrypted using your system keychain and is never stored plain-text.
+* **Multiple Profiles**: Customizable per-profile settings for users that manage multiple game installations.
+* **Encrypted Arguments**: Game arguments are encrypted out of the box, so we are as secure as other launchers.
+* **Secure Password Storage**: Login information is encrypted using your system keychain.
 * **Game Patching Support**: Can patch the game without the need to boot into the official launcher.
-* **Alternative Server Support**: Can use alternative servers in case the official ones ever disappear. 
+* **Resilient**: Astra can be used offline (assuming you have an alternative server) and is designed to be future-proof.
 
 ## Get It
 
