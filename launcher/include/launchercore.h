@@ -155,6 +155,7 @@ Q_SIGNALS:
     void loginError(QString message);
     void dalamudError(QString message);
     void miscError(QString message);
+    void assetError(QString message);
     void stageChanged(QString message, QString explanation = {});
     void stageIndeterminate();
     void stageDeterminate(int min, int max, int value);
@@ -165,6 +166,8 @@ Q_SIGNALS:
     void showWindow();
     void requiresUpdate(QString message);
     void updateDecided(bool allowUpdate);
+    void assetDecided(bool shouldContinue);
+    void dalamudDecided(bool shouldContinue);
 
 protected:
     friend class Patcher;

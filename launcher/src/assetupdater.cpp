@@ -9,6 +9,7 @@
 #include <KLocalizedString>
 #include <KTar>
 #include <KZip>
+#include <QCoroSignal>
 #include <QFile>
 #include <QJsonDocument>
 #include <QNetworkReply>
@@ -86,8 +87,10 @@ QCoro::Task<bool> AssetUpdater::checkRemoteCompatibilityToolVersion()
 
     const auto reply = co_await launcher.mgr()->get(request);
     if (reply->error() != QNetworkReply::NetworkError::NoError) {
-        Q_EMIT launcher.miscError(i18n("Could not check for the latest compatibility tool version.\n\n%1", reply->errorString()));
-        co_return false;
+        Q_EMIT launcher.assetError(i18n("Could not check for the latest compatibility tool version.\n\n%1", reply->errorString()));
+
+        const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::assetDecided);
+        co_return shouldContinue;
     }
 
     const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
@@ -132,8 +135,10 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDxvkVersion()
 
     const auto reply = co_await launcher.mgr()->get(request);
     if (reply->error() != QNetworkReply::NetworkError::NoError) {
-        Q_EMIT launcher.miscError(i18n("Could not check for the latest DXVK version.\n\n%1", reply->errorString()));
-        co_return false;
+        Q_EMIT launcher.assetError(i18n("Could not check for the latest DXVK version.\n\n%1", reply->errorString()));
+
+        const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::assetDecided);
+        co_return shouldContinue;
     }
 
     const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
@@ -179,7 +184,9 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudAssetVersion()
 
     if (reply->error() != QNetworkReply::NetworkError::NoError) {
         Q_EMIT launcher.dalamudError(i18n("Could not check for Dalamud asset updates.\n\n%1", reply->errorString()));
-        co_return false;
+
+        const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::dalamudDecided);
+        co_return shouldContinue;
     }
 
     const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
@@ -221,7 +228,13 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudVersion()
 
     if (reply->error() != QNetworkReply::NetworkError::NoError) {
         Q_EMIT launcher.dalamudError(i18n("Could not check for Dalamud updates.\n\n%1", reply->errorString()));
-        co_return false;
+
+        // Always assume Dalamud is applicable for this version when we can't contact the server!
+        // The user is prompted to turn off Dalamud anyway, if they wish.
+        m_profile.setDalamudApplicable(true);
+
+        const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::dalamudDecided);
+        co_return shouldContinue;
     }
 
     const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
@@ -349,7 +362,9 @@ QCoro::Task<bool> AssetUpdater::installDalamudAssets()
     if (!extractZip(m_tempDir.filePath(QStringLiteral("dalamud-assets.zip")), m_dalamudAssetDir.absolutePath())) {
         qCritical(ASTRA_LOG) << "Failed to install Dalamud assets";
         Q_EMIT launcher.dalamudError(i18n("Failed to install Dalamud assets."));
-        co_return false;
+
+        const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::dalamudDecided);
+        co_return shouldContinue;
     }
 
     // TODO: check for file hashes
@@ -381,7 +396,9 @@ QCoro::Task<bool> AssetUpdater::installDalamud()
     if (!extractZip(m_tempDir.filePath(QStringLiteral("latest.zip")), m_dalamudDir.absoluteFilePath(m_profile.dalamudChannelName()))) {
         qCritical(ASTRA_LOG) << "Failed to install Dalamud";
         Q_EMIT launcher.dalamudError(i18n("Failed to install Dalamud."));
-        co_return false;
+
+        const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::dalamudDecided);
+        co_return shouldContinue;
     }
 
     m_profile.setDalamudVersion(m_remoteDalamudVersion);
@@ -432,7 +449,8 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
         qCritical(ASTRA_LOG) << "Failed to install dotnet";
         Q_EMIT launcher.dalamudError(i18n("Failed to install .NET runtime."));
 
-        co_return false;
+        const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::dalamudDecided);
+        co_return shouldContinue;
     } else {
         Utility::writeVersion(m_dalamudRuntimeDir.absoluteFilePath(QStringLiteral("runtime.ver")), m_remoteRuntimeVersion);
 

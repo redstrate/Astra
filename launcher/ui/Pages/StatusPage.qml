@@ -46,13 +46,29 @@ Kirigami.Page {
         title: i18n("Dalamud Error")
 
         showCloseButton: false
-        standardButtons: Kirigami.Dialog.Yes | Kirigami.Dialog.Cancel
+        standardButtons: Kirigami.Dialog.Cancel
 
-        onAccepted: {
-            LauncherCore.currentProfile.config.dalamudEnabled = false;
+        customFooterActions: [
+            Kirigami.Action {
+                icon.name: "edit-none-symbolic"
+                text: i18n("Disable Dalamud")
+                onTriggered: {
+                    LauncherCore.currentProfile.config.dalamudEnabled = false;
+                    dalamudErrorDialog.accept();
+                }
+            },
+            Kirigami.Action {
+                icon.name: "checkmark-symbolic"
+                text: i18n("Continue Anyway")
+                onTriggered: dalamudErrorDialog.accept()
+            }
+        ]
+
+        onAccepted: LauncherCore.dalamudDecided(true)
+        onRejected: {
+            LauncherCore.dalamudDecided(false);
             applicationWindow().checkSetup();
         }
-        onRejected: applicationWindow().checkSetup()
     }
 
     Kirigami.PromptDialog {
@@ -64,6 +80,27 @@ Kirigami.Page {
         onAccepted: LauncherCore.updateDecided(true)
         onRejected: {
             LauncherCore.updateDecided(false);
+            applicationWindow().checkSetup();
+        }
+    }
+
+    Kirigami.PromptDialog {
+        id: assetDialog
+
+        showCloseButton: false
+        standardButtons: Kirigami.Dialog.Cancel
+
+        customFooterActions: [
+            Kirigami.Action {
+                icon.name: "checkmark-symbolic"
+                text: i18n("Continue Anyway")
+                onTriggered: assetDialog.accept()
+            }
+        ]
+
+        onAccepted: LauncherCore.assetDecided(true)
+        onRejected: {
+            LauncherCore.assetDecided(false);
             applicationWindow().checkSetup();
         }
     }
@@ -108,6 +145,12 @@ Kirigami.Page {
             updateDialog.title = i18n("Update Required");
             updateDialog.subtitle = message;
             updateDialog.open();
+        }
+
+        function onAssetError(message: string): void {
+            assetDialog.title = i18n("Error");
+            assetDialog.subtitle = message;
+            assetDialog.open();
         }
     }
 }
