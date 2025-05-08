@@ -20,7 +20,8 @@ cleanup:
   - /mkspecs
 finish-args:
   - --share=ipc
-  - --socket=fallback-x11
+  # grab both sockets until we provide a build of Wine with Wayland support
+  - --socket=x11
   - --socket=wayland
   - --share=network
   - --filesystem=home
@@ -34,6 +35,7 @@ finish-args:
   - --talk-name=org.kde.kwalletd5
   - --talk-name=org.kde.kwalletd6
   - --device=all
+  # Needed for Dalamud to run
   - --allow=devel
 modules:
   - name: kirigami-addons
