@@ -45,5 +45,14 @@ SPDX-License-Identifier: CC0-1.0
     <entry key="EnableRenderDocCapture" type="bool">
       <default>false</default>
     </entry>
+    <entry name="DXVKRepository" type="String">
+      <default>doitsujin/dxvk</default>
+    </entry>
+    <entry name="WineRepository" type="String">
+      <default>goatcorp/wine-xiv-git</default>
+    </entry>
+    <entry name="GithubApi" type="String">
+      <default>api.github.com</default>
+    </entry>
   </group>
 </kcfg>

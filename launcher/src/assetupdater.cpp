@@ -81,8 +81,37 @@ QCoro::Task<bool> AssetUpdater::update()
 
 QCoro::Task<bool> AssetUpdater::checkRemoteCompatibilityToolVersion()
 {
-    // TODO: hardcoded for now
-    m_remoteCompatibilityToolVersion = QStringLiteral("wine-xiv-staging-fsync-git-8.5.r4.g4211bac7");
+    const QNetworkRequest request(wineReleasesUrl());
+    Utility::printRequest(QStringLiteral("GET"), request);
+
+    const auto reply = co_await launcher.mgr()->get(request);
+    if (reply->error() != QNetworkReply::NetworkError::NoError) {
+        Q_EMIT launcher.miscError(i18n("Could not check for the latest compatibility tool version.\n\n%1", reply->errorString()));
+        co_return false;
+    }
+
+    const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+    const QJsonArray releases = doc.array();
+    const QJsonObject latestRelease = releases.first().toObject();
+
+    if (latestRelease.contains("tag_name"_L1)) {
+        m_remoteCompatibilityToolVersion = latestRelease["tag_name"_L1].toString();
+    } else if (latestRelease.contains("name"_L1)) {
+        m_remoteCompatibilityToolVersion = latestRelease["name"_L1].toString();
+    } else {
+        m_remoteCompatibilityToolVersion = latestRelease["commit"_L1].toObject()["sha"_L1].toString();
+    }
+
+    for (auto asset : latestRelease["assets"_L1].toArray()) {
+        if (asset["name"_L1].toString().contains("ubuntu"_L1)) {
+            m_remoteCompatibilityToolUrl = asset["browser_download_url"_L1].toString();
+        }
+    }
+
+    // fallback to first asset just in case
+    if (m_remoteCompatibilityToolUrl.isEmpty()) {
+        m_remoteCompatibilityToolUrl = latestRelease["assets"_L1].toArray().first()["browser_download_url"_L1].toString();
+    }
 
     qInfo(ASTRA_LOG) << "Compatibility tool remote version" << m_remoteCompatibilityToolVersion;
 
@@ -98,8 +127,27 @@ QCoro::Task<bool> AssetUpdater::checkRemoteCompatibilityToolVersion()
 
 QCoro::Task<bool> AssetUpdater::checkRemoteDxvkVersion()
 {
-    // TODO: hardcoded for now
-    m_remoteDxvkToolVersion = QStringLiteral("dxvk-2.3");
+    const QNetworkRequest request(dxvkReleasesUrl());
+    Utility::printRequest(QStringLiteral("GET"), request);
+
+    const auto reply = co_await launcher.mgr()->get(request);
+    if (reply->error() != QNetworkReply::NetworkError::NoError) {
+        Q_EMIT launcher.miscError(i18n("Could not check for the latest DXVK version.\n\n%1", reply->errorString()));
+        co_return false;
+    }
+
+    const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+    const QJsonArray releases = doc.array();
+    const QJsonObject latestRelease = releases.first().toObject();
+
+    if (latestRelease.contains("tag_name"_L1)) {
+        m_remoteDxvkToolVersion = latestRelease["tag_name"_L1].toString();
+    } else if (latestRelease.contains("name"_L1)) {
+        m_remoteDxvkToolVersion = latestRelease["name"_L1].toString();
+    } else {
+        m_remoteDxvkToolVersion = latestRelease["commit"_L1].toObject()["sha"_L1].toString();
+    }
+    m_remoteDxvkToolUrl = latestRelease["assets"_L1].toArray().first()["browser_download_url"_L1].toString();
 
     qInfo(ASTRA_LOG) << "DXVK remote version" << m_remoteDxvkToolVersion;
 
@@ -231,8 +279,7 @@ QCoro::Task<bool> AssetUpdater::installCompatibilityTool() const
         co_return false;
     }
 
-    // the first directory is the same as the version we download
-    const auto *root = dynamic_cast<const KArchiveDirectory *>(archive.directory()->entry(m_remoteCompatibilityToolVersion));
+    const auto *root = dynamic_cast<const KArchiveDirectory *>(archive.directory()->entry(archive.directory()->entries().first()));
     Q_UNUSED(root->copyTo(m_wineDir.absolutePath(), true))
 
     archive.close();
@@ -251,8 +298,7 @@ QCoro::Task<bool> AssetUpdater::installDxvkTool() const
     const auto request = QNetworkRequest(QUrl(m_remoteDxvkToolUrl));
     Utility::printRequest(QStringLiteral("GET"), request);
 
-    const auto reply = launcher.mgr()->get(request);
-    co_await reply;
+    const auto reply = co_await launcher.mgr()->get(request);
 
     qInfo(ASTRA_LOG) << "Finished downloading DXVK";
 
@@ -273,8 +319,7 @@ QCoro::Task<bool> AssetUpdater::installDxvkTool() const
         co_return false;
     }
 
-    // the first directory is the same as the version we download
-    const auto *root = dynamic_cast<const KArchiveDirectory *>(archive.directory()->entry(m_remoteDxvkToolVersion));
+    const auto *root = dynamic_cast<const KArchiveDirectory *>(archive.directory()->entry(archive.directory()->entries().first()));
     Q_UNUSED(root->copyTo(m_dxvkDir.absolutePath(), true))
 
     archive.close();
@@ -431,6 +476,26 @@ QUrl AssetUpdater::dotnetDesktopPackageUrl(const QString &version) const
     url.setScheme(launcher.config()->preferredProtocol());
     url.setHost(launcher.config()->dalamudDistribServer());
     url.setPath(QStringLiteral("/Dalamud/Release/Runtime/WindowsDesktop/%1").arg(version));
+
+    return url;
+}
+
+QUrl AssetUpdater::dxvkReleasesUrl() const
+{
+    QUrl url;
+    url.setScheme(launcher.config()->preferredProtocol());
+    url.setHost(launcher.config()->githubApi());
+    url.setPath(QStringLiteral("/repos/%1/releases").arg(launcher.config()->dXVKRepository()));
+
+    return url;
+}
+
+QUrl AssetUpdater::wineReleasesUrl() const
+{
+    QUrl url;
+    url.setScheme(launcher.config()->preferredProtocol());
+    url.setHost(launcher.config()->githubApi());
+    url.setPath(QStringLiteral("/repos/%1/releases").arg(launcher.config()->wineRepository()));
 
     return url;
 }

@@ -38,6 +38,8 @@ private:
     [[nodiscard]] QUrl dalamudAssetManifestUrl() const;
     [[nodiscard]] QUrl dotnetRuntimePackageUrl(const QString &version) const;
     [[nodiscard]] QUrl dotnetDesktopPackageUrl(const QString &version) const;
+    [[nodiscard]] QUrl dxvkReleasesUrl() const;
+    [[nodiscard]] QUrl wineReleasesUrl() const;
 
     static bool extractZip(const QString &filePath, const QString &directory);
 
@@ -60,11 +62,9 @@ private:
     QString m_remoteDalamudDownloadUrl;
     QString m_remoteDalamudAssetPackageUrl;
     QString m_remoteCompatibilityToolVersion;
+    QString m_remoteCompatibilityToolUrl;
     QString m_remoteDxvkToolVersion;
-    // TODO: hardcoded
-    QString m_remoteCompatibilityToolUrl =
-        QStringLiteral("https://github.com/goatcorp/wine-xiv-git/releases/download/8.5.r4.g4211bac7/wine-xiv-staging-fsync-git-ubuntu-8.5.r4.g4211bac7.tar.xz");
-    QString m_remoteDxvkToolUrl = QStringLiteral("https://github.com/doitsujin/dxvk/releases/download/v2.3/dxvk-2.3.tar.gz");
+    QString m_remoteDxvkToolUrl;
 
     Profile &m_profile;
 };
