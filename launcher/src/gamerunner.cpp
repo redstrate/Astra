@@ -13,6 +13,7 @@
 #include "utility.h"
 
 #include <KProcessList>
+#include <QGuiApplication>
 
 using namespace Qt::StringLiterals;
 
@@ -340,6 +341,12 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     const QString logDir = dataDir.absoluteFilePath(QStringLiteral("log"));
 
     env.insert(QStringLiteral("DXVK_LOG_PATH"), logDir);
+
+    // Enable the Wayland backend if we detect we're running on Wayland, otherwise fallback to X11.
+    if (QGuiApplication::platformName() == QStringLiteral("wayland") && m_launcher.config()->enableWayland()) {
+        // We have to unset the DISPLAY variable for Wine to pick it up.
+        env.remove(QStringLiteral("DISPLAY"));
+    }
 #endif
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
