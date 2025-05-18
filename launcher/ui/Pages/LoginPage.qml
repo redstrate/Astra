@@ -275,7 +275,11 @@ QQC2.Control {
                 enabled: page.isLoginValid
                 onClicked: {
                     page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "StatusPage"))
-                    LauncherCore.login(LauncherCore.currentProfile, usernameField.text, passwordField.text, otpField.text)
+                    let otp = otpField.text;
+                    if (LauncherCore.currentProfile.account.config.rememberOTP) {
+                        otp = LauncherCore.currentProfile.account.getOTP();
+                    }
+                    LauncherCore.login(LauncherCore.currentProfile, usernameField.text, passwordField.text, otp);
                 }
             }
 
