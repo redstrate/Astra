@@ -83,7 +83,7 @@ QQC2.Control {
             return;
         }
 
-        if (LauncherCore.currentProfile.account.config.useOTP) {
+        if (LauncherCore.currentProfile.account.config.useOTP && !LauncherCore.currentProfile.account.config.rememberOTP) {
             otpField.forceActiveFocus();
             return;
         }
