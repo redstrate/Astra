@@ -73,22 +73,28 @@ QQC2.Control {
 
         function onAccountChanged(): void {
             page.updateFields();
-
-            if (LauncherCore.currentProfile.account.needsPassword) {
-                passwordField.forceActiveFocus();
-                return;
-            }
-
-            if (LauncherCore.currentProfile.account.config.useOTP) {
-                otpField.forceActiveFocus();
-                return;
-            }
-
-            loginButton.forceActiveFocus();
+            page.updateFocus();
         }
     }
 
-    Component.onCompleted: updateFields()
+    function updateFocus(): void {
+        if (LauncherCore.currentProfile.account.needsPassword && !LauncherCore.currentProfile.account.config.rememberPassword) {
+            passwordField.forceActiveFocus();
+            return;
+        }
+
+        if (LauncherCore.currentProfile.account.config.useOTP) {
+            otpField.forceActiveFocus();
+            return;
+        }
+
+        loginButton.forceActiveFocus();
+    }
+
+    Component.onCompleted: {
+        updateFields();
+        updateFocus();
+    }
 
     contentItem: ColumnLayout {
         width: parent.width
@@ -227,7 +233,6 @@ QQC2.Control {
             FormCard.FormPasswordFieldDelegate {
                 id: passwordField
                 label: i18n("Square Enix Password")
-                focus: true
                 onAccepted: {
                     if (otpField.visible) {
                         otpField.clicked();
