@@ -174,7 +174,6 @@ qt_target_qml_sources(astra_static
 target_link_libraries(astra PRIVATE
         astra_static
         astra_staticplugin
-        physis-logger
         KDAB::kdsingleapplication
         Qt6::Widgets
         Qt6::QuickControls2

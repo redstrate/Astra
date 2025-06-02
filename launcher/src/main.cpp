@@ -17,7 +17,6 @@
 #include "astra-version.h"
 #include "launchercore.h"
 #include "logger.h"
-#include "physis_logger.h"
 #include "utility.h"
 
 using namespace Qt::StringLiterals;
@@ -89,7 +88,6 @@ int main(int argc, char *argv[])
     KAboutData::setApplicationData(about);
 
     initializeLogging();
-    setup_physis_logging();
 
     QCommandLineParser parser;
     about.setupCommandLine(&parser);
