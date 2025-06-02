@@ -1,0 +1,22 @@
+version = 1
+SPDX-PackageName = "Astra"
+SPDX-PackageSupplier = "Joshua Goins <josh@redstrate.com>"
+SPDX-PackageDownloadLocation = "https://github.com/redstrate/astra"
+
+[[annotations]]
+path = [".gitmodules", "README.md", "BUILDING.md", "FLATPAK.md", "CONTRIBUTING.md", ".build.yml", ".editorconfig", "zone.xiv.astra.yml", "zone.xiv.astra.desktop", "misc/**", "scripts/**", ".github/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Joshua Goins <josh@redstrate.com>"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = ["zone.xiv.astra.svg", "resources/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Joshua Goins <josh@redstrate.com>"
+SPDX-License-Identifier = "CC-BY-SA-4.0"
+
+[[annotations]]
+path = "external/libcotp/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "libcotp contributors"
+SPDX-License-Identifier = "Apache-2.0"
