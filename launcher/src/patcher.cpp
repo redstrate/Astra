@@ -152,7 +152,7 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
                 updateDownloadProgress(ourIndex, received);
             });
 
-            connect(patchReply, &QNetworkReply::readyRead, this, [this, tempPatchPath, patchReply] {
+            connect(patchReply, &QNetworkReply::readyRead, this, [tempPatchPath, patchReply] {
                 // TODO: don't open the file each time we receive data
                 QFile file(tempPatchPath);
                 file.open(QIODevice::WriteOnly | QIODevice::Append);

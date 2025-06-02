@@ -201,7 +201,7 @@ void LauncherCore::fetchAvatar(Account *account)
                     Utility::printRequest(QStringLiteral("GET"), avatarRequest);
 
                     auto avatarReply = mgr()->get(avatarRequest);
-                    connect(avatarReply, &QNetworkReply::finished, [this, filename, avatarReply, account] {
+                    connect(avatarReply, &QNetworkReply::finished, [filename, avatarReply, account] {
                         QFile file(filename);
                         file.open(QIODevice::ReadWrite);
                         file.write(avatarReply->readAll());
