@@ -345,8 +345,18 @@ void LauncherCore::buildRequest(const Profile &settings, QNetworkRequest &reques
     if (settings.account()->config()->license() == Account::GameLicense::macOS) {
         request.setHeader(QNetworkRequest::UserAgentHeader, QByteArrayLiteral("macSQEXAuthor/2.0.0(MacOSX; ja-jp)"));
     } else {
-        request.setHeader(QNetworkRequest::UserAgentHeader,
-                          QStringLiteral("SQEXAuthor/2.0.0(Windows 6.2; ja-jp; %1)").arg(QString::fromUtf8(QSysInfo::bootUniqueId())));
+        const auto hashString = QSysInfo::bootUniqueId();
+
+        QCryptographicHash hash(QCryptographicHash::Sha1);
+        hash.addData(hashString);
+
+        QByteArray bytes = hash.result();
+        bytes.resize(4);
+
+        auto checkSum = (uint8_t)-(bytes[0] + bytes[1] + bytes[2] + bytes[3]);
+        bytes.prepend(checkSum);
+
+        request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("SQEXAuthor/2.0.0(Windows 6.2; ja-jp; %1)").arg(QString::fromUtf8(bytes.toHex())));
     }
 
     request.setRawHeader(QByteArrayLiteral("Accept"),
@@ -354,6 +364,8 @@ void LauncherCore::buildRequest(const Profile &settings, QNetworkRequest &reques
                                            "application/x-ms-xbap, */*"));
     request.setRawHeader(QByteArrayLiteral("Accept-Encoding"), QByteArrayLiteral("gzip, deflate"));
     request.setRawHeader(QByteArrayLiteral("Accept-Language"), QByteArrayLiteral("en-us"));
+    request.setRawHeader(QByteArrayLiteral("Connection"), QByteArrayLiteral("Keep-Alive"));
+    request.setRawHeader(QByteArrayLiteral("Cookie"), QByteArrayLiteral("_rsid=\"\""));
 }
 
 void LauncherCore::setupIgnoreSSL(QNetworkReply *reply)

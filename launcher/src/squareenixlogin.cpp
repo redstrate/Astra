@@ -265,6 +265,8 @@ QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStor
     auto request = QNetworkRequest(url);
     m_launcher.buildRequest(*m_info->profile, request);
 
+    request.setRawHeader(QByteArrayLiteral("Referer"), m_info->profile->frontierUrl().toUtf8());
+
     Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = m_launcher.mgr()->get(request);
