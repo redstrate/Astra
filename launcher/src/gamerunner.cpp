@@ -342,6 +342,10 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
     env.insert(QStringLiteral("DXVK_LOG_PATH"), logDir);
 
+    if (!m_launcher.config()->gPUDeviceFilter().isEmpty()) {
+        env.insert(QStringLiteral("DXVK_FILTER_DEVICE_NAME"), m_launcher.config()->gPUDeviceFilter());
+    }
+
     // Enable the Wayland backend if we detect we're running on Wayland, otherwise fallback to X11.
     if (QGuiApplication::platformName() == QStringLiteral("wayland") && m_launcher.config()->enableWayland()) {
         // We have to unset the DISPLAY variable for Wine to pick it up.

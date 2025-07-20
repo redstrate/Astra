@@ -57,5 +57,8 @@ SPDX-License-Identifier: CC0-1.0
     <entry name="EnableWayland" type="bool">
       <default>false</default>
     </entry>
+    <entry name="GPUDeviceFilter" type="String">
+      <default></default>
+    </entry>
   </group>
 </kcfg>

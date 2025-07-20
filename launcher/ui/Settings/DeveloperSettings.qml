@@ -185,5 +185,21 @@ FormCard.FormCardPage {
                 LauncherCore.config.save();
             }
         }
+
+        FormCard.FormDelegateSeparator {
+            above: wineRepositoryDelegate
+            below: gpuDeviceDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: gpuDeviceDelegate
+
+            label: i18n("GPU Device Filter")
+            text: LauncherCore.config.gPUDeviceFilter
+            onTextChanged: {
+                LauncherCore.config.gPUDeviceFilter = text;
+                LauncherCore.config.save();
+            }
+        }
     }
 }
