@@ -31,7 +31,7 @@ Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData 
     Q_EMIT m_launcher.stageChanged(i18n("Checking %1 version", getBaseString()));
 }
 
-Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, GameData &gameData, QObject *parent)
+Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, SqPackResource &gameData, QObject *parent)
     : QObject(parent)
     , m_baseDirectory(baseDirectory)
     , m_gameData(&gameData)

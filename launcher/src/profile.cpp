@@ -377,7 +377,7 @@ BootData *Profile::bootData() const
     return m_bootData;
 }
 
-GameData *Profile::gameData() const
+SqPackResource *Profile::gameData() const
 {
     return m_gameData;
 }

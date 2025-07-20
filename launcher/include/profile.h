@@ -98,7 +98,7 @@ public:
     void setCompatibilityToolVersion(const QString &version);
 
     BootData *bootData() const;
-    GameData *gameData() const;
+    SqPackResource *gameData() const;
 
     [[nodiscard]] QString subtitle() const;
 
@@ -127,7 +127,7 @@ private:
     QList<QString> m_expansionNames;
 
     BootData *m_bootData = nullptr;
-    GameData *m_gameData = nullptr;
+    SqPackResource *m_gameData = nullptr;
 
     physis_Repositories m_repositories = {};
     const char *m_bootVersion = nullptr;

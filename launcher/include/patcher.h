@@ -20,7 +20,7 @@ class Patcher : public QObject
     Q_OBJECT
 
 public:
-    Patcher(LauncherCore &launcher, const QString &baseDirectory, GameData &gameData, QObject *parent = nullptr);
+    Patcher(LauncherCore &launcher, const QString &baseDirectory, SqPackResource &gameData, QObject *parent = nullptr);
     Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData &bootData, QObject *parent = nullptr);
     ~Patcher() override;
 
@@ -62,7 +62,7 @@ private:
     QDir m_patchesDir;
     QString m_baseDirectory;
     BootData *m_bootData = nullptr;
-    GameData *m_gameData = nullptr;
+    SqPackResource *m_gameData = nullptr;
     QStorageInfo m_patchesDirStorageInfo;
     QStorageInfo m_baseDirStorageInfo;
 

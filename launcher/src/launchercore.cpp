@@ -239,7 +239,7 @@ void LauncherCore::refreshLogoImage()
         Q_UNUSED(QDir().mkpath(logoDir.absolutePath()))
     }
 
-    const auto saveTexture = [](GameData *data, const QString &path, const QString &name) {
+    const auto saveTexture = [](SqPackResource *data, const QString &path, const QString &name) {
         if (QFile::exists(name)) {
             return;
         }
