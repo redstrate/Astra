@@ -39,17 +39,6 @@ Profile::~Profile()
 void Profile::readDalamudInfo()
 {
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-
-    const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
-    const QDir wineDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("wine"));
-    if (wineDir.exists()) {
-        const QString wineVer = wineDir.absoluteFilePath(QStringLiteral("wine.ver"));
-        if (QFile::exists(wineVer)) {
-            m_compatibilityToolVersion = Utility::readVersion(wineVer);
-            qInfo(ASTRA_LOG) << "Compatibility tool version:" << m_compatibilityToolVersion;
-        }
-    }
-
     const QDir dalamudDir = dataDir.absoluteFilePath(QStringLiteral("dalamud"));
 
     if (dalamudDir.exists()) {
@@ -117,6 +106,18 @@ void Profile::readGameData()
 
 void Profile::readWineInfo()
 {
+    const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+
+    const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
+    const QDir wineDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("wine"));
+    if (wineDir.exists()) {
+        const QString wineVer = wineDir.absoluteFilePath(QStringLiteral("wine.ver"));
+        if (QFile::exists(wineVer)) {
+            m_compatibilityToolVersion = Utility::readVersion(wineVer);
+            qInfo(ASTRA_LOG) << "Compatibility tool version:" << m_compatibilityToolVersion;
+        }
+    }
+
     auto wineProcess = new QProcess(this);
 
     connect(wineProcess, &QProcess::readyReadStandardOutput, this, [wineProcess, this] {
