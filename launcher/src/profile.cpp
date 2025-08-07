@@ -42,7 +42,7 @@ void Profile::readDalamudInfo()
     const QDir dalamudDir = dataDir.absoluteFilePath(QStringLiteral("dalamud"));
 
     if (dalamudDir.exists()) {
-        const QDir dalamudInstallDir = dalamudDir.absoluteFilePath(dalamudChannelName());
+        const QDir dalamudInstallDir = dalamudDir.absoluteFilePath(config()->dalamudChannel());
         const QDir dalamudAssetsDir = dalamudDir.absoluteFilePath(QStringLiteral("assets"));
         const QDir dalamudRuntimeDir = dalamudDir.absoluteFilePath(QStringLiteral("runtime"));
 
@@ -264,20 +264,6 @@ QString Profile::wineVersionText() const
     }
 }
 
-QString Profile::dalamudChannelName() const
-{
-    switch (config()->dalamudChannel()) {
-    case DalamudChannel::Stable:
-        return QStringLiteral("stable");
-    case DalamudChannel::Staging:
-        return QStringLiteral("stg");
-    case DalamudChannel::Local:
-        return QStringLiteral("local");
-    }
-
-    Q_UNREACHABLE();
-}
-
 [[nodiscard]] bool Profile::isGameInstalled() const
 {
     return m_repositories.repositories_count > 0;
@@ -360,7 +346,7 @@ void Profile::setDalamudApplicable(const bool applicable)
 bool Profile::dalamudShouldLaunch() const
 {
     // Local Dalamud installations can always run
-    return config()->dalamudEnabled() && (config()->dalamudChannel() != DalamudChannel::Local ? m_dalamudApplicable : true);
+    return config()->dalamudEnabled() && (config()->dalamudChannel() != QStringLiteral("local") ? m_dalamudApplicable : true);
 }
 
 QString Profile::compatibilityToolVersion() const

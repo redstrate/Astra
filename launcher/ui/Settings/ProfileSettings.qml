@@ -234,15 +234,55 @@ FormCard.FormCardPage {
         FormCard.FormComboBoxDelegate {
             id: dalamudChannelDelegate
 
-            text: i18n("Update Channel")
-            model: LauncherCore.config.showDevTools ? [i18n("Stable"), i18n("Staging"), i18n("Local")] : [i18n("Stable"), i18n("Staging")]
-            currentIndex: page.profile.config.dalamudChannel
-            onCurrentIndexChanged: {
-                page.profile.config.dalamudChannel = currentIndex;
-                page.profile.config.save();
+            ListModel {
+                id: normalTracks
+                ListElement { name: "Release"; track: "release" }
+                ListElement { name: "Custom"; track: "custom" }
+            }
+
+            ListModel {
+                id: devTracks
+                ListElement { name: "Release"; track: "release" }
+                ListElement { name: "Custom"; track: "custom" }
+                ListElement { name: "Local Build"; track: "local" }
+            }
+
+            text: i18n("Update Track")
+            model: LauncherCore.config.showDevTools ? devTracks : normalTracks
+            textRole: "name"
+            valueRole: "track"
+            onCurrentValueChanged: {
+                // custom one is set below
+                if (currentValue !== "custom") {
+                    page.profile.config.dalamudChannel = currentValue;
+                    page.profile.config.save();
+                }
+            }
+            Component.onCompleted: {
+                const index = indexOfValue(page.profile.config.dalamudChannel);
+                // if you can't find it, it's probably custom
+                if (index === -1) {
+                    currentIndex = 1;
+                } else {
+                    currentIndex = index;
+                }
             }
             enabled: page.profile.config.dalamudEnabled
             visible: page.profile.config.dalamudEnabled
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: customTrackDelegate
+
+            visible: page.profile.config.dalamudEnabled && dalamudChannelDelegate.currentIndex === 1 // custom
+            label: i18nc("@info:label", "Track Name")
+            enabled: page.profile.config.dalamudEnabled
+
+            Component.onCompleted: text = page.profile.config.dalamudChannel
+            onTextChanged: {
+                page.profile.config.dalamudChannel = text;
+                page.profile.config.save();
+            }
         }
 
         FormCard.FormDelegateSeparator {

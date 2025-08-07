@@ -110,7 +110,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
     const QDir dalamudAssetDir = dalamudDir.absoluteFilePath(QStringLiteral("assets"));
     const QDir dalamudConfigPath = userDalamudConfigDir.absoluteFilePath(QStringLiteral("dalamud-config.json"));
 
-    const QDir dalamudInstallDir = dalamudDir.absoluteFilePath(profile.dalamudChannelName());
+    const QDir dalamudInstallDir = dalamudDir.absoluteFilePath(profile.config()->dalamudChannel());
     const QString dalamudInjector = dalamudInstallDir.absoluteFilePath(QStringLiteral("Dalamud.Injector.exe"));
 
     const auto dalamudProcess = new QProcess(this);

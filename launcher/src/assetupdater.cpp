@@ -65,7 +65,7 @@ QCoro::Task<bool> AssetUpdater::update()
     Utility::createPathIfNeeded(m_dalamudAssetDir);
     Utility::createPathIfNeeded(m_dalamudRuntimeDir);
 
-    if (m_profile.config()->dalamudChannel() != Profile::DalamudChannel::Local) {
+    if (m_profile.config()->dalamudChannel() != QStringLiteral("local")) {
         if (!co_await checkRemoteDalamudAssetVersion()) {
             co_return false;
         }
@@ -213,7 +213,7 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudVersion()
     QUrl url(dalamudVersionManifestUrl());
 
     QUrlQuery query;
-    query.addQueryItem(QStringLiteral("track"), m_profile.dalamudChannelName());
+    query.addQueryItem(QStringLiteral("track"), m_profile.config()->dalamudChannel());
 
     url.setQuery(query);
 
@@ -393,7 +393,7 @@ QCoro::Task<bool> AssetUpdater::installDalamud()
     file.write(reply->readAll());
     file.close();
 
-    if (!extractZip(m_tempDir.filePath(QStringLiteral("latest.zip")), m_dalamudDir.absoluteFilePath(m_profile.dalamudChannelName()))) {
+    if (!extractZip(m_tempDir.filePath(QStringLiteral("latest.zip")), m_dalamudDir.absoluteFilePath(m_profile.config()->dalamudChannel()))) {
         qCritical(ASTRA_LOG) << "Failed to install Dalamud";
         Q_EMIT launcher.dalamudError(i18n("Failed to install Dalamud."));
 

@@ -40,16 +40,8 @@ SPDX-License-Identifier: CC0-1.0
       <entry key="DalamudEnabled" type="bool">
         <default>false</default>
       </entry>
-      <entry key="DalamudChannel" type="Enum">
-        <choices name="Profile::DalamudChannel">
-          <choice name="Stable">
-          </choice>
-          <choice name="Staging">
-          </choice>
-          <choice name="Net5">
-          </choice>
-        </choices>
-        <default>Stable</default>
+      <entry key="DalamudChannel" type="String">
+        <default>release</default>
       </entry>
       <entry key="DalamudInjectMethod" type="Enum">
         <choices name="Profile::DalamudInjectMethod">

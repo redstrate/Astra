@@ -38,13 +38,6 @@ public:
     };
     Q_ENUM(WineType)
 
-    enum DalamudChannel {
-        Stable,
-        Staging,
-        Local
-    };
-    Q_ENUM(DalamudChannel)
-
     enum DalamudInjectMethod {
         Entrypoint,
         DLLInject
@@ -66,8 +59,6 @@ public:
     [[nodiscard]] QString expansionVersionText() const;
     [[nodiscard]] QString dalamudVersionText() const;
     [[nodiscard]] QString wineVersionText() const;
-
-    [[nodiscard]] QString dalamudChannelName() const;
 
     [[nodiscard]] bool isGameInstalled() const;
     [[nodiscard]] bool isWineInstalled() const;
