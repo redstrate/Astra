@@ -90,12 +90,9 @@ void Profile::readGameData()
 
         // TODO: bad API, we should instead get a list of row ids from libphysis but that API doesn't exist yet.
         for (unsigned int i = 0; i < exd.row_count; i++) {
-            auto rows = physis_exd_read_row(&exd, i);
-            for (unsigned int j = 0; j < rows.row_count; j++) {
-                auto row = rows.row_data[j];
-                if (row.column_data != nullptr) {
-                    m_expansionNames.push_back(QString::fromLatin1(row.column_data[0].string._0));
-                }
+            auto row = physis_exd_get_row(&exd, i);
+            if (row->column_data != nullptr) {
+                m_expansionNames.push_back(QString::fromLatin1(row->column_data[0].string._0));
             }
         }
 
