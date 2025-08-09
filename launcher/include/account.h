@@ -69,5 +69,5 @@ private:
     AccountConfig *m_config;
     QString m_key;
     QString m_avatarUrl;
-    bool m_needsPassword = false;
+    bool m_needsPassword = true;
 };

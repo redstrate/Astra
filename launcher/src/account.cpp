@@ -38,6 +38,11 @@ QString Account::avatarUrl() const
 
 QString Account::getPassword()
 {
+    // Early exit if no password is supposed to be saved
+    if (!config()->rememberPassword()) {
+        return QString{};
+    }
+
     return QCoro::waitFor(getKeychainValue(QStringLiteral("password")));
 }
 
@@ -150,6 +155,12 @@ bool Account::needsPassword() const
 
 QCoro::Task<> Account::fetchPassword()
 {
+    // Early exit if no password is supposed to be saved
+    if (!config()->rememberPassword()) {
+        m_needsPassword = true;
+        co_return;
+    }
+
     const QString password = co_await getKeychainValue(QStringLiteral("password"));
     m_needsPassword = password.isEmpty();
     Q_EMIT needsPasswordChanged();

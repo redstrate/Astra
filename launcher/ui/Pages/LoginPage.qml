@@ -60,7 +60,7 @@ QQC2.Control {
 
     function updateFields(): void {
         usernameField.text = LauncherCore.currentProfile.account.config.name;
-        passwordField.text = !LauncherCore.currentProfile.account.needsPassword && LauncherCore.currentProfile.account.config.rememberPassword ? LauncherCore.currentProfile.account.getPassword() : "";
+        passwordField.text = LauncherCore.currentProfile.account.getPassword();
         if (LauncherCore.currentProfile.account.config.rememberOTP) {
             otpField.text = "Auto-generated";
         } else {
