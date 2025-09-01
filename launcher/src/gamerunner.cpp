@@ -252,7 +252,7 @@ QString GameRunner::getGameArgs(const Profile &profile, const std::optional<Logi
 
     if (auth) {
         auto config = auth->account->config();
-        if (!config->frontierServer().isEmpty()) {
+        if (!config->frontierServer().isEmpty() && config->frontierServer() != config->defaultFrontierServerValue()) {
             gameArgs.push_back({QStringLiteral("DEV.GMServerHost"), config->frontierServer()});
         }
 

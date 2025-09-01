@@ -178,9 +178,7 @@ void LauncherCore::fetchAvatar(Account *account)
     if (!QFile(filename).exists()) {
         qDebug(ASTRA_LOG) << "Did not find lodestone character " << account->config()->lodestoneId() << " in cache, fetching from Lodestone.";
 
-        QUrl url;
-        url.setScheme(account->config()->preferredProtocol());
-        url.setHost(QStringLiteral("na.%1").arg(account->config()->newServer()));
+        QUrl url = QUrl::fromUserInput(account->config()->lodestoneServer());
         url.setPath(QStringLiteral("/lodestone/character/%1").arg(account->config()->lodestoneId()));
 
         const QNetworkRequest request(url);
@@ -506,9 +504,7 @@ QCoro::Task<> LauncherCore::fetchNews()
     query.addQueryItem(QStringLiteral("lang"), QStringLiteral("en-us"));
     query.addQueryItem(QStringLiteral("media"), QStringLiteral("pcapp"));
 
-    QUrl headlineUrl;
-    headlineUrl.setScheme(currentProfile()->account()->config()->preferredProtocol());
-    headlineUrl.setHost(QStringLiteral("frontier.%1").arg(currentProfile()->account()->config()->oldServer()));
+    QUrl headlineUrl = QUrl::fromUserInput(currentProfile()->account()->config()->frontierServer());
     headlineUrl.setPath(QStringLiteral("/news/headline.json"));
     headlineUrl.setQuery(query);
 
@@ -525,9 +521,7 @@ QCoro::Task<> LauncherCore::fetchNews()
     auto headlineReply = mgr()->get(headlineRequest);
     co_await headlineReply;
 
-    QUrl bannerUrl;
-    bannerUrl.setScheme(currentProfile()->account()->config()->preferredProtocol());
-    bannerUrl.setHost(QStringLiteral("frontier.%1").arg(currentProfile()->account()->config()->oldServer()));
+    QUrl bannerUrl = QUrl::fromUserInput(currentProfile()->account()->config()->frontierServer());
     bannerUrl.setPath(QStringLiteral("/v2/topics/%1/banner.json").arg(QStringLiteral("en-us")));
     bannerUrl.setQuery(query);
 
@@ -692,6 +686,40 @@ void LauncherCore::uninhibitSleep()
 #endif
 }
 
+QCoro::Task<> LauncherCore::beginAutoConfiguration(Account *account, QString url)
+{
+    // NOTE: url is intentionally copied so it doesn't deference during coroutine execution
+
+    QUrl requestUrl = QUrl::fromUserInput(url);
+    requestUrl.setPath(QStringLiteral("/.well-known/xiv"));
+
+    auto reply = m_mgr->get(QNetworkRequest(requestUrl));
+    co_await reply;
+
+    if (reply->error() != QNetworkReply::NoError) {
+        Q_EMIT account->autoConfigurationResult(i18n("Configuration Error"), i18n("Failed to fetch configuration from %1:\n\n%2", url, reply->errorString()));
+        co_return;
+    }
+
+    const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
+    const QJsonObject obj = document.object();
+
+    account->config()->setGamePatchServer(obj["game_patch_server"_L1].toString());
+    account->config()->setBootPatchServer(obj["boot_patch_server"_L1].toString());
+    account->config()->setLobbyServer(obj["lobby_server"_L1].toString());
+    account->config()->setLobbyPort(obj["lobby_port"_L1].toInt());
+    account->config()->setLodestoneServer(obj["lodestone_server"_L1].toString());
+    account->config()->setFrontierServer(obj["frontier_server"_L1].toString());
+    account->config()->setSaveDataBankServer(obj["savedata_bank_server"_L1].toString());
+    account->config()->setSaveDataBankPort(obj["savedata_bank_port"_L1].toInt());
+    account->config()->setDataCenterTravelServer(obj["datacenter_travel_server"_L1].toString());
+    account->config()->setLoginServer(obj["login_server"_L1].toString());
+
+    Q_EMIT account->autoConfigurationResult(i18n("Configuration Successful"), i18n("Configuration from %1 applied! You can now log into this server.", url));
+
+    co_return;
+}
+
 QString LauncherCore::currentProfileId() const
 {
     return KSharedConfig::openStateConfig()->group(QStringLiteral("General")).readEntry(QStringLiteral("CurrentProfile"));
@@ -713,6 +741,11 @@ void LauncherCore::openConfigBackup(Profile *profile)
 {
     Q_ASSERT(profile != nullptr);
     m_runner->openConfigBackup(*profile);
+}
+
+void LauncherCore::downloadServerConfiguration(Account *account, const QString &url)
+{
+    beginAutoConfiguration(account, url);
 }
 
 #include "moc_launchercore.cpp"

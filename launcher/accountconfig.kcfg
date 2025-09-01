@@ -58,29 +58,26 @@ SPDX-License-Identifier: CC0-1.0
       </entry>
       <entry key="IsFreeTrial" type="bool">
       </entry>
-      <entry name="PreferredProtocol" type="String">
-        <default>https</default>
-      </entry>
-      <entry name="GMServer" type="String">
-        <default></default>
-      </entry>
       <entry name="LobbyServer" type="String">
         <default></default>
       </entry>
       <entry name="LobbyPort" type="int">
         <default></default>
       </entry>
-      <entry name="OldServer" type="String">
-        <default>ffxiv.com</default>
+      <entry name="GamePatchServer" type="String">
+        <default>https://patch-gamever.ffxiv.com</default>
+      </entry>
+      <entry name="BootPatchServer" type="String">
+        <default>http://patch-bootver.ffxiv.com</default>
       </entry>
       <entry name="LoginServer" type="String">
-        <default>square-enix.com</default>
+        <default>https://ffxiv-login.square-enix.com</default>
       </entry>
-      <entry name="NewServer" type="String">
-        <default>finalfantasyxiv.com</default>
+      <entry name="LodestoneServer" type="String">
+        <default>https://na.finalfantasyxiv.com</default>
       </entry>
       <entry name="FrontierServer" type="String">
-         <default></default>
+         <default>https://frontier.ffxiv.com</default>
       </entry>
       <entry name="SaveDataBankServer" type="String">
         <default></default>

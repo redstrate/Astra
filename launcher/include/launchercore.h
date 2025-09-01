@@ -148,6 +148,8 @@ public:
     [[nodiscard]] SyncManager *syncManager() const;
 #endif
 
+    Q_INVOKABLE void downloadServerConfiguration(Account *account, const QString &url);
+
 Q_SIGNALS:
     void loadingFinished();
     void successfulLaunch();
@@ -189,6 +191,8 @@ private:
 
     /// Tell the system we can allow the screen to turn off
     void uninhibitSleep();
+
+    QCoro::Task<> beginAutoConfiguration(Account *account, QString url);
 
     QString currentProfileId() const;
 

@@ -6,6 +6,7 @@
 #include <QtQml>
 #include <qcorotask.h>
 
+class LauncherCore;
 class AccountConfig;
 
 class Account : public QObject
@@ -52,6 +53,7 @@ public:
 Q_SIGNALS:
     void avatarUrlChanged();
     bool needsPasswordChanged();
+    void autoConfigurationResult(const QString &title, const QString &subtitle);
 
 private:
     QCoro::Task<> fetchPassword();

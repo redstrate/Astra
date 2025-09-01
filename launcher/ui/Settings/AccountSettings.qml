@@ -14,7 +14,7 @@ import zone.xiv.astra
 FormCard.FormCardPage {
     id: page
 
-    property var account
+    required property Account account
 
     title: i18nc("@title:window", "Edit Account")
 
@@ -64,6 +64,16 @@ FormCard.FormCardPage {
         ]
 
         Component.onCompleted: actions[0].checked = true
+    }
+
+    Connections {
+        target: page.account
+
+        function onAutoConfigurationResult(title: string, subtitle: string): void {
+            configurationPrompt.title = title;
+            configurationPrompt.subtitle = subtitle;
+            configurationPrompt.visible = true;
+        }
     }
 
     FormCard.FormCard {
@@ -256,7 +266,6 @@ FormCard.FormCardPage {
             onClicked: otpDialog.open()
         }
     }
-
     FormCard.FormCard {
         visible: developerAction.checked
 
@@ -264,29 +273,41 @@ FormCard.FormCardPage {
         Layout.topMargin: Kirigami.Units.largeSpacing * 4
 
         FormCard.FormTextFieldDelegate {
-            id: preferredProtocolDelegate
+            id: serverUrlDelegate
 
-            label: i18n("Preferred Protocol")
-            text: page.account.config.preferredProtocol
-            onTextChanged: {
-                page.account.config.preferredProtocol = text;
-                page.account.config.save();
-            }
+            label: i18n("Server URL")
+            placeholderText: "http://ffxiv.localhost"
         }
 
         FormCard.FormDelegateSeparator {
-            above: preferredProtocolDelegate
-            below: squareMainServerDelegate
+            above: serverUrlDelegate
+            below: downloadConfigDelegate
         }
+
+        FormCard.FormButtonDelegate {
+            id: downloadConfigDelegate
+
+            icon.name: "download-symbolic"
+            text: i18nc("@action:button", "Download Configuration")
+
+            onClicked: LauncherCore.downloadServerConfiguration(page.account, serverUrlDelegate.text)
+        }
+    }
+
+    FormCard.FormCard {
+        visible: developerAction.checked
+
+        Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
 
         FormCard.FormTextFieldDelegate {
             id: squareMainServerDelegate
 
-            label: i18n("Old Server")
-            text: page.account.config.oldServer
-            placeholderText: "ffxiv.com"
+            label: i18n("Frontier Server")
+            text: page.account.config.frontierServer
+            placeholderText: page.account.config.defaultFrontierServerValue
             onTextChanged: {
-                page.account.config.oldServer = text;
+                page.account.config.frontierSrver = text;
                 page.account.config.save();
             }
         }
@@ -301,7 +322,7 @@ FormCard.FormCardPage {
 
             label: i18n("Login Server")
             text: page.account.config.loginServer
-            placeholderText: "square-enix.com"
+            placeholderText: page.account.config.defaultLoginServerValue
             onTextChanged: {
                 page.account.config.loginServer = text;
                 page.account.config.save();
@@ -316,17 +337,51 @@ FormCard.FormCardPage {
         FormCard.FormTextFieldDelegate {
             id: mainServerDelegate
 
-            label: i18n("New Server")
-            text: page.account.config.newServer
-            placeholderText: "finalfantasyxiv.com"
+            label: i18n("Lodestone Server")
+            text: page.account.config.lodestoneServer
+            placeholderText: page.account.config.defaultLodestoneServerValue
             onTextChanged: {
-                page.account.config.newServer = text;
+                page.account.config.lodestoneServer = text;
                 page.account.config.save();
             }
         }
 
         FormCard.FormDelegateSeparator {
-            above: mainServerDelegate
+            above: loginServerDelegate
+            below: bootPatchServerDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: bootPatchServerDelegate
+
+            label: i18n("Boot Patch Server")
+            text: page.account.config.bootPatchServer
+            placeholderText: page.account.config.defaultBootPatchServerValue
+            onTextChanged: {
+                page.account.config.bootPatchServer = text;
+                page.account.config.save();
+            }
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: bootPatchServerDelegate
+            below: gamePatchServerDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: gamePatchServerDelegate
+
+            label: i18n("Game Patch Server")
+            text: page.account.config.gamePatchServer
+            placeholderText: page.account.config.defaultGamePatchServerValue
+            onTextChanged: {
+                page.account.config.gamePatchServer = text;
+                page.account.config.save();
+            }
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: gamePatchServerDelegate
             below: gameServerDelegate
         }
 
@@ -357,7 +412,7 @@ FormCard.FormCardPage {
                 page.account.config.save();
             }
             from: 0
-            to: 999999
+            to: 65535
         }
 
         FormCard.FormDelegateSeparator {
@@ -443,5 +498,13 @@ FormCard.FormCardPage {
             LauncherCore.accountManager.deleteAccount(page.account);
             page.Window.window.pageStack.layers.pop();
         }
+    }
+
+    Kirigami.PromptDialog {
+        id: configurationPrompt
+
+        standardButtons: Kirigami.Dialog.Ok
+        showCloseButton: false
+        parent: page.QQC2.Overlay.overlay
     }
 }

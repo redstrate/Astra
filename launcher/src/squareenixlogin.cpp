@@ -81,9 +81,7 @@ QCoro::Task<bool> SquareEnixLogin::checkGateStatus() const
     Q_EMIT m_launcher.stageChanged(i18n("Checking gate..."));
     qInfo(ASTRA_LOG) << "Checking if the gate is open...";
 
-    QUrl url;
-    url.setScheme(m_info->profile->account()->config()->preferredProtocol());
-    url.setHost(QStringLiteral("frontier.%1").arg(m_info->profile->account()->config()->oldServer()));
+    QUrl url = QUrl::fromUserInput(m_info->profile->account()->config()->frontierServer());
     url.setPath(QStringLiteral("/worldStatus/gate_status.json"));
     url.setQuery(QString::number(QDateTime::currentMSecsSinceEpoch()));
 
@@ -122,9 +120,7 @@ QCoro::Task<bool> SquareEnixLogin::checkLoginStatus() const
     Q_EMIT m_launcher.stageChanged(i18n("Checking login..."));
     qInfo(ASTRA_LOG) << "Checking if login is open...";
 
-    QUrl url;
-    url.setScheme(m_info->profile->account()->config()->preferredProtocol());
-    url.setHost(QStringLiteral("frontier.%1").arg(m_info->profile->account()->config()->oldServer()));
+    QUrl url = QUrl::fromUserInput(m_info->profile->account()->config()->frontierServer());
     url.setPath(QStringLiteral("/worldStatus/login_status.json"));
     url.setQuery(QString::number(QDateTime::currentMSecsSinceEpoch()));
 
@@ -164,9 +160,7 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
 
     const QUrlQuery query{{QStringLiteral("time"), formattedDate}};
 
-    QUrl url;
-    url.setScheme(QStringLiteral("http"));
-    url.setHost(QStringLiteral("patch-bootver.%1").arg(m_info->profile->account()->config()->oldServer()));
+    QUrl url = QUrl::fromUserInput(m_info->profile->account()->config()->bootPatchServer());
     url.setPath(QStringLiteral("/http/%1/%2/%3/")
                     .arg(m_info->profile->config()->platform(), m_info->profile->config()->bootUpdateChannel(), m_info->profile->bootVersion()));
     url.setQuery(query);
@@ -178,7 +172,7 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
         request.setHeader(QNetworkRequest::KnownHeaders::UserAgentHeader, patchUserAgent);
     }
 
-    request.setRawHeader(QByteArrayLiteral("Host"), QStringLiteral("patch-bootver.%1").arg(m_info->profile->account()->config()->oldServer()).toUtf8());
+    request.setRawHeader(QByteArrayLiteral("Host"), QUrl::fromUserInput(m_info->profile->account()->config()->bootPatchServer()).host().toUtf8());
     Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = m_launcher.mgr()->get(request);
@@ -256,9 +250,7 @@ QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStor
         query.addQueryItem(QStringLiteral("ticket_size"), QString::number(ticketSize));
     }
 
-    QUrl url;
-    url.setScheme(m_info->profile->account()->config()->preferredProtocol());
-    url.setHost(QStringLiteral("ffxiv-login.%1").arg(m_info->profile->account()->config()->loginServer()));
+    QUrl url = QUrl::fromUserInput(m_info->profile->account()->config()->loginServer());
     url.setPath(QStringLiteral("/oauth/ffxivarr/login/top"));
     url.setQuery(query);
 
@@ -303,9 +295,7 @@ QCoro::Task<bool> SquareEnixLogin::loginOAuth()
     postData.addQueryItem(QStringLiteral("password"), m_info->password);
     postData.addQueryItem(QStringLiteral("otppw"), m_info->oneTimePassword);
 
-    QUrl url;
-    url.setScheme(m_info->profile->account()->config()->preferredProtocol());
-    url.setHost(QStringLiteral("ffxiv-login.%1").arg(m_info->profile->account()->config()->loginServer()));
+    QUrl url = QUrl::fromUserInput(m_info->profile->account()->config()->loginServer());
     url.setPath(QStringLiteral("/oauth/ffxivarr/login/login.send"));
 
     QNetworkRequest request(url);
@@ -364,9 +354,7 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
 {
     qInfo(ASTRA_LOG) << "Registering the session...";
 
-    QUrl url;
-    url.setScheme(m_info->profile->account()->config()->preferredProtocol());
-    url.setHost(QStringLiteral("patch-gamever.%1").arg(m_info->profile->account()->config()->oldServer()));
+    QUrl url = QUrl::fromUserInput(m_info->profile->account()->config()->gamePatchServer());
     url.setPath(QStringLiteral("/http/%1/%2/%3/%4")
                     .arg(m_info->profile->config()->platform(), m_info->profile->config()->gameUpdateChannel(), m_info->profile->baseGameVersion(), m_SID));
 
