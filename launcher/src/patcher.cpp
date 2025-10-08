@@ -56,6 +56,7 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
     }
 
     // First, let's check if we have enough space to even download the patches
+    qInfo() << patchList.total_size_downloaded << m_patchesDirStorageInfo.bytesAvailable();
     const qint64 neededSpace = patchList.total_size_downloaded - m_patchesDirStorageInfo.bytesAvailable();
     if (neededSpace > 0) {
         KFormat format;
@@ -66,6 +67,8 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
     }
 
     // If we do, we want to make sure we have enough space for all the repositories we download
+    // TODO: this math is bad, because I think we over-estimate how much space is actually needed to install the patch
+    // but the math assumes we're practically reinstalling the game. which isn't what's happening, obviously.
     QMap<QString, int64_t> repositorySizes;
     for (int i = 0; i < patchList.num_entries; i++) {
         // Record the largest byte size for the repository
@@ -79,6 +82,7 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
         requiredInstallSize += value;
     }
     const qint64 neededInstallSpace = requiredInstallSize - m_baseDirStorageInfo.bytesAvailable();
+    qInfo() << requiredInstallSize << m_baseDirStorageInfo.bytesAvailable();
     if (neededInstallSpace > 0) {
         KFormat format;
         QString neededSpaceStr = format.formatByteSize(neededInstallSpace);
