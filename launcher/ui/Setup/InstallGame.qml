@@ -21,7 +21,7 @@ FormCard.FormCardPage {
     data: FolderDialog {
         id: installFolderDialog
 
-        onAccepted: page.profile.config.gamePath = decodeURIComponent(selectedFolder.toString().replace("file://", ""))
+        onAccepted: page.profile.config.gamePath = selectedFolder.toString().replace("file://", "").substr(Qt.platform.os === "windows" ? 1 : 0)
     }
 
     FormCard.FormCard {
@@ -74,7 +74,7 @@ FormCard.FormCardPage {
                 nameFilters: [i18n("Windows executable (*.exe)")]
 
                 onAccepted: {
-                    const url = decodeURIComponent(selectedFile.toString().replace("file://", ""));
+                    const url = selectedFile.toString().replace("file://", "");
                     page.Window.window.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "InstallProgress"), {
                         gameInstaller: LauncherCore.createInstallerFromExisting(page.profile, url)
                     });
