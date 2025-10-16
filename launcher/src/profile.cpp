@@ -178,8 +178,8 @@ void Profile::readGameVersion()
         return;
     }
 
-    m_gameData = physis_gamedata_initialize(QString(config()->gamePath() + QStringLiteral("/game")).toStdString().c_str());
-    m_bootData = physis_bootdata_initialize(QString(config()->gamePath() + QStringLiteral("/boot")).toStdString().c_str());
+    m_gameData = physis_gamedata_initialize(QDir(config()->gamePath()).absoluteFilePath(QStringLiteral("game")).toStdString().c_str());
+    m_bootData = physis_bootdata_initialize(QDir(config()->gamePath()).absoluteFilePath(QStringLiteral("boot")).toStdString().c_str());
 
     if (m_bootData != nullptr) {
         m_bootVersion = physis_bootdata_get_version(m_bootData);
@@ -191,7 +191,7 @@ void Profile::readGameVersion()
     }
 
     // Extract frontier url if possible
-    const auto launcherPath = QString(config()->gamePath() + QStringLiteral("/boot/ffxivlauncher64.exe"));
+    const auto launcherPath = QDir(config()->gamePath()).absoluteFilePath(QStringLiteral("boot/ffxivlauncher64.exe"));
     if (QFile::exists(launcherPath)) {
         m_frontierUrl = QString::fromUtf8(physis_extract_frontier_url(launcherPath.toStdString().c_str()));
     }

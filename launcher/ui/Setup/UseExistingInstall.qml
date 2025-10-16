@@ -23,7 +23,7 @@ FormCard.FormCardPage {
         id: dialog
 
         onAccepted: {
-            page.profile.config.gamePath = decodeURIComponent(selectedFolder.toString().replace("file://", ""));
+            page.profile.config.gamePath = selectedFolder.toString().replace("file://", "").substr(Qt.platform.os === "windows" ? 1 : 0);
             applicationWindow().checkSetup();
         }
     }
