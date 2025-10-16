@@ -19,13 +19,16 @@ cleanup:
   - /lib/x86_64-linux-gnu/pkgconfig
   - /mkspecs
 finish-args:
+  # Needed for X11, once we can remove that... remove this too
   - --share=ipc
   # We can switch to fallback-x11 once the Wine Wayland driver is on par with just running it through XWayland
   - --socket=x11
   - --socket=wayland
   - --share=network
-  - --filesystem=home
-  # We need to install compatibility tools for Flatpak Steam
+  # Default directory for screenshots
+  - --filesystem=xdg-pictures:rw
+  # We need to install compatibility tools for Steam
+  - --filesystem=~/.steam/steam/compatibilitytools.d/:rw
   - --filesystem=~/.var/app/com.valvesoftware.Steam/data/Steam/compatibilitytools.d/:rw
   - --socket=pulseaudio
   # Allow access to the GNOME secret service API and to talk to the GNOME keyring daemon
