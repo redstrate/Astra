@@ -78,7 +78,7 @@ QQC2.Control {
     }
 
     function updateFocus(): void {
-        if (LauncherCore.currentProfile.account.needsPassword && !LauncherCore.currentProfile.account.config.rememberPassword) {
+        if (LauncherCore.currentProfile.account.needsPassword && (!LauncherCore.currentProfile.account.config.rememberPassword || passwordField.text === "")) {
             passwordField.forceActiveFocus();
             return;
         }
