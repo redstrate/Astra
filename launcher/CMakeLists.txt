@@ -178,7 +178,8 @@ target_link_libraries(astra PRIVATE
         Qt6::Widgets
         Qt6::QuickControls2
         KF6::Kirigami
-        KF6::IconThemes)
+        KF6::IconThemes
+        KirigamiApp)
 
 if (BUILD_WEBVIEW)
     target_link_libraries(astra PRIVATE

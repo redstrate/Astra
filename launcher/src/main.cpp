@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <KAboutData>
-#include <KIconTheme>
-#include <KLocalizedContext>
 #include <KLocalizedString>
+#include <KirigamiApp>
 #include <QApplication> // NOTE: do not remove this, if your IDE suggests to do so
 #include <QQuickStyle>
 #include <kdsingleapplication.h>
@@ -27,9 +26,8 @@ int main(int argc, char *argv[])
     QtWebView::initialize();
 #endif
 
-    KIconTheme::initTheme();
-
-    const QApplication app(argc, argv);
+    KirigamiApp::App app(argc, argv);
+    KirigamiApp kapp;
 
     const KDSingleApplication singleApplication;
     if (!singleApplication.isPrimaryInstance()) {
@@ -116,25 +114,13 @@ int main(int argc, char *argv[])
         }
     }
 
-#if defined(Q_OS_LINUX)
-    // Default to org.kde.desktop style unless the user forces another style
-    if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE")) {
-        if (Utility::isSteamDeck()) {
-            QQuickStyle::setStyle(QStringLiteral("org.kde.breeze"));
-        } else {
-            QQuickStyle::setStyle(QStringLiteral("org.kde.desktop"));
-        }
-    }
-#endif
-
     QCoro::Qml::registerTypes();
 
     QQmlApplicationEngine engine;
 
-    engine.rootContext()->setContextObject(new KLocalizedContext(&engine));
     QObject::connect(&engine, &QQmlApplicationEngine::quit, &app, &QCoreApplication::quit);
 
-    engine.loadFromModule(QStringLiteral("zone.xiv.astra"), QStringLiteral("Main"));
+    kapp.start(QStringLiteral("zone.xiv.astra"), QStringLiteral("Main"), &engine);
     if (engine.rootObjects().isEmpty()) {
         return -1;
     }
