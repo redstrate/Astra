@@ -1,6 +1,6 @@
 app-id: zone.xiv.astra
 runtime: org.kde.Platform
-runtime-version: '6.8'
+runtime-version: '6.9'
 sdk: org.kde.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
@@ -38,37 +38,6 @@ finish-args:
   # Needed for Dalamud to run
   - --allow=devel
 modules:
-  - name: kirigami-addons
-    config-opts:
-      - -DBUILD_TESTING=OFF
-      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
-      - -DQT_MAJOR_VERSION=6
-    buildsystem: cmake-ninja
-    sources:
-      - type: git
-        url: https://invent.kde.org/libraries/kirigami-addons.git
-        branch: master
-    cleanup:
-      - /lib/debug
-  - name: libsecret
-    cleanup:
-      - /bin
-      - /include
-      - /lib/pkgconfig
-    config-opts:
-      - -Dmanpage=false
-      - -Dvapi=false
-      - -Dgtk_doc=false
-      - -Dintrospection=false
-    buildsystem: meson
-    sources:
-      - type: archive
-        url: https://download.gnome.org/sources/libsecret/0.21/libsecret-0.21.6.tar.xz
-        sha256: 747b8c175be108c880d3adfb9c3537ea66e520e4ad2dccf5dce58003aeeca090
-        x-checker-data:
-        - type: gnome
-        - name: libsecret
-        - stable-only: true
   - name: qtkeychain
     cleanup:
       - /bin
@@ -80,9 +49,9 @@ modules:
       - -DBUILD_TRANSLATIONS=NO
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
     sources:
-      - type: git
-        url: https://github.com/frankosterfeld/qtkeychain.git
-        branch: main
+      - type: archive
+        url: https://github.com/frankosterfeld/qtkeychain/archive/refs/tags/0.15.0.tar.gz
+        sha256: f4254dc8f0933b06d90672d683eab08ef770acd8336e44dfa030ce041dc2ca22
   - name: steamwrap
     buildsystem: simple
     build-commands:
@@ -108,13 +77,8 @@ modules:
       - /bin
     sources:
       - type: archive
-        url: https://download.qt.io/official_releases/qt/6.8/6.8.1/submodules/qtwebview-everywhere-src-6.8.1.tar.xz
-        sha256: f56bc09e9c84fa06f3955871ba37065556696c72be9c7620925eb0fd83569e22
-        x-checker-data:
-          - type: anitya
-            project-id: 7927
-            stable-only: true
-            url-template: https://download.qt.io/official_releases/qt/6.8/$version/submodules/qtwebview-everywhere-src-$version.tar.xz
+        url: https://download.qt.io/official_releases/qt/6.9/6.9.2/submodules/qtwebview-everywhere-src-6.9.2.tar.xz
+        sha256: 4ccfd14ae68222d5709e54c970da51d7f0b4cf58af045a96935dfcc34f1b1ff1
   - name: corrosion
     buildsystem: cmake-ninja
     config-opts:
@@ -125,9 +89,9 @@ modules:
     cleanup:
       - /app
     sources:
-      - type: "git"
-        url: https://github.com/AndrewGaspar/corrosion
-        commit: v0.4.5
+      - type: archive
+        url: https://github.com/corrosion-rs/corrosion/archive/refs/tags/v0.5.2.tar.gz
+        sha256: 6bc02411e29183a896aa60c58db6819ec6cf57c08997481d0b0da9029356b529
   - name: astra
     buildsystem: cmake-ninja
     config-opts:
