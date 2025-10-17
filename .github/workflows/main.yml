@@ -348,6 +348,7 @@ jobs:
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/lib/plugins/styles/breeze6.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/plugins/styles
 
           Copy-Item -Force -Recurse -Path ${{ steps.strings.outputs.prefix-dir }}\lib\qml\* -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/qml/
+          Copy-Item -Force -Recurse -Path ${{ steps.strings.outputs.prefix-dir }}\lib\plugins\kf6 -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/plugins/
 
       - name: Remove extra files
         if: runner.os == 'Windows'
