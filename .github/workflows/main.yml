@@ -352,7 +352,26 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/opengl32sw.dll
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/dxcompiler.dll
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/D3Dcompiler_47.dll
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/Qt6QuickControls2Imagine.dll
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/Qt6QuickControls2Material.dll
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/Qt6QuickControls2Fusion.dll
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/Qt6QuickControls2Universal.dll
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/Qt6QuickControls2MaterialStyleImpl.dll
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/Qt6QuickControls2FluentWinUI3StyleImpl.dll
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/Qt6QuickControls2FusionStyleImpl.dll  
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/Qt6QuickControls2UniversalStyleImpl.dll  
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/Qt6QuickControls2WindowsStyleImpl.dll  
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/Qt6QuickControls2ImagineStyleImpl.dll  
           Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/Release -Force -Recurse
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/qml/QtQuick/Controls/FluentWinUI3 -Force -Recurse
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/qml/QtQuick/Controls/Fusion -Force -Recurse
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/qml/QtQuick/Controls/Imagine -Force -Recurse
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/qml/QtQuick/Controls/Material -Force -Recurse
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/qml/QtQuick/Controls/Windows -Force -Recurse
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/plugins/qmltooling -Force -Recurse
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/zone -Force -Recurse
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
