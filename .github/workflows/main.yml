@@ -333,6 +333,7 @@ jobs:
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6WidgetsAddons.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6Crash.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6SonnetCore.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6WindowSystem.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
 
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/Kirigami.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiDelegates.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
