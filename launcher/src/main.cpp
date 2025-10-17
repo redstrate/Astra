@@ -13,6 +13,10 @@
 #include <QtWebView>
 #endif
 
+#ifdef Q_OS_WINDOWS
+#include <QStyleFactory>
+#endif
+
 #include "astra-version.h"
 #include "launchercore.h"
 #include "logger.h"
@@ -28,6 +32,11 @@ int main(int argc, char *argv[])
 
     KirigamiApp::App app(argc, argv);
     KirigamiApp kapp;
+
+    // TODO: remove once https://invent.kde.org/libraries/kirigami-addons/-/merge_requests/399 is merged
+#ifdef Q_OS_WINDOWS
+    app.setStyle(QStyleFactory::create(QStringLiteral("Breeze")));
+#endif
 
     const KDSingleApplication singleApplication;
     if (!singleApplication.isPrimaryInstance()) {
