@@ -86,17 +86,18 @@ void Profile::readGameData()
     const auto header = physis_gamedata_extract_file(m_gameData, "exd/exversion.exh");
     physis_EXH *exh = physis_parse_excel_sheet_header(header);
     if (exh != nullptr) {
+        // TODO: support languages other than English
         const physis_EXD exd = physis_gamedata_read_excel_sheet(m_gameData, "ExVersion", exh, Language::English, 0);
-
-        // TODO: bad API, we should instead get a list of row ids from libphysis but that API doesn't exist yet.
-        for (unsigned int i = 0; i < exd.row_count; i++) {
-            auto row = physis_exd_get_row(&exd, i);
-            if (row->column_data != nullptr) {
-                m_expansionNames.push_back(QString::fromLatin1(row->column_data[0].string._0));
+        if (exd.p_ptr) {
+            // TODO: bad API, we should instead get a list of row ids from libphysis but that API doesn't exist yet.
+            for (unsigned int i = 0; i < exd.row_count; i++) {
+                auto row = physis_exd_get_row(&exd, i);
+                if (row->column_data != nullptr) {
+                    m_expansionNames.push_back(QString::fromLatin1(row->column_data[0].string._0));
+                }
             }
+            physis_gamedata_free_sheet(exd);
         }
-
-        physis_gamedata_free_sheet(exd);
         physis_gamedata_free_sheet_header(exh);
     }
 }
