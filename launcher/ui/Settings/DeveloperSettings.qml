@@ -201,5 +201,21 @@ FormCard.FormCardPage {
                 LauncherCore.config.save();
             }
         }
+
+        FormCard.FormDelegateSeparator {
+            above: gpuDeviceDelegate
+            below: benchmarkUrlDelegate
+        }
+
+        FormCard.FormTextFieldDelegate {
+            id: benchmarkUrlDelegate
+
+            label: i18n("Benchmark URL")
+            text: LauncherCore.config.benchmarkURL
+            onTextChanged: {
+                LauncherCore.config.benchmarkURL = text;
+                LauncherCore.config.save();
+            }
+        }
     }
 }

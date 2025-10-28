@@ -13,9 +13,6 @@
 #include "profileconfig.h"
 #include "utility.h"
 
-// TODO: this should be dynamically grabbed from the webpage to avoid hardcoding it
-const auto installerUrl = QStringLiteral("https://download.finalfantasyxiv.com/s9qmq6SJfMMqYM4o/ffxiv-dawntrail-bench.zip");
-
 BenchmarkInstaller::BenchmarkInstaller(LauncherCore &launcher, Profile &profile, QObject *parent)
     : QObject(parent)
     , m_launcher(launcher)
@@ -32,7 +29,7 @@ BenchmarkInstaller::BenchmarkInstaller(LauncherCore &launcher, Profile &profile,
 void BenchmarkInstaller::start()
 {
     if (m_localInstallerPath.isEmpty()) {
-        const auto request = QNetworkRequest(QUrl(installerUrl));
+        const auto request = QNetworkRequest(QUrl(m_launcher.config()->benchmarkURL()));
         Utility::printRequest(QStringLiteral("GET"), request);
 
         auto reply = m_launcher.mgr()->get(request);
