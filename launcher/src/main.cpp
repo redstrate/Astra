@@ -78,12 +78,12 @@ int main(int argc, char *argv[])
                        KAboutLicense::GPL_V3);
     about.addComponent(QStringLiteral("KDSingleApplication"),
                        i18n("Helper class for single-instance policy applications."),
-                       QStringLiteral("1.1.1"),
+                       QStringLiteral("1.2.0"),
                        QStringLiteral("https://github.com/KDAB/KDSingleApplication"),
                        KAboutLicense::MIT);
     about.addComponent(QStringLiteral("libcotp"),
                        i18n(" C library that generates TOTP and HOTP."),
-                       QStringLiteral("3.0.0"),
+                       QStringLiteral("3.1.1"),
                        QStringLiteral("https://github.com/paolostivanin/libcotp"),
                        KAboutLicense::Unknown);
     about.setDesktopFileName(QStringLiteral("zone.xiv.astra"));
