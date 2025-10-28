@@ -466,6 +466,10 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 
 QCoro::Task<> LauncherCore::fetchNews()
 {
+    if (!currentProfile() || !currentProfile()->account()) {
+        co_return;
+    }
+
     qInfo(ASTRA_LOG) << "Fetching news...";
 
     QUrlQuery query;

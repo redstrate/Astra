@@ -92,6 +92,7 @@ void BenchmarkInstaller::installGame()
 
     archive.close();
 
+    m_profile.config()->setIsBenchmark(true);
     m_profile.readGameVersion();
 
     Q_EMIT installFinished();
