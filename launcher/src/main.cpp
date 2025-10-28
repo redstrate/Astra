@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
                      KAboutLicense::GPL_V3,
                      i18n("© 2021-2025 Joshua Goins"));
     about.setOtherText(
-        i18n("This software requires that you have a legitimate and active subscription to FINAL FANTASY XIV. By using this software, you may be in violation "
+        i18n("This software requires that you have legitimate access to FINAL FANTASY XIV. By using this software, you may be in violation "
              "of your User Agreement.\n\nFINAL FANTASY, FINAL FANTASY XIV, FFXIV, SQUARE ENIX, and the SQUARE ENIX logo are registered trademarks or "
              "trademarks of Square Enix Holdings Co., Ltd."));
     about.addAuthor(i18n("Joshua Goins"),
