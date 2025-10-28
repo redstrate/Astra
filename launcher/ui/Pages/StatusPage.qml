@@ -26,7 +26,7 @@ Kirigami.Page {
     Kirigami.LoadingPlaceholder {
         id: placeholder
 
-        text: "Logging in..."
+        text: i18n("Logging in…")
 
         anchors.centerIn: parent
     }
