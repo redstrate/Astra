@@ -35,10 +35,17 @@ void BenchmarkInstaller::start()
         const auto request = QNetworkRequest(QUrl(installerUrl));
         Utility::printRequest(QStringLiteral("GET"), request);
 
-        // TODO: benchmarks are usually quite large, and need download progress reporting
         auto reply = m_launcher.mgr()->get(request);
 
-        QObject::connect(reply, &QNetworkReply::finished, [this, reply] {
+        connect(reply, &QNetworkReply::downloadProgress, this, [this](const qint64 received, const qint64 total) {
+            m_downloadedBytes = received;
+            Q_EMIT downloadedBytesChanged();
+
+            m_totalBytes = total;
+            Q_EMIT totalBytesChanged();
+        });
+
+        connect(reply, &QNetworkReply::finished, [this, reply] {
             if (reply->error() != QNetworkReply::NetworkError::NoError) {
                 Q_EMIT error(reply->errorString());
                 return;
@@ -59,6 +66,16 @@ void BenchmarkInstaller::start()
     } else {
         installGame();
     }
+}
+
+qint64 BenchmarkInstaller::totalBytes() const
+{
+    return m_totalBytes;
+}
+
+qint64 BenchmarkInstaller::downloadedBytes() const
+{
+    return m_downloadedBytes;
 }
 
 void BenchmarkInstaller::installGame()

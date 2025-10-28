@@ -20,6 +20,12 @@ Kirigami.Page {
         anchors.centerIn: parent
 
         text: i18n("Downloading…")
+        explanation: Math.round((page.benchmarkInstaller.downloadedBytes / page.benchmarkInstaller.totalBytes) * 100.0) + "%"
+
+        determinate: true
+        progressBar.value: page.benchmarkInstaller.downloadedBytes
+        progressBar.from: 0
+        progressBar.to: page.benchmarkInstaller.totalBytes
     }
 
     Kirigami.PromptDialog {
