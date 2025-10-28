@@ -23,11 +23,6 @@
 #include "squareenixlogin.h"
 #include "utility.h"
 
-#ifdef BUILD_SYNC
-#include "charactersync.h"
-#include "syncmanager.h"
-#endif
-
 #ifdef HAS_DBUS
 #include <QDBusConnection>
 #include <QDBusReply>
@@ -51,10 +46,6 @@ LauncherCore::LauncherCore()
     connect(m_accountManager, &AccountManager::accountLodestoneIdChanged, this, &LauncherCore::fetchAvatar);
 
     connect(this, &LauncherCore::gameClosed, this, &LauncherCore::handleGameExit);
-
-#ifdef BUILD_SYNC
-    m_syncManager = new SyncManager(this);
-#endif
 
     m_profileManager->load();
     m_accountManager->load();
@@ -411,15 +402,6 @@ bool LauncherCore::isPatching() const
     return m_isPatching;
 }
 
-bool LauncherCore::supportsSync() const
-{
-#ifdef BUILD_SYNC
-    return true;
-#else
-    return false;
-#endif
-}
-
 QNetworkAccessManager *LauncherCore::mgr()
 {
     return m_mgr;
@@ -455,26 +437,12 @@ SteamAPI *LauncherCore::steamApi() const
     return m_steamApi;
 }
 
-#ifdef BUILD_SYNC
-SyncManager *LauncherCore::syncManager() const
-{
-    return m_syncManager;
-}
-#endif
-
 QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 {
     // Hmm, I don't think we're set up for this yet?
     if (!info.profile->config()->isBenchmark()) {
         updateConfig(info.profile->account());
     }
-
-#ifdef BUILD_SYNC
-    const auto characterSync = new CharacterSync(*info.profile->account(), *this, this);
-    if (!co_await characterSync->sync()) {
-        co_return;
-    }
-#endif
 
     std::optional<LoginAuth> auth;
     if (!info.profile->config()->isBenchmark()) {
@@ -584,35 +552,16 @@ QCoro::Task<> LauncherCore::fetchNews()
     Q_EMIT newsChanged();
 }
 
-QCoro::Task<> LauncherCore::handleGameExit(const Profile *profile)
+void LauncherCore::handleGameExit()
 {
     qCDebug(ASTRA_LOG) << "Game has closed.";
 
     uninhibitSleep();
 
-#ifdef BUILD_SYNC
-    // TODO: once we have Steam API support we can tell Steam to delay putting the Deck to sleep until our upload is complete
-    if (config()->enableSync()) {
-        Q_EMIT showWindow();
-
-        qCDebug(ASTRA_LOG) << "Game closed! Uploading character data...";
-        const auto characterSync = new CharacterSync(*profile->account(), *this, this);
-        co_await characterSync->sync(false);
-
-        // Tell the user they can now quit.
-        Q_EMIT stageChanged(i18n("You may now safely close the game."));
-
-        co_return;
-    }
-#else
-    Q_UNUSED(profile)
-#endif
     // Otherwise, quit when everything is finished.
     if (config()->closeWhenLaunched()) {
         QCoreApplication::exit();
     }
-
-    co_return;
 }
 
 void LauncherCore::updateConfig(const Account *account)

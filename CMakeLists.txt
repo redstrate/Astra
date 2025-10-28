@@ -8,9 +8,6 @@ project(Astra VERSION 0.7.0 LANGUAGES CXX)
 option(BUILD_FLATPAK "Build for Flatpak." OFF)
 option(BUILD_WEBVIEW "Build support for the integrated web browser. Only used on the Steam Deck." OFF)
 
-# TODO: phase out once all supported builds can turn on this option
-option(BUILD_SYNC "Build Matrix sync support." OFF)
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -54,9 +51,6 @@ find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS Kirigami I18n Config Core
 find_package(KF6KirigamiAddons 1.10.0 REQUIRED)
 find_package(QCoro6 REQUIRED COMPONENTS Core Network Qml)
 qcoro_enable_coroutines()
-if (BUILD_SYNC)
-    find_package(QuotientQt6 REQUIRED)
-endif()
 
 qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)

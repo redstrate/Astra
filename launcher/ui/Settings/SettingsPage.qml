@@ -36,13 +36,6 @@ KirigamiSettings.ConfigurationView {
             visible: !settingsPage.isInitialSetup
         },
         KirigamiSettings.ConfigurationModule {
-            moduleId: "sync"
-            text: i18n("Synchronization")
-            icon.name: "state-sync-symbolic"
-            page: () => Qt.createComponent("zone.xiv.astra", "SyncSettings")
-            visible: LauncherCore.supportsSync()
-        },
-        KirigamiSettings.ConfigurationModule {
             moduleId: "compattool"
             text: i18n("Compatibility Tool")
             icon.name: "system-run-symbolic"

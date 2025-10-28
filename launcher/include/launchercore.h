@@ -20,7 +20,6 @@ class GameInstaller;
 class CompatibilityToolInstaller;
 class GameRunner;
 class BenchmarkInstaller;
-class SyncManager;
 
 class LoginInformation : public QObject
 {
@@ -66,10 +65,6 @@ class LauncherCore : public QObject
     Q_PROPERTY(Profile *currentProfile READ currentProfile WRITE setCurrentProfile NOTIFY currentProfileChanged)
     Q_PROPERTY(Profile *autoLoginProfile READ autoLoginProfile WRITE setAutoLoginProfile NOTIFY autoLoginProfileChanged)
     Q_PROPERTY(QString cachedLogoImage READ cachedLogoImage NOTIFY cachedLogoImageChanged)
-
-#ifdef BUILD_SYNC
-    Q_PROPERTY(SyncManager *syncManager READ syncManager CONSTANT)
-#endif
 
 public:
     LauncherCore();
@@ -119,7 +114,6 @@ public:
     [[nodiscard]] static bool isWindows();
     [[nodiscard]] static bool needsCompatibilityTool();
     [[nodiscard]] Q_INVOKABLE bool isPatching() const;
-    [[nodiscard]] Q_INVOKABLE bool supportsSync() const;
 
     [[nodiscard]] QNetworkAccessManager *mgr();
     [[nodiscard]] Config *config() const;
@@ -143,10 +137,6 @@ public:
      * @brief Opens the config backup tool.
      */
     Q_INVOKABLE void openConfigBackup(Profile *profile);
-
-#ifdef BUILD_SYNC
-    [[nodiscard]] SyncManager *syncManager() const;
-#endif
 
     Q_INVOKABLE void downloadServerConfiguration(Account *account, const QString &url);
 
@@ -181,7 +171,7 @@ private:
 
     QCoro::Task<> fetchNews();
 
-    QCoro::Task<> handleGameExit(const Profile *profile);
+    void handleGameExit();
 
     /// Updates FFXIV.cfg with some recommended options like turning the opening cutscene movie off
     void updateConfig(const Account *account);
@@ -210,10 +200,6 @@ private:
     Config *m_config = nullptr;
     GameRunner *m_runner = nullptr;
     QString m_cachedLogoImage;
-
-#ifdef BUILD_SYNC
-    SyncManager *m_syncManager = nullptr;
-#endif
 
     int m_currentProfileIndex = 0;
 

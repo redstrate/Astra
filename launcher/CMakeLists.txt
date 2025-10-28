@@ -103,18 +103,6 @@ if (BUILD_FLATPAK)
     target_compile_definitions(astra_static PUBLIC FLATPAK)
 endif ()
 
-if (BUILD_SYNC)
-    target_sources(astra_static PRIVATE
-            include/charactersync.h
-            include/syncmanager.h
-
-            src/charactersync.cpp
-            src/syncmanager.cpp
-    )
-    target_compile_definitions(astra_static PUBLIC BUILD_SYNC)
-    target_link_libraries(astra_static PRIVATE QuotientQt6)
-endif ()
-
 # For screensaver inhibition on Linux
 if (TARGET Qt6::DBus)
     target_link_libraries(astra_static PRIVATE Qt6::DBus)
@@ -149,7 +137,6 @@ qt_target_qml_sources(astra_static
         ui/Settings/ProfileSettings.qml
         ui/Settings/ProfilesPage.qml
         ui/Settings/SettingsPage.qml
-        ui/Settings/SyncSettings.qml
         ui/Setup/AccountSetup.qml
         ui/Setup/AddSquareEnix.qml
         ui/Setup/BenchmarkInstallProgress.qml
