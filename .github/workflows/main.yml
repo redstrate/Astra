@@ -18,6 +18,9 @@ jobs:
     name: "REUSE"
     runs-on: ubuntu-latest
 
+    # Skip running on PR events that come from the same repository, it will just duplicate the branch action
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+
     steps:
     - uses: actions/checkout@v5
     - name: REUSE Compliance Check
@@ -26,6 +29,9 @@ jobs:
   build:
     name: "Build"
     runs-on: ${{ matrix.os }}
+
+    # Skip running on PR events that come from the same repository, it will just duplicate the branch action
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
 
     strategy:
       fail-fast: false
@@ -389,6 +395,10 @@ jobs:
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
       options: --privileged
+
+    # Skip running on PR events that come from the same repository, it will just duplicate the branch action
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+
     steps:
       - uses: actions/checkout@v5
         with:
