@@ -39,7 +39,8 @@ find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
         Network
         QuickControls2
         Concurrent
-        Test)
+        Test
+        QmlPrivate) # QmlPrivate is here to work around a QCoro issue with 6.10, remove later
 if (BUILD_WEBVIEW)
     find_package(Qt6WebView ${QT_MIN_VERSION} REQUIRED)
 endif ()
