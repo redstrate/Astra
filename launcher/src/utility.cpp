@@ -10,7 +10,11 @@ using namespace Qt::StringLiterals;
 
 QString Utility::toWindowsPath(const QDir &dir)
 {
+#ifdef Q_OS_WINDOWS
+    return dir.absolutePath().replace('/'_L1, '\\'_L1);
+#else
     return QStringLiteral("Z:") + dir.absolutePath().replace('/'_L1, '\\'_L1);
+#endif
 }
 
 void Utility::printRequest(const QString &type, const QNetworkRequest &request)
