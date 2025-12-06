@@ -7,9 +7,9 @@
     <id>zone.xiv.astra</id>
     <metadata_license>CC0-1.0</metadata_license>
     <name>Astra</name>
-    <summary>Linux FFXIV Launcher</summary>
+    <summary>Play FFXIV</summary>
     <description>
-        <p>A custom FFXIV launcher that supports multiple accounts, Dalamud plugins and runs natively on Linux!</p>
+        <p>Unofficial FFXIV launcher that supports multiple accounts, Dalamud plugins and supports alternative servers!</p>
     </description>
     <categories>
         <category>Game</category>
@@ -26,13 +26,12 @@
     <url type="vcs-browser">https://github.com/redstrate/astra</url>
     <launchable type="desktop-id">zone.xiv.astra.desktop</launchable>
     <releases>
-        <release version="0.8.0"/>
-        <release version="0.7.0"/>
-        <release version="0.6.1"/>
-        <release version="0.6.0"/>
-        <release version="0.5.1"/>
-        <release version="0.5.0"/>
-        <release version="0.2.0"/>
+        <release version="0.7.0" date="06-24-2025"/>
+        <release version="0.6.1" date="07-18-2024"/>
+        <release version="0.6.0" date="06-28-2024"/>
+        <release version="0.5.1" date="05-20-2024"/>
+        <release version="0.5.0" date="01-31-2024"/>
+        <release version="0.2.0" date="02-24-2022"/>
     </releases>
     <provides>
         <binary>astra</binary>

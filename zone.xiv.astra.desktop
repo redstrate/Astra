@@ -3,7 +3,7 @@
 [Desktop Entry]
 Name=Astra
 GenericName=FFXIV Launcher
-Comment=Linux launcher for FFXIV
+Comment=Play FFXIV
 Exec=astra %u
 Terminal=false
 Icon=zone.xiv.astra

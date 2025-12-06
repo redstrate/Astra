@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     KAboutData about(QStringLiteral("astra"),
                      i18n("Astra"),
                      QStringLiteral(ASTRA_VERSION_STRING),
-                     i18n("FFXIV Launcher"),
+                     i18n("Play FFXIV"),
                      KAboutLicense::GPL_V3,
                      i18n("© 2021-2025 Joshua Goins"));
     about.setOtherText(
