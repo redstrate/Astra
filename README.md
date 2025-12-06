@@ -19,6 +19,8 @@ plugins!
 
 Details on where to find stable releases of Astra can be found on its [homepage](https://xiv.zone/astra/install).
 
+Newer, experimental builds are available for Windows and Linux through [GitHub Actions](https://github.com/redstrate/Astra/actions).
+
 ## Building
 
 Please refer to the [building document](BUILDING.md) for instructions on how to build Astra.
