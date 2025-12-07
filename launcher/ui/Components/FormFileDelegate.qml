@@ -23,6 +23,6 @@ FormCard.FormButtonDelegate {
 
         currentFolder: StandardPaths.standardLocations(StandardPaths.HomeLocation)[0]
 
-        onAccepted: control.accepted(selectedFile.toString().replace("file://", ""))
+        onAccepted: control.accepted(decodeURI(selectedFile.toString().replace("file://", "")))
     }
 }
