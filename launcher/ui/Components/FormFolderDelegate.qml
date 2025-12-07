@@ -67,6 +67,6 @@ FormCard.AbstractFormDelegate {
         currentFolder: "file://" + root.folder
         selectedFolder: "file://" + root.folder
 
-        onAccepted: root.accepted(selectedFolder.toString().replace("file://", "").substr(Qt.platform.os === "windows" ? 1 : 0))
+        onAccepted: root.accepted(decodeURI(selectedFolder.toString().replace("file://", "").substr(Qt.platform.os === "windows" ? 1 : 0)))
     }
 }
