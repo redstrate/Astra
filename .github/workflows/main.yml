@@ -75,7 +75,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install \
             gettext \
-            libunshield-dev \
             libsecret-1-dev
 
       - name: Cache Prefix
@@ -284,13 +283,6 @@ jobs:
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-qtkeychain -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S qtkeychain -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} ${{ env.COMMON_CMAKE_OPTIONS }} -DBUILD_WITH_QT6=ON -DQTKEYCHAIN_TARGET_NAME=keychain
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-qtkeychain --config ${{ matrix.build_type }} --target install
 
-      - name: Build unshield
-        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
-        run: |
-          git clone https://github.com/twogood/unshield.git
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}-unshield -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S unshield -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} ${{ env.COMMON_CMAKE_OPTIONS }}
-          cmake --build ${{ steps.strings.outputs.build-output-dir }}-unshield --config ${{ matrix.build_type }} --target install
-
       - name: Save Prefix
         id: cache-prefix-save
         uses: actions/cache/save@v4
@@ -322,7 +314,6 @@ jobs:
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6ConfigGui.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6CoreAddons.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6Archive.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
-          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/unshield.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libgcrypt-20.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KF6ConfigCore.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/libgpg-error6-0.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
