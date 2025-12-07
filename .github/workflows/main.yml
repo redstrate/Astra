@@ -5,10 +5,10 @@ on:
   pull_request:
 
 env:
-  QT_VERSION: 6.10.0 # Keep in sync with CMakeLists.txt
-  KF_VERSION: v6.19.0 # Ditto
+  QT_VERSION: 6.10.1 # Keep in sync with CMakeLists.txt
+  KF_VERSION: v6.21.0 # Ditto
   KIRIGAMI_ADDONS_VERSION: v1.10.0 # Ditto x2
-  PLASMA_VERSION: v6.5.1 # For Breeze
+  PLASMA_VERSION: v6.5.4 # For Breeze
   COMMON_CMAKE_OPTIONS: "-DBUILD_TESTING=OFF -DBUILD_PYTHON_BINDINGS=OFF"
 
 jobs:
@@ -76,6 +76,10 @@ jobs:
           sudo apt-get install \
             gettext \
             libsecret-1-dev
+
+      - name: Setup Python dependencies
+        run: |
+          pip install lxml
 
       - name: Cache Prefix
         id: cache-prefix-restore
@@ -172,7 +176,6 @@ jobs:
 
       - name: Build KGuiAddons
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
-        continue-on-error: true
         run: |
           git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/kguiaddons.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-kguiaddons -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kguiaddons -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DWITH_WAYLAND=OFF -DWITH_X11=OFF ${{ env.COMMON_CMAKE_OPTIONS }}
@@ -180,24 +183,33 @@ jobs:
 
       - name: Build KGlobalAccel
         if: (runner.os == 'Linux') && (steps.cache-prefix-restore.outputs.cache-hit != 'true')
-        continue-on-error: true
         run: |
           git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/kglobalaccel.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-kglobalaccel -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kglobalaccel -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} ${{ env.COMMON_CMAKE_OPTIONS }}
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-kglobalaccel --config ${{ matrix.build_type }} --target install
 
-      - name: Build Breeze Icons
+      - name: Clone Breeze Icons
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
-        continue-on-error: true
         run: |
           git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/breeze-icons.git
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}-breeze-icons -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S breeze-icons -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DICONS_LIBRARY=ON -DSKIP_INSTALL_ICONS=ON ${{ env.COMMON_CMAKE_OPTIONS }}
-          cmake --build ${{ steps.strings.outputs.build-output-dir }}-breeze-icons --config ${{ matrix.build_type }} --target install
+
+      # Don't exit on XML errors (which happen for some reason)
+      - name: Fix Breeze Icons
+        uses: richardrigutins/replace-in-files@v2
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        with:
+          files: 'breeze-icons/tools/qrcAlias.cpp'
+          search-text: 'qFatal'
+          replacement-text: 'qWarning'
+
+      - name: Build Breeze Icons
+        if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
+        run: |
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}-breeze-icons -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S breeze-icons -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} -DSKIP_INSTALL_ICONS=ON ${{ env.COMMON_CMAKE_OPTIONS }}
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-breeze-icons --config ${{ matrix.build_type }} --target install
 
       - name: Build KWidgetsAddons
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
-        continue-on-error: true
         run: |
           git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/kwidgetsaddons.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-kwidgetsaddons -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kwidgetsaddons -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} ${{ env.COMMON_CMAKE_OPTIONS }}
@@ -205,7 +217,6 @@ jobs:
 
       - name: Build KColorScheme
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
-        continue-on-error: true
         run: |
           git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/kcolorscheme.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-kcolorscheme -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kcolorscheme -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} ${{ env.COMMON_CMAKE_OPTIONS }}
@@ -213,7 +224,6 @@ jobs:
 
       - name: Build KIconThemes
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
-        continue-on-error: true
         run: |
           git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/kiconthemes.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-kiconthemes -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kiconthemes -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} ${{ env.COMMON_CMAKE_OPTIONS }}
@@ -221,7 +231,6 @@ jobs:
 
       - name: Build KCrash
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
-        continue-on-error: true
         run: |
           git clone --depth 1 --branch ${{ env.KF_VERSION }}  https://invent.kde.org/frameworks/kcrash.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-kcrash -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S kcrash -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} ${{ env.COMMON_CMAKE_OPTIONS }}
