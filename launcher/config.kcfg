@@ -21,7 +21,7 @@ SPDX-License-Identifier: CC0-1.0
     <entry name="AutoLoginProfile" type="String">
     </entry>
     <entry name="ScreenshotDir" type="String">
-      <default code="true">QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + QDir::separator() + QStringLiteral("FFXIV")</default>
+      <default code="true">QDir(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation)).absoluteFilePath(QStringLiteral("FFXIV"))</default>
     </entry>
   </group>
   <group name="Developer">
