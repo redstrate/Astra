@@ -158,6 +158,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     env.insert(QStringLiteral("DALAMUD_RUNTIME"), Utility::toWindowsPath(dalamudRuntimeDir));
+    env.insert(QStringLiteral("DOTNET_ROOT"), Utility::toWindowsPath(dalamudRuntimeDir));
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
     env.insert(QStringLiteral("XL_WINEONLINUX"), QStringLiteral("true"));
