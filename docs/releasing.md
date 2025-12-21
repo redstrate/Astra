@@ -86,11 +86,3 @@ Currently the website has to be kept up to date manually:
 ## Update the Flatpak
 
 Make sure to run the process described in [Updating the Flatpak](astra/updating-flatpak).
-
-## Update the distro packaging
-
-There are three packages to update and test:
-
-* Fedora
-* Gentoo
-* Arch Linux
