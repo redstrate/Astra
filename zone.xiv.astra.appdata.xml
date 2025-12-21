@@ -26,6 +26,7 @@
     <url type="vcs-browser">https://github.com/redstrate/astra</url>
     <launchable type="desktop-id">zone.xiv.astra.desktop</launchable>
     <releases>
+        <release version="0.8.0" date="12-21-2025"/>
         <release version="0.7.0" date="06-24-2025"/>
         <release version="0.6.1" date="07-18-2024"/>
         <release version="0.6.0" date="06-28-2024"/>
