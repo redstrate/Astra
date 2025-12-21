@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <KAboutData>
+#include <KIconTheme>
 #include <KLocalizedString>
 #include <KirigamiApp>
 #include <QApplication> // NOTE: do not remove this, if your IDE suggests to do so
@@ -29,6 +30,8 @@ int main(int argc, char *argv[])
 #ifdef HAVE_WEBVIEW
     QtWebView::initialize();
 #endif
+
+    KIconTheme::initTheme(); // TODO: KirigamiApp doesn't call this before app construction so it doesn't work on Windows
 
     KirigamiApp::App app(argc, argv);
     KirigamiApp kapp;
