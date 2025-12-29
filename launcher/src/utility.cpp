@@ -4,6 +4,7 @@
 #include "utility.h"
 #include "astra_http_log.h"
 
+#include <QDirIterator>
 #include <QSslConfiguration>
 
 using namespace Qt::StringLiterals;
@@ -63,4 +64,17 @@ QString Utility::repositoryFromPatchUrl(const QString &url)
 {
     auto url_parts = url.split('/'_L1);
     return url_parts[url_parts.size() - 3];
+}
+
+qint64 Utility::getDirectorySize(const QString &path)
+{
+    qint64 size = 0;
+
+    QDirIterator it(path);
+    while (it.hasNext()) {
+        const QFileInfo logoFile(it.next());
+        size += logoFile.size();
+    }
+
+    return size;
 }

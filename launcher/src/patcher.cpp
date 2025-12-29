@@ -56,7 +56,6 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
     }
 
     // First, let's check if we have enough space to even download the patches
-    qInfo() << patchList.total_size_downloaded << m_patchesDirStorageInfo.bytesAvailable();
     const qint64 neededSpace = patchList.total_size_downloaded - m_patchesDirStorageInfo.bytesAvailable();
     if (neededSpace > 0) {
         KFormat format;
@@ -66,23 +65,57 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
         co_return false;
     }
 
+    // Calculate the existing repository sizes, which will be used to have an idea of how much space it will grow by.
+    QMap<QString, int64_t> localRepositorySizes;
+    for (int i = 0; i < patchList.num_entries; i++) {
+        const auto &patch = patchList.entries[i];
+
+        // The "game" repository is written as "ffxiv" locally.
+        QString key = Utility::repositoryFromPatchUrl(QLatin1String(patch.url));
+        QString folder = Utility::repositoryFromPatchUrl(QLatin1String(patch.url));
+        if (key == QStringLiteral("game")) {
+            folder = QStringLiteral("ffxiv");
+        }
+
+        // Take the movie directory
+        const QDir movieDir = m_baseDirectory.absoluteFilePath(QStringLiteral("movie"));
+        const QDir repoMovieDir = movieDir.absoluteFilePath(folder);
+
+        // Take the sqpack directory
+        const QDir sqPackDir = m_baseDirectory.absoluteFilePath(QStringLiteral("sqpack"));
+        const QDir repoSqPackDir = sqPackDir.absoluteFilePath(folder);
+
+        // TODO: other files should be accounted for the game repository, such as the game executable. This isn't too important as it's only ~100 MiB
+
+        auto totalSize = Utility::getDirectorySize(repoSqPackDir.absolutePath()) + Utility::getDirectorySize(repoMovieDir.absolutePath());
+        if (totalSize > 0) {
+            localRepositorySizes[key] = totalSize;
+        } else {
+            qWarning() << "Failed to calculate size for" << key << ", ignoring...";
+        }
+    }
+
     // If we do, we want to make sure we have enough space for all the repositories we download
-    // TODO: this math is bad, because I think we over-estimate how much space is actually needed to install the patch
-    // but the math assumes we're practically reinstalling the game. which isn't what's happening, obviously.
-    QMap<QString, int64_t> repositorySizes;
     for (int i = 0; i < patchList.num_entries; i++) {
         // Record the largest byte size for the repository
         const auto &patch = patchList.entries[i];
         const auto &key = Utility::repositoryFromPatchUrl(QLatin1String(patch.url));
-        repositorySizes[key] = std::max(patch.size_on_disk, repositorySizes.value(Utility::repositoryFromPatchUrl(QLatin1String(patch.url)), 0));
+        if (localRepositorySizes.contains(key)) {
+            // Now calculate how much space we need, and cull anything that would be "negative space" which makes no sense.
+            auto newSize = localRepositorySizes[key] - patch.size_on_disk;
+            if (newSize > 0) {
+                localRepositorySizes[key] = newSize;
+            } else {
+                localRepositorySizes.remove(key);
+            }
+        }
     }
 
     int64_t requiredInstallSize = 0;
-    for (const auto &[_, value] : repositorySizes.asKeyValueRange()) {
+    for (const auto &[_, value] : localRepositorySizes.asKeyValueRange()) {
         requiredInstallSize += value;
     }
     const qint64 neededInstallSpace = requiredInstallSize - m_baseDirStorageInfo.bytesAvailable();
-    qInfo() << requiredInstallSize << m_baseDirStorageInfo.bytesAvailable();
     if (neededInstallSpace > 0) {
         KFormat format;
         QString neededSpaceStr = format.formatByteSize(neededInstallSpace);
@@ -262,14 +295,14 @@ void Patcher::processPatch(const QueuedPatch &patch)
 
     QString verFilePath;
     if (isBoot()) {
-        verFilePath = m_baseDirectory + QStringLiteral("/ffxivboot.ver");
+        verFilePath = m_baseDirectory.absoluteFilePath(QStringLiteral("ffxivboot.ver"));
     } else {
         if (patch.repository == "game"_L1) {
-            verFilePath = m_baseDirectory + QStringLiteral("/ffxivgame.ver");
+            verFilePath = m_baseDirectory.absoluteFilePath(QStringLiteral("ffxivgame.ver"));
         } else {
-            const QString sqPackDir = m_baseDirectory + QStringLiteral("/sqpack/") + patch.repository + QStringLiteral("/");
+            const QDir sqPackDir = m_baseDirectory.absoluteFilePath(QStringLiteral("sqpack/%1").arg(patch.repository));
             Utility::createPathIfNeeded(sqPackDir);
-            verFilePath = sqPackDir + patch.repository + QStringLiteral(".ver");
+            verFilePath = sqPackDir.absoluteFilePath(patch.repository + QStringLiteral(".ver"));
         }
     }
 
