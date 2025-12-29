@@ -60,7 +60,7 @@ private:
     QList<QueuedPatch> m_patchQueue;
 
     QDir m_patchesDir;
-    QString m_baseDirectory;
+    QDir m_baseDirectory;
     BootData *m_bootData = nullptr;
     SqPackResource *m_gameData = nullptr;
     QStorageInfo m_patchesDirStorageInfo;
