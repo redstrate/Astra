@@ -289,6 +289,7 @@ FormCard.FormCardPage {
 
             icon.name: "download-symbolic"
             text: i18nc("@action:button", "Download Configuration")
+            enabled: serverUrlDelegate.text.length > 0
 
             onClicked: LauncherCore.downloadServerConfiguration(page.account, serverUrlDelegate.text)
         }
