@@ -55,7 +55,7 @@ private:
         }
     };
 
-    void processPatch(const QueuedPatch &patch);
+    bool processPatch(const QueuedPatch &patch);
 
     QList<QueuedPatch> m_patchQueue;
 

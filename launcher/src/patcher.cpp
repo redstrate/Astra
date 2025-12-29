@@ -230,15 +230,18 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
         Q_EMIT m_launcher.stageChanged(i18n("Installing %1 - %2 [%3/%4]", repositoryName, patch.version, i++, m_remainingPatches));
         Q_EMIT m_launcher.stageDeterminate(0, static_cast<int>(m_patchQueue.size()), i);
 
-        co_await QtConcurrent::run([this, patch] {
-            processPatch(patch);
+        const bool success = co_await QtConcurrent::run([this, patch] {
+            return processPatch(patch);
         });
+        if (!success) {
+            co_return false;
+        }
     }
 
     co_return true;
 }
 
-void Patcher::processPatch(const QueuedPatch &patch)
+bool Patcher::processPatch(const QueuedPatch &patch)
 {
     // Perform hash checking
     if (!patch.hashes.isEmpty()) {
@@ -251,7 +254,8 @@ void Patcher::processPatch(const QueuedPatch &patch)
             f.remove();
             qCritical(ASTRA_PATCHER) << patch.path << "has the wrong size.";
             Q_EMIT m_launcher.miscError(i18n("Patch %1 is the wrong size. The downloaded patch has been discarded, please log in again.", patch.name));
-            return;
+            false;
+            return false;
         }
 
         const int parts = std::ceil(static_cast<double>(patch.length) / static_cast<double>(patch.hashBlockSize));
@@ -273,7 +277,7 @@ void Patcher::processPatch(const QueuedPatch &patch)
                 f.remove();
                 qCritical(ASTRA_PATCHER) << patch.path << "failed the hash check.";
                 Q_EMIT m_launcher.miscError(i18n("Patch %1 failed the hash check. The downloaded patch has been discarded, please log in again.", patch.name));
-                return;
+                return false;
             }
         }
     }
@@ -288,7 +292,7 @@ void Patcher::processPatch(const QueuedPatch &patch)
     if (!res) {
         qCritical(ASTRA_PATCHER) << "Failed to install" << patch.path << "to" << (isBoot() ? QStringLiteral("boot") : patch.repository);
         Q_EMIT m_launcher.miscError(i18n("Patch %1 failed to apply. The game is now in an invalid state and must be immediately repaired.", patch.name));
-        return;
+        return false;
     }
 
     qDebug(ASTRA_PATCHER) << "Installed" << patch.path << "to" << (isBoot() ? QStringLiteral("boot") : patch.repository);
@@ -311,6 +315,8 @@ void Patcher::processPatch(const QueuedPatch &patch)
     if (!m_launcher.config()->keepPatches()) {
         QFile::remove(patch.path);
     }
+
+    return true;
 }
 
 void Patcher::setupDirectories()
