@@ -105,6 +105,26 @@ Kirigami.Page {
         }
     }
 
+    Kirigami.PromptDialog {
+        id: repairErrorDialog
+
+        title: i18n("Repair Needed")
+
+        showCloseButton: false
+        standardButtons: Kirigami.Dialog.Cancel
+
+        customFooterActions: [
+            Kirigami.Action {
+                icon.name: "checkmark-symbolic"
+                text: i18n("Repair")
+                onTriggered: repairErrorDialog.accept()
+            }
+        ]
+
+        onAccepted: LauncherCore.repairDecided(true)
+        onRejected: LauncherCore.repairDecided(false)
+    }
+
     Connections {
         target: LauncherCore
 
@@ -151,6 +171,11 @@ Kirigami.Page {
             assetDialog.title = i18n("Error");
             assetDialog.subtitle = message;
             assetDialog.open();
+        }
+
+        function onNeedsRepair(message: string): void {
+            repairErrorDialog.subtitle = i18n("The game needs immediate repair before launching:\n\n%1\nWould you like to perform repairs now?", message);
+            repairErrorDialog.open();
         }
     }
 }

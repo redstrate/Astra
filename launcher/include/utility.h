@@ -16,4 +16,8 @@ QString readVersion(const QString &path);
 void writeVersion(const QString &path, const QString &version);
 bool isSteamDeck();
 QString repositoryFromPatchUrl(const QString &url);
+/**
+ * @note Only returns files at the top-level path.
+ */
+qint64 getDirectorySize(const QString &path);
 }

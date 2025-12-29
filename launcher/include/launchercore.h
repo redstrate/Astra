@@ -160,6 +160,8 @@ Q_SIGNALS:
     void updateDecided(bool allowUpdate);
     void assetDecided(bool shouldContinue);
     void dalamudDecided(bool shouldContinue);
+    void needsRepair(QString message);
+    void repairDecided(bool shouldRepair);
 
 protected:
     friend class Patcher;

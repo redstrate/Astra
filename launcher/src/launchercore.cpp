@@ -4,6 +4,7 @@
 #include "gameinstaller.h"
 
 #include <KLocalizedString>
+#include <QCoroSignal>
 #include <QDir>
 #include <QImage>
 #include <QNetworkAccessManager>
@@ -442,6 +443,49 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
     // Hmm, I don't think we're set up for this yet?
     if (!info.profile->config()->isBenchmark()) {
         updateConfig(info.profile->account());
+    }
+
+    const auto repairs = physis_gamedata_needs_repair(info.profile->gameData());
+    if (repairs.action_count > 0) {
+        QString message;
+        for (int i = 0; i < repairs.action_count; i++) {
+            const auto action = repairs.actions[i];
+
+            QString actionText;
+            switch (action) {
+            case RepairAction::VersionFileMissing:
+                actionText = i18n("Version file is missing, and data has to be re-downloaded.");
+                break;
+            case RepairAction::VersionFileCanRestore:
+                actionText = i18n("Version file is missing, but can be restored.");
+                break;
+            case RepairAction::VersionFileExtraSpacing:
+                actionText = i18n("Version file has extra spacing.");
+                break;
+            default:
+                actionText = i18n("Unknown repair required.");
+                break;
+            }
+
+            const auto repository = repairs.repositories[i];
+            message += QStringLiteral("%1: %2\n").arg(QString::fromLatin1(repository)).arg(actionText);
+        }
+
+        Q_EMIT needsRepair(message);
+
+        const bool shouldRepair = co_await qCoro(this, &LauncherCore::repairDecided);
+        if (shouldRepair) {
+            const bool successful = physis_gamedata_repair(info.profile->gameData());
+            if (!successful) {
+                Q_EMIT miscError(i18n("Repair failed! Game data may be invalid and needs to be re-downloaded."));
+                co_return;
+            }
+
+            // Re-read game version so repairs actually have an effect!
+            info.profile->readGameVersion();
+        } else {
+            co_return;
+        }
     }
 
     std::optional<LoginAuth> auth;
