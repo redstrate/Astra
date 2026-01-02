@@ -229,14 +229,14 @@ void LauncherCore::refreshLogoImage()
         Q_UNUSED(QDir().mkpath(logoDir.absolutePath()))
     }
 
-    const auto saveTexture = [](SqPackResource *data, const QString &path, const QString &name) {
+    const auto saveTexture = [](physis_SqPackResource const *data, const QString &path, const QString &name) {
         if (QFile::exists(name)) {
             return;
         }
 
-        const auto file = physis_gamedata_extract_file(data, path.toStdString().c_str());
+        const auto file = physis_sqpack_read(data, path.toStdString().c_str());
         if (file.data != nullptr) {
-            const auto tex = physis_texture_parse(file);
+            const auto tex = physis_texture_parse(data->platform, file);
 
             const QImage image(tex.rgba, tex.width, tex.height, QImage::Format_RGBA8888);
             Q_UNUSED(image.save(name))
@@ -246,14 +246,14 @@ void LauncherCore::refreshLogoImage()
     // TODO: this finds the first profile that has a valid image, but this could probably be cached per-profile
     for (int i = 0; i < m_profileManager->numProfiles(); i++) {
         const auto profile = m_profileManager->getProfile(i);
-        if (profile->isGameInstalled() && profile->gameData()) {
+        if (profile->isGameInstalled() && profile->resource()) {
             // A Realm Reborn
-            saveTexture(profile->gameData(), QStringLiteral("ui/uld/Title_Logo.tex"), logoDir.absoluteFilePath(QStringLiteral("ffxiv.png")));
+            saveTexture(profile->resource(), QStringLiteral("ui/uld/Title_Logo.tex"), logoDir.absoluteFilePath(QStringLiteral("ffxiv.png")));
 
             for (int j = 0; j < profile->numInstalledExpansions(); j++) {
                 const int expansionNumber = 100 * (j + 3); // logo number starts at 300 for ex1
 
-                saveTexture(profile->gameData(),
+                saveTexture(profile->resource(),
                             QStringLiteral("ui/uld/Title_Logo%1_hr1.tex").arg(expansionNumber),
                             logoDir.absoluteFilePath(QStringLiteral("ex%1.png").arg(j + 1)));
             }
@@ -445,7 +445,7 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
         updateConfig(info.profile->account());
     }
 
-    const auto repairs = physis_gamedata_needs_repair(info.profile->gameData());
+    const auto repairs = physis_sqpack_needs_repair(info.profile->resource());
     if (repairs.action_count > 0) {
         QString message;
         for (int i = 0; i < repairs.action_count; i++) {
@@ -475,7 +475,7 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
 
         const bool shouldRepair = co_await qCoro(this, &LauncherCore::repairDecided);
         if (shouldRepair) {
-            const bool successful = physis_gamedata_repair(info.profile->gameData());
+            const bool successful = physis_sqpack_repair(info.profile->resource());
             if (!successful) {
                 Q_EMIT miscError(i18n("Repair failed! Game data may be invalid and needs to be re-downloaded."));
                 co_return;

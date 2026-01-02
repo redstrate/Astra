@@ -18,23 +18,10 @@
 
 using namespace Qt::StringLiterals;
 
-Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData &bootData, QObject *parent)
+Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, const bool isBoot, QObject *parent)
     : QObject(parent)
     , m_baseDirectory(baseDirectory)
-    , m_bootData(&bootData)
-    , m_launcher(launcher)
-{
-    m_launcher.m_isPatching = true;
-
-    setupDirectories();
-
-    Q_EMIT m_launcher.stageChanged(i18n("Checking %1 version", getBaseString()));
-}
-
-Patcher::Patcher(LauncherCore &launcher, const QString &baseDirectory, SqPackResource &gameData, QObject *parent)
-    : QObject(parent)
-    , m_baseDirectory(baseDirectory)
-    , m_gameData(&gameData)
+    , m_isBoot(isBoot)
     , m_launcher(launcher)
 {
     m_launcher.m_isPatching = true;
@@ -282,13 +269,7 @@ bool Patcher::processPatch(const QueuedPatch &patch)
         }
     }
 
-    bool res;
-    if (isBoot()) {
-        res = physis_bootdata_apply_patch(m_bootData, patch.path.toStdString().c_str());
-    } else {
-        res = physis_gamedata_apply_patch(m_gameData, patch.path.toStdString().c_str());
-    }
-
+    const bool res = physis_patch_apply(m_baseDirectory.absolutePath().toStdString().c_str(), patch.path.toStdString().c_str());
     if (!res) {
         qCritical(ASTRA_PATCHER) << "Failed to install" << patch.path << "to" << (isBoot() ? QStringLiteral("boot") : patch.repository);
         Q_EMIT m_launcher.miscError(i18n("Patch %1 failed to apply. The game is now in an invalid state and must be immediately repaired.", patch.name));

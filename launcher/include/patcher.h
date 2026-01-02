@@ -20,8 +20,7 @@ class Patcher : public QObject
     Q_OBJECT
 
 public:
-    Patcher(LauncherCore &launcher, const QString &baseDirectory, SqPackResource &gameData, QObject *parent = nullptr);
-    Patcher(LauncherCore &launcher, const QString &baseDirectory, BootData &bootData, QObject *parent = nullptr);
+    Patcher(LauncherCore &launcher, const QString &baseDirectory, bool isBoot, QObject *parent = nullptr);
     ~Patcher() override;
 
     QCoro::Task<bool> patch(const physis_PatchList &patchList);
@@ -32,7 +31,7 @@ private:
 
     [[nodiscard]] bool isBoot() const
     {
-        return m_bootData != nullptr;
+        return m_isBoot;
     }
 
     struct QueuedPatch {
@@ -61,10 +60,9 @@ private:
 
     QDir m_patchesDir;
     QDir m_baseDirectory;
-    BootData *m_bootData = nullptr;
-    SqPackResource *m_gameData = nullptr;
     QStorageInfo m_patchesDirStorageInfo;
     QStorageInfo m_baseDirStorageInfo;
+    bool m_isBoot;
 
     int m_remainingPatches = -1;
 

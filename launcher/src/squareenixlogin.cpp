@@ -202,7 +202,7 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
                 co_return false;
             }
 
-            m_patcher = new Patcher(m_launcher, m_info->profile->config()->gamePath() + QStringLiteral("/boot"), *m_info->profile->bootData(), this);
+            m_patcher = new Patcher(m_launcher, m_info->profile->config()->gamePath() + QStringLiteral("/boot"), true, this);
             const bool hasPatched = co_await m_patcher->patch(parsedPatchList);
             if (hasPatched) {
                 // update game version information
@@ -411,7 +411,7 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
                     co_return false;
                 }
 
-                m_patcher = new Patcher(m_launcher, m_info->profile->config()->gamePath() + QStringLiteral("/game"), *m_info->profile->gameData(), this);
+                m_patcher = new Patcher(m_launcher, m_info->profile->config()->gamePath() + QStringLiteral("/game"), true, this);
                 const bool hasPatched = co_await m_patcher->patch(parsedPatchList);
                 m_patcher->deleteLater();
                 if (!hasPatched) {

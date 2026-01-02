@@ -79,26 +79,26 @@ void Profile::readDalamudInfo()
 
 void Profile::readGameData()
 {
-    if (!physis_gamedata_exists(m_gameData, "exd/exversion.exh")) {
+    if (!physis_sqpack_exists(&m_resource, "exd/exversion.exh")) {
         return;
     }
 
-    const auto header = physis_gamedata_extract_file(m_gameData, "exd/exversion.exh");
-    physis_EXH *exh = physis_parse_excel_sheet_header(header);
-    if (exh != nullptr) {
+    const auto header = physis_sqpack_read(&m_resource, "exd/exversion.exh");
+    physis_EXH exh = physis_exh_parse(m_resource.platform, header);
+    if (exh.p_ptr) {
         // TODO: support languages other than English
-        const physis_EXD exd = physis_gamedata_read_excel_sheet(m_gameData, "ExVersion", exh, Language::English, 0);
-        if (exd.p_ptr) {
+        const physis_ExcelSheet sheet = physis_sqpack_read_excel_sheet(&m_resource, "ExVersion", &exh, Language::English);
+        if (sheet.p_ptr) {
             // TODO: bad API, we should instead get a list of row ids from libphysis but that API doesn't exist yet.
-            for (unsigned int i = 0; i < exd.row_count; i++) {
-                auto row = physis_exd_get_row(&exd, i);
-                if (row->column_data != nullptr) {
-                    m_expansionNames.push_back(QString::fromLatin1(row->column_data[0].string._0));
+            for (unsigned int i = 0; i < sheet.pages[0].row_count; i++) {
+                auto row = physis_excel_get_row(&sheet, i);
+                if (row.row_count > 0) {
+                    m_expansionNames.push_back(QString::fromLatin1(row.row_data[0].column_data[0].string._0));
                 }
             }
-            physis_gamedata_free_sheet(exd);
+            physis_sqpack_free_excel_sheet(&sheet);
         }
-        physis_gamedata_free_sheet_header(exh);
+        physis_exh_free(&exh);
     }
 }
 
@@ -179,15 +179,15 @@ void Profile::readGameVersion()
         return;
     }
 
-    m_gameData = physis_gamedata_initialize(QDir(config()->gamePath()).absoluteFilePath(QStringLiteral("game")).toStdString().c_str());
+    m_resource = physis_sqpack_initialize(QDir(config()->gamePath()).absoluteFilePath(QStringLiteral("game")).toStdString().c_str());
     m_bootData = physis_bootdata_initialize(QDir(config()->gamePath()).absoluteFilePath(QStringLiteral("boot")).toStdString().c_str());
 
     if (m_bootData != nullptr) {
         m_bootVersion = physis_bootdata_get_version(m_bootData);
     }
 
-    if (m_gameData != nullptr) {
-        m_repositories = physis_gamedata_get_repositories(m_gameData);
+    if (m_resource.p_ptr) {
+        m_repositories = physis_sqpack_get_repositories(&m_resource);
         readGameData();
     }
 
@@ -362,9 +362,9 @@ BootData *Profile::bootData() const
     return m_bootData;
 }
 
-SqPackResource *Profile::gameData() const
+physis_SqPackResource const *Profile::resource() const
 {
-    return m_gameData;
+    return &m_resource;
 }
 
 QString Profile::subtitle() const
