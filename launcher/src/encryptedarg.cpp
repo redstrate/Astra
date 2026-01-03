@@ -68,7 +68,7 @@ QString encryptGameArg(const QString &arg)
     char buffer[9]{};
     sprintf(buffer, "%08x", key);
 
-    Blowfish *blowfish = physis_blowfish_initialize(reinterpret_cast<uint8_t *>(buffer), 9);
+    SqexArgBlowfish *blowfish = physis_blowfish_initialize(reinterpret_cast<uint8_t *>(buffer), 9);
 
     uint8_t *out_data = nullptr;
     uint32_t out_size = 0;
@@ -148,12 +148,12 @@ std::pair<QString, int> encryptSteamTicket(QString ticket, qint64 time)
     auto finalBytes = binaryWriter;
     std::swap(finalBytes[0], finalBytes[1]);
 
-    SteamTicketBlowfish *blowfish = miscel_steamticket_blowfish_initialize(reinterpret_cast<uint8_t *>(blowfishKey), 16);
+    SteamTicketBlowfish *blowfish = physis_steamticket_blowfish_initialize(reinterpret_cast<uint8_t *>(blowfishKey), 16);
 
-    miscel_steamticket_blowfish_encrypt(blowfish, reinterpret_cast<uint8_t *>(finalBytes.data()), finalBytes.size());
+    physis_steamticket_blowfish_encrypt(blowfish, reinterpret_cast<uint8_t *>(finalBytes.data()), finalBytes.size());
     Q_ASSERT(finalBytes.length() % 8 == 0);
 
-    miscel_steamticket_physis_blowfish_free(blowfish);
+    physis_steamticket_physis_blowfish_free(blowfish);
 
     auto encoded = finalBytes.toBase64(QByteArray::Base64Option::Base64UrlEncoding | QByteArray::Base64Option::KeepTrailingEquals);
     encoded.replace('+', '-');

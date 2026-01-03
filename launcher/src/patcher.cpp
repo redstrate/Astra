@@ -44,6 +44,7 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
 
     // First, let's check if we have enough space to even download the patches
     const qint64 neededSpace = patchList.total_size_downloaded - m_patchesDirStorageInfo.bytesAvailable();
+    qInfo() << neededSpace << m_patchesDirStorageInfo.bytesAvailable();
     if (neededSpace > 0) {
         KFormat format;
         QString neededSpaceStr = format.formatByteSize(neededSpace);
