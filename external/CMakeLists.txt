@@ -9,14 +9,17 @@ set(BUILD_TESTS OFF)
 
 add_subdirectory(libcotp EXCLUDE_FROM_ALL)
 
-include(FetchContent)
-FetchContent_Declare(
-        Corrosion
-        GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
-        GIT_TAG v0.5.2
-)
+find_package(Corrosion QUIET)
+if (NOT Corrosion_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(
+            Corrosion
+            GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
+            GIT_TAG v0.5.2
+    )
 
-FetchContent_MakeAvailable(Corrosion)
+    FetchContent_MakeAvailable(Corrosion)
+endif()
 
 corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/libphysis/Cargo.toml)
 
