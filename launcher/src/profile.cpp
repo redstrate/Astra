@@ -89,11 +89,10 @@ void Profile::readGameData()
         // TODO: support languages other than English
         const physis_ExcelSheet sheet = physis_sqpack_read_excel_sheet(&m_resource, "ExVersion", &exh, Language::English);
         if (sheet.p_ptr) {
-            // TODO: bad API, we should instead get a list of row ids from libphysis but that API doesn't exist yet.
-            for (unsigned int i = 0; i < sheet.pages[0].row_count; i++) {
-                auto row = physis_excel_get_row(&sheet, i);
-                if (row.row_count > 0) {
-                    m_expansionNames.push_back(QString::fromLatin1(row.row_data[0].column_data[0].string._0));
+            for (unsigned int i = 0; i < sheet.pages[0].entry_count; i++) {
+                auto entry = sheet.pages[0].entries[i];
+                if (entry.subrow_count > 0) {
+                    m_expansionNames.push_back(QString::fromLatin1(entry.subrows[0].columns[0].string._0));
                 }
             }
             physis_sqpack_free_excel_sheet(&sheet);
