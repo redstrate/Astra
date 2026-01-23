@@ -80,14 +80,32 @@ void Profile::readDalamudInfo()
 void Profile::readGameData()
 {
     if (!physis_sqpack_exists(&m_resource, "exd/exversion.exh")) {
+        qWarning() << "Failed to find ExVersion sheet.";
         return;
     }
 
     const auto header = physis_sqpack_read(&m_resource, "exd/exversion.exh");
     physis_EXH exh = physis_exh_parse(m_resource.platform, header);
     if (exh.p_ptr) {
-        // TODO: support languages other than English
-        const physis_ExcelSheet sheet = physis_sqpack_read_excel_sheet(&m_resource, "ExVersion", &exh, Language::English);
+        std::optional<Language> language;
+        for (uint32_t i = 0; i < exh.language_count; i++) {
+            if (exh.languages[i] == Language::English) {
+                language = exh.languages[i];
+                break;
+            }
+        }
+
+        // Fall back to the first found one, e.g. Korean.
+        if (!language.has_value() && exh.language_count >= 1) {
+            language = exh.languages[0];
+        }
+
+        if (!language.has_value()) {
+            qWarning() << "No languages available when reading ExVersion?!";
+            return;
+        }
+
+        const physis_ExcelSheet sheet = physis_sqpack_read_excel_sheet(&m_resource, "ExVersion", &exh, language.value());
         if (sheet.p_ptr) {
             for (unsigned int i = 0; i < sheet.pages[0].entry_count; i++) {
                 auto entry = sheet.pages[0].entries[i];
@@ -98,6 +116,8 @@ void Profile::readGameData()
             physis_sqpack_free_excel_sheet(&sheet);
         }
         physis_exh_free(&exh);
+    } else {
+        qWarning() << "Failed to parse ExVersion sheet.";
     }
 }
 
