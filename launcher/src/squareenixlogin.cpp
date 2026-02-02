@@ -411,7 +411,7 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
                     co_return false;
                 }
 
-                m_patcher = new Patcher(m_launcher, m_info->profile->config()->gamePath() + QStringLiteral("/game"), true, this);
+                m_patcher = new Patcher(m_launcher, m_info->profile->config()->gamePath() + QStringLiteral("/game"), false, this);
                 const bool hasPatched = co_await m_patcher->patch(parsedPatchList);
                 m_patcher->deleteLater();
                 if (!hasPatched) {

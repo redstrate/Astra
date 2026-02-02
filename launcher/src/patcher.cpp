@@ -242,7 +242,6 @@ bool Patcher::processPatch(const QueuedPatch &patch)
             f.remove();
             qCritical(ASTRA_PATCHER) << patch.path << "has the wrong size.";
             Q_EMIT m_launcher.miscError(i18n("Patch %1 is the wrong size. The downloaded patch has been discarded, please log in again.", patch.name));
-            false;
             return false;
         }
 
