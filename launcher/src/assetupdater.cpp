@@ -528,16 +528,16 @@ bool AssetUpdater::extractZip(const QString &filePath, const QString &directory)
 {
     KZip archive(filePath);
     if (!archive.open(QIODevice::ReadOnly)) {
+        qWarning() << "Error while opening archive:" << archive.errorString();
         return false;
     }
 
     const KArchiveDirectory *root = archive.directory();
     if (!root->copyTo(directory, true)) {
+        qWarning() << "Error while extracting archive:" << archive.errorString();
         archive.close();
         return false;
     }
-
-    archive.close();
 
     return true;
 }
