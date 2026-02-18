@@ -140,6 +140,8 @@ public:
 
     Q_INVOKABLE void downloadServerConfiguration(Account *account, const QString &url);
 
+    Q_INVOKABLE void resetServerConfiguration(Account *account);
+
 Q_SIGNALS:
     void loadingFinished();
     void successfulLaunch();

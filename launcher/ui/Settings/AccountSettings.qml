@@ -73,8 +73,29 @@ FormCard.FormCardPage {
             configurationPrompt.title = title;
             configurationPrompt.subtitle = subtitle;
             configurationPrompt.visible = true;
+            page.reloadServerConfiguration();
+        }
+
+        function onResetConfiguration(): void {
+            page.reloadServerConfiguration();
         }
     }
+
+    // Needed because Kirigami Add-ons overwrites our bindings with static values
+    function reloadServerConfiguration(): void {
+        squareMainServerDelegate.text = page.account.config.frontierServer;
+        loginServerDelegate.text = page.account.config.loginServer;
+        mainServerDelegate.text = page.account.config.lodestoneServer;
+        bootPatchServerDelegate.text = page.account.config.bootPatchServer;
+        gamePatchServerDelegate.text = page.account.config.gamePatchServer;
+        gameServerDelegate.text = page.account.config.lobbyServer;
+        gameServerPortDelegate.value = page.account.config.lobbyPort;
+        saveDataBankServerDelegate.text = page.account.config.saveDataBankServer;
+        saveDataBankPortDelegate.value = page.account.config.saveDataBankPort;
+        dataCenterTravelServerDelegate.text = page.account.config.dataCenterTravelServer;
+    }
+
+    Component.onCompleted: reloadServerConfiguration()
 
     FormCard.FormCard {
         visible: generalAction.checked
@@ -276,7 +297,6 @@ FormCard.FormCardPage {
             id: serverUrlDelegate
 
             label: i18n("Server URL")
-            placeholderText: "http://ffxiv.localhost"
         }
 
         FormCard.FormDelegateSeparator {
@@ -293,6 +313,20 @@ FormCard.FormCardPage {
 
             onClicked: LauncherCore.downloadServerConfiguration(page.account, serverUrlDelegate.text)
         }
+
+        FormCard.FormDelegateSeparator {
+            above: downloadConfigDelegate
+            below: resetConfigDelegate
+        }
+
+        FormCard.FormButtonDelegate {
+            id: resetConfigDelegate
+
+            icon.name: "kt-restore-defaults-symbolic"
+            text: i18nc("@action:button", "Reset to Defaults")
+
+            onClicked: LauncherCore.resetServerConfiguration(page.account)
+        }
     }
 
     FormCard.FormCard {
@@ -308,7 +342,7 @@ FormCard.FormCardPage {
             text: page.account.config.frontierServer
             placeholderText: page.account.config.defaultFrontierServerValue
             onTextChanged: {
-                page.account.config.frontierSrver = text;
+                page.account.config.frontierServer = text;
                 page.account.config.save();
             }
         }
@@ -418,23 +452,6 @@ FormCard.FormCardPage {
 
         FormCard.FormDelegateSeparator {
             above: gameServerPortDelegate
-            below: frontierServerDelegate
-        }
-
-        FormCard.FormTextFieldDelegate {
-            id: frontierServerDelegate
-
-            label: i18n("Frontier Server")
-            text: page.account.config.frontierServer
-            placeholderText: i18nc("@info:placeholder", "(Default value in client)")
-            onTextChanged: {
-                page.account.config.frontierServer = text;
-                page.account.config.save();
-            }
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: frontierServerDelegate
             below: saveDataBankServerDelegate
         }
 
