@@ -745,4 +745,20 @@ void LauncherCore::downloadServerConfiguration(Account *account, const QString &
     beginAutoConfiguration(account, url);
 }
 
+void LauncherCore::resetServerConfiguration(Account *account)
+{
+    account->config()->setGamePatchServer(account->config()->defaultGamePatchServerValue());
+    account->config()->setBootPatchServer(account->config()->defaultBootPatchServerValue());
+    account->config()->setLobbyServer({});
+    account->config()->setLobbyPort(0);
+    account->config()->setLodestoneServer(account->config()->defaultLodestoneServerValue());
+    account->config()->setFrontierServer(account->config()->defaultFrontierServerValue());
+    account->config()->setSaveDataBankServer({});
+    account->config()->setSaveDataBankPort(0);
+    account->config()->setDataCenterTravelServer({});
+    account->config()->setLoginServer(account->config()->defaultLoginServerValue());
+
+    Q_EMIT account->resetConfiguration();
+}
+
 #include "moc_launchercore.cpp"

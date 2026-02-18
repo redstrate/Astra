@@ -54,6 +54,7 @@ Q_SIGNALS:
     void avatarUrlChanged();
     bool needsPasswordChanged();
     void autoConfigurationResult(const QString &title, const QString &subtitle);
+    void resetConfiguration();
 
 private:
     QCoro::Task<> fetchPassword();
