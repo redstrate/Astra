@@ -41,7 +41,7 @@ private:
     [[nodiscard]] QUrl dxvkReleasesUrl() const;
     [[nodiscard]] QUrl wineReleasesUrl() const;
 
-    static bool extractZip(const QString &filePath, const QString &directory);
+    static QString extractZip(const QString &filePath, const QString &directory);
 
     LauncherCore &launcher;
 

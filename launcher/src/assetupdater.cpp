@@ -183,7 +183,7 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudAssetVersion()
     co_await reply;
 
     if (reply->error() != QNetworkReply::NetworkError::NoError) {
-        Q_EMIT launcher.dalamudError(i18n("Could not check for Dalamud asset updates.\n\n%1", reply->errorString()));
+        Q_EMIT launcher.dalamudError(i18n("Could not check for Dalamud asset updates:\n\n%1", reply->errorString()));
 
         const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::dalamudDecided);
         co_return shouldContinue;
@@ -227,7 +227,7 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudVersion()
     co_await reply;
 
     if (reply->error() != QNetworkReply::NetworkError::NoError) {
-        Q_EMIT launcher.dalamudError(i18n("Could not check for Dalamud updates.\n\n%1", reply->errorString()));
+        Q_EMIT launcher.dalamudError(i18n("Could not check for Dalamud updates:\n\n%1", reply->errorString()));
 
         // Always assume Dalamud is applicable for this version when we can't contact the server!
         // The user is prompted to turn off Dalamud anyway, if they wish.
@@ -365,9 +365,10 @@ QCoro::Task<bool> AssetUpdater::installDalamudAssets()
     file.write(reply->readAll());
     file.close();
 
-    if (!extractZip(m_tempDir.filePath(QStringLiteral("dalamud-assets.zip")), m_dalamudAssetDir.absolutePath())) {
-        qCritical(ASTRA_LOG) << "Failed to install Dalamud assets";
-        Q_EMIT launcher.dalamudError(i18n("Failed to install Dalamud assets."));
+    if (const QString errorString = extractZip(m_tempDir.filePath(QStringLiteral("dalamud-assets.zip")), m_dalamudAssetDir.absolutePath());
+        !errorString.isEmpty()) {
+        qCritical(ASTRA_LOG) << "Failed to install Dalamud assets:" << errorString;
+        Q_EMIT launcher.dalamudError(i18n("Failed to install Dalamud assets:\n\n%1").arg(errorString));
 
         const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::dalamudDecided);
         co_return shouldContinue;
@@ -399,9 +400,11 @@ QCoro::Task<bool> AssetUpdater::installDalamud()
     file.write(reply->readAll());
     file.close();
 
-    if (!extractZip(m_tempDir.filePath(QStringLiteral("latest.zip")), m_dalamudDir.absoluteFilePath(m_profile.config()->dalamudChannel()))) {
-        qCritical(ASTRA_LOG) << "Failed to install Dalamud";
-        Q_EMIT launcher.dalamudError(i18n("Failed to install Dalamud."));
+    if (const QString errorString =
+            extractZip(m_tempDir.filePath(QStringLiteral("latest.zip")), m_dalamudDir.absoluteFilePath(m_profile.config()->dalamudChannel()));
+        !errorString.isEmpty()) {
+        qCritical(ASTRA_LOG) << "Failed to install Dalamud:" << errorString;
+        Q_EMIT launcher.dalamudError(i18n("Failed to install Dalamud:\n\n%1").arg(errorString));
 
         const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::dalamudDecided);
         co_return shouldContinue;
@@ -448,12 +451,12 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
         file.close();
     }
 
-    bool success = extractZip(m_tempDir.filePath(QStringLiteral("dotnet-core.zip")), m_dalamudRuntimeDir.absolutePath());
-    success |= extractZip(m_tempDir.filePath(QStringLiteral("dotnet-desktop.zip")), m_dalamudRuntimeDir.absolutePath());
+    const QString errorString1 = extractZip(m_tempDir.filePath(QStringLiteral("dotnet-core.zip")), m_dalamudRuntimeDir.absolutePath());
+    const QString errorString2 = extractZip(m_tempDir.filePath(QStringLiteral("dotnet-desktop.zip")), m_dalamudRuntimeDir.absolutePath());
 
-    if (!success) {
-        qCritical(ASTRA_LOG) << "Failed to install dotnet";
-        Q_EMIT launcher.dalamudError(i18n("Failed to install .NET runtime."));
+    if (!errorString1.isEmpty() || !errorString2.isEmpty()) {
+        qCritical(ASTRA_LOG) << "Failed to install .NET runtime:" << errorString1 << errorString2;
+        Q_EMIT launcher.dalamudError(i18n("Failed to install .NET runtime:\n\n%1%2").arg(errorString1).arg(errorString2));
 
         const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::dalamudDecided);
         co_return shouldContinue;
@@ -524,22 +527,19 @@ QUrl AssetUpdater::wineReleasesUrl() const
     return url;
 }
 
-bool AssetUpdater::extractZip(const QString &filePath, const QString &directory)
+QString AssetUpdater::extractZip(const QString &filePath, const QString &directory)
 {
     KZip archive(filePath);
     if (!archive.open(QIODevice::ReadOnly)) {
-        qWarning() << "Error while opening archive:" << archive.errorString();
-        return false;
+        return archive.errorString();
     }
 
     const KArchiveDirectory *root = archive.directory();
     if (!root->copyTo(directory, true)) {
-        qWarning() << "Error while extracting archive:" << archive.errorString();
-        archive.close();
-        return false;
+        return archive.errorString();
     }
 
-    return true;
+    return {};
 }
 
 #include "moc_assetupdater.cpp"
