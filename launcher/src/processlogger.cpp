@@ -29,5 +29,10 @@ ProcessLogger::ProcessLogger(const QString &baseName, QProcess *process)
         deleteLater();
     });
 
+    connect(process, &QProcess::errorOccurred, this, [this, process] {
+        qWarning(ASTRA_LOG) << "Error while running" << process->program() << process->errorString();
+        deleteLater();
+    });
+
     qInfo(ASTRA_LOG) << "Client logs are being written to" << m_file.fileName().toUtf8().constData();
 }
