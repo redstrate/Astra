@@ -110,6 +110,10 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
     const QDir dalamudAssetDir = dalamudDir.absoluteFilePath(QStringLiteral("assets"));
     const QDir dalamudConfigPath = userDalamudConfigDir.absoluteFilePath(QStringLiteral("dalamud-config.json"));
 
+    const QDir tempDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+    const QDir dalamudTempDir = tempDir.absoluteFilePath(profile.account()->uuid());
+    Utility::createPathIfNeeded(dalamudTempDir);
+
     const QDir dalamudInstallDir = dalamudDir.absoluteFilePath(profile.config()->dalamudChannel());
     const QString dalamudInjector = dalamudInstallDir.absoluteFilePath(QStringLiteral("Dalamud.Injector.exe"));
 
@@ -180,6 +184,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
          QStringLiteral("--dalamud-configuration-path=") + Utility::toWindowsPath(dalamudConfigPath),
          QStringLiteral("--dalamud-plugin-directory=") + Utility::toWindowsPath(dalamudPluginDir),
          QStringLiteral("--dalamud-asset-directory=") + Utility::toWindowsPath(dalamudAssetDir),
+         QStringLiteral("--dalamud-temp-directory=") + Utility::toWindowsPath(dalamudTempDir),
          QStringLiteral("--dalamud-client-language=") + QString::number(profile.account()->config()->language()),
          QStringLiteral("--dalamud-delay-initialize=") + QString::number(profile.config()->dalamudInjectDelay()),
          QStringLiteral("--logpath=") + Utility::toWindowsPath(logDir),
