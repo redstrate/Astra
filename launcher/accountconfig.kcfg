@@ -12,6 +12,7 @@ SPDX-License-Identifier: CC0-1.0
       <parameter name="uuid"/>
     </kcfgfile>
     <include>account.h</include>
+    <include>accountmanager.h</include>
     <group name="account-$(uuid)">
       <entry key="Name" type="string">
       </entry>
@@ -87,6 +88,9 @@ SPDX-License-Identifier: CC0-1.0
       </entry>
       <entry name="DataCenterTravelServer" type="String">
         <default></default>
+      </entry>
+      <entry key="WinePrefixPath" type="Path">
+        <default code="true">AccountManager::getDefaultWinePrefixPath(mParamuuid)</default>
       </entry>
     </group>
 </kcfg>

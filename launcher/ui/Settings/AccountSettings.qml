@@ -501,6 +501,24 @@ FormCard.FormCardPage {
                 page.account.config.save();
             }
         }
+
+        FormCard.FormDelegateSeparator {
+            above: saveDataBankPortDelegate
+            below: winePrefixPathDelegate
+        }
+
+        FormFolderDelegate {
+            id: winePrefixPathDelegate
+
+            text: i18n("Wine Prefix Folder")
+            folder: page.account.config.winePrefixPath
+            displayText: page.account.isWinePrefixDefault ? i18n("Default Location") : folder
+
+            onAccepted: (path) => {
+                page.account.config.winePrefixPath = path;
+                page.account.config.save();
+            }
+        }
     }
 
     Kirigami.PromptDialog {

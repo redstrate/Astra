@@ -181,28 +181,12 @@ FormCard.FormCardPage {
 
         FormCard.FormDelegateSeparator {
             above: winePathDelegate
-            below: winePrefixPathDelegate
-            visible: winePathDelegate.visible
-        }
-
-        FormFolderDelegate {
-            id: winePrefixPathDelegate
-
-            text: i18n("Wine Prefix Folder")
-            folder: page.profile.config.winePrefixPath
-            displayText: page.profile.isWinePrefixDefault ? i18n("Default Location") : folder
-
-            onAccepted: (path) => {
-                page.profile.config.winePrefixPath = path;
-                page.profile.config.save();
-            }
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: winePrefixPathDelegate
+            below: wineVersionDelegate
         }
 
         FormCard.FormTextDelegate {
+            id: wineVersionDelegate
+
             description: page.profile.wineVersionText
         }
     }

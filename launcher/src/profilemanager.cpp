@@ -85,13 +85,6 @@ QString ProfileManager::getDefaultGamePath(const QString &uuid)
     return gameDir.absoluteFilePath(uuid);
 }
 
-QString ProfileManager::getDefaultWinePrefixPath(const QString &uuid)
-{
-    const QDir appData = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::AppDataLocation)[0];
-    const QDir prefixDir = appData.absoluteFilePath(QStringLiteral("prefix"));
-    return prefixDir.absoluteFilePath(uuid);
-}
-
 void ProfileManager::load()
 {
     auto config = KSharedConfig::openStateConfig();

@@ -256,7 +256,7 @@ QString GameRunner::getGameArgs(const Profile &profile, const std::optional<Logi
 
     // FIXME: this should belong somewhere else...
     if (LauncherCore::needsCompatibilityTool())
-        Utility::createPathIfNeeded(profile.config()->winePrefixPath());
+        Utility::createPathIfNeeded(profile.account()->config()->winePrefixPath());
 
     if (auth) {
         auto config = auth->account->config();
@@ -327,7 +327,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
         const QDir dxvkDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("dxvk"));
         const QDir dxvk64Dir = dxvkDir.absoluteFilePath(QStringLiteral("x64"));
 
-        const QDir winePrefix = profile.config()->winePrefixPath();
+        const QDir winePrefix = profile.account()->config()->winePrefixPath();
         const QDir driveC = winePrefix.absoluteFilePath(QStringLiteral("drive_c"));
         const QDir windows = driveC.absoluteFilePath(QStringLiteral("windows"));
         const QDir system32 = windows.absoluteFilePath(QStringLiteral("system32"));
@@ -368,7 +368,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 #endif
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
-    env.insert(QStringLiteral("WINEPREFIX"), profile.config()->winePrefixPath());
+    env.insert(QStringLiteral("WINEPREFIX"), profile.account()->config()->winePrefixPath());
 
     if (profile.config()->wineType() == Profile::WineType::BuiltIn) {
         env.insert(QStringLiteral("WINEDLLOVERRIDES"), QStringLiteral("msquic=,mscoree=n,b;d3d9,d3d11,d3d10core,dxgi=n,b"));

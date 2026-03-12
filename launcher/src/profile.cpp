@@ -28,7 +28,6 @@ Profile::Profile(const QString &key, QObject *parent)
     connect(m_config, &ProfileConfig::WineTypeChanged, this, &Profile::readWineInfo);
     connect(m_config, &ProfileConfig::GamePathChanged, this, &Profile::readGameVersion);
     connect(m_config, &ProfileConfig::GamePathChanged, this, &Profile::hasDirectx9Changed);
-    connect(m_config, &ProfileConfig::WinePrefixPathChanged, this, &Profile::winePrefixChanged);
 }
 
 Profile::~Profile()
@@ -411,11 +410,6 @@ ProfileConfig *Profile::config() const
 bool Profile::isGamePathDefault() const
 {
     return m_config->gamePath() == m_config->defaultGamePathValue();
-}
-
-bool Profile::isWinePrefixDefault() const
-{
-    return m_config->winePrefixPath() == m_config->defaultWinePrefixPathValue();
 }
 
 #include "moc_profile.cpp"

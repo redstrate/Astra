@@ -18,6 +18,7 @@ class Account : public QObject
     Q_PROPERTY(AccountConfig *config READ config CONSTANT)
     Q_PROPERTY(QString avatarUrl READ avatarUrl NOTIFY avatarUrlChanged)
     Q_PROPERTY(bool needsPassword READ needsPassword NOTIFY needsPasswordChanged)
+    Q_PROPERTY(bool isWinePrefixDefault READ isWinePrefixDefault NOTIFY winePrefixChanged)
 
 public:
     explicit Account(const QString &key, QObject *parent = nullptr);
@@ -47,6 +48,7 @@ public:
     [[nodiscard]] Q_INVOKABLE QString getConfigPath() const;
 
     [[nodiscard]] bool needsPassword() const;
+    bool isWinePrefixDefault() const;
 
     AccountConfig *config() const;
 
@@ -55,6 +57,7 @@ Q_SIGNALS:
     bool needsPasswordChanged();
     void autoConfigurationResult(const QString &title, const QString &subtitle);
     void resetConfiguration();
+    void winePrefixChanged();
 
 private:
     QCoro::Task<> fetchPassword();

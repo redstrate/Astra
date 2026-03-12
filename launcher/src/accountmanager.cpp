@@ -120,4 +120,11 @@ int AccountManager::numAccounts() const
     return static_cast<int>(m_accounts.count());
 }
 
+QString AccountManager::getDefaultWinePrefixPath(const QString &uuid)
+{
+    const QDir appData = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::AppDataLocation)[0];
+    const QDir prefixDir = appData.absoluteFilePath(QStringLiteral("prefix"));
+    return prefixDir.absoluteFilePath(uuid);
+}
+
 #include "moc_accountmanager.cpp"

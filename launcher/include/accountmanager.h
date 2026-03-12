@@ -38,6 +38,8 @@ public:
     Q_INVOKABLE [[nodiscard]] bool hasAnyAccounts() const;
     Q_INVOKABLE [[nodiscard]] int numAccounts() const;
 
+    static QString getDefaultWinePrefixPath(const QString &uuid);
+
 Q_SIGNALS:
     void accountsChanged();
     void accountAdded(Account *account);

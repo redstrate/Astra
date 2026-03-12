@@ -45,7 +45,6 @@ public:
     [[nodiscard]] Q_INVOKABLE bool hasAnyExistingInstallations() const;
 
     static QString getDefaultGamePath(const QString &uuid);
-    static QString getDefaultWinePrefixPath(const QString &uuid);
 
 Q_SIGNALS:
     void profilesChanged();

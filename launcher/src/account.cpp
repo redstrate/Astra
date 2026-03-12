@@ -19,6 +19,8 @@ Account::Account(const QString &key, QObject *parent)
     , m_key(key)
 {
     fetchPassword();
+
+    connect(m_config, &AccountConfig::WinePrefixPathChanged, this, &Account::winePrefixChanged);
 }
 
 Account::~Account()
@@ -163,6 +165,11 @@ QCoro::Task<> Account::fetchPassword()
 AccountConfig *Account::config() const
 {
     return m_config;
+}
+
+bool Account::isWinePrefixDefault() const
+{
+    return m_config->winePrefixPath() == m_config->defaultWinePrefixPathValue();
 }
 
 #include "moc_account.cpp"
