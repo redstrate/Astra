@@ -46,6 +46,7 @@ finish-args:
   - --allow=devel
   # For QtWebEngine
   - --env=QTWEBENGINEPROCESS_PATH=/app/bin/QtWebEngineProcess
+  - --env=QTWEBENGINE_DICTIONARIES_PATH=/app/qtwebengine_dictionaries
 modules:
   - name: qtkeychain
     cleanup:
