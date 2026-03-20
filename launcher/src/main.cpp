@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
                      QStringLiteral(ASTRA_VERSION_STRING),
                      i18n("Play FFXIV"),
                      KAboutLicense::GPL_V3,
-                     i18n("© 2021-2025 Joshua Goins"));
+                     i18n("© 2021-2026 Joshua Goins"));
     about.setOtherText(
         i18n("This software requires that you have legitimate access to FINAL FANTASY XIV. By using this software, you may be in violation "
              "of your User Agreement.\n\nFINAL FANTASY, FINAL FANTASY XIV, FFXIV, SQUARE ENIX, and the SQUARE ENIX logo are registered trademarks or "
