@@ -26,24 +26,10 @@ jobs:
 
   build:
     name: "Build"
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
 
     # Skip running on PR events that come from the same repository, it will just duplicate the branch action
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest, ubuntu-latest]
-        build_type: [Release]
-        c_compiler: [cl]
-        include:
-          - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
-        exclude:
-          - os: windows-latest
-            c_compiler: gcc
 
     steps:
       - uses: actions/checkout@v5
