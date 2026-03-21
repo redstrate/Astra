@@ -2,6 +2,10 @@
 
 I appreciate any code contributions to Astra, whether they are bugfixes or new features! this repository is managed on [GitHub](https://github.com/redstrate/Astra).
 
+## Use of Generative AI
+
+Astra follows the [standard AI policy for all xiv.zone projects](https://xiv.zone/ai-policy).
+
 ## What Needs Doing
 
 The current TODO list can be located [here](https://github.com/redstrate/astra). It's the best place for feature requests and bug reports.
