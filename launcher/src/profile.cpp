@@ -282,7 +282,9 @@ QString Profile::wineVersionText() const
 
 [[nodiscard]] bool Profile::isGameInstalled() const
 {
-    return m_repositories.repositories_count > 0;
+    // This ensures we don't accidentally detext directories that have a folder named "game".
+    return m_repositories.repositories_count > 0 && m_repositories.repositories[0].repository_type.tag == RepositoryType::Tag::Base
+        && m_repositories.repositories[0].version != nullptr;
 }
 
 [[nodiscard]] bool Profile::isWineInstalled() const
