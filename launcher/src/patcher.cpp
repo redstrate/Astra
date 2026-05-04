@@ -98,7 +98,7 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
         }
     }
 
-    int64_t requiredInstallSize = 0;
+    int64_t requiredInstallSize = neededSpace; // We need to begin counting after the patches are downloaded
     for (const auto &[_, value] : localRepositorySizes.asKeyValueRange()) {
         requiredInstallSize += value;
     }
