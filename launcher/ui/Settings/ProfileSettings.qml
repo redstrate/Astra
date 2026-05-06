@@ -385,9 +385,9 @@ FormCard.FormCardPage {
         QQC2.Switch {
             id: deleteFilesSwitch
 
-            checked: true
+            checked: false
 
-            text: i18n("Delete Files")
+            text: i18n("Also Delete Game Files")
         }
 
         onAccepted: {
