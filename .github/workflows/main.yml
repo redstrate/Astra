@@ -10,6 +10,7 @@ env:
   KIRIGAMI_ADDONS_VERSION: v1.10.0 # Ditto x2
   PLASMA_VERSION: v6.5.4 # For Breeze
   COMMON_CMAKE_OPTIONS: "-DBUILD_TESTING=OFF -DBUILD_PYTHON_BINDINGS=OFF"
+  QCORO_VERSION: v0.13.0
 
 jobs:
   reuse:
@@ -247,7 +248,7 @@ jobs:
       - name: Build QCoro
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
         run: |
-          git clone https://github.com/danvratil/qcoro.git
+          git clone --depth 1 --branch ${{ env.QCORO_VERSION }} https://github.com/danvratil/qcoro.git
           cmake -B ${{ steps.strings.outputs.build-output-dir }}-qcoro -DCMAKE_PREFIX_PATH=${{ steps.strings.outputs.prefix-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=Release -S qcoro -DCMAKE_INSTALL_PREFIX=${{ steps.strings.outputs.prefix-dir }} ${{ env.COMMON_CMAKE_OPTIONS }} -DQCORO_WITH_QTWEBSOCKETS=OFF -DQCORO_BUILD_EXAMPLES=OFF
           cmake --build ${{ steps.strings.outputs.build-output-dir }}-qcoro --config Release --target install
 
