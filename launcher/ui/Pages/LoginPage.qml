@@ -196,6 +196,7 @@ QQC2.Control {
 
                                 onClicked: {
                                     LauncherCore.currentProfile.account = menuItem.account;
+                                    LauncherCore.refreshNews();
                                     accountMenu.close();
                                 }
                             }
