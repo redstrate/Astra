@@ -6,7 +6,6 @@ project(Astra VERSION 0.9.0 LANGUAGES CXX)
 
 # build options used for distributors
 option(BUILD_FLATPAK "Build for Flatpak." OFF)
-option(BUILD_WEBVIEW "Build support for the integrated web browser. Only used on the Steam Deck." OFF)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -41,9 +40,6 @@ find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
         Concurrent
         Test
         QmlPrivate) # QmlPrivate is here to work around a QCoro issue with 6.10, remove later
-if (BUILD_WEBVIEW)
-    find_package(Qt6WebView ${QT_MIN_VERSION} REQUIRED)
-endif ()
 if (LINUX)
     find_package(Qt6 ${QT_MIN_VERSION} REQUIRED NO_MODULE COMPONENTS DBus)
 endif ()

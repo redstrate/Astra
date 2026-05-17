@@ -96,13 +96,7 @@ Kirigami.ApplicationWindow {
     }
 
     function openUrl(url: string): void {
-        if (LauncherCore.isSteamDeck) {
-            appWindow.pageStack.layers.push(Qt.createComponent("zone.xiv.astra", "BrowserPage"), {
-                url: url
-            })
-        } else {
-            Qt.openUrlExternally(url)
-        }
+        Qt.openUrlExternally(url);
     }
 
     Connections {

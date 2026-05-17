@@ -10,10 +10,6 @@
 #include <kdsingleapplication.h>
 #include <qcoroqml.h>
 
-#ifdef HAVE_WEBVIEW
-#include <QtWebView>
-#endif
-
 #ifdef Q_OS_WINDOWS
 #include <QStyleFactory>
 #endif
@@ -27,10 +23,6 @@ using namespace Qt::StringLiterals;
 
 int main(int argc, char *argv[])
 {
-#ifdef HAVE_WEBVIEW
-    QtWebView::initialize();
-#endif
-
     KIconTheme::initTheme(); // TODO: KirigamiApp doesn't call this before app construction so it doesn't work on Windows
 
     KirigamiApp::App app(argc, argv);
