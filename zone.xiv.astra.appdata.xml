@@ -7,9 +7,9 @@
     <id>zone.xiv.astra</id>
     <metadata_license>CC0-1.0</metadata_license>
     <name>Astra</name>
-    <summary>Play FFXIV</summary>
+    <summary>Unofficial FFXIV launcher for A Realm Reborn+</summary>
     <description>
-        <p>Unofficial FFXIV launcher that supports multiple accounts, Dalamud plugins and supports alternative servers!</p>
+        <p>Linux FFXIV launcher that supports profiles, multiple accounts and Dalamud plugins!</p>
     </description>
     <categories>
         <category>Game</category>
@@ -21,7 +21,6 @@
     </keywords>
     <url type="homepage">https://xiv.zone/astra</url>
     <url type="bugtracker">https://github.com/redstrate/astra/issues</url>
-    <url type="faq">https://xiv.zone/astra/faq</url>
     <url type="contact">https://redstrate.com/contact</url>
     <url type="vcs-browser">https://github.com/redstrate/astra</url>
     <launchable type="desktop-id">zone.xiv.astra.desktop</launchable>
@@ -51,10 +50,27 @@
         <control>touch</control>
     </supports>
     <project_license>GPL-3.0</project_license>
-    <developer_name>redstrate</developer_name>
+    <developer id="com.redstrate">
+        <name>redstrate</name>
+    </developer>
     <screenshots>
         <screenshot type="default">
-            <image width="1033" height="667">https://xiv.zone/astra/main-screenshot.png</image>
+            <image width="1033" height="667">https://xiv.zone/software/astra/main-screenshot.png</image>
         </screenshot>
     </screenshots>
+    <branding>
+        <color type="primary" scheme_preference="light">#8d3535</color>
+        <color type="primary" scheme_preference="dark">#8d3535</color>
+    </branding>
+    <content_rating type="oars-1.1">
+        <content_attribute id="violence-fantasy">intense</content_attribute>
+        <content_attribute id="violence-bloodshed">moderate</content_attribute>
+        <content_attribute id="violence-desecration">mild</content_attribute>
+        <content_attribute id="drugs-alcohol">mild</content_attribute>
+        <content_attribute id="sex-nudity">mild</content_attribute>
+        <content_attribute id="sex-themes">mild</content_attribute>
+        <content_attribute id="language-profanity">moderate</content_attribute>
+        <content_attribute id="language-humor">mild</content_attribute>
+        <content_attribute id="social-chat">moderate</content_attribute>
+    </content_rating>
 </component>
