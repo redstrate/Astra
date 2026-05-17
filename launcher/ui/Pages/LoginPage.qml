@@ -23,10 +23,6 @@ QQC2.Control {
             return i18n("Profile has no associated account.");
         }
 
-        if (usernameField.text.length === 0) {
-            return i18n("Username is required.");
-        }
-
         if (LauncherCore.currentProfile.account.needsPassword && passwordField.text.length === 0) {
             return i18n("Password is required.");
         }
@@ -43,10 +39,6 @@ QQC2.Control {
             return false;
         }
 
-        if (usernameField.text.length === 0) {
-            return false;
-        }
-
         if (LauncherCore.currentProfile.account.needsPassword && passwordField.text.length === 0) {
             return false;
         }
@@ -59,7 +51,6 @@ QQC2.Control {
     }
 
     function updateFields(): void {
-        usernameField.text = LauncherCore.currentProfile.account.config.name;
         passwordField.text = LauncherCore.currentProfile.account.getPassword();
         if (LauncherCore.currentProfile.account.config.rememberOTP) {
             otpField.text = "Auto-generated";
@@ -115,6 +106,9 @@ QQC2.Control {
             Layout.preferredHeight: width * aspectRatio
         }
 
+        FormCard.FormHeader {
+            title: i18n("Profile")
+        }
         FormCard.FormCard {
             maximumWidth: Kirigami.Units.gridUnit * 25
             visible: LauncherCore.profileManager.numProfiles > 1
@@ -155,6 +149,9 @@ QQC2.Control {
             }
         }
 
+        FormCard.FormHeader {
+            title: i18n("Account")
+        }
         FormCard.FormCard {
             id: regularLoginCard
 
@@ -211,28 +208,12 @@ QQC2.Control {
 
             FormCard.FormDelegateSeparator {
                 above: currentAccountDelegate
-                below: usernameField
-            }
-
-            FormCard.FormTextFieldDelegate {
-                id: usernameField
-                label: i18n("Square Enix ID")
-                text: LauncherCore.currentProfile.account.config.name
-                enabled: false
-
-                QQC2.ToolTip.text: i18n("The username can only be changed under account settings.")
-                QQC2.ToolTip.delay: Kirigami.Units.toolTipDelay
-                QQC2.ToolTip.visible: hovered
-            }
-
-            FormCard.FormDelegateSeparator {
-                above: usernameField
                 below: passwordField
             }
 
             FormCard.FormPasswordFieldDelegate {
                 id: passwordField
-                label: i18n("Square Enix Password")
+                label: i18n("Password")
                 onAccepted: {
                     if (otpField.visible) {
                         otpField.clicked();
@@ -279,7 +260,7 @@ QQC2.Control {
                     if (LauncherCore.currentProfile.account.config.rememberOTP) {
                         otp = LauncherCore.currentProfile.account.getOTP();
                     }
-                    LauncherCore.login(LauncherCore.currentProfile, usernameField.text, passwordField.text, otp);
+                    LauncherCore.login(LauncherCore.currentProfile, LauncherCore.currentProfile.account.config.name, passwordField.text, otp);
                 }
             }
 
@@ -291,7 +272,7 @@ QQC2.Control {
             FormCard.FormButtonDelegate {
                 id: forgotPasswordButton
 
-                text: i18n("Forgot ID or Password")
+                text: i18n("Forgot Username or Password")
                 icon.name: "question-symbolic"
                 onClicked: applicationWindow().openUrl('https://secure.square-enix.com/account/app/svc/reminder')
             }
