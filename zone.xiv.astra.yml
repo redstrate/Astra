@@ -54,8 +54,8 @@ modules:
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
     sources:
       - type: archive
-        url: https://github.com/frankosterfeld/qtkeychain/archive/refs/tags/0.15.0.tar.gz
-        sha256: f4254dc8f0933b06d90672d683eab08ef770acd8336e44dfa030ce041dc2ca22
+        url: https://github.com/frankosterfeld/qtkeychain/archive/refs/tags/0.16.0.tar.gz
+        sha256: 3be26ec4ae30eecf0c2ff7572ba83799791b157c76e15a05ef35f23dc25e4054
   - name: steamwrap
     buildsystem: simple
     build-commands:
@@ -83,8 +83,8 @@ modules:
       - /app
     sources:
       - type: archive
-        url: https://github.com/corrosion-rs/corrosion/archive/refs/tags/v0.5.2.tar.gz
-        sha256: 6bc02411e29183a896aa60c58db6819ec6cf57c08997481d0b0da9029356b529
+        url: https://github.com/corrosion-rs/corrosion/archive/refs/tags/v0.6.1.tar.gz
+        sha256: e9e95b1ee2bad52681f347993fb1a5af5cce458c5ce8a2636c9e476e4babf8e3
   - name: astra
     buildsystem: cmake-ninja
     config-opts:
