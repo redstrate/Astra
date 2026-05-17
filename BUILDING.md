@@ -27,7 +27,7 @@ The process to build Astra manually is a little bit more involved, but not diffi
   * Windows, macOS and other systems may work but are currently unsupported. Patches are accepted to fix any problems with those OSes though.
 * [CMake](https://cmake.org) 3.25 or later
 * [Qt](https://www.qt.io/) 6.6 or later
-  * Base, Declarative, WebView, Concurrent
+  * Base, Declarative, Concurrent
 * [KDE Frameworks](https://develop.kde.org/products/frameworks/) 6
   * Extra CMake Modules, Kirigami, I18n, Config, CoreAddons and Archive.
 * [Rust](https://www.rust-lang.org/)

@@ -123,7 +123,6 @@ qt_target_qml_sources(astra_static
         ui/Components/FormFileDelegate.qml
         ui/Components/FormFolderDelegate.qml
         ui/Pages/AutoLoginPage.qml
-        ui/Pages/BrowserPage.qml
         ui/Pages/LoginPage.qml
         ui/Pages/MainPage.qml
         ui/Pages/NewsPage.qml
@@ -167,13 +166,6 @@ target_link_libraries(astra PRIVATE
         KF6::Kirigami
         KF6::IconThemes
         KirigamiApp)
-
-if (BUILD_WEBVIEW)
-    target_link_libraries(astra PRIVATE
-            Qt6::WebView
-    )
-    target_compile_definitions(astra PRIVATE HAVE_WEBVIEW)
-endif ()
 
 if (WIN32)
     set_target_properties(astra PROPERTIES
