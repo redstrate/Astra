@@ -5,10 +5,10 @@ on:
   pull_request:
 
 env:
-  QT_VERSION: 6.10.1 # Keep in sync with CMakeLists.txt
-  KF_VERSION: v6.21.0 # Ditto
-  KIRIGAMI_ADDONS_VERSION: v1.10.0 # Ditto x2
-  PLASMA_VERSION: v6.5.4 # For Breeze
+  QT_VERSION: 6.10.3 # Keep in sync with CMakeLists.txt
+  KF_VERSION: v6.26.0 # Ditto
+  KIRIGAMI_ADDONS_VERSION: v1.12.0 # Ditto x2
+  PLASMA_VERSION: v6.6.5 # For Breeze
   COMMON_CMAKE_OPTIONS: "-DBUILD_TESTING=OFF -DBUILD_PYTHON_BINDINGS=OFF"
   QCORO_VERSION: v0.13.0
 
@@ -313,8 +313,12 @@ jobs:
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiPrivate.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiTemplates.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiPolyfill.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiControls.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiForms.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiFormsPrivateCards.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiLayoutsPrivate.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiApp.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
+          Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/bin/KirigamiAddonsComponents.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/bin
           Copy-Item -Path ${{ steps.strings.outputs.prefix-dir }}/lib/plugins/styles/breeze6.dll -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/plugins/styles
 
           Copy-Item -Force -Recurse -Path ${{ steps.strings.outputs.prefix-dir }}\lib\qml\* -Destination ${{ steps.strings.outputs.build-output-dir }}/bin/qml/
@@ -335,14 +339,18 @@ jobs:
           Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/Qt6QuickControls2UniversalStyleImpl.dll  
           Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/Qt6QuickControls2WindowsStyleImpl.dll  
           Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/Qt6QuickControls2ImagineStyleImpl.dll  
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/bin/Qt6QuickControls2BasicStyleImpl.dll
           Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/Release -Force -Recurse
           Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/qml/QtQuick/Controls/FluentWinUI3 -Force -Recurse
           Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/qml/QtQuick/Controls/Fusion -Force -Recurse
           Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/qml/QtQuick/Controls/Imagine -Force -Recurse
           Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/qml/QtQuick/Controls/Material -Force -Recurse
           Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/qml/QtQuick/Controls/Windows -Force -Recurse
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/qml/QtQuick/Controls/Universal -Force -Recurse
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/qml/QtQuick/NativeStyle -Force -Recurse
           Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/plugins/qmltooling -Force -Recurse
           Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/zone -Force -Recurse
+          Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/translations -Force -Recurse
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v5
