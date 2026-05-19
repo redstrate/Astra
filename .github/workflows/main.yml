@@ -355,7 +355,7 @@ jobs:
       - name: Archive artifacts
         uses: actions/upload-artifact@v5
         with:
-          name: Windows-package
+          name: astra-windows-x86_64
           path: ${{ steps.strings.outputs.build-output-dir }}/bin
 
   flatpak:
