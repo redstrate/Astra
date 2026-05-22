@@ -57,9 +57,9 @@ FormCard.FormCardPage {
             },
             Kirigami.Action {
                 id: developerAction
-                text: i18n("Developer")
+                text: i18n("Servers")
+                icon.name: "network-server-symbolic"
                 visible: LauncherCore.config.showDevTools
-                icon.name: "applications-development-symbolic"
             }
         ]
 
@@ -128,6 +128,26 @@ FormCard.FormCardPage {
             currentIndex: page.account.config.language
             onCurrentIndexChanged: {
                 page.account.config.language = currentIndex;
+                page.account.config.save();
+            }
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: languageDelegate
+            below: winePrefixPathDelegate
+            visible: LauncherCore.config.showDevTools
+        }
+
+        FormFolderDelegate {
+            id: winePrefixPathDelegate
+
+            text: i18n("Wine Prefix Folder")
+            folder: page.account.config.winePrefixPath
+            displayText: page.account.isWinePrefixDefault ? i18n("Default Location") : folder
+            visible: LauncherCore.config.showDevTools
+
+            onAccepted: (path) => {
+                page.account.config.winePrefixPath = path;
                 page.account.config.save();
             }
         }
@@ -296,7 +316,7 @@ FormCard.FormCardPage {
         FormCard.FormTextFieldDelegate {
             id: serverUrlDelegate
 
-            label: i18n("Server URL")
+            label: i18n("Autoconfig Server URL")
         }
 
         FormCard.FormDelegateSeparator {
@@ -498,24 +518,6 @@ FormCard.FormCardPage {
             placeholderText: i18nc("@info:placeholder", "(Default value in client)")
             onTextChanged: {
                 page.account.config.dataCenterTravelServer = text;
-                page.account.config.save();
-            }
-        }
-
-        FormCard.FormDelegateSeparator {
-            above: saveDataBankPortDelegate
-            below: winePrefixPathDelegate
-        }
-
-        FormFolderDelegate {
-            id: winePrefixPathDelegate
-
-            text: i18n("Wine Prefix Folder")
-            folder: page.account.config.winePrefixPath
-            displayText: page.account.isWinePrefixDefault ? i18n("Default Location") : folder
-
-            onAccepted: (path) => {
-                page.account.config.winePrefixPath = path;
                 page.account.config.save();
             }
         }
