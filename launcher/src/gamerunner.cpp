@@ -390,7 +390,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
             // Benchmarks usually have some data located in the root
             process->setWorkingDirectory(profile.config()->gamePath());
         } else {
-            process->setWorkingDirectory(profile.config()->gamePath() + QStringLiteral("/game/"));
+            process->setWorkingDirectory(QDir(profile.config()->gamePath()).absoluteFilePath(QStringLiteral("game")));
         }
     }
 
