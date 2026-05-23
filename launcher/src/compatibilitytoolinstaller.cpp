@@ -3,6 +3,8 @@
 
 #include "compatibilitytoolinstaller.h"
 
+#include "astra_log.h"
+
 #include <KLocalizedString>
 #include <KSandbox>
 
@@ -34,9 +36,12 @@ void CompatibilityToolInstaller::installCompatibilityTool()
     const auto wrapperScriptContents = QStringLiteral("#!/bin/sh\nexec \"$@\"");
 
     QFile wrapperScriptFile(astraToolDir.absoluteFilePath(QStringLiteral("wrapper.sh")));
-    wrapperScriptFile.open(QIODevice::WriteOnly | QIODevice::Text);
-    wrapperScriptFile.write(wrapperScriptContents.toUtf8());
-    wrapperScriptFile.close();
+    if (wrapperScriptFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        wrapperScriptFile.write(wrapperScriptContents.toUtf8());
+        wrapperScriptFile.close();
+    } else {
+        qCWarning(ASTRA_LOG) << "Could not open" << wrapperScriptFile.fileName() << "for writing:" << wrapperScriptFile.errorString();
+    }
 
     QProcess::execute(QStringLiteral("chmod"), {QStringLiteral("+x"), astraToolDir.absoluteFilePath(QStringLiteral("wrapper.sh"))});
 
@@ -55,9 +60,12 @@ void CompatibilityToolInstaller::installCompatibilityTool()
     }
 
     QFile runScriptFile(astraToolDir.absoluteFilePath(QStringLiteral("run.sh")));
-    runScriptFile.open(QIODevice::WriteOnly | QIODevice::Text);
-    runScriptFile.write(runScriptContents.toUtf8());
-    runScriptFile.close();
+    if (runScriptFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        runScriptFile.write(runScriptContents.toUtf8());
+        runScriptFile.close();
+    } else {
+        qCWarning(ASTRA_LOG) << "Could not open" << runScriptFile.fileName() << "for writing:" << runScriptFile.errorString();
+    }
 
     QProcess::execute(QStringLiteral("chmod"), {QStringLiteral("+x"), astraToolDir.absoluteFilePath(QStringLiteral("run.sh"))});
 
@@ -78,9 +86,12 @@ void CompatibilityToolInstaller::installCompatibilityTool()
         "}");
 
     QFile toolManifestFile(astraToolDir.absoluteFilePath(QStringLiteral("toolmanifest.vdf")));
-    toolManifestFile.open(QIODevice::WriteOnly | QIODevice::Text);
-    toolManifestFile.write(toolManifestContents.toUtf8());
-    toolManifestFile.close();
+    if (toolManifestFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        toolManifestFile.write(toolManifestContents.toUtf8());
+        toolManifestFile.close();
+    } else {
+        qCWarning(ASTRA_LOG) << "Could not open" << toolManifestFile.fileName() << "for writing:" << toolManifestFile.errorString();
+    }
 
     const auto compatibilityToolContents = QStringLiteral(
         "\"compatibilitytools\"\n"
@@ -99,9 +110,12 @@ void CompatibilityToolInstaller::installCompatibilityTool()
         "}");
 
     QFile compatibilityToolFile(astraToolDir.absoluteFilePath(QStringLiteral("compatibilitytool.vdf")));
-    compatibilityToolFile.open(QIODevice::WriteOnly | QIODevice::Text);
-    compatibilityToolFile.write(compatibilityToolContents.toUtf8());
-    compatibilityToolFile.close();
+    if (compatibilityToolFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        compatibilityToolFile.write(compatibilityToolContents.toUtf8());
+        compatibilityToolFile.close();
+    } else {
+        qCWarning(ASTRA_LOG) << "Could not open" << compatibilityToolFile.fileName() << "for writing:" << compatibilityToolFile.errorString();
+    }
 
     Q_EMIT installFinished(steamType == SteamType::Flatpak);
     Q_EMIT isInstalledChanged();

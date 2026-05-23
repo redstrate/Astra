@@ -30,7 +30,7 @@ private Q_SLOTS:
     void testReadVersion()
     {
         QTemporaryFile verFile;
-        verFile.open();
+        QVERIFY(verFile.open());
 
         verFile.write(QByteArrayLiteral("2023.09.15.0000.0000"));
         verFile.flush();
@@ -47,7 +47,7 @@ private Q_SLOTS:
     void testWriteVersion()
     {
         QTemporaryFile verFile;
-        verFile.open();
+        QVERIFY(verFile.open());
 
         Utility::writeVersion(verFile.fileName(), QStringLiteral("2023.09.15.0000.0000"));
         QCOMPARE(Utility::readVersion(verFile.fileName()), QStringLiteral("2023.09.15.0000.0000"));

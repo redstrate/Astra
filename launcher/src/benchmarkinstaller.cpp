@@ -53,9 +53,12 @@ void BenchmarkInstaller::start()
             const QByteArray data = reply->readAll();
 
             QFile file(dataDir.absoluteFilePath(QStringLiteral("ffxiv-bench.zip")));
-            file.open(QIODevice::WriteOnly);
-            file.write(data);
-            file.close();
+            if (file.open(QIODevice::WriteOnly)) {
+                file.write(data);
+                file.close();
+            } else {
+                qCWarning(ASTRA_LOG) << "Could not open" << file.fileName() << "for writing:" << file.errorString();
+            }
 
             m_localInstallerPath = file.fileName();
             installGame();

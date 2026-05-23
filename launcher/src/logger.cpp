@@ -2,12 +2,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "logger.h"
+
+#include "astra_log.h"
 #include "utility.h"
 
 #include <QByteArray>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QLoggingCategory>
 #include <QMutexLocker>
 #include <QStandardPaths>
 #include <QtLogging>
@@ -78,7 +81,9 @@ public:
         }
 
         file.setFileName(logDirectory.absoluteFilePath(QStringLiteral("astra.0.log")));
-        file.open(QIODevice::WriteOnly | QIODevice::Unbuffered);
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Unbuffered)) {
+            qCWarning(ASTRA_LOG) << "Could not open" << file.fileName() << "for writing:" << file.errorString();
+        }
     }
 
 private:

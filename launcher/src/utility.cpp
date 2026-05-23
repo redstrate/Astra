@@ -3,6 +3,7 @@
 
 #include "utility.h"
 #include "astra_http_log.h"
+#include "astra_log.h"
 
 #include <QDirIterator>
 #include <QSslConfiguration>
@@ -42,7 +43,9 @@ void Utility::setSSL(QNetworkRequest &request)
 QString Utility::readVersion(const QString &path)
 {
     QFile file(path);
-    file.open(QFile::ReadOnly | QFile::Text);
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+        qCWarning(ASTRA_LOG) << "Could not open" << path << "for reading:" << file.errorString();
+    }
 
     return QString::fromUtf8(file.readAll()).trimmed();
 }

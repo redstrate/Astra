@@ -43,13 +43,8 @@ void GameInstaller::installGame()
         QDir().mkpath(gameDir.path());
     }
 
-    QFile bootVerFile(bootDir.absoluteFilePath(QStringLiteral("ffxivboot.ver")));
-    bootVerFile.open(QIODevice::WriteOnly);
-    bootVerFile.write(QByteArrayLiteral("2012.01.01.0000.0000"));
-
-    QFile gameVerFile(gameDir.absoluteFilePath(QStringLiteral("ffxivgame.ver")));
-    gameVerFile.open(QIODevice::WriteOnly);
-    gameVerFile.write(QByteArrayLiteral("2012.01.01.0000.0000"));
+    Utility::writeVersion(bootDir.absoluteFilePath(QStringLiteral("ffxivboot.ver")), QStringLiteral("2012.01.01.0000.0000"));
+    Utility::writeVersion(gameDir.absoluteFilePath(QStringLiteral("ffxivgame.ver")), QStringLiteral("2012.01.01.0000.0000"));
 
     m_profile.readGameVersion();
 

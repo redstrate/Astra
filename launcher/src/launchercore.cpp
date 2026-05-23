@@ -193,9 +193,12 @@ void LauncherCore::fetchAvatar(Account *account)
                     auto avatarReply = mgr()->get(avatarRequest);
                     connect(avatarReply, &QNetworkReply::finished, [filename, avatarReply, account] {
                         QFile file(filename);
-                        file.open(QIODevice::ReadWrite);
-                        file.write(avatarReply->readAll());
-                        file.close();
+                        if (file.open(QIODevice::ReadWrite)) {
+                            file.write(avatarReply->readAll());
+                            file.close();
+                        } else {
+                            qCWarning(ASTRA_LOG) << "Could not open" << file.fileName() << "for writing:" << file.errorString();
+                        }
 
                         account->setAvatarUrl(QStringLiteral("file:///%1").arg(filename));
                     });
@@ -449,7 +452,7 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
     const auto repairs = physis_sqpack_needs_repair(info.profile->resource());
     if (repairs.action_count > 0) {
         QString message;
-        for (int i = 0; i < repairs.action_count; i++) {
+        for (uint32_t i = 0; i < repairs.action_count; i++) {
             const auto action = repairs.actions[i];
 
             QString actionText;
@@ -643,9 +646,12 @@ void LauncherCore::updateConfig(const Account *account)
     const auto buffer = physis_cfg_write(cfgFile);
 
     QFile file(configDir);
-    file.open(QIODevice::WriteOnly);
-    file.write(reinterpret_cast<const char *>(buffer.data), buffer.size);
-    file.close();
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(reinterpret_cast<const char *>(buffer.data), buffer.size);
+        file.close();
+    } else {
+        qCWarning(ASTRA_LOG) << "Could not open" << file.fileName() << "for writing:" << file.errorString();
+    }
 }
 
 void LauncherCore::inhibitSleep()

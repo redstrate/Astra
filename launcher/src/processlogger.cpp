@@ -13,7 +13,9 @@ ProcessLogger::ProcessLogger(const QString &baseName, QProcess *process)
     const QDir logDirectory = dataDir.absoluteFilePath(QStringLiteral("log"));
 
     m_file.setFileName(logDirectory.absoluteFilePath(QStringLiteral("%1.log").arg(baseName)));
-    m_file.open(QIODevice::WriteOnly | QIODevice::Unbuffered);
+    if (!m_file.open(QIODevice::WriteOnly | QIODevice::Unbuffered)) {
+        qCWarning(ASTRA_LOG) << "Could not open" << m_file.fileName() << "for writing:" << m_file.errorString();
+    }
 
     connect(process, &QProcess::readyReadStandardOutput, this, [this, process] {
         m_file.write(process->readAllStandardOutput());

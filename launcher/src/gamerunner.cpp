@@ -126,7 +126,9 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
 
         // so what we'll do instead is get the game PID from Dalamud first.
         QFile logFile(logDir.absoluteFilePath(QStringLiteral("dalamud-initial-injection.log")));
-        logFile.open(QIODevice::ReadOnly);
+        if (!logFile.open(QIODevice::ReadOnly)) {
+            qCWarning(ASTRA_LOG) << "Failed to open" << logFile.fileName() << "for reading:" << logFile.errorString();
+        }
 
         const static QRegularExpression pidRegex(QStringLiteral("{\"pid\": (\\d*),"));
         const QString log = QString::fromUtf8(logFile.readAll());

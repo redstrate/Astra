@@ -287,9 +287,12 @@ QCoro::Task<bool> AssetUpdater::installCompatibilityTool() const
     qInfo(ASTRA_LOG) << "Finished downloading compatibility tool";
 
     QFile file(m_tempDir.filePath(QStringLiteral("wine.tar.xz")));
-    file.open(QIODevice::WriteOnly);
-    file.write(reply->readAll());
-    file.close();
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(reply->readAll());
+        file.close();
+    } else {
+        qCWarning(ASTRA_LOG) << "Could not open" << file.fileName() << "for writing:" << file.errorString();
+    }
 
     KTar archive(m_tempDir.filePath(QStringLiteral("wine.tar.xz")));
     if (!archive.open(QIODevice::ReadOnly)) {
@@ -327,9 +330,12 @@ QCoro::Task<bool> AssetUpdater::installDxvkTool() const
     }
 
     QFile file(m_tempDir.filePath(QStringLiteral("dxvk.tar.xz")));
-    file.open(QIODevice::WriteOnly);
-    file.write(reply->readAll());
-    file.close();
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(reply->readAll());
+        file.close();
+    } else {
+        qCWarning(ASTRA_LOG) << "Could not open" << file.fileName() << "for writing:" << file.errorString();
+    }
 
     KTar archive(m_tempDir.filePath(QStringLiteral("dxvk.tar.xz")));
     if (!archive.open(QIODevice::ReadOnly)) {
@@ -361,9 +367,12 @@ QCoro::Task<bool> AssetUpdater::installDalamudAssets()
     qInfo(ASTRA_LOG) << "Finished downloading Dalamud assets";
 
     QFile file(m_tempDir.filePath(QStringLiteral("dalamud-assets.zip")));
-    file.open(QIODevice::WriteOnly);
-    file.write(reply->readAll());
-    file.close();
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(reply->readAll());
+        file.close();
+    } else {
+        qCWarning(ASTRA_LOG) << "Could not open" << file.fileName() << "for writing:" << file.errorString();
+    }
 
     if (const QString errorString = extractZip(m_tempDir.filePath(QStringLiteral("dalamud-assets.zip")), m_dalamudAssetDir.absolutePath());
         !errorString.isEmpty()) {
@@ -396,9 +405,12 @@ QCoro::Task<bool> AssetUpdater::installDalamud()
     qInfo(ASTRA_LOG) << "Finished downloading Dalamud";
 
     QFile file(m_tempDir.filePath(QStringLiteral("latest.zip")));
-    file.open(QIODevice::WriteOnly);
-    file.write(reply->readAll());
-    file.close();
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(reply->readAll());
+        file.close();
+    } else {
+        qCWarning(ASTRA_LOG) << "Could not open" << file.fileName() << "for writing:" << file.errorString();
+    }
 
     if (const QString errorString =
             extractZip(m_tempDir.filePath(QStringLiteral("latest.zip")), m_dalamudDir.absoluteFilePath(m_profile.config()->dalamudChannel()));
@@ -430,9 +442,12 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
         qInfo(ASTRA_LOG) << "Finished downloading Dotnet-core";
 
         QFile file(m_tempDir.filePath(QStringLiteral("dotnet-core.zip")));
-        file.open(QIODevice::WriteOnly);
-        file.write(reply->readAll());
-        file.close();
+        if (file.open(QIODevice::WriteOnly)) {
+            file.write(reply->readAll());
+            file.close();
+        } else {
+            qCWarning(ASTRA_LOG) << "Could not open" << file.fileName() << "for writing:" << file.errorString();
+        }
     }
 
     // desktop
@@ -446,9 +461,12 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
         qInfo(ASTRA_LOG) << "Finished downloading Dotnet-desktop";
 
         QFile file(m_tempDir.filePath(QStringLiteral("dotnet-desktop.zip")));
-        file.open(QIODevice::WriteOnly);
-        file.write(reply->readAll());
-        file.close();
+        if (file.open(QIODevice::WriteOnly)) {
+            file.write(reply->readAll());
+            file.close();
+        } else {
+            qCWarning(ASTRA_LOG) << "Could not open" << file.fileName() << "for writing:" << file.errorString();
+        }
     }
 
     const QString errorString1 = extractZip(m_tempDir.filePath(QStringLiteral("dotnet-core.zip")), m_dalamudRuntimeDir.absolutePath());

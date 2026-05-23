@@ -48,7 +48,9 @@ void Profile::readDalamudInfo()
         const QString dalamudDepsJson = dalamudInstallDir.absoluteFilePath(QStringLiteral("Dalamud.deps.json"));
         if (QFile::exists(dalamudDepsJson)) {
             QFile depsJson(dalamudDepsJson);
-            depsJson.open(QFile::ReadOnly);
+            if (!depsJson.open(QFile::ReadOnly)) {
+                qCWarning(ASTRA_LOG) << "Could not open" << depsJson.fileName() << "for reading:" << depsJson.errorString();
+            }
             const QJsonDocument doc = QJsonDocument::fromJson(depsJson.readAll());
 
             QString versionString;
