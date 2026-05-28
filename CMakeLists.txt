@@ -37,11 +37,8 @@ find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
         Concurrent
         Test
         QmlPrivate) # QmlPrivate is here to work around a QCoro issue with 6.10, remove later
-if (LINUX)
-    find_package(Qt6 ${QT_MIN_VERSION} REQUIRED NO_MODULE COMPONENTS DBus)
-endif ()
 
-find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS Kirigami I18n Config CoreAddons Archive IconThemes FileMetaData)
+find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS Kirigami I18n Config CoreAddons Archive IconThemes GuiAddons)
 find_package(KF6KirigamiAddons 1.10.0 REQUIRED)
 find_package(QCoro6 REQUIRED COMPONENTS Core Network Qml)
 qcoro_enable_coroutines()

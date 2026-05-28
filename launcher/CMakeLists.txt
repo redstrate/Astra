@@ -87,6 +87,7 @@ target_link_libraries(astra_static PUBLIC
         KF6::ConfigCore
         KF6::ConfigGui
         KF6::Archive
+        KF6::GuiAddons
         QCoro::Core
         QCoro::Network
         QCoro::Qml)
@@ -100,11 +101,6 @@ target_include_directories(astra_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inclu
 
 if (NOT MSVC)
     target_compile_options(astra_static PUBLIC -fexceptions)
-endif ()
-
-# For screensaver inhibition on Linux
-if (TARGET Qt6::DBus)
-    target_link_libraries(astra_static PRIVATE Qt6::DBus)
 endif ()
 
 add_executable(astra)
