@@ -40,7 +40,7 @@ KirigamiSettings.ConfigurationView {
             text: i18n("Compatibility Tool")
             icon.name: "system-run-symbolic"
             page: () => Qt.createComponent("zone.xiv.astra", "CompatibilityToolSetup")
-            visible: !LauncherCore.isWindows
+            visible: Qt.platform.os !== "windows"
         },
         KirigamiSettings.ConfigurationModule {
             moduleId: "devtool"

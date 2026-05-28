@@ -57,7 +57,6 @@ class LauncherCore : public QObject
     Q_PROPERTY(bool loadingFinished READ isLoadingFinished NOTIFY loadingFinished)
     Q_PROPERTY(bool isSteam READ isSteam CONSTANT)
     Q_PROPERTY(bool isSteamDeck READ isSteamDeck CONSTANT)
-    Q_PROPERTY(bool isWindows READ isWindows CONSTANT)
     Q_PROPERTY(Config *config READ config CONSTANT)
     Q_PROPERTY(ProfileManager *profileManager READ profileManager CONSTANT)
     Q_PROPERTY(AccountManager *accountManager READ accountManager CONSTANT)
@@ -111,7 +110,6 @@ public:
     [[nodiscard]] bool isLoadingFinished() const;
     [[nodiscard]] bool isSteam() const;
     [[nodiscard]] bool isSteamDeck() const;
-    [[nodiscard]] static bool isWindows();
     [[nodiscard]] static bool needsCompatibilityTool();
     [[nodiscard]] Q_INVOKABLE bool isPatching() const;
 

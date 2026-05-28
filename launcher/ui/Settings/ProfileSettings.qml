@@ -43,7 +43,7 @@ FormCard.FormCardPage {
             Kirigami.Action {
                 id: wineAction
                 text: i18n("Wine")
-                visible: !LauncherCore.isWindows
+                visible: Qt.platform.os !== "windows"
                 icon.name: "wine-symbolic"
             },
             Kirigami.Action {

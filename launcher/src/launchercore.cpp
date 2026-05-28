@@ -388,18 +388,12 @@ bool LauncherCore::isSteamDeck() const
     return Utility::isSteamDeck();
 }
 
-bool LauncherCore::isWindows()
-{
-#if defined(Q_OS_WIN)
-    return true;
-#else
-    return false;
-#endif
-}
-
 bool LauncherCore::needsCompatibilityTool()
 {
-    return !isWindows();
+#ifdef Q_OS_WINDOWS
+    return false;
+#endif
+    return true;
 }
 
 bool LauncherCore::isPatching() const
