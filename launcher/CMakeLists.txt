@@ -99,10 +99,6 @@ if (NOT MSVC)
     target_compile_options(astra_static PUBLIC -fexceptions)
 endif ()
 
-if (BUILD_FLATPAK)
-    target_compile_definitions(astra_static PUBLIC FLATPAK)
-endif ()
-
 # For screensaver inhibition on Linux
 if (TARGET Qt6::DBus)
     target_link_libraries(astra_static PRIVATE Qt6::DBus)
