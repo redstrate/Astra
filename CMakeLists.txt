@@ -45,6 +45,9 @@ find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS Kirigami I18n Config Core
 find_package(KF6KirigamiAddons 1.10.0 REQUIRED)
 find_package(QCoro6 REQUIRED COMPONENTS Core Network Qml)
 qcoro_enable_coroutines()
+if (LINUX)
+    find_package(KF6FileMetaData ${KF_MIN_VERSION} REQUIRED)
+endif ()
 
 qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)
