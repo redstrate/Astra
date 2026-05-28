@@ -20,6 +20,7 @@ class GameInstaller;
 class CompatibilityToolInstaller;
 class GameRunner;
 class BenchmarkInstaller;
+class KSystemInhibitor;
 
 class LoginInformation : public QObject
 {
@@ -212,5 +213,5 @@ private:
 
     int m_currentProfileIndex = 0;
 
-    unsigned int screenSaverDbusCookie = 0;
+    KSystemInhibitor *m_inhibitor = nullptr;
 };
