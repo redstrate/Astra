@@ -3,7 +3,12 @@
 
 #include "gameinstaller.h"
 
+#ifdef Q_OS_LINUX
 #include <KFileMetaData/UserMetaData>
+#include <QDBusConnection>
+#include <QDBusReply>
+#include <QGuiApplication>
+#endif
 #include <KLocalizedString>
 #include <QCoroSignal>
 #include <QDir>
@@ -23,12 +28,6 @@
 #include "profileconfig.h"
 #include "squareenixlogin.h"
 #include "utility.h"
-
-#ifdef HAS_DBUS
-#include <QDBusConnection>
-#include <QDBusReply>
-#include <QGuiApplication>
-#endif
 
 using namespace Qt::StringLiterals;
 
@@ -650,7 +649,7 @@ void LauncherCore::updateConfig(const Account *account)
 
 void LauncherCore::inhibitSleep()
 {
-#ifdef HAS_DBUS
+#ifdef Q_OS_LINUX
     if (screenSaverDbusCookie != 0)
         return;
 
@@ -670,7 +669,7 @@ void LauncherCore::inhibitSleep()
 
 void LauncherCore::uninhibitSleep()
 {
-#ifdef HAS_DBUS
+#ifdef Q_OS_LINUX
     if (screenSaverDbusCookie == 0)
         return;
 
@@ -764,10 +763,12 @@ void LauncherCore::resetServerConfiguration(Account *account)
 
 QString LauncherCore::readHostPath(const QString &path)
 {
+#ifdef Q_OS_LINUX
     KFileMetaData::UserMetaData metadata(path);
     if (metadata.hasAttribute(QStringLiteral("document-portal.host-path"))) {
         return metadata.attribute(QStringLiteral("document-portal.host-path"));
     }
+#endif
 
     return path;
 }

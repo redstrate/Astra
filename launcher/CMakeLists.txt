@@ -89,8 +89,10 @@ target_link_libraries(astra_static PUBLIC
         KF6::Archive
         QCoro::Core
         QCoro::Network
-        QCoro::Qml
-        KF6::FileMetaData)
+        QCoro::Qml)
+if (LINUX)
+    target_link_libraries(astra_static PUBLIC KF6::FileMetaData)
+endif()
 kconfig_target_kcfg_file(astra_static FILE config.kcfg CLASS_NAME Config MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR QML_REGISTRATION QML_UNCREATABLE USE_ENUM_TYPES)
 kconfig_target_kcfg_file(astra_static FILE accountconfig.kcfg CLASS_NAME AccountConfig MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR QML_REGISTRATION QML_UNCREATABLE USE_ENUM_TYPES)
 kconfig_target_kcfg_file(astra_static FILE profileconfig.kcfg CLASS_NAME ProfileConfig MUTATORS GENERATE_PROPERTIES GENERATE_MOC DEFAULT_VALUE_GETTERS PARENT_IN_CONSTRUCTOR QML_REGISTRATION QML_UNCREATABLE USE_ENUM_TYPES)
@@ -103,7 +105,6 @@ endif ()
 # For screensaver inhibition on Linux
 if (TARGET Qt6::DBus)
     target_link_libraries(astra_static PRIVATE Qt6::DBus)
-    target_compile_definitions(astra_static PRIVATE -DHAS_DBUS)
 endif ()
 
 add_executable(astra)
