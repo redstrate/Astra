@@ -170,7 +170,7 @@ FormCard.FormCardPage {
             id: winePathDelegate
 
             text: i18n("Wine Executable")
-            file: page.profile.winePath
+            file: LauncherCore.readHostPath(page.profile.winePath)
             visible: page.profile.config.wineType !== Profile.BuiltIn
 
             onAccepted: (path) => {
