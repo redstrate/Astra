@@ -89,7 +89,7 @@ FormCard.FormCardPage {
 
             text: i18n("Game Folder")
             folder: page.profile.config.gamePath
-            displayText: page.profile.isGamePathDefault ? i18n("Default Location") : folder
+            displayText: page.profile.isGamePathDefault ? i18n("Default Location") : LauncherCore.readHostPath(folder)
 
             onAccepted: (folder) => {
                 page.profile.config.gamePath = folder;

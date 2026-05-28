@@ -3,13 +3,13 @@
 
 #include "gameinstaller.h"
 
+#include <KFileMetaData/UserMetaData>
 #include <KLocalizedString>
 #include <QCoroSignal>
 #include <QDir>
 #include <QImage>
 #include <QNetworkAccessManager>
 #include <QStandardPaths>
-#include <algorithm>
 #include <qcoronetworkreply.h>
 
 #include "account.h"
@@ -760,6 +760,16 @@ void LauncherCore::resetServerConfiguration(Account *account)
     account->config()->setLoginServer(account->config()->defaultLoginServerValue());
 
     Q_EMIT account->resetConfiguration();
+}
+
+QString LauncherCore::readHostPath(const QString &path)
+{
+    KFileMetaData::UserMetaData metadata(path);
+    if (metadata.hasAttribute(QStringLiteral("document-portal.host-path"))) {
+        return metadata.attribute(QStringLiteral("document-portal.host-path"));
+    }
+
+    return path;
 }
 
 #include "moc_launchercore.cpp"

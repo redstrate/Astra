@@ -58,7 +58,7 @@ FormCard.FormCardPage {
             id: screenshotsPathDelegate
 
             text: i18n("Screenshots Folder")
-            folder: LauncherCore.config.screenshotDir
+            folder: LauncherCore.readHostPath(LauncherCore.config.screenshotDir)
 
             onAccepted: (folder) => {
                 LauncherCore.config.screenshotDir = folder;

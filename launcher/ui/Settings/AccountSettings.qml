@@ -143,7 +143,7 @@ FormCard.FormCardPage {
 
             text: i18n("Wine Prefix Folder")
             folder: page.account.config.winePrefixPath
-            displayText: page.account.isWinePrefixDefault ? i18n("Default Location") : folder
+            displayText: page.account.isWinePrefixDefault ? i18n("Default Location") : LauncherCore.readHostPath(folder)
             visible: LauncherCore.config.showDevTools
 
             onAccepted: (path) => {

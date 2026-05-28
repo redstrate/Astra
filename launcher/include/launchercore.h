@@ -140,6 +140,13 @@ public:
 
     Q_INVOKABLE void resetServerConfiguration(Account *account);
 
+    /**
+     * @brief Translates this path from its sandbox form (if applicable) to the host path.
+     *
+     * @note This should be used to display any and all paths, if users are exposed to the Documents API they are (rightfully) confused!
+     */
+    Q_INVOKABLE QString readHostPath(const QString &path);
+
 Q_SIGNALS:
     void loadingFinished();
     void successfulLaunch();
