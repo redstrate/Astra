@@ -111,7 +111,7 @@ void Profile::readGameData()
             for (unsigned int i = 0; i < sheet.pages[0].entry_count; i++) {
                 auto entry = sheet.pages[0].entries[i];
                 if (entry.subrow_count > 0) {
-                    m_expansionNames.push_back(QString::fromLatin1(entry.subrows[0].columns[0].string._0));
+                    m_expansionNames.push_back(QString::fromStdString(entry.subrows[0].columns[0].string._0));
                 }
             }
             physis_sqpack_free_excel_sheet(&sheet);
@@ -229,7 +229,7 @@ QString Profile::expansionVersionText() const
 
         expacString += QStringLiteral("Boot");
 
-        if (!m_bootVersion) {
+        if (!m_bootVersion || strlen(m_bootVersion) == 0) {
             expacString += i18n(" (Not Installed)");
         } else {
             expacString += QStringLiteral(" (%1)").arg(QString::fromLatin1(m_bootVersion));

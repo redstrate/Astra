@@ -465,7 +465,7 @@ QCoro::Task<> LauncherCore::beginLogin(LoginInformation &info)
             }
 
             const auto repository = repairs.repositories[i];
-            message += QStringLiteral("%1: %2\n").arg(QString::fromLatin1(repository)).arg(actionText);
+            message += QStringLiteral("%1: %2\n").arg(QString::fromStdString(repository)).arg(actionText);
         }
 
         Q_EMIT needsRepair(message);
