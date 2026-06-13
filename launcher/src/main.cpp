@@ -15,6 +15,7 @@
 #endif
 
 #include "astra-version.h"
+#include "astra_log.h"
 #include "launchercore.h"
 #include "logger.h"
 #include "utility.h"
@@ -35,6 +36,7 @@ int main(int argc, char *argv[])
 
     const KDSingleApplication singleApplication;
     if (!singleApplication.isPrimaryInstance()) {
+        qCWarning(ASTRA_LOG) << "Astra is already running";
         return 0;
     }
 
@@ -114,6 +116,7 @@ int main(int argc, char *argv[])
         const QStringList args = parser.positionalArguments();
         // Steam tries to use as a compatibility tool, running installation scripts (like DirectX), so try to ignore it.
         if (!args.empty() && !args.join(QLatin1Char(';')).contains("ffxivboot.exe"_L1)) {
+            qCWarning(ASTRA_LOG) << "Quitting due to Steam starting us too early!";
             return 0;
         }
     }
@@ -126,6 +129,7 @@ int main(int argc, char *argv[])
 
     kapp.start(QStringLiteral("zone.xiv.astra"), QStringLiteral("Main"), &engine);
     if (engine.rootObjects().isEmpty()) {
+        qCWarning(ASTRA_LOG) << "Failed to start application due to QML failing to load!";
         return -1;
     }
 
