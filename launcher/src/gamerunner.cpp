@@ -135,7 +135,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
 
         const auto match = pidRegex.match(log);
         if (match.hasCaptured(1)) {
-            const qint64 PID = match.captured(1).toInt();
+            qint64 PID = match.captured(1).toInt();
             if (PID > 0) {
                 qCInfo(ASTRA_LOG) << "Recieved PID from Dalamud:" << PID;
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
