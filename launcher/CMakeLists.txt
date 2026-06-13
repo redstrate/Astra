@@ -5,7 +5,11 @@ add_library(astra_static STATIC)
 
 ecm_add_qml_module(astra_static GENERATE_PLUGIN_SOURCE
         URI zone.xiv.astra
-        VERSION 1.0)
+        VERSION 1.0
+        DEPENDENCIES
+        org.kde.kirigami
+        Qt.labs.qmlmodels
+)
 
 ecm_qt_declare_logging_category(astra_static
         HEADER astra_log.h
