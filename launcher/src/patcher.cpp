@@ -80,7 +80,7 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
         if (totalSize > 0) {
             localRepositorySizes[key] = totalSize;
         } else {
-            qWarning() << "Failed to calculate size for" << key << ", ignoring...";
+            qCWarning(ASTRA_PATCHER) << "Failed to calculate size for" << key << ", ignoring...";
         }
     }
 

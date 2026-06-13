@@ -81,7 +81,7 @@ void Profile::readDalamudInfo()
 void Profile::readGameData()
 {
     if (!physis_sqpack_exists(&m_resource, "exd/exversion.exh")) {
-        qWarning() << "Failed to find ExVersion sheet.";
+        qCWarning(ASTRA_LOG) << "Failed to find ExVersion sheet.";
         return;
     }
 
@@ -102,7 +102,7 @@ void Profile::readGameData()
         }
 
         if (!language.has_value()) {
-            qWarning() << "No languages available when reading ExVersion?!";
+            qCWarning(ASTRA_LOG) << "No languages available when reading ExVersion?!";
             return;
         }
 
@@ -118,7 +118,7 @@ void Profile::readGameData()
         }
         physis_exh_free(&exh);
     } else {
-        qWarning() << "Failed to parse ExVersion sheet.";
+        qCWarning(ASTRA_LOG) << "Failed to parse ExVersion sheet.";
     }
 }
 

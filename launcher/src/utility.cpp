@@ -54,7 +54,7 @@ void Utility::writeVersion(const QString &path, const QString &version)
 {
     QFile verFile(path);
     if (!verFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qWarning() << "Not able to write" << version << "to" << path << "because" << verFile.errorString();
+        qCWarning(ASTRA_LOG) << "Not able to write" << version << "to" << path << "because" << verFile.errorString();
         return;
     }
     verFile.write(version.toUtf8());
