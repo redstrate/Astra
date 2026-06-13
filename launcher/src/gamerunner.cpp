@@ -135,7 +135,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
 
         const auto match = pidRegex.match(log);
         if (match.hasCaptured(1)) {
-            qint64 PID = match.captured(1).toInt();
+            const qint64 PID = match.captured(1).toInt();
             if (PID > 0) {
                 qCInfo(ASTRA_LOG) << "Recieved PID from Dalamud:" << PID;
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
@@ -158,6 +158,8 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
             }
         }
 
+        qCWarning(ASTRA_LOG) << "Did not find or parse PID from Dalamud:" << log;
+
         // If Dalamud didn't give a valid PID, OK. Let's just do our previous status quo and indicate we did log out.
         Q_EMIT m_launcher.gameClosed(&profile);
     });
@@ -166,7 +168,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
     env.insert(QStringLiteral("DALAMUD_RUNTIME"), Utility::toWindowsPath(dalamudRuntimeDir));
     env.insert(QStringLiteral("DOTNET_ROOT"), Utility::toWindowsPath(dalamudRuntimeDir));
 
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+#if defined(Q_OS_LINUX)
     env.insert(QStringLiteral("XL_PLATFORM"), QStringLiteral("linux"));
 #elif defined(Q_OS_MAC)
     env.insert(QStringLiteral("XL_PLATFORM"), QStringLiteral("macos"));
@@ -400,6 +402,8 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
     process->setProgram(executable);
     process->setArguments(arguments);
+
+    qCDebug(ASTRA_LOG) << "Launching executable" << executable << "with arguments" << arguments;
 
     process->start();
 }
