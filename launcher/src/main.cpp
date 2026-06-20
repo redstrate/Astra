@@ -6,6 +6,7 @@
 #include <KLocalizedString>
 #include <KirigamiApp>
 #include <QApplication> // NOTE: do not remove this, if your IDE suggests to do so
+#include <QIcon>
 #include <QQuickStyle>
 #include <kdsingleapplication.h>
 #include <qcoroqml.h>
@@ -46,13 +47,16 @@ int main(int argc, char *argv[])
     }
 
     KLocalizedString::setApplicationDomain("astra");
+    // This needs to be set before fromAppStreamForApplication can be used, so don't remove this!
+    QGuiApplication::setDesktopFileName(u"zone.xiv.astra"_s);
 
-    KAboutData about(QStringLiteral("astra"),
-                     i18n("Astra"),
-                     QStringLiteral(ASTRA_VERSION_STRING),
-                     i18n("Play FFXIV"),
-                     KAboutLicense::GPL_V3,
-                     i18n("© 2021-2026 Joshua Goins"));
+    auto about = KAboutData::fromAppStreamForApplication();
+    about.setVersion(QByteArrayLiteral(ASTRA_VERSION_STRING));
+    // Works around bug fixed with https://invent.kde.org/frameworks/kcoreaddons/-/merge_requests/582
+#if KCOREADDONS_VERSION < QT_VERSION_CHECK(6, 28, 0)
+    about.setComponentName(QStringLiteral("astra"));
+#endif
+    about.setCopyrightStatement(i18n("© 2021-2026 Joshua Goins"));
     about.setOtherText(
         i18n("This software requires that you have legitimate access to FINAL FANTASY XIV. By using this software, you may be in violation "
              "of your User Agreement.\n\nFINAL FANTASY, FINAL FANTASY XIV, FFXIV, SQUARE ENIX, and the SQUARE ENIX logo are registered trademarks or "
@@ -62,7 +66,6 @@ int main(int argc, char *argv[])
                     QStringLiteral("josh@redstrate.com"),
                     QStringLiteral("https://redstrate.com/"),
                     QUrl(QStringLiteral("https://redstrate.com/rss-image.png")));
-    about.setHomepage(QStringLiteral("https://xiv.zone/astra"));
     about.addComponent(QStringLiteral("physis"),
                        i18n("Library for reading and writing FFXIV data."),
                        QString::fromLatin1(physis_get_physis_version()),
@@ -83,14 +86,9 @@ int main(int argc, char *argv[])
                        QStringLiteral("3.1.1"),
                        QStringLiteral("https://github.com/paolostivanin/libcotp"),
                        KAboutLicense::Unknown);
-    about.setDesktopFileName(QStringLiteral("zone.xiv.astra"));
-    about.setBugAddress(QByteArrayLiteral("https://github.com/redstrate/astra/issues"));
-    about.setComponentName(QStringLiteral("astra"));
-    about.setProgramLogo(QStringLiteral("zone.xiv.astra"));
-    about.setOrganizationDomain(QByteArrayLiteral("xiv.zone"));
 
     KAboutData::setApplicationData(about);
-
+    QGuiApplication::setWindowIcon(QIcon::fromTheme(u"zone.xiv.astra"_s));
     initializeLogging();
 
     QCommandLineParser parser;

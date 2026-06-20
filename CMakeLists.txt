@@ -58,9 +58,10 @@ if (BUILD_TESTING)
     add_subdirectory(autotests)
 endif()
 
+install(FILES zone.xiv.astra.appdata.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
+
 if (NOT WIN32)
     install(FILES zone.xiv.astra.desktop DESTINATION ${KDE_INSTALL_APPDIR})
-    install(FILES zone.xiv.astra.appdata.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
     install(FILES zone.xiv.astra.svg DESTINATION ${KDE_INSTALL_FULL_ICONDIR}/hicolor/scalable/apps)
 
     ecm_qt_install_logging_categories(
