@@ -9,6 +9,7 @@
 #include <QIcon>
 #include <QQuickStyle>
 #include <kdsingleapplication.h>
+#include <kdsingleapplication_version.h>
 #include <qcoroqml.h>
 
 #ifdef Q_OS_WINDOWS
@@ -78,12 +79,12 @@ int main(int argc, char *argv[])
                        KAboutLicense::GPL_V3);
     about.addComponent(QStringLiteral("KDSingleApplication"),
                        i18n("Helper class for single-instance policy applications."),
-                       QStringLiteral("1.2.0"),
+                       QString::fromLatin1(KDSINGLEAPPLICATION_VERSION_STRING),
                        QStringLiteral("https://github.com/KDAB/KDSingleApplication"),
                        KAboutLicense::MIT);
     about.addComponent(QStringLiteral("libcotp"),
-                       i18n(" C library that generates TOTP and HOTP."),
-                       QStringLiteral("3.1.1"),
+                       i18n("C library that generates TOTP and HOTP."),
+                       QString::fromLatin1(LIBCOTP_VERSION_STRING),
                        QStringLiteral("https://github.com/paolostivanin/libcotp"),
                        KAboutLicense::Unknown);
 
