@@ -271,11 +271,13 @@ QCoro::Task<std::optional<SquareEnixLogin::StoredInfo>> SquareEnixLogin::getStor
     const QRegularExpressionMatch match = re.match(str);
     if (match.hasMatch()) {
         co_return StoredInfo{match.captured(1), url};
-    } else {
-        Q_EMIT m_launcher.loginError(
-            i18n("Square Enix servers refused to confirm session information. The game may be under maintenance, try the official launcher."));
-        co_return {};
     }
+
+    qCDebug(ASTRA_LOG) << "Failed to find _STORED_ in" << str;
+    Q_EMIT m_launcher.loginError(
+        i18n("Square Enix servers refused to confirm session information. The game may be under maintenance, try the official launcher."));
+
+    co_return {};
 }
 
 QCoro::Task<bool> SquareEnixLogin::loginOAuth()
