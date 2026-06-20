@@ -95,6 +95,8 @@ target_link_libraries(astra_static PUBLIC
         QCoro::Core
         QCoro::Network
         QCoro::Qml)
+get_target_property(LIBCOTP_VERSION cotp VERSION)
+target_compile_definitions(astra_static PUBLIC LIBCOTP_VERSION_STRING="${LIBCOTP_VERSION}")
 if (LINUX)
     target_link_libraries(astra_static PUBLIC KF6::FileMetaData)
 endif()
