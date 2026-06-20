@@ -35,6 +35,10 @@ LauncherCore::LauncherCore()
     : QObject()
 {
     m_config = new Config(KSharedConfig::openConfig(QStringLiteral("astrarc"), KConfig::SimpleConfig, QStandardPaths::AppConfigLocation), this);
+    if (config()->verboseLogging()) {
+        QLoggingCategory::setFilterRules(QStringLiteral("zone.xiv.astra*=true"));
+    }
+
     m_mgr = new QNetworkAccessManager(this);
     m_squareEnixLogin = new SquareEnixLogin(*this, this);
     m_profileManager = new ProfileManager(this);
