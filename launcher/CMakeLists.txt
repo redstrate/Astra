@@ -147,16 +147,6 @@ qt_target_qml_sources(astra_static
         ui/Main.qml
 )
 
-set_source_files_properties(../zone.xiv.astra.svg PROPERTIES
-        QT_RESOURCE_ALIAS /zone.xiv.astra.svg
-)
-
-qt_target_qml_sources(astra_static
-        PREFIX /
-        RESOURCES
-        ../zone.xiv.astra.svg
-)
-
 target_link_libraries(astra PRIVATE
         astra_static
         astra_staticplugin

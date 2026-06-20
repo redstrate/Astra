@@ -31,12 +31,14 @@ FormCard.FormCardPage {
         onAccepted: page.profile.config.gamePath = decodeURI(selectedFolder.toString().replace("file://", "").substr(Qt.platform.os === "windows" ? 1 : 0))
     }
 
-    Image {
-        source: "qrc:/zone.xiv.astra.svg"
+    Kirigami.Icon {
+        source: "zone.xiv.astra"
 
         fillMode: Image.PreserveAspectFit
         visible: !LauncherCore.profileManager.hasAnyExistingInstallations()
 
+        Layout.preferredWidth: Math.round(Kirigami.Units.iconSizes.huge * 1.5)
+        Layout.preferredHeight: Math.round(Kirigami.Units.iconSizes.huge * 1.5)
         Layout.fillWidth: true
         Layout.fillHeight: true
         Layout.margins: Kirigami.Units.largeSpacing * 3
