@@ -19,8 +19,8 @@
         <keyword translate="no">ffxiv</keyword>
         <keyword translate="no">ff14</keyword>
     </keywords>
-    <url type="homepage">https://xiv.zone/astra</url>
-    <url type="bugtracker">https://github.com/redstrate/astra/issues</url>
+    <url type="homepage">https://xiv.zone/software/astra</url>
+    <url type="bugtracker">https://github.com/redstrate/astra/issues/new</url>
     <url type="contact">https://redstrate.com/contact</url>
     <url type="vcs-browser">https://github.com/redstrate/astra</url>
     <launchable type="desktop-id">zone.xiv.astra.desktop</launchable>
