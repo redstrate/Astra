@@ -277,9 +277,9 @@ bool Patcher::processPatch(const QueuedPatch &patch)
         }
     }
 
-    const bool res = physis_patch_apply(m_baseDirectory.absolutePath().toStdString().c_str(), patch.path.toStdString().c_str());
-    if (!res) {
-        qCritical(ASTRA_PATCHER) << "Failed to install" << patch.path << "to" << (isBoot() ? QStringLiteral("boot") : patch.repository);
+    const char *res = physis_patch_apply(m_baseDirectory.absolutePath().toStdString().c_str(), patch.path.toStdString().c_str());
+    if (res) {
+        qCritical(ASTRA_PATCHER) << "Failed to install" << patch.path << "to" << (isBoot() ? QStringLiteral("boot") : patch.repository) << "because:" << res;
         Q_EMIT m_launcher.miscError(i18n("Patch %1 failed to apply. The game is now in an invalid state and must be immediately repaired.", patch.name));
         return false;
     }
