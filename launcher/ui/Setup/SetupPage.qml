@@ -34,7 +34,6 @@ FormCard.FormCardPage {
     Kirigami.Icon {
         source: "zone.xiv.astra"
 
-        fillMode: Image.PreserveAspectFit
         visible: !LauncherCore.profileManager.hasAnyExistingInstallations()
 
         Layout.preferredWidth: Math.round(Kirigami.Units.iconSizes.huge * 1.5)
