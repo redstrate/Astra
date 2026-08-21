@@ -257,9 +257,13 @@ QString GameRunner::getGameArgs(const Profile &profile, const std::optional<Logi
         Utility::createPathIfNeeded(profile.account()->config()->winePrefixPath());
 
     if (auth) {
-        auto config = auth->account->config();
+        const auto config = auth->account->config();
         if (!config->frontierServer().isEmpty() && config->frontierServer() != config->defaultFrontierServerValue()) {
-            gameArgs.push_back({QStringLiteral("DEV.GMServerHost"), config->frontierServer()});
+            // The game handles the schema for this URL, we don't want to add it.
+            const auto frontierServerUrl = QUrl(config->frontierServer());
+            const auto frontierServer =
+                frontierServerUrl.toString(QUrl::RemoveScheme).remove(0, 2); // Remove leading // because RemoveScheme doesn't do that I guess
+            gameArgs.push_back({QStringLiteral("DEV.GMServerHost"), frontierServer});
         }
 
         if (!config->lobbyServer().isEmpty()) {
