@@ -74,7 +74,7 @@ QString Account::getOTP()
     }
 
     cotp_error err;
-    char *totp = get_totp(otpSecret.toStdString().c_str(), 6, 30, SHA1, &err);
+    char *totp = get_totp(otpSecret.toStdString().c_str(), 6, 30, COTP_SHA1, &err);
 
     if (err == NO_ERROR) {
         QString totpStr = QString::fromLatin1(totp);

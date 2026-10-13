@@ -243,9 +243,9 @@ void LauncherCore::refreshLogoImage()
         const auto file = physis_sqpack_read(data, path.toStdString().c_str());
         if (file.data != nullptr) {
             const auto tex = physis_texture_parse(data->platform, file);
-            const auto rgba = physis_texture_to_rgba(tex);
+            const auto rgba = physis_texture_decode(tex, 0, 0);
 
-            const QImage image(rgba.rgba, tex.width, tex.height, QImage::Format_RGBA8888);
+            const QImage image(rgba.rgba, rgba.width, rgba.height, QImage::Format_RGBA8888);
             Q_UNUSED(image.save(name))
         }
     };
