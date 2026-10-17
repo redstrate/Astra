@@ -87,7 +87,6 @@ public:
     [[nodiscard]] QString compatibilityToolVersion() const;
     void setCompatibilityToolVersion(const QString &version);
 
-    BootData *bootData() const;
     physis_SqPackResource const *resource() const;
 
     [[nodiscard]] QString subtitle() const;
@@ -114,11 +113,10 @@ private:
 
     QList<QString> m_expansionNames;
 
-    BootData *m_bootData = nullptr;
     physis_SqPackResource m_resource;
 
     physis_Repositories m_repositories = {};
-    const char *m_bootVersion = nullptr;
+    QString m_bootVersion;
 
     QString m_dalamudVersion;
     int m_dalamudAssetVersion = -1;

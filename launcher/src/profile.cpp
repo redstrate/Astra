@@ -200,10 +200,9 @@ void Profile::readGameVersion()
     }
 
     m_resource = physis_sqpack_initialize(QDir(config()->gamePath()).absoluteFilePath(QStringLiteral("game")).toStdString().c_str());
-    m_bootData = physis_bootdata_initialize(QDir(config()->gamePath()).absoluteFilePath(QStringLiteral("boot")).toStdString().c_str());
-
-    if (m_bootData != nullptr) {
-        m_bootVersion = physis_bootdata_get_version(m_bootData);
+    const QDir bootDirectory(QDir(config()->gamePath()).absoluteFilePath(QStringLiteral("boot")));
+    if (bootDirectory.exists()) {
+        m_bootVersion = Utility::readVersion(bootDirectory.absoluteFilePath(QStringLiteral("ffxivboot.ver")));
     }
 
     if (m_resource.p_ptr) {
@@ -212,7 +211,7 @@ void Profile::readGameVersion()
     }
 
     // Extract frontier url if possible
-    const auto launcherPath = QDir(config()->gamePath()).absoluteFilePath(QStringLiteral("boot/ffxivlauncher64.exe"));
+    const auto launcherPath = bootDirectory.absoluteFilePath(QStringLiteral("ffxivlauncher64.exe"));
     if (QFile::exists(launcherPath)) {
         m_frontierUrl = QString::fromUtf8(physis_extract_frontier_url(launcherPath.toStdString().c_str()));
     }
@@ -225,14 +224,12 @@ QString Profile::expansionVersionText() const
     if (!isGameInstalled()) {
         return i18n("No game installed.");
     } else {
-        QString expacString;
+        QString expacString = QStringLiteral("Boot");
 
-        expacString += QStringLiteral("Boot");
-
-        if (!m_bootVersion || strlen(m_bootVersion) == 0) {
+        if (m_bootVersion.isEmpty()) {
             expacString += i18n(" (Not Installed)");
         } else {
-            expacString += QStringLiteral(" (%1)").arg(QString::fromLatin1(m_bootVersion));
+            expacString += QStringLiteral(" (%1)").arg(m_bootVersion);
         }
 
         for (unsigned int i = 0; i < m_repositories.repositories_count; i++) {
@@ -277,9 +274,8 @@ QString Profile::wineVersionText() const
         } else {
             return i18n("Wine is not installed.");
         }
-    } else {
-        return m_wineVersion;
     }
+    return m_wineVersion;
 }
 
 [[nodiscard]] bool Profile::isGameInstalled() const
@@ -296,10 +292,10 @@ QString Profile::wineVersionText() const
 
 QString Profile::bootVersion() const
 {
-    if (m_bootVersion == nullptr || strlen(m_bootVersion) == 0) {
+    if (m_bootVersion.isEmpty()) {
         return QStringLiteral("2012.01.01.0000.0000");
     }
-    return QString::fromLatin1(m_bootVersion);
+    return m_bootVersion;
 }
 
 QString Profile::baseGameVersion() const
@@ -328,9 +324,8 @@ QString Profile::frontierUrl() const
     if (m_frontierUrl.isEmpty()) {
         // fallback url
         return QStringLiteral("https://launcher.finalfantasyxiv.com/v700/");
-    } else {
-        return m_frontierUrl;
     }
+    return m_frontierUrl;
 }
 
 int Profile::dalamudAssetVersion() const
@@ -379,11 +374,6 @@ void Profile::setCompatibilityToolVersion(const QString &version)
     m_compatibilityToolVersion = version;
 }
 
-BootData *Profile::bootData() const
-{
-    return m_bootData;
-}
-
 physis_SqPackResource const *Profile::resource() const
 {
     return &m_resource;
@@ -393,7 +383,8 @@ QString Profile::subtitle() const
 {
     if (config()->isBenchmark()) {
         return i18n("Benchmark");
-    } else if (m_repositories.repositories_count > 0) {
+    }
+    if (m_repositories.repositories_count > 0) {
         const unsigned int latestExpansion = m_repositories.repositories_count - 1;
         QString expansionName = i18n("Unknown Expansion");
         if (latestExpansion < static_cast<unsigned int>(m_expansionNames.size())) {
@@ -401,9 +392,8 @@ QString Profile::subtitle() const
         }
 
         return QStringLiteral("%1 (%2)").arg(expansionName, QString::fromLatin1(m_repositories.repositories[latestExpansion].version));
-    } else {
-        return i18n("Unknown");
     }
+    return i18n("Unknown");
 }
 
 ProfileConfig *Profile::config() const
