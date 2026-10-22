@@ -74,6 +74,8 @@ FormCard.FormCardPage {
         Layout.topMargin: Kirigami.Units.largeSpacing
 
         Repeater {
+            id: repeater
+
             model: LauncherCore.profileManager
 
             ColumnLayout {
@@ -95,7 +97,7 @@ FormCard.FormCardPage {
                 }
 
                 FormCard.FormDelegateSeparator {
-                    visible: layout.index + 1 < LauncherCore.profileManager.numProfiles
+                    visible: layout.index + 1 < repeater.count
                 }
             }
         }

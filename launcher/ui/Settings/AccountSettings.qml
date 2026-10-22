@@ -30,7 +30,7 @@ FormCard.FormCardPage {
             text: i18n("Delete Account…")
             tooltip: !enabled ? i18n("Cannot delete the only account.") : ""
             icon.name: "delete"
-            enabled: LauncherCore.accountManager.canDelete(page.account)
+            enabled: LauncherCore.accountManager.canDelete()
 
             onTriggered: deletePrompt.open()
         }

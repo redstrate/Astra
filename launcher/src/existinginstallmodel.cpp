@@ -13,7 +13,9 @@ ExistingInstallModel::ExistingInstallModel(QObject *parent)
 
 QVariant ExistingInstallModel::data(const QModelIndex &index, const int role) const
 {
-    Q_ASSERT(checkIndex(index, QAbstractItemModel::CheckIndexOption::IndexIsValid));
+    if (!checkIndex(index)) {
+        return {};
+    }
 
     const auto &install = m_existingInstalls[index.row()];
 
@@ -43,7 +45,10 @@ QVariant ExistingInstallModel::data(const QModelIndex &index, const int role) co
 
 int ExistingInstallModel::rowCount(const QModelIndex &parent) const
 {
-    return parent.isValid() ? 0 : m_existingInstalls.size();
+    if (parent.isValid()) {
+        return 0;
+    }
+    return m_existingInstalls.size();
 }
 
 QHash<int, QByteArray> ExistingInstallModel::roleNames() const

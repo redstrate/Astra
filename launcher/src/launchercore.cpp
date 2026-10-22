@@ -250,7 +250,7 @@ void LauncherCore::refreshLogoImage()
     };
 
     // TODO: this finds the first profile that has a valid image, but this could probably be cached per-profile
-    for (int i = 0; i < m_profileManager->numProfiles(); i++) {
+    for (int i = 0; i < m_profileManager->rowCount({}); i++) {
         const auto profile = m_profileManager->getProfile(i);
         if (profile->isGameInstalled() && profile->resource()) {
             // A Realm Reborn

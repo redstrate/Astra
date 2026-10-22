@@ -31,11 +31,11 @@ FormCard.FormCardPage {
 
     FormCard.FormHeader {
         title: i18n("Existing Accounts")
-        visible: LauncherCore.accountManager.hasAnyAccounts()
+        visible: LauncherCore.accountManager.rowCount() > 0
     }
 
     FormCard.FormCard {
-        visible: LauncherCore.accountManager.hasAnyAccounts()
+        visible: LauncherCore.accountManager.rowCount() > 0
 
         Layout.fillWidth: true
 
@@ -57,7 +57,7 @@ FormCard.FormCardPage {
 
     FormCard.FormHeader {
         title: i18n("Add Account")
-        visible: LauncherCore.accountManager.hasAnyAccounts()
+        visible: LauncherCore.accountManager.rowCount() > 0
     }
 
     FormCard.FormCard {

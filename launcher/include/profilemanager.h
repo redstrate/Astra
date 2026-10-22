@@ -14,8 +14,6 @@ class ProfileManager : public QAbstractListModel
     QML_ELEMENT
     QML_UNCREATABLE("Use LauncherCore.profileManager")
 
-    Q_PROPERTY(int numProfiles READ numProfiles NOTIFY profilesChanged)
-
 public:
     explicit ProfileManager(QObject *parent = nullptr);
 
@@ -25,7 +23,7 @@ public:
         ProfileRole = Qt::UserRole,
     };
 
-    [[nodiscard]] int rowCount(const QModelIndex &index) const override;
+    [[nodiscard]] int rowCount(const QModelIndex &parent) const override;
 
     [[nodiscard]] QVariant data(const QModelIndex &index, int role) const override;
 
@@ -39,16 +37,12 @@ public:
     Q_INVOKABLE void deleteProfile(Profile *profile, bool deleteFiles);
 
     [[nodiscard]] QList<Profile *> profiles() const;
-    [[nodiscard]] int numProfiles() const;
 
-    Q_INVOKABLE bool canDelete(const Profile *account) const;
+    Q_INVOKABLE bool canDelete() const;
 
     [[nodiscard]] Q_INVOKABLE bool hasAnyExistingInstallations() const;
 
     static QString getDefaultGamePath(const QString &uuid);
-
-Q_SIGNALS:
-    void profilesChanged();
 
 private:
     void insertProfile(Profile *profile);

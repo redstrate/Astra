@@ -18,21 +18,22 @@ void AccountManager::load()
 {
     auto config = KSharedConfig::openStateConfig();
     for (const auto &id : config->groupList()) {
-        if (id.contains("account-"_L1)) {
+        if (id.startsWith("account-"_L1)) {
             const QString uuid = QString(id).remove("account-"_L1);
             qInfo(ASTRA_LOG) << "Loading account" << uuid;
 
             const auto account = new Account(uuid, this);
             m_accounts.append(account);
-            Q_EMIT accountsChanged();
             Q_EMIT accountAdded(account);
         }
     }
 }
 
-int AccountManager::rowCount(const QModelIndex &index) const
+int AccountManager::rowCount(const QModelIndex &parent) const
 {
-    Q_UNUSED(index)
+    if (parent.isValid()) {
+        return 0;
+    }
     return static_cast<int>(m_accounts.size());
 }
 
@@ -79,9 +80,8 @@ Account *AccountManager::getByUuid(const QString &uuid) const
     return nullptr;
 }
 
-bool AccountManager::canDelete(const Account *account) const
+bool AccountManager::canDelete() const
 {
-    Q_UNUSED(account)
     return m_accounts.size() > 1;
 }
 
@@ -91,7 +91,6 @@ void AccountManager::deleteAccount(Account *account)
     beginRemoveRows(QModelIndex(), row, row);
     m_accounts.removeAll(account);
     endRemoveRows();
-    Q_EMIT accountsChanged();
 
     const QString uuid = account->uuid();
 
@@ -111,18 +110,7 @@ void AccountManager::insertAccount(Account *account)
     beginInsertRows(QModelIndex(), static_cast<int>(m_accounts.size()), static_cast<int>(m_accounts.size()));
     m_accounts.append(account);
     endInsertRows();
-    Q_EMIT accountsChanged();
     Q_EMIT accountAdded(account);
-}
-
-bool AccountManager::hasAnyAccounts() const
-{
-    return !m_accounts.empty();
-}
-
-int AccountManager::numAccounts() const
-{
-    return static_cast<int>(m_accounts.count());
 }
 
 QString AccountManager::getDefaultWinePrefixPath(const QString &uuid)

@@ -80,9 +80,8 @@ QString Account::getOTP()
         QString totpStr = QString::fromLatin1(totp);
         free(totp);
         return totpStr;
-    } else {
-        return {};
     }
+    return {};
 }
 
 void Account::setOTPSecret(const QString &secret)

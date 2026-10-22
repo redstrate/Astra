@@ -108,11 +108,11 @@ QQC2.Control {
 
         FormCard.FormHeader {
             title: i18n("Profile")
-            visible: LauncherCore.profileManager.numProfiles > 1
+            visible: LauncherCore.profileManager.rowCount() > 1
         }
         FormCard.FormCard {
             maximumWidth: Kirigami.Units.gridUnit * 25
-            visible: LauncherCore.profileManager.numProfiles > 1
+            visible: LauncherCore.profileManager.rowCount() > 1
 
             Layout.fillWidth: true
 
@@ -164,7 +164,7 @@ QQC2.Control {
             FormCard.FormButtonDelegate {
                 id: currentAccountDelegate
 
-                enabled: LauncherCore.accountManager.numAccounts > 1
+                enabled: LauncherCore.accountManager.rowCount() > 1
                 text: LauncherCore.currentProfile.account.config.name
 
                 leading: Components.Avatar {

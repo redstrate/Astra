@@ -13,8 +13,6 @@ class AccountManager : public QAbstractListModel
     QML_ELEMENT
     QML_UNCREATABLE("Use LauncherCore.accountManager")
 
-    Q_PROPERTY(int numAccounts READ numAccounts NOTIFY accountsChanged)
-
 public:
     explicit AccountManager(QObject *parent = nullptr);
 
@@ -24,7 +22,7 @@ public:
         AccountRole = Qt::UserRole,
     };
 
-    [[nodiscard]] int rowCount(const QModelIndex &index) const override;
+    [[nodiscard]] int rowCount(const QModelIndex &parent) const override;
 
     [[nodiscard]] QVariant data(const QModelIndex &index, int role) const override;
 
@@ -34,16 +32,12 @@ public:
 
     [[nodiscard]] Account *getByUuid(const QString &uuid) const;
 
-    Q_INVOKABLE bool canDelete(const Account *account) const;
+    Q_INVOKABLE bool canDelete() const;
     Q_INVOKABLE void deleteAccount(Account *account);
-
-    Q_INVOKABLE [[nodiscard]] bool hasAnyAccounts() const;
-    Q_INVOKABLE [[nodiscard]] int numAccounts() const;
 
     static QString getDefaultWinePrefixPath(const QString &uuid);
 
 Q_SIGNALS:
-    void accountsChanged();
     void accountAdded(Account *account);
     void accountLodestoneIdChanged(Account *account);
 

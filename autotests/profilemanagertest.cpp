@@ -15,18 +15,12 @@ private Q_SLOTS:
         ProfileManager profileManager;
         QAbstractItemModelTester modelTester(&profileManager);
 
-        const QSignalSpy profilesChangedSpy(&profileManager, &ProfileManager::profilesChanged);
-        QVERIFY(profilesChangedSpy.isValid());
-
         QCOMPARE(profileManager.rowCount({}), 0);
         profileManager.load();
 
-        QCOMPARE(profilesChangedSpy.count(), 1);
-
         // the dummy profile
         QCOMPARE(profileManager.rowCount({}), 1);
-        QCOMPARE(profileManager.numProfiles(), 1);
-        QVERIFY(!profileManager.canDelete(profileManager.getProfile(0))); // the first profile can never be deleted
+        QVERIFY(!profileManager.canDelete()); // the first profile can never be deleted
 
         auto profile = profileManager.getProfile(0);
 
@@ -41,24 +35,17 @@ private Q_SLOTS:
         ProfileManager profileManager;
         QAbstractItemModelTester modelTester(&profileManager);
 
-        const QSignalSpy profilesChangedSpy(&profileManager, &ProfileManager::profilesChanged);
-        QVERIFY(profilesChangedSpy.isValid());
-
         QCOMPARE(profileManager.rowCount({}), 0);
         profileManager.load();
-        QCOMPARE(profilesChangedSpy.count(), 1);
 
         profileManager.addProfile();
-        QCOMPARE(profilesChangedSpy.count(), 2);
 
         QCOMPARE(profileManager.rowCount({}), 2);
-        QCOMPARE(profileManager.numProfiles(), 2);
-        QVERIFY(profileManager.canDelete(profileManager.getProfile(1)));
+        QVERIFY(profileManager.canDelete());
 
         profileManager.deleteProfile(profileManager.getProfile(1), false);
 
         QCOMPARE(profileManager.rowCount({}), 1);
-        QCOMPARE(profileManager.numProfiles(), 1);
     }
 };
 
