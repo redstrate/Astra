@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <KAboutData>
-#include <KIconTheme>
+#include <KLocalizedQmlContext>
 #include <KLocalizedString>
-#include <KirigamiApp>
-#include <QApplication> // NOTE: do not remove this, if your IDE suggests to do so
+#include <KirigamiAppDefaults>
+#include <QApplication>
 #include <QCommandLineParser>
 #include <QIcon>
 #include <QQmlApplicationEngine>
@@ -13,10 +13,6 @@
 #include <kdsingleapplication.h>
 #include <kdsingleapplication_version.h>
 #include <qcoroqml.h>
-
-#ifdef Q_OS_WINDOWS
-#include <QStyleFactory>
-#endif
 
 #include "astra-version.h"
 #include "astra_log.h"
@@ -28,15 +24,8 @@ using namespace Qt::StringLiterals;
 
 int main(int argc, char *argv[])
 {
-    KIconTheme::initTheme(); // TODO: KirigamiApp doesn't call this before app construction so it doesn't work on Windows
-
-    KirigamiApp::App app(argc, argv);
-    KirigamiApp kapp;
-
-    // TODO: remove once https://invent.kde.org/libraries/kirigami-addons/-/merge_requests/399 is merged
-#ifdef Q_OS_WINDOWS
-    app.setStyle(QStyleFactory::create(QStringLiteral("Breeze")));
-#endif
+    QApplication app(argc, argv);
+    KirigamiAppDefaults::apply(&app);
 
     const KDSingleApplication singleApplication;
     if (!singleApplication.isPrimaryInstance()) {
@@ -125,10 +114,12 @@ int main(int argc, char *argv[])
     QCoro::Qml::registerTypes();
 
     QQmlApplicationEngine engine;
+    KLocalization::setupLocalizedContext(&engine);
 
     QObject::connect(&engine, &QQmlApplicationEngine::quit, &app, &QCoreApplication::quit);
 
-    kapp.start(QStringLiteral("zone.xiv.astra"), QStringLiteral("Main"), &engine);
+    engine.loadFromModule("zone.xiv.astra", u"Main");
+
     if (engine.rootObjects().isEmpty()) {
         qCWarning(ASTRA_LOG) << "Failed to start application due to QML failing to load!";
         return -1;
