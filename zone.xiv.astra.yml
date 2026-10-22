@@ -5,7 +5,6 @@ sdk: org.kde.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
 command: astra
-separate-locales: true
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin
   build-args:
@@ -47,7 +46,6 @@ modules:
       - /bin
     buildsystem: cmake-ninja
     config-opts:
-      - -DBUILD_WITH_QT6=ON
       - -DCMAKE_INSTALL_LIBDIR=/app/lib
       - -DLIB_INSTALL_DIR=/app/lib
       - -DBUILD_TRANSLATIONS=NO
