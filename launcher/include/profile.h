@@ -114,7 +114,7 @@ private:
 
     QList<QString> m_expansionNames;
 
-    physis_SqPackResource m_resource;
+    physis_SqPackResource m_resource{};
 
     physis_Repositories m_repositories = {};
     QString m_bootVersion;

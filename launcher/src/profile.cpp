@@ -4,8 +4,6 @@
 #include "profile.h"
 
 #include <KLocalizedString>
-#include <QFile>
-#include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QProcess>
@@ -88,7 +86,7 @@ void Profile::readGameData()
     }
 
     const auto header = physis_sqpack_read(&m_resource, "exd/exversion.exh");
-    physis_EXH exh = physis_exh_parse(m_resource.platform, header);
+    const physis_EXH exh = physis_exh_parse(m_resource.platform, header);
     if (exh.p_ptr) {
         std::optional<Language> language;
         for (uint32_t i = 0; i < exh.language_count; i++) {
@@ -111,7 +109,7 @@ void Profile::readGameData()
         const physis_ExcelSheet sheet = physis_sqpack_read_excel_sheet(&m_resource, "ExVersion", &exh, language.value());
         if (sheet.p_ptr) {
             for (unsigned int i = 0; i < sheet.pages[0].entry_count; i++) {
-                auto entry = sheet.pages[0].entries[i];
+                const auto entry = sheet.pages[0].entries[i];
                 if (entry.subrow_count > 0) {
                     m_expansionNames.push_back(QString::fromStdString(entry.subrows[0].columns[0].string._0));
                 }
@@ -152,7 +150,7 @@ void Profile::readWineInfo()
 QString Profile::winePath() const
 {
     switch (config()->wineType()) {
-    case WineType::BuiltIn: {
+    case BuiltIn: {
         const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
         const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
         const QDir wineDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("wine"));
@@ -160,7 +158,7 @@ QString Profile::winePath() const
 
         return wineBinDir.absoluteFilePath(QStringLiteral("wine64"));
     }
-    case WineType::Custom: // custom pth
+    case Custom: // custom pth
         return m_config->winePath();
     default:
         return {};
@@ -225,26 +223,25 @@ QString Profile::expansionVersionText() const
 {
     if (!isGameInstalled()) {
         return i18n("No game installed.");
-    } else {
-        QString expacString = QStringLiteral("Boot");
-
-        if (m_bootVersion.isEmpty()) {
-            expacString += i18n(" (Not Installed)");
-        } else {
-            expacString += QStringLiteral(" (%1)").arg(m_bootVersion);
-        }
-
-        for (unsigned int i = 0; i < m_repositories.repositories_count; i++) {
-            QString expansionName = i18n("Unknown Expansion");
-            if (i < static_cast<unsigned int>(m_expansionNames.size())) {
-                expansionName = m_expansionNames[i];
-            }
-
-            expacString += QStringLiteral("\n%1 (%2)").arg(expansionName, QString::fromLatin1(m_repositories.repositories[i].version));
-        }
-
-        return expacString;
     }
+    QString versionString = QStringLiteral("Boot");
+
+    if (m_bootVersion.isEmpty()) {
+        versionString += i18n(" (Not Installed)");
+    } else {
+        versionString += QStringLiteral(" (%1)").arg(m_bootVersion);
+    }
+
+    for (unsigned int i = 0; i < m_repositories.repositories_count; i++) {
+        QString expansionName = i18n("Unknown Expansion");
+        if (i < static_cast<unsigned int>(m_expansionNames.size())) {
+            expansionName = m_expansionNames[i];
+        }
+
+        versionString += QStringLiteral("\n%1 (%2)").arg(expansionName, QString::fromLatin1(m_repositories.repositories[i].version));
+    }
+
+    return versionString;
 }
 
 QString Profile::dalamudVersionText() const
@@ -273,9 +270,8 @@ QString Profile::wineVersionText() const
     if (!isWineInstalled()) {
         if (config()->wineType() == Profile::WineType::BuiltIn) {
             return i18n("Wine will be installed when you launch the game.");
-        } else {
-            return i18n("Wine is not installed.");
         }
+        return i18n("Wine is not installed.");
     }
     return m_wineVersion;
 }
