@@ -165,7 +165,7 @@ void LauncherCore::fetchAvatar(Account *account)
         return;
     }
 
-    const QString cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + QStringLiteral("/avatars");
+    const QString cacheLocation = QDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)).absoluteFilePath(QStringLiteral("avatars"));
     Utility::createPathIfNeeded(cacheLocation);
 
     const QString filename = QStringLiteral("%1/%2.jpg").arg(cacheLocation, account->config()->lodestoneId());
@@ -214,9 +214,9 @@ void LauncherCore::fetchAvatar(Account *account)
 
 void LauncherCore::clearAvatarCache()
 {
-    const QString cacheLocation = QStandardPaths::standardLocations(QStandardPaths::CacheLocation)[0] + QStringLiteral("/avatars");
-    if (QDir(cacheLocation).exists()) {
-        QDir(cacheLocation).removeRecursively();
+    QDir cacheLocation = QDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)).absoluteFilePath(QStringLiteral("avatars"));
+    if (cacheLocation.exists()) {
+        cacheLocation.removeRecursively();
     }
 }
 
@@ -227,12 +227,9 @@ void LauncherCore::refreshNews()
 
 void LauncherCore::refreshLogoImage()
 {
-    const QDir cacheDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::CacheLocation).last();
+    const QDir cacheDir = QStandardPaths::writableLocation(QStandardPaths::StandardLocation::CacheLocation);
     const QDir logoDir = cacheDir.absoluteFilePath(QStringLiteral("logos"));
-
-    if (!logoDir.exists()) {
-        Q_UNUSED(QDir().mkpath(logoDir.absolutePath()))
-    }
+    Utility::createPathIfNeeded(logoDir);
 
     const auto saveTexture = [](physis_SqPackResource const *data, const QString &path, const QString &name) {
         if (QFile::exists(name)) {

@@ -34,14 +34,10 @@ void GameInstaller::installGame()
     const QDir installDirectory = m_profile.config()->gamePath();
 
     const QDir bootDir = installDirectory.absoluteFilePath(QStringLiteral("boot"));
-    if (!bootDir.exists()) {
-        QDir().mkpath(bootDir.path());
-    }
+    Utility::createPathIfNeeded(bootDir);
 
     const QDir gameDir = installDirectory.absoluteFilePath(QStringLiteral("game"));
-    if (!gameDir.exists()) {
-        QDir().mkpath(gameDir.path());
-    }
+    Utility::createPathIfNeeded(gameDir);
 
     Utility::writeVersion(bootDir.absoluteFilePath(QStringLiteral("ffxivboot.ver")), QStringLiteral("2012.01.01.0000.0000"));
     Utility::writeVersion(gameDir.absoluteFilePath(QStringLiteral("ffxivgame.ver")), QStringLiteral("2012.01.01.0000.0000"));

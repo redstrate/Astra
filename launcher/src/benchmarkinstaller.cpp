@@ -49,6 +49,7 @@ void BenchmarkInstaller::start()
             }
 
             const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+            Utility::createPathIfNeeded(dataDir);
 
             const QByteArray data = reply->readAll();
 

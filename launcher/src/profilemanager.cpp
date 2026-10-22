@@ -84,7 +84,7 @@ void ProfileManager::deleteProfile(Profile *profile, const bool deleteFiles)
 
 QString ProfileManager::getDefaultGamePath(const QString &uuid)
 {
-    const QDir appData = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::AppDataLocation)[0];
+    const QDir appData = QStandardPaths::writableLocation(QStandardPaths::StandardLocation::AppDataLocation);
     const QDir gameDir = appData.absoluteFilePath(QStringLiteral("game"));
     return gameDir.absoluteFilePath(uuid);
 }

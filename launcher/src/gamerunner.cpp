@@ -28,9 +28,9 @@ void GameRunner::beginGameExecutable(Profile &profile, const std::optional<Login
 {
     QString gameExectuable;
     if (profile.config()->useDX9() && profile.hasDirectx9()) {
-        gameExectuable = profile.config()->gamePath() + QStringLiteral("/game/ffxiv.exe");
+        gameExectuable = QDir(profile.config()->gamePath()).absoluteFilePath(QStringLiteral("game/ffxiv.exe"));
     } else {
-        gameExectuable = profile.config()->gamePath() + QStringLiteral("/game/ffxiv_dx11.exe");
+        gameExectuable = QDir(profile.config()->gamePath()).absoluteFilePath(QStringLiteral("game/ffxiv_dx11.exe"));
     }
 
     if (profile.dalamudShouldLaunch()) {
@@ -49,7 +49,7 @@ void GameRunner::openOfficialLauncher(Profile &profile)
 
     new ProcessLogger(QStringLiteral("ffxivlauncher"), process);
 
-    launchExecutable(profile, process, {profile.config()->gamePath() + QStringLiteral("/boot/ffxivboot64.exe")}, true, true);
+    launchExecutable(profile, process, {QDir(profile.config()->gamePath()).absoluteFilePath(QStringLiteral("boot/ffxivboot64.exe"))}, true, true);
 }
 
 void GameRunner::openConfigBackup(Profile &profile)
@@ -59,7 +59,7 @@ void GameRunner::openConfigBackup(Profile &profile)
 
     new ProcessLogger(QStringLiteral("ffxivconfig"), process);
 
-    launchExecutable(profile, process, {profile.config()->gamePath() + QStringLiteral("/boot/ffxivconfig64.exe")}, true, true);
+    launchExecutable(profile, process, {QDir(profile.config()->gamePath()).absoluteFilePath(QStringLiteral("boot/ffxivconfig64.exe"))}, true, true);
 }
 
 void GameRunner::openSystemInfo(Profile &profile)
@@ -69,7 +69,7 @@ void GameRunner::openSystemInfo(Profile &profile)
 
     new ProcessLogger(QStringLiteral("ffxivsysinfo"), process);
 
-    launchExecutable(profile, process, {profile.config()->gamePath() + QStringLiteral("/boot/ffxivsysinfo64.exe")}, true, true);
+    launchExecutable(profile, process, {QDir(profile.config()->gamePath()).absoluteFilePath(QStringLiteral("boot/ffxivsysinfo64.exe"))}, true, true);
 }
 
 void GameRunner::beginVanillaGame(const QString &gameExecutablePath, Profile &profile, const std::optional<LoginAuth> &auth)
@@ -96,6 +96,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
 
     const QDir dalamudConfigDir = configDir.absoluteFilePath(QStringLiteral("dalamud"));
     const QDir userDalamudConfigDir = dalamudConfigDir.absoluteFilePath(profile.account()->uuid());
+    Utility::createPathIfNeeded(userDalamudConfigDir);
 
     const QDir dalamudBasePluginDir = dalamudDir.absoluteFilePath(QStringLiteral("plugins"));
     const QDir dalamudUserPluginDir = dalamudBasePluginDir.absoluteFilePath(profile.account()->uuid());
@@ -103,12 +104,14 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
     // Some really dumb plugins check for "installedPlugins" in their assembly directory FOR SOME REASON,
     // so we need to match typical XIVQuickLauncher behavior here. Why? I have no clue.
     const QDir dalamudPluginDir = dalamudUserPluginDir.absoluteFilePath(QStringLiteral("installedPlugins"));
+    Utility::createPathIfNeeded(dalamudPluginDir);
 
     const QDir logDir = dataDir.absoluteFilePath(QStringLiteral("log"));
     Utility::createPathIfNeeded(logDir);
 
     const QDir dalamudRuntimeDir = dalamudDir.absoluteFilePath(QStringLiteral("runtime"));
     const QDir dalamudAssetDir = dalamudDir.absoluteFilePath(QStringLiteral("assets"));
+    Utility::createPathIfNeeded(dalamudAssetDir);
     const QDir dalamudConfigPath = userDalamudConfigDir.absoluteFilePath(QStringLiteral("dalamud-config.json"));
 
     const QDir tempDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
@@ -237,9 +240,9 @@ QString GameRunner::getGameArgs(const Profile &profile, const std::optional<Logi
         gameArgs.push_back({QStringLiteral("ver"), profile.baseGameVersion()});
         gameArgs.push_back({QStringLiteral("resetconfig"), QStringLiteral("0")});
         gameArgs.push_back({QStringLiteral("language"), QString::number(profile.account()->config()->language())});
-        gameArgs.push_back({QStringLiteral("UserPath"), Utility::toWindowsPath(profile.account()->getConfigDir().absolutePath())});
+        gameArgs.push_back({QStringLiteral("UserPath"), Utility::toWindowsPath(profile.account()->getConfigPath())});
 
-        Utility::createPathIfNeeded(profile.account()->getConfigDir().absolutePath());
+        Utility::createPathIfNeeded(profile.account()->getConfigPath());
 
         if (auth) {
             gameArgs.push_back({QStringLiteral("DEV.MaxEntitledExpansionID"), QString::number(auth->maxExpansion)});
@@ -334,6 +337,10 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
         const QDir driveC = winePrefix.absoluteFilePath(QStringLiteral("drive_c"));
         const QDir windows = driveC.absoluteFilePath(QStringLiteral("windows"));
         const QDir system32 = windows.absoluteFilePath(QStringLiteral("system32"));
+        if (!system32.exists()) {
+            qCWarning(ASTRA_LOG) << "Stopping launch because we don't have a system32 directory?";
+            return; // something went horribly wrong, don't even touch this
+        }
 
         for (const auto &entry : dxvk64Dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot)) {
             if (QFile::exists(system32.absoluteFilePath(entry.fileName()))) {
@@ -356,6 +363,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     const QString logDir = dataDir.absoluteFilePath(QStringLiteral("log"));
+    Utility::createPathIfNeeded(logDir);
 
     env.insert(QStringLiteral("DXVK_LOG_PATH"), logDir);
 

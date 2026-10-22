@@ -448,15 +448,16 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
 
 QCoro::Task<QString> SquareEnixLogin::getBootHash() const
 {
-    const QList<QString> fileList = {QStringLiteral("ffxivboot.exe"),
-                                     QStringLiteral("ffxivboot64.exe"),
-                                     QStringLiteral("ffxivlauncher.exe"),
-                                     QStringLiteral("ffxivlauncher64.exe"),
-                                     QStringLiteral("ffxivupdater.exe"),
-                                     QStringLiteral("ffxivupdater64.exe")};
+    const QDir bootDir = QDir(m_info->profile->config()->gamePath()).absoluteFilePath(QStringLiteral("boot"));
+    const QList fileList = {QStringLiteral("ffxivboot.exe"),
+                            QStringLiteral("ffxivboot64.exe"),
+                            QStringLiteral("ffxivlauncher.exe"),
+                            QStringLiteral("ffxivlauncher64.exe"),
+                            QStringLiteral("ffxivupdater.exe"),
+                            QStringLiteral("ffxivupdater64.exe")};
 
-    const auto hashFuture = QtConcurrent::mapped(fileList, [this](const auto &filename) -> QString {
-        return getFileHash(m_info->profile->config()->gamePath() + QStringLiteral("/boot/") + filename);
+    const auto hashFuture = QtConcurrent::mapped(fileList, [bootDir](const auto &filename) -> QString {
+        return getFileHash(bootDir.absoluteFilePath(filename));
     });
 
     co_await hashFuture;

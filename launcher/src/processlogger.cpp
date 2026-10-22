@@ -11,6 +11,7 @@ ProcessLogger::ProcessLogger(const QString &baseName, QProcess *process)
 {
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     const QDir logDirectory = dataDir.absoluteFilePath(QStringLiteral("log"));
+    Utility::createPathIfNeeded(logDirectory);
 
     m_file.setFileName(logDirectory.absoluteFilePath(QStringLiteral("%1.log").arg(baseName)));
     if (!m_file.open(QIODevice::WriteOnly | QIODevice::Unbuffered)) {

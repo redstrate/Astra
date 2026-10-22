@@ -312,13 +312,9 @@ bool Patcher::processPatch(const QueuedPatch &patch)
 
 void Patcher::setupDirectories()
 {
-    QDir dataDir;
-    dataDir.setPath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
-
-    m_patchesDir.setPath(dataDir.absoluteFilePath(QStringLiteral("patch")));
-    if (!m_patchesDir.exists()) {
-        QDir().mkpath(m_patchesDir.path());
-    }
+    const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    m_patchesDir = dataDir.absoluteFilePath(QStringLiteral("patch"));
+    Utility::createPathIfNeeded(m_patchesDir);
 
     m_patchesDirStorageInfo = QStorageInfo(m_patchesDir);
     m_baseDirStorageInfo = QStorageInfo(m_baseDirectory);

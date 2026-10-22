@@ -53,7 +53,6 @@ private:
     QTemporaryDir m_tempDir;
     QDir m_wineDir;
     QDir m_dxvkDir;
-    QDir m_dataDir;
     QDir m_appDataDir;
     QDir m_dalamudDir;
     QDir m_dalamudAssetDir;

@@ -9,6 +9,7 @@
 #include <KSandbox>
 
 #include "launchercore.h"
+#include "utility.h"
 
 CompatibilityToolInstaller::CompatibilityToolInstaller(LauncherCore &launcher, QObject *parent)
     : QObject(parent)
@@ -30,7 +31,7 @@ void CompatibilityToolInstaller::installCompatibilityTool()
         return;
     }
 
-    Q_UNUSED(QDir().mkpath(astraToolDir.absolutePath()))
+    Utility::createPathIfNeeded(astraToolDir);
 
     // we need a run script to escape the compatibility tool quirk where it runs everything in the current directory
     const auto wrapperScriptContents = QStringLiteral("#!/bin/sh\nexec \"$@\"");
@@ -70,7 +71,7 @@ void CompatibilityToolInstaller::installCompatibilityTool()
     QProcess::execute(QStringLiteral("chmod"), {QStringLiteral("+x"), astraToolDir.absoluteFilePath(QStringLiteral("run.sh"))});
 
     // copy required files
-    const QDir homeDir = QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first();
+    const QDir homeDir = QStandardPaths::standardLocations(QStandardPaths::HomeLocation).constFirst(); // TODO: Port to locateFile I *guess*
     const QDir filesDir = homeDir.absoluteFilePath(QStringLiteral(".local/share/flatpak/app/zone.xiv.astra/current/active/files/libexec/"));
 
     // we want to link these so they are updated when our flatpak updates
@@ -155,7 +156,8 @@ bool CompatibilityToolInstaller::hasSteam() const
 
 std::pair<CompatibilityToolInstaller::SteamType, QDir> CompatibilityToolInstaller::findSteamType() const
 {
-    const QDir appDataDir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::HomeLocation)[0];
+    // TODO: Port to locateFile I *guess*
+    const QDir appDataDir = QStandardPaths::writableLocation(QStandardPaths::StandardLocation::HomeLocation);
 
     // prefer flatpak
     {

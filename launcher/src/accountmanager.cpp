@@ -115,7 +115,7 @@ void AccountManager::insertAccount(Account *account)
 
 QString AccountManager::getDefaultWinePrefixPath(const QString &uuid)
 {
-    const QDir appData = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::AppDataLocation)[0];
+    const QDir appData = QStandardPaths::writableLocation(QStandardPaths::StandardLocation::AppDataLocation);
     const QDir prefixDir = appData.absoluteFilePath(QStringLiteral("prefix"));
     return prefixDir.absoluteFilePath(uuid);
 }

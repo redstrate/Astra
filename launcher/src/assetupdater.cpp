@@ -32,14 +32,14 @@ QCoro::Task<bool> AssetUpdater::update()
 {
     qInfo(ASTRA_LOG) << "Checking for compatibility tool updates...";
 
-    m_dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
     if (LauncherCore::needsCompatibilityTool()) {
-        const QDir compatibilityToolDir = m_dataDir.absoluteFilePath(QStringLiteral("tool"));
+        const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
         m_wineDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("wine"));
-        m_dxvkDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("dxvk"));
-
         Utility::createPathIfNeeded(m_wineDir);
+
+        m_dxvkDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("dxvk"));
         Utility::createPathIfNeeded(m_dxvkDir);
 
         if (m_profile.config()->wineType() == Profile::WineType::BuiltIn && !co_await checkRemoteCompatibilityToolVersion()) {
@@ -58,13 +58,13 @@ QCoro::Task<bool> AssetUpdater::update()
 
     qInfo(ASTRA_LOG) << "Checking for asset updates...";
 
-    m_dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    m_dalamudDir = m_dataDir.absoluteFilePath(QStringLiteral("dalamud"));
-    m_dalamudAssetDir = m_dalamudDir.absoluteFilePath(QStringLiteral("assets"));
-    m_dalamudRuntimeDir = m_dalamudDir.absoluteFilePath(QStringLiteral("runtime"));
-
+    m_dalamudDir = dataDir.absoluteFilePath(QStringLiteral("dalamud"));
     Utility::createPathIfNeeded(m_dalamudDir);
+
+    m_dalamudAssetDir = m_dalamudDir.absoluteFilePath(QStringLiteral("assets"));
     Utility::createPathIfNeeded(m_dalamudAssetDir);
+
+    m_dalamudRuntimeDir = m_dalamudDir.absoluteFilePath(QStringLiteral("runtime"));
     Utility::createPathIfNeeded(m_dalamudRuntimeDir);
 
     if (m_profile.config()->dalamudChannel() != QStringLiteral("local")) {
