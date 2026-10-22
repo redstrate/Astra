@@ -6,10 +6,9 @@ on:
 
 env:
   QT_VERSION: 6.10.3 # Keep in sync with CMakeLists.txt
-  KF_VERSION: v6.26.0 # Ditto
-  # TODO: switch back to released version once https://invent.kde.org/libraries/kirigami-addons/-/commit/476b855c8d4606e75548b8f774a9c4ffe7897e32 is in a release
-  KIRIGAMI_ADDONS_VERSION: master # Ditto x2
-  PLASMA_VERSION: v6.6.5 # For Breeze
+  KF_VERSION: v6.31.0 # Ditto
+  KIRIGAMI_ADDONS_VERSION: v1.15.0 # Ditto x2
+  PLASMA_VERSION: v6.7.5 # For Breeze
   COMMON_CMAKE_OPTIONS: "-DBUILD_TESTING=OFF -DBUILD_PYTHON_BINDINGS=OFF"
   QCORO_VERSION: v0.13.0
 
@@ -22,7 +21,7 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
     - name: REUSE Compliance Check
       uses: fsfe/reuse-action@v6
 
@@ -34,7 +33,7 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           submodules: true
 
@@ -58,7 +57,7 @@ jobs:
 
       - name: Cache Prefix
         id: cache-prefix-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: ${{ steps.strings.outputs.prefix-dir }}
           key: windows-prefix-kf${{ env.KF_VERSION }}-qt${{ env.QT_VERSION }}-ka${{ env.KIRIGAMI_ADDONS_VERSION }}
@@ -262,7 +261,7 @@ jobs:
 
       - name: Save Prefix
         id: cache-prefix-save
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         if: steps.cache-prefix-restore.outputs.cache-hit != 'true'
         with:
           path: ${{ steps.strings.outputs.prefix-dir }}
@@ -354,7 +353,7 @@ jobs:
           Remove-Item -Path ${{ steps.strings.outputs.build-output-dir }}/bin/translations -Force -Recurse
 
       - name: Archive artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: astra-windows-x86_64
           path: ${{ steps.strings.outputs.build-output-dir }}/bin
@@ -377,7 +376,7 @@ jobs:
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.variant.runner }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@v7
         with:
           submodules: true
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
