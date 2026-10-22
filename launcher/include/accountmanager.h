@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <QAbstractListModel>
+
 #include "account.h"
 
 class AccountManager : public QAbstractListModel

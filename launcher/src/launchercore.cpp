@@ -9,10 +9,10 @@
 #include <KLocalizedString>
 #include <KSystemInhibitor>
 #include <QCoroSignal>
-#include <QDir>
+#include <QDirIterator>
 #include <QImage>
-#include <QNetworkAccessManager>
-#include <QStandardPaths>
+#include <QJsonObject>
+#include <QUrlQuery>
 #include <qcoronetworkreply.h>
 
 #include "account.h"
@@ -24,7 +24,6 @@
 #include "gamerunner.h"
 #include "launchercore.h"
 
-#include "assetupdater.h"
 #include "profileconfig.h"
 #include "squareenixlogin.h"
 #include "utility.h"

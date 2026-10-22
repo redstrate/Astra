@@ -6,6 +6,8 @@
 #include <KLocalizedString>
 #include <QFile>
 #include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QProcess>
 
 #include "account.h"

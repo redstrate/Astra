@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include <QtQml>
+#include <QAbstractListModel>
+#include <qqmlintegration.h>
 
 #include "profile.h"
 

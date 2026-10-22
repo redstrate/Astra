@@ -3,9 +3,9 @@
 
 #include "benchmarkinstaller.h"
 
-#include <KArchiveDirectory>
 #include <KLocalizedString>
 #include <KZip>
+#include <QNetworkReply>
 
 #include "astra_log.h"
 #include "launchercore.h"

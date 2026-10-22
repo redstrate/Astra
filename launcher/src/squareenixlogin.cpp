@@ -5,12 +5,10 @@
 
 #include <KFormat>
 #include <KLocalizedString>
-#include <KSandbox>
 #include <QCoroSignal>
 #include <QDesktopServices>
 #include <QFile>
-#include <QNetworkReply>
-#include <QRegularExpressionMatch>
+#include <QJsonObject>
 #include <QUrlQuery>
 #include <QtConcurrentMap>
 #include <qcorofuture.h>

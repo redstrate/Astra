@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include <QtQml>
+#include <QObject>
+#include <qqmlintegration.h>
 
 #include <physis.hpp>
 

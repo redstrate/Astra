@@ -6,6 +6,9 @@
 #include "launchercore.h"
 
 #include <QCoroNetwork>
+#include <QJsonDocument>
+#include <QJsonValue>
+#include <QUrlQuery>
 
 SteamAPI::SteamAPI(QObject *parent)
     : QObject(parent)

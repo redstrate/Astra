@@ -3,7 +3,9 @@
 
 #pragma once
 
-#include <QtQml>
+#include <QDir>
+#include <QObject>
+#include <qqmlintegration.h>
 
 class LauncherCore;
 

@@ -4,8 +4,8 @@
 #pragma once
 
 #include <QNetworkAccessManager>
-#include <QtQml>
 #include <qcorotask.h>
+#include <qqmlintegration.h>
 
 #include "accountmanager.h"
 #include "config.h"

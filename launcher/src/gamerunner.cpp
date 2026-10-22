@@ -14,6 +14,7 @@
 
 #include <KProcessList>
 #include <QGuiApplication>
+#include <QRegularExpression>
 
 using namespace Qt::StringLiterals;
 

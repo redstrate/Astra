@@ -6,7 +6,9 @@
 #include <KLocalizedString>
 #include <KirigamiApp>
 #include <QApplication> // NOTE: do not remove this, if your IDE suggests to do so
+#include <QCommandLineParser>
 #include <QIcon>
+#include <QQmlApplicationEngine>
 #include <QQuickStyle>
 #include <kdsingleapplication.h>
 #include <kdsingleapplication_version.h>

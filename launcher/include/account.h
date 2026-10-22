@@ -3,8 +3,9 @@
 
 #pragma once
 
-#include <QtQml>
+#include <QDir>
 #include <qcorotask.h>
+#include <qqmlintegration.h>
 
 class LauncherCore;
 class AccountConfig;

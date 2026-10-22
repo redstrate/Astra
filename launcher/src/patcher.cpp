@@ -7,8 +7,10 @@
 #include <KLocalizedString>
 #include <QDir>
 #include <QFile>
+#include <QFutureSynchronizer>
+#include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QtConcurrent>
+#include <QtConcurrentRun>
 #include <physis.hpp>
 #include <qcorofuture.h>
 
