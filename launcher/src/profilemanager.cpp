@@ -62,10 +62,6 @@ Profile *ProfileManager::addProfile()
 
 void ProfileManager::deleteProfile(Profile *profile, const bool deleteFiles)
 {
-    auto config = KSharedConfig::openStateConfig();
-    config->deleteGroup(QStringLiteral("profile-%1").arg(profile->uuid()));
-    config->sync();
-
     // delete files if requested
     if (deleteFiles) {
         QDir(profile->config()->gamePath()).removeRecursively();
@@ -76,6 +72,15 @@ void ProfileManager::deleteProfile(Profile *profile, const bool deleteFiles)
     m_profiles.removeAll(profile);
     endRemoveRows();
     Q_EMIT profilesChanged();
+
+    const QString uuid = profile->uuid();
+
+    // We want to delete the Profile object first, so it doesn't attempt to re-save the config.
+    delete profile;
+
+    auto config = KSharedConfig::openStateConfig();
+    config->deleteGroup(QStringLiteral("profile-%1").arg(uuid));
+    config->sync();
 }
 
 QString ProfileManager::getDefaultGamePath(const QString &uuid)

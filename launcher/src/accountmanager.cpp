@@ -87,15 +87,20 @@ bool AccountManager::canDelete(const Account *account) const
 
 void AccountManager::deleteAccount(Account *account)
 {
-    auto config = KSharedConfig::openStateConfig();
-    config->deleteGroup(QStringLiteral("account-%1").arg(account->uuid()));
-    config->sync();
-
     const int row = static_cast<int>(m_accounts.indexOf(account));
     beginRemoveRows(QModelIndex(), row, row);
     m_accounts.removeAll(account);
     endRemoveRows();
     Q_EMIT accountsChanged();
+
+    const QString uuid = account->uuid();
+
+    // We want to delete the Account object first, so it doesn't attempt to re-save the config.
+    delete account;
+
+    auto config = KSharedConfig::openStateConfig();
+    config->deleteGroup(QStringLiteral("account-%1").arg(uuid));
+    config->sync();
 }
 
 void AccountManager::insertAccount(Account *account)
