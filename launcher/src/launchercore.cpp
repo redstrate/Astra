@@ -670,6 +670,7 @@ QCoro::Task<> LauncherCore::beginAutoConfiguration(Account *account, QString url
     co_await reply;
 
     if (reply->error() != QNetworkReply::NoError) {
+        qWarning(ASTRA_LOG) << "Failed to fetch configuration from" << url << reply->errorString();
         Q_EMIT account->autoConfigurationResult(i18n("Configuration Error"), i18n("Failed to fetch configuration from %1:\n\n%2", url, reply->errorString()));
         co_return;
     }
