@@ -327,27 +327,29 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
         setWindowsVersion(profile, QStringLiteral("win7"));
 
-        // copy DXVK
-        const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-        const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
-        const QDir dxvkDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("dxvk"));
-        const QDir dxvk64Dir = dxvkDir.absoluteFilePath(QStringLiteral("x64"));
+        // copy DXVK if using the built-in wine. currently this is tied to the same setting, mostly for ARM64 reasons
+        if (profile.config()->wineType() == Profile::WineType::BuiltIn) {
+            const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+            const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
+            const QDir dxvkDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("dxvk"));
+            const QDir dxvk64Dir = dxvkDir.absoluteFilePath(QStringLiteral("x64"));
 
-        const QDir winePrefix = profile.account()->config()->winePrefixPath();
-        const QDir driveC = winePrefix.absoluteFilePath(QStringLiteral("drive_c"));
-        const QDir windows = driveC.absoluteFilePath(QStringLiteral("windows"));
-        const QDir system32 = windows.absoluteFilePath(QStringLiteral("system32"));
-        if (!system32.exists()) {
-            qCWarning(ASTRA_LOG) << "Stopping launch because we don't have a system32 directory?";
-            Q_EMIT m_launcher.gameClosed(&profile);
-            return; // something went horribly wrong, don't even touch this
-        }
-
-        for (const auto &entry : dxvk64Dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot)) {
-            if (QFile::exists(system32.absoluteFilePath(entry.fileName()))) {
-                QFile::remove(system32.absoluteFilePath(entry.fileName()));
+            const QDir winePrefix = profile.account()->config()->winePrefixPath();
+            const QDir driveC = winePrefix.absoluteFilePath(QStringLiteral("drive_c"));
+            const QDir windows = driveC.absoluteFilePath(QStringLiteral("windows"));
+            const QDir system32 = windows.absoluteFilePath(QStringLiteral("system32"));
+            if (!system32.exists()) {
+                qCWarning(ASTRA_LOG) << "Stopping launch because we don't have a system32 directory?";
+                Q_EMIT m_launcher.gameClosed(&profile);
+                return; // something went horribly wrong, don't even touch this
             }
-            QFile::copy(entry.absoluteFilePath(), system32.absoluteFilePath(entry.fileName()));
+
+            for (const auto &entry : dxvk64Dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot)) {
+                if (QFile::exists(system32.absoluteFilePath(entry.fileName()))) {
+                    QFile::remove(system32.absoluteFilePath(entry.fileName()));
+                }
+                QFile::copy(entry.absoluteFilePath(), system32.absoluteFilePath(entry.fileName()));
+            }
         }
 #endif
     }
