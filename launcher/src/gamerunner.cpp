@@ -80,6 +80,9 @@ void GameRunner::beginVanillaGame(const QString &gameExecutablePath, Profile &pr
         Q_UNUSED(exitCode)
         Q_EMIT m_launcher.gameClosed(&profile);
     });
+    connect(gameProcess, &QProcess::errorOccurred, this, [this, &profile] {
+        Q_EMIT m_launcher.gameClosed(&profile);
+    });
 
     auto args = getGameArgs(profile, auth);
 
@@ -165,6 +168,9 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
         qCWarning(ASTRA_LOG) << "Did not find or parse PID from Dalamud:" << log;
 
         // If Dalamud didn't give a valid PID, OK. Let's just do our previous status quo and indicate we did log out.
+        Q_EMIT m_launcher.gameClosed(&profile);
+    });
+    connect(dalamudProcess, &QProcess::errorOccurred, this, [this, &profile] {
         Q_EMIT m_launcher.gameClosed(&profile);
     });
 
