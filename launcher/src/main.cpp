@@ -74,6 +74,18 @@ int main(int argc, char *argv[])
                        QString::fromLatin1(LIBCOTP_VERSION_STRING),
                        QStringLiteral("https://github.com/paolostivanin/libcotp"),
                        KAboutLicense::Unknown);
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+    about.addComponent(QStringLiteral("Wine"),
+                       i18n("Used to run the Windows version of FFXIV."),
+                       {},
+                       QStringLiteral("https://winehq.org/"),
+                       KAboutLicense::GPL_V2);
+    about.addComponent(QStringLiteral("DXVK"),
+                       i18n("Vulkan-based implementation of D3D8, 9, 10 and 11 for Linux / Wine"),
+                       {},
+                       QStringLiteral("https://github.com/doitsujin/dxvk"),
+                       KAboutLicense::Unknown);
+#endif
 
     KAboutData::setApplicationData(about);
     QGuiApplication::setWindowIcon(QIcon::fromTheme(u"zone.xiv.astra"_s));
