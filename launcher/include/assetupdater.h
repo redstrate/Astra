@@ -24,14 +24,9 @@ public:
     QCoro::Task<bool> update();
 
 private:
-    QCoro::Task<bool> checkRemoteCompatibilityToolVersion();
-    QCoro::Task<bool> checkRemoteDxvkVersion();
-
     QCoro::Task<bool> checkRemoteDalamudAssetVersion();
     QCoro::Task<bool> checkRemoteDalamudVersion();
 
-    QCoro::Task<bool> installCompatibilityTool() const;
-    QCoro::Task<bool> installDxvkTool() const;
     QCoro::Task<bool> installDalamudAssets();
     QCoro::Task<bool> installDalamud();
     QCoro::Task<bool> installRuntime();
@@ -40,8 +35,6 @@ private:
     [[nodiscard]] QUrl dalamudAssetManifestUrl() const;
     [[nodiscard]] QUrl dotnetRuntimePackageUrl(const QString &version) const;
     [[nodiscard]] QUrl dotnetDesktopPackageUrl(const QString &version) const;
-    [[nodiscard]] QUrl dxvkReleasesUrl() const;
-    [[nodiscard]] QUrl wineReleasesUrl() const;
 
     static QString extractZip(const QString &filePath, const QString &directory);
 
@@ -51,8 +44,6 @@ private:
     QString m_remoteRuntimeVersion;
 
     QTemporaryDir m_tempDir;
-    QDir m_wineDir;
-    QDir m_dxvkDir;
     QDir m_appDataDir;
     QDir m_dalamudDir;
     QDir m_dalamudAssetDir;
@@ -62,10 +53,6 @@ private:
     QJsonArray m_remoteDalamudAssetArray;
     QString m_remoteDalamudDownloadUrl;
     QString m_remoteDalamudAssetPackageUrl;
-    QString m_remoteCompatibilityToolVersion;
-    QString m_remoteCompatibilityToolUrl;
-    QString m_remoteDxvkToolVersion;
-    QString m_remoteDxvkToolUrl;
 
     Profile &m_profile;
 };

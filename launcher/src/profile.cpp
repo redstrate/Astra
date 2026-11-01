@@ -124,18 +124,6 @@ void Profile::readGameData()
 
 void Profile::readWineInfo()
 {
-    const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-
-    const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
-    const QDir wineDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("wine"));
-    if (wineDir.exists()) {
-        const QString wineVer = wineDir.absoluteFilePath(QStringLiteral("wine.ver"));
-        if (QFile::exists(wineVer)) {
-            m_compatibilityToolVersion = Utility::readVersion(wineVer);
-            qInfo(ASTRA_LOG) << "Compatibility tool version:" << m_compatibilityToolVersion;
-        }
-    }
-
     auto wineProcess = new QProcess(this);
 
     connect(wineProcess, &QProcess::readyReadStandardOutput, this, [wineProcess, this] {
@@ -150,14 +138,8 @@ void Profile::readWineInfo()
 QString Profile::winePath() const
 {
     switch (config()->wineType()) {
-    case BuiltIn: {
-        const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-        const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
-        const QDir wineDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("wine"));
-        const QDir wineBinDir = wineDir.absoluteFilePath(QStringLiteral("bin"));
-
-        return wineBinDir.absoluteFilePath(QStringLiteral("wine64"));
-    }
+    case BuiltIn:
+        return QStringLiteral("/app/lib/wine/bin/wine64");
     case Custom: // custom pth
         return m_config->winePath();
     default:
@@ -269,7 +251,7 @@ QString Profile::wineVersionText() const
 {
     if (!isWineInstalled()) {
         if (config()->wineType() == Profile::WineType::BuiltIn) {
-            return i18n("Wine will be installed when you launch the game.");
+            return i18n("Built-in Wine is missing, and the game will not launch!");
         }
         return i18n("Wine is not installed.");
     }
@@ -360,16 +342,6 @@ bool Profile::dalamudShouldLaunch() const
 {
     // Local Dalamud installations can always run
     return config()->dalamudEnabled() && (config()->dalamudChannel() != QStringLiteral("local") ? m_dalamudApplicable : true);
-}
-
-QString Profile::compatibilityToolVersion() const
-{
-    return m_compatibilityToolVersion;
-}
-
-void Profile::setCompatibilityToolVersion(const QString &version)
-{
-    m_compatibilityToolVersion = version;
 }
 
 physis_SqPackResource const *Profile::resource() const

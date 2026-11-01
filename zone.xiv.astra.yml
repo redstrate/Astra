@@ -7,8 +7,6 @@ sdk-extensions:
 command: astra
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin
-  build-args:
-    - --share=network
 cleanup:
   # dev files
   - /share/cmake
@@ -83,6 +81,28 @@ modules:
       - type: archive
         url: https://github.com/corrosion-rs/corrosion/archive/refs/tags/v0.6.1.tar.gz
         sha256: e9e95b1ee2bad52681f347993fb1a5af5cce458c5ce8a2636c9e476e4babf8e3
+  - name: wine
+    buildsystem: simple
+    build-commands:
+      - mkdir /app/lib/wine
+      - tar -xf wine-xiv-staging-fsync-git-ubuntu-10.8.r0.a2ca9e4.tar.xz --strip-components=1 --no-same-owner -C /app/lib/wine
+      - rm -rf /app/lib/wine/include
+    only-arches:
+      - x86_64
+    sources:
+      - type: file
+        url: https://github.com/goatcorp/wine-xiv-git/releases/download/10.8.r0.a2ca9e4/wine-xiv-staging-fsync-git-ubuntu-10.8.r0.a2ca9e4.tar.xz
+        sha256: b9d74ea2f9db3f1eed1c9fdb7510996975a0deb20d268c117a69900709a3e815
+  - name: dxvk
+    buildsystem: simple
+    build-commands:
+      - mkdir /app/lib/dxvk
+      - tar -xf dxvk-3.1.1.tar.gz --strip-components=1 --no-same-owner -C /app/lib/dxvk
+      - rm -rf /app/lib/dxvk/x32
+    sources:
+      - type: file
+        url: https://github.com/doitsujin/dxvk/releases/download/v3.1.1/dxvk-3.1.1.tar.gz
+        sha256: 40565b4a724aadc4433fa4e010b4b23916d9b1f1baeee64e17186db94f54e608
   - name: astra
     buildsystem: cmake-ninja
     config-opts:
@@ -93,7 +113,7 @@ modules:
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
     build-options:
       build-args:
-        - --share=network # needed for cargo unfortunately, flatpak has no native support (yet)
+        - --share=network # TODO: port to generated sources
     sources:
       - type: dir
         path: .

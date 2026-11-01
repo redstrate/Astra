@@ -85,9 +85,6 @@ public:
     /// @return If Dalamud is enabled, and it's also applicable for the current game version.
     [[nodiscard]] bool dalamudShouldLaunch() const;
 
-    [[nodiscard]] QString compatibilityToolVersion() const;
-    void setCompatibilityToolVersion(const QString &version);
-
     physis_SqPackResource const *resource() const;
 
     [[nodiscard]] QString subtitle() const;
@@ -122,7 +119,6 @@ private:
     QString m_dalamudVersion;
     int m_dalamudAssetVersion = -1;
     QString m_runtimeVersion;
-    QString m_compatibilityToolVersion;
     bool m_dalamudApplicable = false;
 
     QString m_frontierUrl;

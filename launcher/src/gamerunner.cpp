@@ -323,22 +323,17 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     QList<QString> arguments;
     auto env = process->processEnvironment();
 
-    if (needsRegistrySetup) {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+    if (needsRegistrySetup) {
         // FFXIV detects this as a "macOS" build by checking if Wine shows up
         if (!profile.config()->isBenchmark()) {
             const int value = profile.account()->config()->license() == Account::GameLicense::macOS ? 0 : 1;
             addRegistryKey(profile, QStringLiteral("HKEY_CURRENT_USER\\Software\\Wine"), QStringLiteral("HideWineExports"), QString::number(value));
         }
 
-        setWindowsVersion(profile, QStringLiteral("win7"));
-
-        // copy DXVK if using the built-in wine. currently this is tied to the same setting, mostly for ARM64 reasons
+        // Copy DXVK if using the built-in wine. currently this is tied to the same setting, mostly for ARM64 reasons
         if (profile.config()->wineType() == Profile::WineType::BuiltIn) {
-            const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-            const QDir compatibilityToolDir = dataDir.absoluteFilePath(QStringLiteral("tool"));
-            const QDir dxvkDir = compatibilityToolDir.absoluteFilePath(QStringLiteral("dxvk"));
-            const QDir dxvk64Dir = dxvkDir.absoluteFilePath(QStringLiteral("x64"));
+            const QDir dxvkDir = QStringLiteral("/app/lib/dxvk/x64");
 
             const QDir winePrefix = profile.account()->config()->winePrefixPath();
             const QDir driveC = winePrefix.absoluteFilePath(QStringLiteral("drive_c"));
@@ -350,15 +345,18 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
                 return; // something went horribly wrong, don't even touch this
             }
 
-            for (const auto &entry : dxvk64Dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot)) {
-                if (QFile::exists(system32.absoluteFilePath(entry.fileName()))) {
-                    QFile::remove(system32.absoluteFilePath(entry.fileName()));
+            for (const auto &entry : dxvkDir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot)) {
+                QFileInfo info(system32.absoluteFilePath(entry.fileName()));
+                if (info.symLinkTarget() == entry.absoluteFilePath()) {
+                    continue;
                 }
-                QFile::copy(entry.absoluteFilePath(), system32.absoluteFilePath(entry.fileName()));
+
+                QFile::remove(info.absoluteFilePath());
+                QFile::link(entry.absoluteFilePath(), info.absoluteFilePath());
             }
         }
-#endif
     }
+#endif
 
     if (m_launcher.config()->enableRenderDocCapture()) {
         env.insert(QStringLiteral("VK_LAYER_RENDERDOC_Capture"), QStringLiteral("VK_LAYER_RENDERDOC_Capture"));

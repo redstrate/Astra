@@ -32,25 +32,13 @@ SPDX-License-Identifier: CC0-1.0
       <default>false</default>
     </entry>
     <entry name="DalamudDistribServer" type="String">
-      <default>kamori.goats.dev</default>
-    </entry>
-    <entry name="PreferredProtocol" type="String">
-      <default>https</default>
+      <default>https://kamori.goats.dev</default>
     </entry>
     <entry key="EncryptArguments" type="bool">
       <default>true</default>
     </entry>
     <entry key="EnableRenderDocCapture" type="bool">
       <default>false</default>
-    </entry>
-    <entry name="DXVKRepository" type="String">
-      <default>doitsujin/dxvk</default>
-    </entry>
-    <entry name="WineRepository" type="String">
-      <default>goatcorp/wine-xiv-git</default>
-    </entry>
-    <entry name="GithubApi" type="String">
-      <default>api.github.com</default>
     </entry>
     <entry name="BenchmarkURL" type="String">
       <default>https://sqex.to/ffxiv-bench</default>
