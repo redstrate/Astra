@@ -52,22 +52,34 @@ modules:
       - type: archive
         url: https://github.com/frankosterfeld/qtkeychain/archive/refs/tags/0.17.0.tar.gz
         sha256: 3b85c3929034b0a99da777130c34d99f006fcd3a9d56564159399a33fee0e504
-  - name: steamwrap
+  - name: steam (x64)
     buildsystem: simple
     build-commands:
         - install -D steamwrap /app/libexec/steamwrap
+        - install -D libsteam_api.so /app/libexec/libsteam_api.so
+    only-arches:
+      - x86_64
     sources:
       - type: file
-        url: https://xiv.zone/distrib/steamwrap/steamwrap
+        url: https://xiv.zone/distrib/steamwrap/1.0.0/x64/steamwrap
         sha256: 196a7d07fcfa65dbb13a6cb37490926cd6c219875f0184f4c5aa156e99d2c454
-  - name: steamapi
+      - type: file
+        url: https://xiv.zone/distrib/steamwrap/1.0.0/x64/libsteam_api.so
+        sha256: 0f2c41c20644503c17e13498203986493332fc8296dbd78493bc1fed352ec0cc
+  - name: steam (arm64)
     buildsystem: simple
     build-commands:
-        - install -D libsteam_api.so /app/libexec/libsteam_api.so
+      - install -D steamwrap /app/libexec/steamwrap
+      - install -D libsteam_api.so /app/libexec/libsteam_api.so
+    only-arches:
+      - aarch64
     sources:
       - type: file
-        url: https://xiv.zone/distrib/steamwrap/libsteam_api.so
-        sha256: 0f2c41c20644503c17e13498203986493332fc8296dbd78493bc1fed352ec0cc
+        url: https://xiv.zone/distrib/steamwrap/1.0.0/arm64/steamwrap
+        sha256: 455ce7ec5ab9c0c3c6a0e46f6f6df3839aac4ca17773b3018387c9c72bd73d56
+      - type: file
+        url: https://xiv.zone/distrib/steamwrap/1.0.0/arm64/libsteam_api.so
+        sha256: 6010ff5049f0154a270092cb93729f1fc691d28e3b8a6f5fc6f8fcccfbd1e508
   - name: corrosion
     buildsystem: cmake-ninja
     config-opts:
