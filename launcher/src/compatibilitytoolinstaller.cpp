@@ -78,13 +78,24 @@ void CompatibilityToolInstaller::installCompatibilityTool()
     QFile::link(filesDir.absoluteFilePath(QStringLiteral("steamwrap")), astraToolDir.absoluteFilePath(QStringLiteral("steamwrap")));
     QFile::link(filesDir.absoluteFilePath(QStringLiteral("libsteam_api.so")), astraToolDir.absoluteFilePath(QStringLiteral("libsteam_api.so")));
 
-    const QString toolManifestContents = QStringLiteral(
-        "\"manifest\"\n"
-        "{\n"
-        "  \"version\" \"2\"\n"
-        "  \"commandline\" \"/wrapper.sh \\\"$STEAM_RUNTIME/scripts/switch-runtime.sh\\\" --runtime=\\\"\\\" -- "
-        "$STEAM_COMPAT_CLIENT_INSTALL_PATH/compatibilitytools.d/astra/run.sh %verb%\"\n"
-        "}");
+    QString toolManifestContents;
+    if (QSysInfo::currentCpuArchitecture() == QStringLiteral("arm64")) {
+        // In the ARM64 Steam runtime switch-runtime.sh isn't a thing, but with some testing on the Steam Frame it looks like we don't even need it?
+        toolManifestContents = QStringLiteral(
+            "\"manifest\"\n"
+            "{\n"
+            "  \"version\" \"2\"\n"
+            "  \"commandline\" \"/wrapper.sh $STEAM_COMPAT_CLIENT_INSTALL_PATH/compatibilitytools.d/astra/run.sh %verb%\"\n"
+            "}");
+    } else {
+        toolManifestContents = QStringLiteral(
+            "\"manifest\"\n"
+            "{\n"
+            "  \"version\" \"2\"\n"
+            "  \"commandline\" \"/wrapper.sh \\\"$STEAM_RUNTIME/scripts/switch-runtime.sh\\\" --runtime=\\\"\\\" -- "
+            "$STEAM_COMPAT_CLIENT_INSTALL_PATH/compatibilitytools.d/astra/run.sh %verb%\"\n"
+            "}");
+    }
 
     QFile toolManifestFile(astraToolDir.absoluteFilePath(QStringLiteral("toolmanifest.vdf")));
     if (toolManifestFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
