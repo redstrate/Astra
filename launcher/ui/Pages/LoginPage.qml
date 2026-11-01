@@ -313,7 +313,6 @@ QQC2.Control {
                 icon.name: "internet-services-symbolic"
                 // TODO: how do we link to a "worldwide" lodestone, if that even exists?
                 url: 'https://na.finalfantasyxiv.com/lodestone/'
-                onClicked: applicationWindow().openUrl(url)
             }
 
             FormCard.FormDelegateSeparator {}
@@ -322,7 +321,6 @@ QQC2.Control {
                 text: i18nc("@action:button", "Mog Station")
                 icon.name: "internet-services-symbolic"
                 url: 'https://secure.square-enix.com/account/app/svc/mogstation/'
-                onClicked: applicationWindow().openUrl(url)
             }
         }
     }

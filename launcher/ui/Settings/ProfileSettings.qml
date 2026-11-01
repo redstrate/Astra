@@ -197,11 +197,47 @@ FormCard.FormCardPage {
         Layout.fillWidth: true
         Layout.topMargin: Kirigami.Units.largeSpacing * 4
 
+        FormCard.FormTextDelegate {
+            id: dalamudDescriptionDelegate
+            text: i18n("Dalamud is a 3rd-party plugin framework for FFXIV.")
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: dalamudDescriptionDelegate
+            below: dalamudWebsiteDelegate
+        }
+
+        FormCard.FormLinkDelegate {
+            id: dalamudWebsiteDelegate
+            text: i18nc("@action:button", "Official Website")
+            icon.name: "internet-services-symbolic"
+            url: 'https://goatcorp.github.io/'
+        }
+
+        FormCard.FormDelegateSeparator {
+            above: dalamudWebsiteDelegate
+            below: dalamudSafetyDelegate
+        }
+
+        FormCard.FormLinkDelegate {
+            id: dalamudSafetyDelegate
+            text: i18nc("@action:button", "Safety Disclaimer")
+            icon.name: "internet-services-symbolic"
+            url: 'https://goatcorp.github.io/faq/xl_troubleshooting#q-are-xivlauncher-dalamud-and-dalamud-plugins-safe-to-use'
+        }
+    }
+
+    FormCard.FormCard {
+        visible: dalamudAction.checked
+
+        Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.largeSpacing
+
         FormCard.FormCheckDelegate {
             id: enableDalamudDelegate
 
             text: i18n("Enable Dalamud")
-            description: i18n("Dalamud extends the game with useful plugins, but use at your own risk.")
+            description: i18n("By enabling this option, you accept the risk of running 3rd-party software during gameplay.")
             checked: page.profile.config.dalamudEnabled
             onCheckedChanged: {
                 page.profile.config.dalamudEnabled = checked;
