@@ -115,6 +115,19 @@ modules:
       - type: file
         url: https://github.com/doitsujin/dxvk/releases/download/v3.1.1/dxvk-3.1.1.tar.gz
         sha256: 40565b4a724aadc4433fa4e010b4b23916d9b1f1baeee64e17186db94f54e608
+  - name: fex-emu
+    buildsystem: simple
+    build-commands:
+      - |
+        bsdtar -Oxf fex-emu-wine_2610-1\~s_arm64.deb 'data.tar.zst' |
+          bsdtar -xf -
+      - install -D usr/lib/wine/aarch64-windows/libarm64ecfex.dll /app/libexec/libarm64ecfex.dll
+    only-arches:
+      - aarch64
+    sources:
+      - type: file
+        url: https://launchpad.net/~fex-emu/+archive/ubuntu/fex/+files/fex-emu-wine_2610-1~s_arm64.deb
+        sha256: dfca27ef4bba53f8f0c6d525a9dd522119e691e22e3e91fc4f82843f7be27ce6
   - name: astra
     buildsystem: cmake-ninja
     config-opts:

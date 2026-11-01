@@ -331,28 +331,37 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
             addRegistryKey(profile, QStringLiteral("HKEY_CURRENT_USER\\Software\\Wine"), QStringLiteral("HideWineExports"), QString::number(value));
         }
 
-        // Copy DXVK if using the built-in wine. currently this is tied to the same setting, mostly for ARM64 reasons
-        if (profile.config()->wineType() == Profile::WineType::BuiltIn) {
-            const QDir dxvkDir = QStringLiteral("/app/lib/dxvk/x64");
+        // Set up DXVK
+        const QDir dxvkDir = QStringLiteral("/app/lib/dxvk/x64");
 
-            const QDir winePrefix = profile.account()->config()->winePrefixPath();
-            const QDir driveC = winePrefix.absoluteFilePath(QStringLiteral("drive_c"));
-            const QDir windows = driveC.absoluteFilePath(QStringLiteral("windows"));
-            const QDir system32 = windows.absoluteFilePath(QStringLiteral("system32"));
-            if (!system32.exists()) {
-                qCWarning(ASTRA_LOG) << "Stopping launch because we don't have a system32 directory?";
-                Q_EMIT m_launcher.gameClosed(&profile);
-                return; // something went horribly wrong, don't even touch this
+        const QDir winePrefix = profile.account()->config()->winePrefixPath();
+        const QDir driveC = winePrefix.absoluteFilePath(QStringLiteral("drive_c"));
+        const QDir windows = driveC.absoluteFilePath(QStringLiteral("windows"));
+        const QDir system32 = windows.absoluteFilePath(QStringLiteral("system32"));
+        if (!system32.exists()) {
+            qCWarning(ASTRA_LOG) << "Stopping launch because we don't have a system32 directory?";
+            Q_EMIT m_launcher.gameClosed(&profile);
+            return; // something went horribly wrong, don't even touch this
+        }
+
+        for (const auto &entry : dxvkDir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot)) {
+            QFileInfo info(system32.absoluteFilePath(entry.fileName()));
+            if (info.symLinkTarget() == entry.absoluteFilePath()) {
+                continue;
             }
 
-            for (const auto &entry : dxvkDir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot)) {
-                QFileInfo info(system32.absoluteFilePath(entry.fileName()));
-                if (info.symLinkTarget() == entry.absoluteFilePath()) {
-                    continue;
-                }
+            QFile::remove(info.absoluteFilePath());
+            QFile::link(entry.absoluteFilePath(), info.absoluteFilePath());
+        }
 
+        // Set up FEX-EMU ARM64EC for x64 translation if needed
+        if (QSysInfo::currentCpuArchitecture() == QStringLiteral("arm64")) {
+            const QString fexEmuDll(QStringLiteral("/app/libexec/libarm64ecfex.dll"));
+            const QFileInfo info(system32.absoluteFilePath(QStringLiteral("libarm64ecfex.dll")));
+            if (info.symLinkTarget() != fexEmuDll) {
+                addRegistryKey(profile, QStringLiteral("HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Wow64\\amd64"), {}, QStringLiteral("libarm64ecfex.dll"));
                 QFile::remove(info.absoluteFilePath());
-                QFile::link(entry.absoluteFilePath(), info.absoluteFilePath());
+                QFile::link(fexEmuDll, info.absoluteFilePath());
             }
         }
     }
@@ -387,10 +396,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
 
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     env.insert(QStringLiteral("WINEPREFIX"), profile.account()->config()->winePrefixPath());
-
-    if (profile.config()->wineType() == Profile::WineType::BuiltIn) {
-        env.insert(QStringLiteral("WINEDLLOVERRIDES"), QStringLiteral("msquic=,mscoree=n,b;d3d9,d3d11,d3d10core,dxgi=n,b"));
-    }
+    env.insert(QStringLiteral("WINEDLLOVERRIDES"), QStringLiteral("msquic=,mscoree=n,b;d3d9,d3d11,d3d10core,dxgi=n,b"));
 
     arguments.push_back(profile.winePath());
 #endif
@@ -426,11 +432,15 @@ void GameRunner::addRegistryKey(const Profile &settings, const QString &key, con
 {
     const auto process = new QProcess(this);
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(settings,
-                     process,
-                     {QStringLiteral("reg"), QStringLiteral("add"), key, QStringLiteral("/v"), value, QStringLiteral("/d"), data, QStringLiteral("/f")},
-                     false,
-                     false);
+
+    QStringList args;
+    if (value.isEmpty()) {
+        args = {QStringLiteral("reg"), QStringLiteral("add"), key, QStringLiteral("/d"), data, QStringLiteral("/f")};
+    } else {
+        args = {QStringLiteral("reg"), QStringLiteral("add"), key, QStringLiteral("/v"), value, QStringLiteral("/d"), data, QStringLiteral("/f")};
+    }
+
+    launchExecutable(settings, process, args, false, false);
     process->waitForFinished();
 }
 
