@@ -41,7 +41,5 @@ private:
     /// \param data What to set the value as, like "1" or "0"
     void addRegistryKey(const Profile &settings, const QString &key, const QString &value, const QString &data);
 
-    void setWindowsVersion(const Profile &settings, const QString &version);
-
     LauncherCore &m_launcher;
 };
