@@ -4,6 +4,7 @@
 #include "steamapi.h"
 #include "encryptedarg.h"
 #include "launchercore.h"
+#include "utility.h"
 
 #include <QCoroNetwork>
 #include <QJsonDocument>
@@ -29,6 +30,7 @@ QCoro::Task<> SteamAPI::initialize(const bool freeTrial)
 
     QNetworkRequest request(url);
     request.setTransferTimeout();
+    Utility::printRequest(QStringLiteral("GET"), request);
 
     Q_UNUSED(co_await m_qnam.post(request, QByteArray{}))
 }
@@ -43,6 +45,7 @@ QCoro::Task<> SteamAPI::shutdown()
 
     QNetworkRequest request(url);
     request.setTransferTimeout();
+    Utility::printRequest(QStringLiteral("GET"), request);
 
     Q_UNUSED(co_await m_qnam.post(request, QByteArray{}))
 }
@@ -57,6 +60,7 @@ QCoro::Task<std::pair<QString, int>> SteamAPI::getTicket()
 
     QNetworkRequest request(url);
     request.setTransferTimeout();
+    Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = co_await m_qnam.get(request);
     const auto ticketBytes = reply->readAll();
