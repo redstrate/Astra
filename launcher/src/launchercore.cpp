@@ -673,6 +673,7 @@ QCoro::Task<> LauncherCore::beginAutoConfiguration(Account *account, QString url
 
     QNetworkRequest request(requestUrl);
     request.setTransferTimeout();
+    Utility::printRequest(QStringLiteral("GET"), request);
 
     auto reply = m_mgr->get(request);
     co_await reply;
