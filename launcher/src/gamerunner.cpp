@@ -443,11 +443,3 @@ void GameRunner::addRegistryKey(const Profile &settings, const QString &key, con
     launchExecutable(settings, process, args, false, false);
     process->waitForFinished();
 }
-
-void GameRunner::setWindowsVersion(const Profile &settings, const QString &version)
-{
-    const auto process = new QProcess(this);
-    process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    launchExecutable(settings, process, {QStringLiteral("winecfg"), QStringLiteral("/v"), version}, false, false);
-    process->waitForFinished();
-}
