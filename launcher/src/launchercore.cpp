@@ -175,7 +175,8 @@ void LauncherCore::fetchAvatar(Account *account)
         QUrl url = QUrl::fromUserInput(account->config()->lodestoneServer());
         url.setPath(QStringLiteral("/lodestone/character/%1").arg(account->config()->lodestoneId()));
 
-        const QNetworkRequest request(url);
+        QNetworkRequest request(url);
+        request.setTransferTimeout();
         Utility::printRequest(QStringLiteral("GET"), request);
 
         const auto reply = mgr()->get(request);
@@ -189,7 +190,8 @@ void LauncherCore::fetchAvatar(Account *account)
                 if (match.hasCaptured(1)) {
                     const QString newAvatarUrl = match.captured(1);
 
-                    const auto avatarRequest = QNetworkRequest(QUrl(newAvatarUrl));
+                    auto avatarRequest = QNetworkRequest(QUrl(newAvatarUrl));
+                    avatarRequest.setTransferTimeout();
                     Utility::printRequest(QStringLiteral("GET"), avatarRequest);
 
                     auto avatarReply = mgr()->get(avatarRequest);
@@ -359,6 +361,7 @@ void LauncherCore::buildRequest(const Profile &settings, QNetworkRequest &reques
     request.setRawHeader(QByteArrayLiteral("Accept-Language"), QByteArrayLiteral("en-us"));
     request.setRawHeader(QByteArrayLiteral("Connection"), QByteArrayLiteral("Keep-Alive"));
     request.setRawHeader(QByteArrayLiteral("Cookie"), QByteArrayLiteral("_rsid=\"\""));
+    request.setTransferTimeout();
 }
 
 void LauncherCore::setupIgnoreSSL(QNetworkReply *reply)
@@ -522,6 +525,7 @@ QCoro::Task<> LauncherCore::fetchNews()
     headlineUrl.setQuery(query);
 
     QNetworkRequest headlineRequest(QUrl(QStringLiteral("%1&%2").arg(headlineUrl.toString(), QString::number(QDateTime::currentMSecsSinceEpoch()))));
+    headlineRequest.setTransferTimeout();
     headlineRequest.setRawHeader(QByteArrayLiteral("Accept"), QByteArrayLiteral("application/json, text/plain, */*"));
     headlineRequest.setRawHeader(QByteArrayLiteral("Origin"), QByteArrayLiteral("https://launcher.finalfantasyxiv.com"));
     headlineRequest.setRawHeader(
@@ -539,6 +543,7 @@ QCoro::Task<> LauncherCore::fetchNews()
     bannerUrl.setQuery(query);
 
     QNetworkRequest bannerRequest(QUrl(QStringLiteral("%1&_=%3").arg(bannerUrl.toString(), QString::number(QDateTime::currentMSecsSinceEpoch()))));
+    bannerRequest.setTransferTimeout();
     bannerRequest.setRawHeader(QByteArrayLiteral("Accept"), QByteArrayLiteral("application/json, text/plain, */*"));
     bannerRequest.setRawHeader(QByteArrayLiteral("Origin"), QByteArrayLiteral("https://launcher.finalfantasyxiv.com"));
     bannerRequest.setRawHeader(
@@ -666,7 +671,10 @@ QCoro::Task<> LauncherCore::beginAutoConfiguration(Account *account, QString url
     QUrl requestUrl = QUrl::fromUserInput(url);
     requestUrl.setPath(QStringLiteral("/.well-known/xiv"));
 
-    auto reply = m_mgr->get(QNetworkRequest(requestUrl));
+    QNetworkRequest request(requestUrl);
+    request.setTransferTimeout();
+
+    auto reply = m_mgr->get(request);
     co_await reply;
 
     if (reply->error() != QNetworkReply::NoError) {

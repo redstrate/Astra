@@ -172,7 +172,8 @@ QCoro::Task<bool> Patcher::patch(const physis_PatchList &patchList)
                 QFile::remove(tempPatchPath);
             }
 
-            const auto patchRequest = QNetworkRequest(QUrl(QLatin1String(patch.url)));
+            auto patchRequest = QNetworkRequest(QUrl(QLatin1String(patch.url)));
+            patchRequest.setTransferTimeout();
             Utility::printRequest(QStringLiteral("GET"), patchRequest);
 
             auto patchReply = m_launcher.mgr()->get(patchRequest);
