@@ -17,9 +17,9 @@ public:
 
     /// Begins the game executable, but calls to Dalamud if needed.
     void beginGameExecutable(Profile &profile, const std::optional<LoginAuth> &auth);
-    void openOfficialLauncher(Profile &profile);
-    void openSystemInfo(Profile &profile);
-    void openConfigBackup(Profile &profile);
+    void openOfficialLauncher(const Profile &profile);
+    void openSystemInfo(const Profile &profile);
+    void openConfigBackup(const Profile &profile);
 
 private:
     /// Starts a vanilla game session with no Dalamud injection.

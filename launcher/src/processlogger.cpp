@@ -7,13 +7,11 @@
 
 #include <QStandardPaths>
 
-ProcessLogger::ProcessLogger(const QString &baseName, QProcess *process)
+ProcessLogger::ProcessLogger(const QDir &dir, const QString &baseName, QProcess *process)
 {
-    const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    const QDir logDirectory = dataDir.absoluteFilePath(QStringLiteral("log"));
-    Utility::createPathIfNeeded(logDirectory);
+    Utility::createPathIfNeeded(dir.absolutePath());
 
-    m_file.setFileName(logDirectory.absoluteFilePath(QStringLiteral("%1.log").arg(baseName)));
+    m_file.setFileName(dir.absoluteFilePath(QStringLiteral("%1.log").arg(baseName)));
     if (!m_file.open(QIODevice::WriteOnly | QIODevice::Unbuffered)) {
         qCWarning(ASTRA_LOG) << "Could not open" << m_file.fileName() << "for writing:" << m_file.errorString();
     }
