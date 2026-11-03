@@ -38,7 +38,7 @@ private:
 
     static QString extractZip(const QString &filePath, const QString &directory);
 
-    LauncherCore &launcher;
+    LauncherCore &m_launcher;
 
     QString m_remoteDalamudVersion;
     QString m_remoteRuntimeVersion;

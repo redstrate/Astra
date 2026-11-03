@@ -23,7 +23,7 @@ using namespace Qt::StringLiterals;
 
 AssetUpdater::AssetUpdater(Profile &profile, LauncherCore &launcher, QObject *parent)
     : QObject(parent)
-    , launcher(launcher)
+    , m_launcher(launcher)
     , m_profile(profile)
 {
 }
@@ -35,6 +35,7 @@ QCoro::Task<bool> AssetUpdater::update()
     }
 
     qInfo(ASTRA_LOG) << "Checking for asset updates...";
+    Q_EMIT m_launcher.stageChanged(i18n("Checking for asset updates..."));
 
     const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
@@ -65,16 +66,17 @@ QCoro::Task<bool> AssetUpdater::update()
 QCoro::Task<bool> AssetUpdater::checkRemoteDalamudAssetVersion()
 {
     // first we want to fetch the list of assets required
-    const QNetworkRequest request(dalamudAssetManifestUrl());
+    QNetworkRequest request(dalamudAssetManifestUrl());
+    request.setTransferTimeout();
     Utility::printRequest(QStringLiteral("GET"), request);
 
-    const auto reply = launcher.mgr()->get(request);
+    const auto reply = m_launcher.mgr()->get(request);
     co_await reply;
 
     if (reply->error() != QNetworkReply::NetworkError::NoError) {
-        Q_EMIT launcher.dalamudError(i18n("Could not check for Dalamud asset updates:\n\n%1", reply->errorString()));
+        Q_EMIT m_launcher.dalamudError(i18n("Could not check for Dalamud asset updates:\n\n%1", reply->errorString()));
 
-        const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::dalamudDecided);
+        const bool shouldContinue = co_await qCoro(&m_launcher, &LauncherCore::dalamudDecided);
         co_return shouldContinue;
     }
 
@@ -106,23 +108,24 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudVersion()
 
     url.setQuery(query);
 
-    const QNetworkRequest request(url);
+    QNetworkRequest request(url);
+    request.setTransferTimeout();
     Utility::printRequest(QStringLiteral("GET"), request);
 
     m_remoteDalamudVersion.clear();
     m_remoteRuntimeVersion.clear();
 
-    const auto reply = launcher.mgr()->get(request);
+    const auto reply = m_launcher.mgr()->get(request);
     co_await reply;
 
     if (reply->error() != QNetworkReply::NetworkError::NoError) {
-        Q_EMIT launcher.dalamudError(i18n("Could not check for Dalamud updates:\n\n%1", reply->errorString()));
+        Q_EMIT m_launcher.dalamudError(i18n("Could not check for Dalamud updates:\n\n%1", reply->errorString()));
 
         // Always assume Dalamud is applicable for this version when we can't contact the server!
         // The user is prompted to turn off Dalamud anyway, if they wish.
         m_profile.setDalamudApplicable(true);
 
-        const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::dalamudDecided);
+        const bool shouldContinue = co_await qCoro(&m_launcher, &LauncherCore::dalamudDecided);
         co_return shouldContinue;
     }
 
@@ -160,12 +163,13 @@ QCoro::Task<bool> AssetUpdater::checkRemoteDalamudVersion()
 
 QCoro::Task<bool> AssetUpdater::installDalamudAssets()
 {
-    Q_EMIT launcher.stageChanged(i18n("Updating Dalamud assets..."));
+    Q_EMIT m_launcher.stageChanged(i18n("Updating Dalamud assets..."));
 
-    const auto request = QNetworkRequest(QUrl(m_remoteDalamudAssetPackageUrl));
+    auto request = QNetworkRequest(QUrl(m_remoteDalamudAssetPackageUrl));
+    request.setTransferTimeout();
     Utility::printRequest(QStringLiteral("GET"), request);
 
-    const auto reply = launcher.mgr()->get(request);
+    const auto reply = m_launcher.mgr()->get(request);
     co_await reply;
 
     qInfo(ASTRA_LOG) << "Finished downloading Dalamud assets";
@@ -181,9 +185,9 @@ QCoro::Task<bool> AssetUpdater::installDalamudAssets()
     if (const QString errorString = extractZip(m_tempDir.filePath(QStringLiteral("dalamud-assets.zip")), m_dalamudAssetDir.absolutePath());
         !errorString.isEmpty()) {
         qCritical(ASTRA_LOG) << "Failed to install Dalamud assets:" << errorString;
-        Q_EMIT launcher.dalamudError(i18n("Failed to install Dalamud assets:\n\n%1").arg(errorString));
+        Q_EMIT m_launcher.dalamudError(i18n("Failed to install Dalamud assets:\n\n%1").arg(errorString));
 
-        const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::dalamudDecided);
+        const bool shouldContinue = co_await qCoro(&m_launcher, &LauncherCore::dalamudDecided);
         co_return shouldContinue;
     }
 
@@ -198,12 +202,13 @@ QCoro::Task<bool> AssetUpdater::installDalamudAssets()
 
 QCoro::Task<bool> AssetUpdater::installDalamud()
 {
-    Q_EMIT launcher.stageChanged(i18n("Updating Dalamud..."));
+    Q_EMIT m_launcher.stageChanged(i18n("Updating Dalamud..."));
 
-    const auto request = QNetworkRequest(QUrl(m_remoteDalamudDownloadUrl));
+    auto request = QNetworkRequest(QUrl(m_remoteDalamudDownloadUrl));
+    request.setTransferTimeout();
     Utility::printRequest(QStringLiteral("GET"), request);
 
-    const auto reply = launcher.mgr()->get(request);
+    const auto reply = m_launcher.mgr()->get(request);
     co_await reply;
 
     qInfo(ASTRA_LOG) << "Finished downloading Dalamud";
@@ -220,9 +225,9 @@ QCoro::Task<bool> AssetUpdater::installDalamud()
             extractZip(m_tempDir.filePath(QStringLiteral("latest.zip")), m_dalamudDir.absoluteFilePath(m_profile.config()->dalamudChannel()));
         !errorString.isEmpty()) {
         qCritical(ASTRA_LOG) << "Failed to install Dalamud:" << errorString;
-        Q_EMIT launcher.dalamudError(i18n("Failed to install Dalamud:\n\n%1").arg(errorString));
+        Q_EMIT m_launcher.dalamudError(i18n("Failed to install Dalamud:\n\n%1").arg(errorString));
 
-        const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::dalamudDecided);
+        const bool shouldContinue = co_await qCoro(&m_launcher, &LauncherCore::dalamudDecided);
         co_return shouldContinue;
     }
 
@@ -233,14 +238,15 @@ QCoro::Task<bool> AssetUpdater::installDalamud()
 
 QCoro::Task<bool> AssetUpdater::installRuntime()
 {
-    Q_EMIT launcher.stageChanged(i18n("Updating .NET Runtime..."));
+    Q_EMIT m_launcher.stageChanged(i18n("Updating .NET Runtime..."));
 
     // core
     {
-        const QNetworkRequest request(dotnetRuntimePackageUrl(m_remoteRuntimeVersion));
+        QNetworkRequest request(dotnetRuntimePackageUrl(m_remoteRuntimeVersion));
+        request.setTransferTimeout();
         Utility::printRequest(QStringLiteral("GET"), request);
 
-        const auto reply = launcher.mgr()->get(request);
+        const auto reply = m_launcher.mgr()->get(request);
         co_await reply;
 
         qInfo(ASTRA_LOG) << "Finished downloading Dotnet-core";
@@ -256,10 +262,11 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
 
     // desktop
     {
-        const QNetworkRequest request(dotnetDesktopPackageUrl(m_remoteRuntimeVersion));
+        QNetworkRequest request(dotnetDesktopPackageUrl(m_remoteRuntimeVersion));
+        request.setTransferTimeout();
         Utility::printRequest(QStringLiteral("GET"), request);
 
-        const auto reply = launcher.mgr()->get(request);
+        const auto reply = m_launcher.mgr()->get(request);
         co_await reply;
 
         qInfo(ASTRA_LOG) << "Finished downloading Dotnet-desktop";
@@ -278,9 +285,9 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
 
     if (!errorString1.isEmpty() || !errorString2.isEmpty()) {
         qCritical(ASTRA_LOG) << "Failed to install .NET runtime:" << errorString1 << errorString2;
-        Q_EMIT launcher.dalamudError(i18n("Failed to install .NET runtime:\n\n%1%2").arg(errorString1).arg(errorString2));
+        Q_EMIT m_launcher.dalamudError(i18n("Failed to install .NET runtime:\n\n%1%2").arg(errorString1).arg(errorString2));
 
-        const bool shouldContinue = co_await qCoro(&launcher, &LauncherCore::dalamudDecided);
+        const bool shouldContinue = co_await qCoro(&m_launcher, &LauncherCore::dalamudDecided);
         co_return shouldContinue;
     } else {
         Utility::writeVersion(m_dalamudRuntimeDir.absoluteFilePath(QStringLiteral("runtime.ver")), m_remoteRuntimeVersion);
@@ -291,7 +298,7 @@ QCoro::Task<bool> AssetUpdater::installRuntime()
 
 QUrl AssetUpdater::dalamudVersionManifestUrl() const
 {
-    QUrl url(launcher.config()->dalamudDistribServer());
+    QUrl url(m_launcher.config()->dalamudDistribServer());
     url.setPath(QStringLiteral("/Dalamud/Release/VersionInfo"));
 
     return url;
@@ -299,7 +306,7 @@ QUrl AssetUpdater::dalamudVersionManifestUrl() const
 
 QUrl AssetUpdater::dalamudAssetManifestUrl() const
 {
-    QUrl url(launcher.config()->dalamudDistribServer());
+    QUrl url(m_launcher.config()->dalamudDistribServer());
     url.setPath(QStringLiteral("/Dalamud/Asset/Meta"));
 
     return url;
@@ -307,7 +314,7 @@ QUrl AssetUpdater::dalamudAssetManifestUrl() const
 
 QUrl AssetUpdater::dotnetRuntimePackageUrl(const QString &version) const
 {
-    QUrl url(launcher.config()->dalamudDistribServer());
+    QUrl url(m_launcher.config()->dalamudDistribServer());
     url.setPath(QStringLiteral("/Dalamud/Release/Runtime/DotNet/%1").arg(version));
 
     return url;
@@ -315,7 +322,7 @@ QUrl AssetUpdater::dotnetRuntimePackageUrl(const QString &version) const
 
 QUrl AssetUpdater::dotnetDesktopPackageUrl(const QString &version) const
 {
-    QUrl url(launcher.config()->dalamudDistribServer());
+    QUrl url(m_launcher.config()->dalamudDistribServer());
     url.setPath(QStringLiteral("/Dalamud/Release/Runtime/WindowsDesktop/%1").arg(version));
 
     return url;

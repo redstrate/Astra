@@ -84,10 +84,7 @@ QCoro::Task<bool> SquareEnixLogin::checkGateStatus() const
     url.setQuery(QString::number(QDateTime::currentMSecsSinceEpoch()));
 
     QNetworkRequest request(url);
-
-    // TODO: really?
     m_launcher.buildRequest(*m_info->profile, request);
-
     Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = m_launcher.mgr()->get(request);
@@ -123,10 +120,7 @@ QCoro::Task<bool> SquareEnixLogin::checkLoginStatus() const
     url.setQuery(QString::number(QDateTime::currentMSecsSinceEpoch()));
 
     QNetworkRequest request(url);
-
-    // TODO: really?
     m_launcher.buildRequest(*m_info->profile, request);
-
     Utility::printRequest(QStringLiteral("GET"), request);
 
     const auto reply = m_launcher.mgr()->get(request);
@@ -164,6 +158,7 @@ QCoro::Task<bool> SquareEnixLogin::checkBootUpdates()
     url.setQuery(query);
 
     auto request = QNetworkRequest(url);
+    request.setTransferTimeout();
     if (m_info->profile->account()->config()->license() == Account::GameLicense::macOS) {
         request.setHeader(QNetworkRequest::KnownHeaders::UserAgentHeader, macosPatchUserAgent);
     } else {
@@ -363,6 +358,7 @@ QCoro::Task<bool> SquareEnixLogin::registerSession()
     request.setRawHeader(QByteArrayLiteral("X-Hash-Check"), QByteArrayLiteral("enabled"));
     request.setHeader(QNetworkRequest::KnownHeaders::UserAgentHeader, patchUserAgent);
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/x-www-form-urlencoded"));
+    request.setTransferTimeout();
 
     QString report = QStringLiteral("%1=%2\n").arg(m_info->profile->bootVersion(), co_await getBootHash());
     for (int i = 0; i < m_auth.maxExpansion; i++) {

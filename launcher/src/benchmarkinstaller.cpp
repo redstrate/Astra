@@ -29,7 +29,8 @@ BenchmarkInstaller::BenchmarkInstaller(LauncherCore &launcher, Profile &profile,
 void BenchmarkInstaller::start()
 {
     if (m_localInstallerPath.isEmpty()) {
-        const auto request = QNetworkRequest(QUrl(m_launcher.config()->benchmarkURL()));
+        auto request = QNetworkRequest(QUrl(m_launcher.config()->benchmarkURL()));
+        request.setTransferTimeout();
         Utility::printRequest(QStringLiteral("GET"), request);
 
         auto reply = m_launcher.mgr()->get(request);

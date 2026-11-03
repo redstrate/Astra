@@ -27,7 +27,10 @@ QCoro::Task<> SteamAPI::initialize(const bool freeTrial)
     url.setPath(QStringLiteral("/init"));
     url.setQuery(query);
 
-    Q_UNUSED(co_await m_qnam.post(QNetworkRequest(url), QByteArray{}))
+    QNetworkRequest request(url);
+    request.setTransferTimeout();
+
+    Q_UNUSED(co_await m_qnam.post(request, QByteArray{}))
 }
 
 QCoro::Task<> SteamAPI::shutdown()
@@ -38,7 +41,10 @@ QCoro::Task<> SteamAPI::shutdown()
     url.setPort(50481);
     url.setPath(QStringLiteral("/shutdown"));
 
-    Q_UNUSED(co_await m_qnam.post(QNetworkRequest(url), QByteArray{}))
+    QNetworkRequest request(url);
+    request.setTransferTimeout();
+
+    Q_UNUSED(co_await m_qnam.post(request, QByteArray{}))
 }
 
 QCoro::Task<std::pair<QString, int>> SteamAPI::getTicket()
@@ -49,7 +55,10 @@ QCoro::Task<std::pair<QString, int>> SteamAPI::getTicket()
     url.setPort(50481);
     url.setPath(QStringLiteral("/ticket"));
 
-    const auto reply = co_await m_qnam.get(QNetworkRequest(url));
+    QNetworkRequest request(url);
+    request.setTransferTimeout();
+
+    const auto reply = co_await m_qnam.get(request);
     const auto ticketBytes = reply->readAll();
 
     const QJsonDocument document = QJsonDocument::fromJson(ticketBytes);
