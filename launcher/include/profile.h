@@ -6,6 +6,7 @@
 #include <QObject>
 #include <qqmlintegration.h>
 
+#include <QDir>
 #include <physis.hpp>
 
 class Account;
@@ -91,6 +92,8 @@ public:
 
     ProfileConfig *config() const;
     bool isGamePathDefault() const;
+
+    [[nodiscard]] QDir logDirectory() const;
 
 Q_SIGNALS:
     void gameInstallChanged();

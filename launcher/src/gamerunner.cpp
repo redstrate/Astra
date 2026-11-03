@@ -42,32 +42,32 @@ void GameRunner::beginGameExecutable(Profile &profile, const std::optional<Login
     Q_EMIT m_launcher.successfulLaunch();
 }
 
-void GameRunner::openOfficialLauncher(Profile &profile)
+void GameRunner::openOfficialLauncher(const Profile &profile)
 {
     const auto process = new QProcess(this);
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
 
-    new ProcessLogger(QStringLiteral("ffxivlauncher"), process);
+    new ProcessLogger(profile.logDirectory(), QStringLiteral("ffxivlauncher"), process);
 
     launchExecutable(profile, process, {QDir(profile.config()->gamePath()).absoluteFilePath(QStringLiteral("boot/ffxivboot64.exe"))}, true, true);
 }
 
-void GameRunner::openConfigBackup(Profile &profile)
+void GameRunner::openConfigBackup(const Profile &profile)
 {
     const auto process = new QProcess(this);
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
 
-    new ProcessLogger(QStringLiteral("ffxivconfig"), process);
+    new ProcessLogger(profile.logDirectory(), QStringLiteral("ffxivconfig"), process);
 
     launchExecutable(profile, process, {QDir(profile.config()->gamePath()).absoluteFilePath(QStringLiteral("boot/ffxivconfig64.exe"))}, true, true);
 }
 
-void GameRunner::openSystemInfo(Profile &profile)
+void GameRunner::openSystemInfo(const Profile &profile)
 {
     const auto process = new QProcess(this);
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
 
-    new ProcessLogger(QStringLiteral("ffxivsysinfo"), process);
+    new ProcessLogger(profile.logDirectory(), QStringLiteral("ffxivsysinfo"), process);
 
     launchExecutable(profile, process, {QDir(profile.config()->gamePath()).absoluteFilePath(QStringLiteral("boot/ffxivsysinfo64.exe"))}, true, true);
 }
@@ -86,7 +86,7 @@ void GameRunner::beginVanillaGame(const QString &gameExecutablePath, Profile &pr
 
     auto args = getGameArgs(profile, auth);
 
-    new ProcessLogger(QStringLiteral("ffxiv"), gameProcess);
+    new ProcessLogger(profile.logDirectory(), QStringLiteral("ffxiv"), gameProcess);
 
     launchExecutable(profile, gameProcess, {gameExecutablePath, args}, true, true);
 }
@@ -109,7 +109,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
     const QDir dalamudPluginDir = dalamudUserPluginDir.absoluteFilePath(QStringLiteral("installedPlugins"));
     Utility::createPathIfNeeded(dalamudPluginDir);
 
-    const QDir logDir = dataDir.absoluteFilePath(QStringLiteral("log"));
+    const QDir logDir = profile.logDirectory();
     Utility::createPathIfNeeded(logDir);
 
     const QDir dalamudRuntimeDir = dalamudDir.absoluteFilePath(QStringLiteral("runtime"));
@@ -179,7 +179,7 @@ void GameRunner::beginDalamudGame(const QString &gameExecutablePath, Profile &pr
     env.insert(QStringLiteral("DOTNET_ROOT"), Utility::toWindowsPath(dalamudRuntimeDir));
     dalamudProcess->setProcessEnvironment(env);
 
-    new ProcessLogger(QStringLiteral("dalamud-initial-injection"), dalamudProcess);
+    new ProcessLogger(profile.logDirectory(), QStringLiteral("dalamud-initial-injection"), dalamudProcess);
 
     const auto args = getGameArgs(profile, auth);
 
@@ -377,8 +377,7 @@ void GameRunner::launchExecutable(const Profile &profile, QProcess *process, con
     env.insert(QStringLiteral("WINEFSYNC"), QString::number(1));
     env.insert(QStringLiteral("WINEFSYNC_FUTEX2"), QString::number(1));
 
-    const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    const QString logDir = dataDir.absoluteFilePath(QStringLiteral("log"));
+    const QString logDir = profile.logDirectory().absolutePath();
     Utility::createPathIfNeeded(logDir);
 
     env.insert(QStringLiteral("DXVK_LOG_PATH"), logDir);

@@ -376,4 +376,11 @@ bool Profile::isGamePathDefault() const
     return m_config->gamePath() == m_config->defaultGamePathValue();
 }
 
+QDir Profile::logDirectory() const
+{
+    const QDir dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    const QDir logDir = dataDir.absoluteFilePath(QStringLiteral("log"));
+    return logDir.absoluteFilePath(m_uuid);
+}
+
 #include "moc_profile.cpp"

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <QDir>
 #include <QFile>
 #include <QObject>
 #include <QProcess>
@@ -10,7 +11,7 @@
 class ProcessLogger : public QObject
 {
 public:
-    explicit ProcessLogger(const QString &baseName, QProcess *process);
+    explicit ProcessLogger(const QDir &dir, const QString &baseName, QProcess *process);
 
 private:
     QFile m_file;
