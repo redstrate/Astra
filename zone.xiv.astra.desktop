@@ -2,8 +2,8 @@
 # SPDX-FileCopyrightText: 2023 Joshua Goins <josh@redstrate.com>
 [Desktop Entry]
 Name=Astra
-GenericName=FFXIV Launcher
-Comment=Play FFXIV
+GenericName=Play FFXIV
+Comment=FFXIV A Realm Reborn+ Launcher
 Exec=astra %u
 Terminal=false
 Icon=zone.xiv.astra

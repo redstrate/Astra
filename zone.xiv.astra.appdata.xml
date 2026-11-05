@@ -25,17 +25,72 @@
     <url type="vcs-browser">https://github.com/redstrate/astra</url>
     <launchable type="desktop-id">zone.xiv.astra.desktop</launchable>
     <releases>
-        <release version="0.9.1" date="2026-11-01"/>
-        <release version="0.9.0" date="2026-10-25"/>
-        <release version="0.8.2" date="2026-03-20"/>
-        <release version="0.8.1" date="2025-12-29"/>
-        <release version="0.8.0" date="2025-12-21"/>
-        <release version="0.7.0" date="2025-06-24"/>
-        <release version="0.6.1" date="2024-07-18"/>
-        <release version="0.6.0" date="2024-06-28"/>
-        <release version="0.5.1" date="2024-05-20"/>
-        <release version="0.5.0" date="2024-01-31"/>
-        <release version="0.2.0" date="2022-02-24"/>
+        <release version="0.9.1" date="2026-11-01">
+            <url>https://xiv.zone/software/astra/changelog/0.9.1</url>
+            <description>
+                <p>Minor release addressing some bugs and a major change to how Wine/DXVK is distributed:</p>
+            </description>
+        </release>
+        <release version="0.9.0" date="2026-10-25">
+            <url>https://xiv.zone/software/astra/changelog/0.9.0</url>
+            <description>
+                <p>Major release with a lot of Flatpak polishing and the beginnings of ARM64 support.</p>
+            </description>
+        </release>
+        <release version="0.8.2" date="2026-03-20">
+            <url>https://xiv.zone/software/astra/changelog/0.8.2</url>
+            <description>
+                <p>Another minor release with a few bugfixes.</p>
+            </description>
+        </release>
+        <release version="0.8.1" date="2025-12-29">
+            <url>https://xiv.zone/software/astra/changelog/0.8.1</url>
+            <description>
+                <p>Minor release fixing a few bugs.</p>
+            </description>
+        </release>
+        <release version="0.8.0" date="2025-12-21">
+            <url>https://xiv.zone/software/astra/changelog/0.8.0</url>
+            <description>
+                <p>Last stable update for 2025, have a happy new year!</p>
+            </description>
+        </release>
+        <release version="0.7.0" date="2025-06-24">
+            <url>https://xiv.zone/software/astra/changelog/0.7.0</url>
+            <description>
+                <p>Another year, another major release of Astra!</p>
+            </description>
+        </release>
+        <release version="0.6.1" date="2024-07-18">
+            <url>https://xiv.zone/software/astra/changelog/0.6.1</url>
+            <description>
+                <p>Minor update to fix some annoyances.</p>
+            </description>
+        </release>
+        <release version="0.6.0" date="2024-06-28">
+            <url>https://xiv.zone/software/astra/changelog/0.6.0</url>
+            <description>
+                <p>Another major release.</p>
+            </description>
+        </release>
+        <release version="0.5.1" date="2024-05-20">
+            <url>https://xiv.zone/software/astra/changelog/0.5.1</url>
+            <description>
+                <p>This is a minor update addressing some changes with recent game versions.</p>
+            </description>
+        </release>
+        <release version="0.5.0" date="2024-01-31">
+            <url>https://xiv.zone/software/astra/changelog/0.5.0</url>
+            <description>
+                <p>It's been a while (a year!) since the last Astra update, and a lot has changed since then. Here's a new major update to Astra!</p>
+            </description>
+        </release>
+        <release version="0.2.0" date="2022-02-24">
+            <url>https://xiv.zone/software/astra/changelog/0.2.0</url>
+            <description>
+                <p>This is a major beta release which adds a bunch new features!</p>
+            </description>
+        </release>
     </releases>
     <provides>
         <binary>astra</binary>
