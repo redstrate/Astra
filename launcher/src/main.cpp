@@ -39,10 +39,8 @@ int main(int argc, char *argv[])
     }
 
     KLocalizedString::setApplicationDomain("astra");
-    // This needs to be set before fromAppStreamForApplication can be used, so don't remove this!
-    QGuiApplication::setDesktopFileName(u"zone.xiv.astra"_s);
 
-    auto about = KAboutData::fromAppStreamForApplication();
+    auto about = KAboutData::fromAppStreamId(u"zone.xiv.astra"_s);
     about.setVersion(QByteArrayLiteral(ASTRA_VERSION_STRING));
     about.setCopyrightStatement(i18n("© 2021-2026 Joshua Goins"));
     about.setOtherText(
