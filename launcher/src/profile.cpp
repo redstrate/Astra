@@ -53,10 +53,15 @@ void Profile::readDalamudInfo()
             }
             const QJsonDocument doc = QJsonDocument::fromJson(depsJson.readAll());
 
+            const auto targetsObj = doc["targets"_L1].toObject();
+
             QString versionString;
-            for (const auto &target : doc["targets"_L1].toObject().keys()) {
+            for (const auto &target : targetsObj.keys()) {
                 if (target.contains(".NETCoreApp"_L1)) {
-                    versionString = doc["targets"_L1].toObject()[target].toObject().keys().filter(QStringLiteral("Dalamud/"))[0];
+                    const auto dalamudKeys = targetsObj[target].toObject().keys().filter(QStringLiteral("Dalamud/"));
+                    if (!dalamudKeys.empty()) {
+                        versionString = dalamudKeys.first();
+                    }
                 }
             }
 
@@ -67,13 +72,13 @@ void Profile::readDalamudInfo()
         const QString dalamudAssetsVer = dalamudAssetsDir.absoluteFilePath(QStringLiteral("asset.ver"));
         if (QFile::exists(dalamudAssetsVer)) {
             m_dalamudAssetVersion = Utility::readVersion(dalamudAssetsVer).toInt();
-            qInfo(ASTRA_LOG) << "Dalamud asset version:" << m_dalamudVersion;
+            qInfo(ASTRA_LOG) << "Dalamud asset version:" << m_dalamudAssetVersion;
         }
 
         const QString dalamudRuntimeVer = dalamudRuntimeDir.absoluteFilePath(QStringLiteral("runtime.ver"));
         if (QFile::exists(dalamudRuntimeVer)) {
             m_runtimeVersion = Utility::readVersion(dalamudRuntimeVer);
-            qInfo(ASTRA_LOG) << "Dalamud runtime version:" << m_dalamudVersion;
+            qInfo(ASTRA_LOG) << "Dalamud runtime version:" << m_runtimeVersion;
         }
     }
 }
