@@ -70,32 +70,25 @@ void CompatibilityToolInstaller::installCompatibilityTool()
 
     QProcess::execute(QStringLiteral("chmod"), {QStringLiteral("+x"), astraToolDir.absoluteFilePath(QStringLiteral("run.sh"))});
 
-    // copy required files
+    // we want to link these so they are updated when our flatpak updates
     const QDir homeDir = QStandardPaths::standardLocations(QStandardPaths::HomeLocation).constFirst(); // TODO: Port to locateFile I *guess*
     const QDir filesDir = homeDir.absoluteFilePath(QStringLiteral(".local/share/flatpak/app/zone.xiv.astra/current/active/files/libexec/"));
-
-    // we want to link these so they are updated when our flatpak updates
-    QFile::link(filesDir.absoluteFilePath(QStringLiteral("steamwrap")), astraToolDir.absoluteFilePath(QStringLiteral("steamwrap")));
-    QFile::link(filesDir.absoluteFilePath(QStringLiteral("libsteam_api.so")), astraToolDir.absoluteFilePath(QStringLiteral("libsteam_api.so")));
-
-    QString toolManifestContents;
-    if (QSysInfo::currentCpuArchitecture() == QStringLiteral("arm64")) {
-        // In the ARM64 Steam runtime switch-runtime.sh isn't a thing, but with some testing on the Steam Frame it looks like we don't even need it?
-        toolManifestContents = QStringLiteral(
-            "\"manifest\"\n"
-            "{\n"
-            "  \"version\" \"2\"\n"
-            "  \"commandline\" \"/wrapper.sh $STEAM_COMPAT_CLIENT_INSTALL_PATH/compatibilitytools.d/astra/run.sh %verb%\"\n"
-            "}");
+    if (filesDir.exists()) {
+        QFile::link(filesDir.absoluteFilePath(QStringLiteral("steamwrap")), astraToolDir.absoluteFilePath(QStringLiteral("steamwrap")));
+        QFile::link(filesDir.absoluteFilePath(QStringLiteral("libsteam_api.so")), astraToolDir.absoluteFilePath(QStringLiteral("libsteam_api.so")));
     } else {
-        toolManifestContents = QStringLiteral(
-            "\"manifest\"\n"
-            "{\n"
-            "  \"version\" \"2\"\n"
-            "  \"commandline\" \"/wrapper.sh \\\"$STEAM_RUNTIME/scripts/switch-runtime.sh\\\" --runtime=\\\"\\\" -- "
-            "$STEAM_COMPAT_CLIENT_INSTALL_PATH/compatibilitytools.d/astra/run.sh %verb%\"\n"
-            "}");
+        // system flatpak
+        const QDir systemDir = homeDir.absoluteFilePath(QStringLiteral("/var/lib/flatpak/app/zone.xiv.astra/current/active/files/libexec/"));
+        QFile::link(systemDir.absoluteFilePath(QStringLiteral("steamwrap")), astraToolDir.absoluteFilePath(QStringLiteral("steamwrap")));
+        QFile::link(systemDir.absoluteFilePath(QStringLiteral("libsteam_api.so")), astraToolDir.absoluteFilePath(QStringLiteral("libsteam_api.so")));
     }
+
+    const QString toolManifestContents = QStringLiteral(
+        "\"manifest\"\n"
+        "{\n"
+        "  \"version\" \"2\"\n"
+        "  \"commandline\" \"/wrapper.sh $STEAM_COMPAT_CLIENT_INSTALL_PATH/compatibilitytools.d/astra/run.sh %verb%\"\n"
+        "}");
 
     QFile toolManifestFile(astraToolDir.absoluteFilePath(QStringLiteral("toolmanifest.vdf")));
     if (toolManifestFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
